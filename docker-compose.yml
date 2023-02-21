@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: ./apps/backend/Dockerfile
     ports:
-      - 3002:3001
+      - 8001:8001
     networks:
       - app_network
     volumes:
@@ -25,6 +25,7 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NGROK_URL=ngrok
+      - PORT=8001
 networks:
   app_network:
     external: true
