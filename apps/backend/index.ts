@@ -6,7 +6,7 @@ const app = express()
 const port = process.env.PORT || '8001'
 
 app.get('/', (req, res) => {
-    res.send('Hello World My Sis')
+    res.send('Hello World DUDEE')
 })
 
 app.get('/hi', (req, res) => {
@@ -14,6 +14,6 @@ app.get('/hi', (req, res) => {
 })
 
 app.listen(port, async () => {
-    // console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Example app listening at http://localhost:${port}`)
     // console.log(`Server is accessible at ${url}`)
 })

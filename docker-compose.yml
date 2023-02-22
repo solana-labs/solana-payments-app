@@ -1,18 +1,8 @@
 version: '3'
 services:
-  ngrok:
-    container_name: ngrok
-    image: wernight/ngrok
-    ports:
-      - "4040:4040"
-    networks:
-      - app_network
-    command: ngrok http 3002
   backend:
     container_name: backend
     platform: linux/amd64
-    depends_on:
-      - ngrok
     build:
       context: .
       dockerfile: ./apps/backend/Dockerfile
@@ -24,7 +14,6 @@ services:
       - ./apps/backend:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      - NGROK_URL=ngrok
       - PORT=8001
 networks:
   app_network:
