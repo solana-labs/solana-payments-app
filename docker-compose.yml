@@ -15,6 +15,21 @@ services:
       - /usr/src/app/node_modules
     environment:
       - PORT=8001
+  merchant-ui:
+    container_name: merchant-ui
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./apps/merchant-ui/Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - app_network
+    volumes:
+      - ./apps/merchant-ui:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=8002
 networks:
   app_network:
     external: true
