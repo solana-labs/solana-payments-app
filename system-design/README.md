@@ -73,7 +73,6 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    sequenceDiagram
     autonumber
     participant Helius
     participant Solana as Solana Blockchain
