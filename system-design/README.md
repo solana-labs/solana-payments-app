@@ -4,7 +4,7 @@ This doc should serve as the starting point of the system design for the Solana 
 
 Note: Given we are in the very early stages of development, this should change over time with the build out.
 
-### Components
+## Components
 
 The Solana Payments App is designed around a few pieces of software that work together
 
@@ -14,9 +14,7 @@ The Solana Payments App is designed around a few pieces of software that work to
 4. Transaction Request Server - Generalized transaction building engine for payments
 5. Commerce Protocol - Lightweight on chain entities and actions to paticipate in commerce
 
-### Goals
-
-System Design Goals
+## System Design Goals.
 
 -   Serve multiple platforms with reuable infrastructure. Some platoforms may use all of the infrastruture, some may only use parts. For example, a point of sale may avoid the payment ui and replace that with their own, client side ui.
 -   Easy to redeploy and host your own instance of the payments app.
