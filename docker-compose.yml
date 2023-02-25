@@ -1,0 +1,35 @@
+version: '3'
+services:
+  backend:
+    container_name: backend
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    ports:
+      - 8001:8001
+    networks:
+      - app_network
+    volumes:
+      - ./apps/backend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=8001
+  merchant-ui:
+    container_name: merchant-ui
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./apps/merchant-ui/Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - app_network
+    volumes:
+      - ./apps/merchant-ui:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=8002
+networks:
+  app_network:
+    external: true

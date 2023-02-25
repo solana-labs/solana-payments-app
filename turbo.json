@@ -9,7 +9,8 @@
         "^build"
       ],
       "outputs": [
-        "./apps/backend/dist/**"
+        "./apps/backend/dist/**",
+        "./apps/merchant-ui/.next/**"
       ]
     },
     "lint": {

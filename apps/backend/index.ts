@@ -1,17 +1,19 @@
 import express from 'express'
+import ngrok from 'ngrok'
 
 const app = express()
 
-const port = 8000
+const port = process.env.PORT || '8001'
 
 app.get('/', (req, res) => {
-    res.send('Hello World My Dude')
+    res.send('Hello World DUDEE')
 })
 
 app.get('/hi', (req, res) => {
-    res.send('Bye My Dude')
+    res.send('Bye My Man')
 })
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Example app listening at http://localhost:${port}`)
+    // console.log(`Server is accessible at ${url}`)
 })
