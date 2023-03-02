@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./apps/backend/Dockerfile
     ports:
-      - 8001:8001
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     networks:
       - app_network
     volumes:
