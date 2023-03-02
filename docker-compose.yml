@@ -29,12 +29,12 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: example_db
-      MYSQL_USER: example_user
-      MYSQL_PASSWORD: example_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - ${DATABASE_PORT}:${DATABASE_PORT}
     volumes:
       - mysql:/var/lib/mysql
     networks:
