@@ -37,9 +37,10 @@ RUN npx turbo run build --filter=backend...
 FROM node:alpine AS runner
 WORKDIR /app
 
-RUN npm install -g nodemon
-RUN npm install -g concurrently
-RUN npm install -g typescript
+# RUN npm install -g nodemon
+# RUN npm install -g concurrently
+# RUN npm install -g typescript
+# RUN npm install -g prisma
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 expressjs

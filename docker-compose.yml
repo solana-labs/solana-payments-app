@@ -7,29 +7,55 @@ services:
       context: .
       dockerfile: ./apps/backend/Dockerfile
     ports:
-      - 8001:8001
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     networks:
       - app_network
     volumes:
       - ./apps/backend:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      - PORT=8001
-  merchant-ui:
-    container_name: merchant-ui
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/merchant-ui/Dockerfile
+      PORT: ${BACKEND_PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      SHOPIFY_CLIENT_ID: ${SHOPIFY_CLIENT_ID}
+      SHOPIFY_SECRET_KEY: ${SHOPIFY_SECRET_KEY}
+      AUTH_0_CLIENT_ID: ${AUTH_0_CLIENT_ID}
+      AUTH_0_CLIENT_SECRET: ${AUTH_0_CLIENT_SECRET}
+      AUTH_0_DOMAIN: ${AUTH_0_DOMAIN}
+      BASE_URL: ${BASE_URL}
+      FRONT_END_URL: ${FRONT_END_URL}
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - 3000:3000
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    volumes:
+      - mysql:/var/lib/mysql
     networks:
       - app_network
-    volumes:
-      - ./apps/merchant-ui:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=8002
+  # merchant-ui:
+  #   container_name: merchant-ui
+  #   platform: linux/amd64
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/merchant-ui/Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app_network
+  #   volumes:
+  #     - ./apps/merchant-ui:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   environment:
+  #     - PORT=3000
 networks:
   app_network:
     external: true
+volumes:
+  mysql: ~
