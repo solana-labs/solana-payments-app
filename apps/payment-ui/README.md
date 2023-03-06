@@ -1,3 +1,3 @@
-# Merchant UI
+# Payment UI
 
 In need of documentation. Coming soon!
