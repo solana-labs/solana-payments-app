@@ -6,13 +6,9 @@ services:
     build:
       context: .
       dockerfile: ./apps/backend/Dockerfile
+    command: npm run dev
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/backend:/usr/src/app
-      - /usr/src/app/node_modules
     environment:
       PORT: ${BACKEND_PORT}
       DATABASE_URL: ${DATABASE_URL}
@@ -37,40 +33,5 @@ services:
       - ${DATABASE_PORT}:${DATABASE_PORT}
     volumes:
       - mysql:/var/lib/mysql
-    networks:
-      - app_network
-  merchant-ui:
-    container_name: merchant-ui
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/merchant-ui/Dockerfile
-    ports:
-      - ${MERCHANT_UI_PORT}:${MERCHANT_UI_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/merchant-ui:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=${MERCHANT_UI_PORT}
-  payment-ui:
-    container_name: payment-ui
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/payment-ui/Dockerfile
-    ports:
-      - ${PAYMENT_UI_PORT}:${PAYMENT_UI_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/payment-ui:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=${PAYMENT_UI_PORT}
-networks:
-  app_network:
-    external: true
 volumes:
   mysql: ~

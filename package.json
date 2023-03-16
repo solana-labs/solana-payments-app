@@ -20,6 +20,8 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "typescript": "^5.0.2"
+  },
   "packageManager": "npm@8.5.2"
 }

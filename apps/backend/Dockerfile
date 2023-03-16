@@ -1,6 +1,9 @@
 # The web Dockerfile is copy-pasted into our main docs at /docs/handbook/deploying-with-docker.
 # Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
 
+FROM node:alpine as development
+WORKDIR /usr/app
+
 FROM node:alpine AS builder
 RUN apk add --no-cache libc6-compat
 RUN apk update
@@ -13,6 +16,7 @@ RUN turbo prune --scope=backend --docker
 FROM node:alpine AS installer
 RUN apk add --no-cache libc6-compat
 RUN apk update
+RUN npm install -g turbo
 WORKDIR /app
 
 # First install dependencies (as they change less often)

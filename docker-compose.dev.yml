@@ -1,0 +1,8 @@
+version: '3'
+services:
+  backend:
+    build:
+      target: development
+    volumes:
+      - ./node_modules:/usr/app/node_modules
+      - ./apps/backend/:/usr/app
