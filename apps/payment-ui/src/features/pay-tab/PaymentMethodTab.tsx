@@ -9,7 +9,7 @@ export const PaymentMethodTab = () => {
 
     const paymentMethodTabOption = ( option: PaymentMethod, label: string ) => {
 
-        const activeTabClassName = 'tab w-1/2 tab-active color-black data-theme="cupcake"'
+        const activeTabClassName = 'tab w-1/2 tab-active color-black drop-shadow'
         const defaultTabClassName = 'tab w-1/2'
 
         return (
@@ -18,7 +18,7 @@ export const PaymentMethodTab = () => {
     }
 
     return (
-        <div data-theme="emerald" className="tabs tabs-boxed w-full rounded-md bg-gray-200">
+        <div data-theme="mytheme" className="tabs tabs-boxed w-full rounded-xl bg-gray-200">
             {paymentMethodTabOption('connect-wallet', 'Pay with Wallet')}
             {paymentMethodTabOption('qr-code', 'Pay with QR Code')}
         </div>
