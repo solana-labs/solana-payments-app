@@ -27,7 +27,7 @@ export const PayToLabel = () => {
                     <div className="text-black text-lg w-1/3">-100.451 SOL</div>
                     <div className='flex flex-row justify-end items-center w-2/3'>
                         <div className='pr-2 text-md text-gray-600'>Pay with</div>
-                        <select className="select select-bordered w-fit max-w-xs">
+                        <select data-theme="mytheme" className="select select-bordered w-fit max-w-xs">
                             <option disabled selected>Currency</option>
                             <option>SOL</option>
                             <option>USDC</option>
