@@ -4,21 +4,22 @@ import React from 'react';
 import BuyButton from './BuyButton';
 import { MdArrowBack } from 'react-icons/md';
 import Image from 'next/image'
+import WalletButton from './WalletButton';
 
 const MainSection = () => {
   return (
-    <div className='flex flex-col h-[100vh] justify-start w-full'>
-        <div className='flex flex-row w-full h-[10vh]'>
+    <div className='flex flex-col h-[100vh] justify-between w-full max-w-5xl mx-auto'>
+        <div className='flex flex-row w-full sm:h-[5vh] h-[10vh]'>
           <div className="w-full relative flex flex-row items-center justify-center">
-            <div className='absolute flex flex-row justify-start w-full pl-4'>
+            <div className='absolute flex flex-row justify-start w-full sm:px-8 px-4'>
               <MdArrowBack color='white' size={30} />
             </div>
             <div className='absolute flex flex-row justify-center w-full'>
-              <Image src="/solana-pay.svg" alt="My SVG" width={80} height={200} />
+              <Image src="/solana-pay.svg" alt="Solana Pay Logo" width={80} height={200} />
             </div>
           </div>
         </div>
-        <div className="w-full max-w-3xl mx-auto rounded-t-xl bg-white flex flex-col justify-between h-[90vh] sm:px-16 pt-16 px-4">
+        <div className="w-full mx-auto rounded-t-xl bg-white flex flex-col justify-between sm:h-[95vh] h-[90vh] sm:px-16 pt-16 px-4">
           <div className='w-full flex flex-col'>
             <div className="relative pb-8 flex-col hidden sm:flex">
               <PaymentMethodTab />
@@ -28,7 +29,12 @@ const MainSection = () => {
             </div>
           </div>
           <div className="relative pb-28 flex flex-col">
-            <BuyButton />
+            <div>
+              <WalletButton />
+            </div>
+            <div className='pt-4'>
+              <BuyButton />
+            </div>
           </div>
       </div>
     </div>

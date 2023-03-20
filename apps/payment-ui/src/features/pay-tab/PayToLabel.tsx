@@ -1,12 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from "../../store"
-import { getPaymentMethod, PaymentMethod, setPaymentMethod } from "./paySlice"
+import { getPaymentDetails, getPaymentMethod, PaymentMethod, setPaymentMethod } from "./paySlice"
 import { MdArrowBack } from 'react-icons/md';
+import PaymentTokenSelector from '@/components/PaymentTokenSelector';
+import { convertToDollarString } from '@/utility';
 
 export const PayToLabel = () => {
 
     const dispatch = useDispatch<AppDispatch>()
     const paymentMethod = useSelector(getPaymentMethod)
+    const paymentDetails = useSelector(getPaymentDetails)
 
     const paymentMethodTabOption = ( option: PaymentMethod, label: string ) => {
 
@@ -21,18 +24,12 @@ export const PayToLabel = () => {
     return (
         <div className="">
             <div className='flex flex-col justify-between h-44'>
-                <div className="text-2xl text-black">Pay to Solana Mobile</div>
-                <div className="text-5xl text-black">$949.00</div>
+                <div className="text-2xl text-black">{"Pay to " + paymentDetails.merchantDisplayName }</div>
+                <div className="text-5xl text-black">{ convertToDollarString(paymentDetails.totalAmountUSD) }</div>
                 <div className='flex flex-row w-full justify-between items-center'>
                     <div className="text-black text-lg w-1/3">-100.451 SOL</div>
-                    <div className='flex flex-row justify-end items-center w-2/3'>
-                        <div className='pr-2 text-md text-gray-600'>Pay with</div>
-                        <select data-theme="mytheme" className="select select-bordered w-fit max-w-xs">
-                            <option disabled selected>Currency</option>
-                            <option>SOL</option>
-                            <option>USDC</option>
-                            <option>DUST</option>
-                        </select>
+                    <div className='w-2/3'>
+                        <PaymentTokenSelector />
                     </div>
                 </div>
             </div>
@@ -41,11 +38,11 @@ export const PayToLabel = () => {
             </div>
             <div className='flex flex-row w-full justify-between'>
                 <div className="label-text">Cart</div>
-                <div className="label-text">$14.95</div>
+                <div className="text-gray-500 w-16 flex justify-center rounded-md h-8 items-center">{convertToDollarString(paymentDetails.totalAmountUSD)}</div>
             </div>
             <div className='flex flex-row w-full justify-between'>
                 <div className="label-text">Transaction Fee</div>
-                <div className="label-text">Free</div>
+                <div className="text-black bg-gray-200 w-16 flex justify-center rounded-md h-8 items-center font-bold">Free</div>
             </div>
         </div>
     )
