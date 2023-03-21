@@ -46,6 +46,11 @@ export const timerTick = createAsyncThunk<void, void>(
     }
 )
 
+export const fetchTransaction = createAsyncThunk<void, void>(
+    'pay/fetchTransaction',
+    async () => {}
+)
+
 const paySlice = createSlice({
     name: 'pay',
     initialState: initalState,
