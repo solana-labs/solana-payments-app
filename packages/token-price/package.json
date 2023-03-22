@@ -1,0 +1,27 @@
+{
+    "name": "token-price",
+    "version": "0.0.1",
+    "description": "Light weight wrapper around token price fetching APIs.",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist/**"
+    ],
+    "keywords": [
+        "api"
+    ],
+    "auther": "@tj_littlejohn",
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+        "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
+        "lint": "TIMING=1 eslint \"src/**/*.ts\""
+    },
+    "devDependencies": {
+        "eslint": "^7.32.0",
+        "tsup": "^6.2.3",
+        "typescript": "^4.8.3",
+        "axios": "^0.24.0"
+    }
+}
