@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from "../../store"
-import { getPaymentDetails, getPaymentMethod, PaymentMethod, setPaymentMethod } from "./paySlice"
+import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, setPaymentMethod } from "./paySlice"
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
@@ -8,6 +8,7 @@ import { convertToDollarString } from '@/utility';
 export const PayToLabel = () => {
 
     const dispatch = useDispatch<AppDispatch>()
+    const payingToken = useSelector(getPayingToken)
     const paymentMethod = useSelector(getPaymentMethod)
     const paymentDetails = useSelector(getPaymentDetails)
 
@@ -27,7 +28,7 @@ export const PayToLabel = () => {
                 <div className="text-2xl text-black">{"Pay to " + paymentDetails.merchantDisplayName }</div>
                 <div className="text-5xl text-black">{ convertToDollarString(paymentDetails.totalAmountUSD) }</div>
                 <div className='flex flex-row w-full justify-between items-center'>
-                    <div className="text-black text-lg w-1/3">-100.451 SOL</div>
+                    <div className="text-black text-lg w-1/3">{payingToken}</div>
                     <div className='w-2/3'>
                         <PaymentTokenSelector />
                     </div>
