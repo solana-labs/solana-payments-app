@@ -1,10 +1,4 @@
-import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import React from 'react';
-import BuyButton from './BuyButton';
-import { MdArrowBack } from 'react-icons/md';
-import Image from 'next/image'
-import WalletButton from './WalletButton';
 import DisplaySection from './DisplaySection';
 import CheckoutSection from './CheckoutSection';
 
