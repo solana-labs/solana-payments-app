@@ -8,6 +8,7 @@ import {
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
+import WalletButton from './WalletButton';
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -43,9 +44,17 @@ export const Wallet: FC = () => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <WalletMultiButton />
-                    <WalletDisconnectButton />
-                    { /* Your app's components go here, nested within the context providers. */ }
+                    <div className=''>
+                        <div className='py-2'>
+                            <WalletMultiButton />
+                        </div>
+                        <div className='py-2'>
+                            <WalletDisconnectButton />
+                        </div>
+                        <div className='py-2'>
+                            <WalletButton />
+                        </div>
+                    </div>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
