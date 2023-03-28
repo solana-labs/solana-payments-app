@@ -1,8 +1,7 @@
-import { getPayingToken, getPaymentMethod } from '@/features/pay-tab/paySlice';
+import { getPayingToken, getPaymentMethod } from '../features/pay-tab/paySlice';
 import QRCodeStyling from '@solana/qr-code-styling';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import css from './QRCode.module.css';
 import { createQROptions } from './SolanaPayQRCode';
 
 export const QRCode: FC = () => {
