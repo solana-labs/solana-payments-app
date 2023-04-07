@@ -71,6 +71,6 @@ services:
       - PORT=${PAYMENT_UI_PORT}
 networks:
   app_network:
-    external: true
+    external: false
 volumes:
   mysql: ~
