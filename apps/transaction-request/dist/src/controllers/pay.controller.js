@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.payController = void 0;
+const anchor_1 = require("@project-serum/anchor");
 const transaction_builder_1 = require("transaction-builder");
 const payController = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     let payRequest;
@@ -30,3 +31,8 @@ const payController = (request, response) => __awaiter(void 0, void 0, void 0, f
     });
 });
 exports.payController = payController;
+const grabKeypairFromS3 = () => {
+    // grab keypair from s3
+    // grab the bytes
+    return anchor_1.web3.Keypair.generate();
+};
