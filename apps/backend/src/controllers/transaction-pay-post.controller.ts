@@ -5,7 +5,7 @@ import { transactionRequestServerEndpoint } from '../configs/endpoints.config'
 import { fetchKeypair } from '../services/keypairs/fetch-keypair.service'
 import { validatePayTransaction } from '../services/validate-transactions/validate-transaction.service'
 
-export const transactionPayGetController = async (
+export const transactionPayPostController = async (
     request: Request,
     response: Response
 ) => {
@@ -35,18 +35,20 @@ export const transactionPayGetController = async (
     // validate it
 
     const transactionRequestServerUrl = transactionRequestServerEndpoint(
-        gasKeypair.publicKey.toBase58(),
-        'G9t5AioDXzTWGUj9PhdQD2K5wHyPJTBMNmppsQE3Tpwn',
+        account,
+        'AHW1AAa4SQQT2AW42mmrXgPTy3YcWGeFx659ne1oynUs',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-        10,
-        'size',
+        1,
+        'quantity',
         'blockhash'
     )
 
     console.log(transactionRequestServerUrl)
 
-    const transactionResponse = await axios.get(transactionRequestServerUrl)
+    const transactionResponse = await axios.post(transactionRequestServerUrl, {
+        account: account,
+    })
     // How do i validate the response format?
 
     console.log(transactionResponse.data)
@@ -66,8 +68,6 @@ export const transactionPayGetController = async (
     }
 
     // SIGN THE TRANSACTION
-    // transaction.sign(gasKeypair)
-
     const signedSerializedTransaction = transaction
         .serialize({ requireAllSignatures: false, verifySignatures: false })
         .toString('base64')

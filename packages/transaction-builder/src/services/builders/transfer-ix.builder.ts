@@ -26,6 +26,9 @@ export const createTransferIx = async (
         token.pubkey
     )
 
+    console.log(senderAssociatedTokenAddress.toBase58())
+    console.log(receiverAssociatedTokenAddress.toBase58())
+
     const info = await connection.getAccountInfo(receiverAssociatedTokenAddress)
 
     if (createAta && info == null) {
@@ -44,7 +47,7 @@ export const createTransferIx = async (
         senderAssociatedTokenAddress,
         token.pubkey,
         receiverAssociatedTokenAddress,
-        receiver,
+        sender,
         quantity,
         token.decimals
     )

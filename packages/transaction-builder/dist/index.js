@@ -31957,10 +31957,10 @@ var PayRequest = import_zod.z.object({
   sendingToken: import_zod.z.string().transform(pubkeyOrThrow),
   receivingToken: import_zod.z.string().transform(pubkeyOrThrow),
   feePayer: import_zod.z.string().transform(pubkeyOrThrow),
-  receivingAmount: import_zod.z.number().nonnegative(),
+  receivingAmount: import_zod.z.string().transform(parseFloat),
   amountType: AmountTypeEnum,
-  transactionType: TransactionTypeEnum,
-  createAta: import_zod.z.boolean().default(true)
+  transactionType: TransactionTypeEnum.default(TransactionType.Blockhash),
+  createAta: import_zod.z.boolean().default(false)
 });
 
 // src/utils/ata.util.ts
@@ -32013,6 +32013,8 @@ var createTransferIx = (sender, receiver, token, quantity, createAta, connection
     receiver,
     token.pubkey
   );
+  console.log(senderAssociatedTokenAddress.toBase58());
+  console.log(receiverAssociatedTokenAddress.toBase58());
   const info = yield connection.getAccountInfo(receiverAssociatedTokenAddress);
   if (createAta && info == null) {
     const createAssociatedInstruction = createAssociatedTokenAccountInstruction(
@@ -32027,7 +32029,7 @@ var createTransferIx = (sender, receiver, token, quantity, createAta, connection
     senderAssociatedTokenAddress,
     token.pubkey,
     receiverAssociatedTokenAddress,
-    receiver,
+    sender,
     quantity,
     token.decimals
   );

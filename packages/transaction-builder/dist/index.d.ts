@@ -8,15 +8,15 @@ declare const PayRequest: z.ZodObject<{
     sendingToken: z.ZodEffects<z.ZodString, _solana_web3_js.PublicKey, string>;
     receivingToken: z.ZodEffects<z.ZodString, _solana_web3_js.PublicKey, string>;
     feePayer: z.ZodEffects<z.ZodString, _solana_web3_js.PublicKey, string>;
-    receivingAmount: z.ZodNumber;
+    receivingAmount: z.ZodEffects<z.ZodString, number, string>;
     amountType: z.ZodNativeEnum<{
         readonly Size: "size";
         readonly Quantity: "quantity";
     }>;
-    transactionType: z.ZodNativeEnum<{
+    transactionType: z.ZodDefault<z.ZodNativeEnum<{
         readonly Blockhash: "blockhash";
         readonly Nonce: "nonce";
-    }>;
+    }>>;
     createAta: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     receiver: _solana_web3_js.PublicKey;
@@ -34,9 +34,9 @@ declare const PayRequest: z.ZodObject<{
     sendingToken: string;
     receivingToken: string;
     feePayer: string;
-    receivingAmount: number;
+    receivingAmount: string;
     amountType: "size" | "quantity";
-    transactionType: "blockhash" | "nonce";
+    transactionType?: "blockhash" | "nonce" | undefined;
     createAta?: boolean | undefined;
 }>;
 type PayRequest = z.infer<typeof PayRequest>;
