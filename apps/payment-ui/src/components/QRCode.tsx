@@ -17,7 +17,7 @@ export const QRCode: FC = () => {
 
     const payingToken = useSelector(getPayingToken)
 
-    const url = 'solana:https://b69dba3fe1c7.ngrok.app/transaction/pay'
+    const url = 'solana:https://1df885212989.ngrok.app/transaction/pay'
     const options = useMemo(() => createQROptions(url, size, 'transparent', 'black'), [url, size]);
 
     const qr = useMemo(() => new QRCodeStyling(), []);

@@ -8,6 +8,7 @@ import helloRoute from './src/routes/hello.route'
 import callbackRoute from './src/routes/callback.route'
 import verifyRoute from './src/routes/verify.route'
 import loginRoute from './src/routes/login.route'
+import heliusRoute from './src/routes/helius.route'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -26,6 +27,7 @@ app.use(bodyParser.json())
 app.use(cors())
 
 app.use('/hello', helloRoute)
+app.use('/helius', heliusRoute)
 app.use('/transaction', transactionRoute)
 app.use('/payment', paymentRoute)
 app.use('/refund', refundRoute)
