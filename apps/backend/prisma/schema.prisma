@@ -18,6 +18,8 @@ model Merchant {
   paymentPublicKey String
 
   shopifyAccess ShopifyAccess?
+  // PaymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+  // paymentRecordId Int?
 }
 
 model ShopifyAccess {
@@ -28,4 +30,10 @@ model ShopifyAccess {
 
   merchantId Int      @unique
   merchant   Merchant @relation(fields: [merchantId], references: [id])
+}
+
+model PaymentRecord {
+  id        Int     @id @default(autoincrement())
+  signature String
+  completed Boolean
 }
