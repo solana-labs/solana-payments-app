@@ -48,3 +48,16 @@ export const callbackRedirectEndpoint = (idToken: string) => {
     const frontEndUrl = process.env.FRONT_END_URL
     return `${frontEndUrl}?token=%22+${idToken}`
 }
+
+export const transactionRequestServerEndpoint = (
+    feePayer: string,
+    receiver: string,
+    sendingToken: string,
+    receivingToken: string,
+    receivingAmount: number,
+    amountType: string,
+    transactionType: string
+) => {
+    const TRANSACTION_REQUEST_URL = process.env.TRANSACTION_REQUEST_URL
+    return `${TRANSACTION_REQUEST_URL}/pay?feePayer=${feePayer}&receiver=${receiver}&sendingToken=${sendingToken}&receivingToken=${receivingToken}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}`
+}
