@@ -45,7 +45,7 @@ sequenceDiagram
     TRS-->>BACKEND: 200 { tx: string, message: string }
     BACKEND->S3: fetch platform authority keypair
     BACKEND->BACKEND: sign transaction
-    BACKEND->SOLANA: sendRawTransaction
+    BACKEND->Solana: sendRawTransaction
     BACKEND->DATABASE: CREATE PaymentRecord
     BACKEND->>SHOP: 200 { redirect_url: string }
     SHOP->>Alice: 301 { redirect_url: string }
