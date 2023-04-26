@@ -5,6 +5,17 @@ import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client
 // 2. createTransactionRecord
 //
 // We currently don't need to support updating Transaction Records
+export type SignatureQuery = {
+    signature: string;
+};
+
+export type TransactionIdQuery = {
+    id: number;
+};
+
+export type TransactionRecordQuery = SignatureQuery | TransactionIdQuery;
+
+
 export class TransactionRecordService {
     private prisma: PrismaClient;
 
@@ -18,6 +29,14 @@ export class TransactionRecordService {
                 signature: signature,
             },
         });
+    }
+    
+    async getTransactionRecordsForMerchant(
+       query: TransactionRecordQuery
+    ): Promise<TransactionRecord[] | null> {
+       return await this.prisma.transactionRecord.findMany({
+         where: query,
+       });
     }
 
     async createTransactionRecord(

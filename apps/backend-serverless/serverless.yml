@@ -13,6 +13,7 @@ provider:
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
     TRM_API_KEY: ${env:TRM_API_KEY}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
   httpApi:
     cors: true
 package:
@@ -20,12 +21,6 @@ package:
   patterns:
     - 'node_modules/.prisma/**'
 functions:
-  hello:
-    handler: src/handlers/hello.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   install:
     handler: src/handlers/shopify-handlers/install.install
     events:
@@ -91,6 +86,30 @@ functions:
     events:
       - httpApi:
           path: /payment-status
+          method: get
+  merchantData:
+    handler: src/handlers/readData/merchantData.merchantData
+    events:
+      - httpApi:
+          path: /merchantData
+          method: get
+  refundData:
+    handler: src/handlers/readData/refundData.refundData
+    events:
+      - httpApi:
+          path: /refundData
+          method: get
+  transactionData:
+    handler: src/handlers/readData/transactionData.transactionData
+    events:
+      - httpApi:
+          path: /transactionData
+          method: get
+  login:
+    handler: src/handlers/login.login
+    events:
+      - httpApi:
+          path: /login
           method: get
   payment-address:
     handler: src/handlers/clients/merchant-ui/payment-address.paymentAddress
