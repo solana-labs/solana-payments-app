@@ -19,3 +19,8 @@ a {
   cursor: pointer;
   text-decoration: none;
 }
+
+.persona-widget__iframe {
+  height: 100%;
+  width: 100%;
+}

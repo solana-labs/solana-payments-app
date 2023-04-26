@@ -20,6 +20,7 @@ export function MerchantInfo(props: Props) {
     walletAddress: "",
     token: Token.USDC,
   });
+  const [isVerified, setIsVerified] = useState(false);
 
   return (
     <DefaultLayoutContent className={props.className}>
@@ -27,7 +28,11 @@ export function MerchantInfo(props: Props) {
       <DefaultLayoutHeader className="mt-24">
         Business Verification
       </DefaultLayoutHeader>
-      <MerchantInfoAccountSetup className="mt-9 pb-9 border-b border-gray-200" />
+      <MerchantInfoAccountSetup
+        className="mt-9 pb-9 border-b border-gray-200"
+        isVerified={isVerified}
+        onVerified={() => setIsVerified(true)}
+      />
       <DefaultLayoutHeader className="mt-12">
         Required Information
       </DefaultLayoutHeader>
