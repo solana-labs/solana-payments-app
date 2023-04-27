@@ -1,1 +1,1 @@
-export const transactionRequestEndpoint = 'https://api.sandbox.solanapay.co'
+export const transactionRequestEndpoint = 'https://api.sandbox.solanapay.com'
