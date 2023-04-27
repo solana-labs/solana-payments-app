@@ -10,7 +10,8 @@
       ],
       "outputs": [
         "./apps/backend/dist/**",
-        "./apps/merchant-ui/.next/**"
+        "./apps/merchant-ui/.next/**",
+        "./apps/payment-ui/.next/**"
       ]
     },
     "lint": {
