@@ -12,6 +12,7 @@ import {
 } from '@/models/access-token.model'
 import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
+import { paymentAppConfigure } from '@/services/payment-app-configure.service'
 
 type Data = {
     name: string
@@ -67,6 +68,13 @@ export default async function handler(
     })
 
     const merchantUiUrl = process.env.MERCHANT_UI_URL!
+
+    await paymentAppConfigure(
+        'greatMerchant123',
+        'false',
+        shop,
+        accessTokenResponse.access_token
+    )
 
     res.status(200).redirect(merchantUiUrl)
 }
