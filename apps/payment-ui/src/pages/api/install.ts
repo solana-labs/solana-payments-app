@@ -45,7 +45,7 @@ export default async function handler(
     const shop = parsedAppInstallQuery.shop
 
     try {
-        const merchant = await prisma.merchant.findUniqueOrThrow({
+        const merchant = await prisma.merchant.findUnique({
             where: {
                 shop: shop,
             },
