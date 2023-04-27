@@ -10,8 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ShopifyAccess {
-  id          Int    @id @default(autoincrement())
-  accessToken String
-  scopes      String
+model Merchant {
+  id          Int     @id @default(autoincrement())
+  shop        String  @unique
+  accessToken String?
+  scopes      String?
+  lastNonce   String
 }

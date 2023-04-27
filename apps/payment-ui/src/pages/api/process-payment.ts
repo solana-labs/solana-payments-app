@@ -1,10 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
-import { ShopifyAccess } from '@prisma/client'
+import { Merchant } from '@prisma/client'
 
 type Data = {
-    name: ShopifyAccess[]
+    name: Merchant[]
 }
 
 export default async function handler(
@@ -13,7 +13,7 @@ export default async function handler(
 ) {
     const prisma = new PrismaClient()
 
-    const access = await prisma.shopifyAccess.findMany()
+    const access = await prisma.merchant.findMany()
 
     res.status(200).json({ name: access })
 }

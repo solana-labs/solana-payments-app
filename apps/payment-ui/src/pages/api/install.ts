@@ -6,7 +6,7 @@ import {
     appInstallQueryParmSchema,
 } from '@/models/install-query-params.model'
 import queryString from 'query-string'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Merchant } from '@prisma/client'
 
 type Data = {
     name: string
@@ -16,6 +16,8 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
 ) {
+    const prisma = new PrismaClient()
+
     try {
         await verifyShopifyInstallRequest(req.query)
     } catch (e) {
@@ -41,6 +43,39 @@ export default async function handler(
     }
 
     const shop = parsedAppInstallQuery.shop
+
+    try {
+        const merchant = await prisma.merchant.findUniqueOrThrow({
+            where: {
+                shop: shop,
+            },
+        })
+
+        const newNonce = 'a'
+
+        if (merchant == null) {
+            await prisma.merchant.create({
+                data: {
+                    shop: shop,
+                    lastNonce: newNonce,
+                },
+            })
+        } else {
+            await prisma.merchant.update({
+                where: {
+                    shop: shop,
+                },
+                data: {
+                    lastNonce: newNonce,
+                },
+            })
+        }
+    } catch (e) {
+        if (e instanceof Error) {
+            res.status(500).json({ name: e.message })
+        }
+        return
+    }
 
     const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, shop)
 
