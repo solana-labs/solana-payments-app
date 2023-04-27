@@ -56,6 +56,9 @@ export default async function handler(
         return
     }
 
+    // Gonna have to do something different than creating a ShopifyAccess row each time
+    // Likely will update the table for the merchant if it exists and create it if it doesn't.
+    // I can also probably just store this as another row in the Merchant table
     await prisma.shopifyAccess.create({
         data: {
             accessToken: accessTokenResponse.access_token,

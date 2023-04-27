@@ -29,7 +29,6 @@
     "react-icons": "^4.8.0",
     "react-redux": "^8.0.5",
     "token-price": "../packages/token-price",
-    "transaction-builder": "../packages/transaction-builder",
     "typescript": "4.9.5"
   },
   "devDependencies": {
