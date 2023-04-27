@@ -79,7 +79,7 @@ export const verifyShopifyRedirectRequest = (appRedirectQuery: any) => {
             appRedirectQuery
         ) as AppRedirectQueryParam
     } catch (error) {
-        throw new Error('Did not find the required info to verify.')
+        throw new Error('Did not find the required info to verifyy.')
     }
 
     // Save the hmac, remove it from the object, get the query string after removing
