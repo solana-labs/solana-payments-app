@@ -56,7 +56,7 @@ export const parseAppInstallQueryParms = (
             appInstallQuery
         ) as AppInstallQueryParam
     } catch (error) {
-        throw new Error('Did not find the required info to verify.')
+        throw new Error('Did not find the required info verify.')
     }
     return parsedAppInstallQuery
 }
