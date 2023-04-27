@@ -1,7 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import Link from "next/link";
-import { useMediaQuery } from "react-responsive";
 
 import { Close } from "./icons/Close";
 import { Menu } from "./icons/Menu";

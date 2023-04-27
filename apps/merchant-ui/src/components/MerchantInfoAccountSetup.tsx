@@ -1,11 +1,11 @@
 import { twMerge } from "tailwind-merge";
 
-import { CheckmarkCircle } from "./icons/CheckmarkCircle";
-import * as Button from "./Button";
+import { KYBButton } from "./KYBButton";
 
 interface Props {
   className?: string;
   isVerified?: boolean;
+  onVerified?(): void;
 }
 
 export function MerchantInfoAccountSetup(props: Props) {
@@ -19,16 +19,10 @@ export function MerchantInfoAccountSetup(props: Props) {
             <div className="text-sm text-neutral-600">Required • Takes ~5m</div>
           )}
         </div>
-        {props.isVerified ? (
-          <div className="flex items-center">
-            <div className="text-black text-sm font-semibold mr-2">
-              Approved
-            </div>
-            <CheckmarkCircle className="fill-transparent h-5 stroke-green-600 w-5" />
-          </div>
-        ) : (
-          <Button.Primary>Start</Button.Primary>
-        )}
+        <KYBButton
+          isVerified={props.isVerified}
+          onVerified={props.onVerified}
+        />
       </div>
     </div>
   );
