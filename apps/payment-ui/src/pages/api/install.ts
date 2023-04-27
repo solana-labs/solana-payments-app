@@ -6,6 +6,7 @@ import {
     appInstallQueryParmSchema,
 } from '@/models/install-query-params.model'
 import queryString from 'query-string'
+import { PrismaClient } from '@prisma/client'
 
 type Data = {
     name: string

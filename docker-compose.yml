@@ -1,30 +1,30 @@
 version: '3'
 services:
-  backend:
-    container_name: backend
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/backend/Dockerfile
-    ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/backend:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      PORT: ${BACKEND_PORT}
-      DATABASE_URL: ${DATABASE_URL}
-      SHOPIFY_CLIENT_ID: ${SHOPIFY_CLIENT_ID}
-      SHOPIFY_SECRET_KEY: ${SHOPIFY_SECRET_KEY}
-      AUTH_0_CLIENT_ID: ${AUTH_0_CLIENT_ID}
-      AUTH_0_CLIENT_SECRET: ${AUTH_0_CLIENT_SECRET}
-      AUTH_0_DOMAIN: ${AUTH_0_DOMAIN}
-      BASE_URL: ${BASE_URL}
-      FRONT_END_URL: ${FRONT_END_URL}
-    depends_on:
-      - db
+  # backend:
+  #   container_name: backend
+  #   platform: linux/amd64
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/backend/Dockerfile
+  #   ports:
+  #     - ${BACKEND_PORT}:${BACKEND_PORT}
+  #   networks:
+  #     - app_network
+  #   volumes:
+  #     - ./apps/backend:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   environment:
+  #     PORT: ${BACKEND_PORT}
+  #     DATABASE_URL: ${DATABASE_URL}
+  #     SHOPIFY_CLIENT_ID: ${SHOPIFY_CLIENT_ID}
+  #     SHOPIFY_SECRET_KEY: ${SHOPIFY_SECRET_KEY}
+  #     AUTH_0_CLIENT_ID: ${AUTH_0_CLIENT_ID}
+  #     AUTH_0_CLIENT_SECRET: ${AUTH_0_CLIENT_SECRET}
+  #     AUTH_0_DOMAIN: ${AUTH_0_DOMAIN}
+  #     BASE_URL: ${BASE_URL}
+  #     FRONT_END_URL: ${FRONT_END_URL}
+  #   depends_on:
+  #     - db
   db:
     image: mysql:5.7
     restart: always
@@ -39,36 +39,36 @@ services:
       - mysql:/var/lib/mysql
     networks:
       - app_network
-  merchant-ui:
-    container_name: merchant-ui
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/merchant-ui/Dockerfile
-    ports:
-      - ${MERCHANT_UI_PORT}:${MERCHANT_UI_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/merchant-ui:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=${MERCHANT_UI_PORT}
-  payment-ui:
-    container_name: payment-ui
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./apps/payment-ui/Dockerfile
-    ports:
-      - ${PAYMENT_UI_PORT}:${PAYMENT_UI_PORT}
-    networks:
-      - app_network
-    volumes:
-      - ./apps/payment-ui:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=${PAYMENT_UI_PORT}
+  # merchant-ui:
+  #   container_name: merchant-ui
+  #   platform: linux/amd64
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/merchant-ui/Dockerfile
+  #   ports:
+  #     - ${MERCHANT_UI_PORT}:${MERCHANT_UI_PORT}
+  #   networks:
+  #     - app_network
+  #   volumes:
+  #     - ./apps/merchant-ui:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   environment:
+  #     - PORT=${MERCHANT_UI_PORT}
+  # payment-ui:
+  #   container_name: payment-ui
+  #   platform: linux/amd64
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/payment-ui/Dockerfile
+  #   ports:
+  #     - ${PAYMENT_UI_PORT}:${PAYMENT_UI_PORT}
+  #   networks:
+  #     - app_network
+  #   volumes:
+  #     - ./apps/payment-ui:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   environment:
+  #     - PORT=${PAYMENT_UI_PORT}
 networks:
   app_network:
     external: false

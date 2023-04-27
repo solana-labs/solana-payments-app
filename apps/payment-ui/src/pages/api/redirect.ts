@@ -11,6 +11,7 @@ import {
     accessTokenResponseSchema,
 } from '@/models/access-token.model'
 import axios from 'axios'
+import { PrismaClient } from '@prisma/client'
 
 type Data = {
     name: string
@@ -20,6 +21,8 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
 ) {
+    const prisma = new PrismaClient()
+
     // Verify the security of the request given to install the shopify app
     try {
         await verifyShopifyRedirectRequest(req.query)
@@ -53,7 +56,16 @@ export default async function handler(
         return
     }
 
-    res.status(200).json({ name: accessTokenResponse.access_token })
+    await prisma.shopifyAccess.create({
+        data: {
+            accessToken: accessTokenResponse.access_token,
+            scopes: accessTokenResponse.scope,
+        },
+    })
+
+    const merchantUiUrl = process.env.MERCHANT_UI_URL!
+
+    res.status(200).redirect(merchantUiUrl)
 }
 
 export const verifyShopifyRedirectRequest = (appRedirectQuery: any) => {
