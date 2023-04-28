@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor'
+import { web3 } from "@project-serum/anchor";
 
 // There is probably a bunch of fancy things we can do here like
 
@@ -6,7 +6,7 @@ import { web3 } from '@project-serum/anchor'
 // 2. check how much gas is remaining
 // 3. have different types of keypairs for different types of transactions
 export const fetchKeypair = async (
-    keypairId: string
+  keypairId: string
 ): Promise<web3.Keypair> => {
-    return web3.Keypair.generate()
-}
+  return web3.Keypair.generate();
+};

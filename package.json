@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/payment-ui",
+    "packages/token-price"
   ],
   "scripts": {
     "build": "turbo run build",

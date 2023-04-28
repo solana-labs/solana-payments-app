@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { callbackController } from '../controllers/callback.controller'
+import { Router } from "express";
+import { callbackController } from "../controllers/callback.controller";
 
-const router = Router()
+const router = Router();
 
-router.get('/', callbackController)
+router.get("/", callbackController);
 
-export default router
+export default router;

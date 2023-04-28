@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Custom500: React.FC = () => {
   return (

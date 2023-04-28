@@ -36,3 +36,6 @@ yarn-error.log*
 
 #backend
 apps/backend/dist
+
+#packages-dist
+packages/transaction-builder/dist/*

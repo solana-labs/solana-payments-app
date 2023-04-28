@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { redirectController } from '../controllers/redirect.controller'
+import { Router } from "express";
+import { redirectController } from "../controllers/redirect.controller";
 
-const router = Router()
+const router = Router();
 
-router.get('/', redirectController)
+router.get("/", redirectController);
 
-export default router
+export default router;
