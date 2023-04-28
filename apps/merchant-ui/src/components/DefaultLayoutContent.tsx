@@ -11,7 +11,7 @@ export function DefaultLayoutContent(props: Props) {
       className={twMerge(
         "px-4",
         "py-8",
-        "md:pl-8",
+        "md:pl-16",
         "md:pr-24",
         "md:pt-32",
         props.className

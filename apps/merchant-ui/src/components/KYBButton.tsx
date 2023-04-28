@@ -36,7 +36,7 @@ export function KYBButton(props: Props) {
       <Dialog.Portal>
         <Dialog.Overlay
           className={twMerge(
-            "bg-black/70",
+            "bg-black/30",
             "bottom-0",
             "fixed",
             "grid",

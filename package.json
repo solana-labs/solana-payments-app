@@ -6,6 +6,7 @@
     "packages": [
       "apps/backend-serverless",
       "apps/payment-ui",
+      "apps/merchant-ui",
       "packages/token-price"
     ],
     "nohoist": [
