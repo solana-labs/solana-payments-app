@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { heliusController } from '../controllers/helius.controller'
+import { Router } from "express";
+import { heliusController } from "../controllers/helius.controller";
 
-const router = Router()
+const router = Router();
 
-router.post('/', heliusController)
+router.post("/", heliusController);
 
-export default router
+export default router;

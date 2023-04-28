@@ -1,19 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import { Merchant } from '@prisma/client'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { PrismaClient } from "@prisma/client";
+import { Merchant } from "@prisma/client";
 
 type Data = {
-    name: Merchant[]
-}
+  name: Merchant[];
+};
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<Data>
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
 ) {
-    const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
 
-    const access = await prisma.merchant.findMany()
+  const access = await prisma.merchant.findMany();
 
-    res.status(200).json({ name: access })
+  res.status(200).json({ name: access });
 }

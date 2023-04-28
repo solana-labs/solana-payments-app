@@ -13,12 +13,12 @@ const paymentAppConfigureMutation = `mutation PaymentsAppConfigure($externalHand
 
 export const paymentAppConfigure = async (
     externalHandle: string,
-    ready: string,
+    ready: boolean,
     shop: string,
     token: string
 ) => {
     const headers = {
-        'content-type': 'application/graphql',
+        'content-type': 'application/json',
         'X-Shopify-Access-Token': token,
     }
     const graphqlQuery = {
@@ -41,7 +41,7 @@ export const paymentAppConfigure = async (
         url: shopifyGraphQLEndpoint(shop),
         method: 'POST',
         headers: headers,
-        data: graphqlQuery,
+        data: JSON.stringify(graphqlQuery),
     })
 
     console.log(response.data)

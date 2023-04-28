@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { verifyController } from '../controllers/verify.controller'
+import { Router } from "express";
+import { verifyController } from "../controllers/verify.controller";
 
-const router = Router()
+const router = Router();
 
-router.post('/', verifyController)
+router.post("/", verifyController);
 
-export default router
+export default router;

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Wallet } from './Wallet';
+import React from "react";
+import { Wallet } from "./Wallet";
 
 const BuyButton = () => {
   return (

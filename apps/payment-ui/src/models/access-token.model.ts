@@ -1,9 +1,9 @@
-import { object, string, InferType } from 'yup'
+import { object, string, InferType } from "yup";
 
 export let accessTokenResponseSchema = object().shape({
-    access_token: string().required(),
-    scope: string().required(),
-})
+  access_token: string().required(),
+  scope: string().required(),
+});
 
 export interface AccessTokenResponse
-    extends InferType<typeof accessTokenResponseSchema> {}
+  extends InferType<typeof accessTokenResponseSchema> {}

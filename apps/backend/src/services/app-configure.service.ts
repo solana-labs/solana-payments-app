@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { SHOPIFY_GRAPH_QL_ENDPOINT } from '../configs/endpoints.config'
+import axios from "axios";
+import { SHOPIFY_GRAPH_QL_ENDPOINT } from "../configs/endpoints.config";
 
 const paymentsAppConfigureMutation = `mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
     paymentsAppConfigure(ready: $ready) {
@@ -13,25 +13,25 @@ const paymentsAppConfigureMutation = `mutation PaymentsAppConfigure($externalHan
         }
     }
 }
-`
+`;
 
 const paymentsAppConfigure = async (ready: boolean, externalHandle: string) => {
-    const headers = {
-        'content-type': 'application/graphql',
-        'X-Shopify-Access-Token': '<token>',
-    }
-    const graphqlQuery = {
-        operationName: 'paymentsAppConfigure',
-        query: paymentsAppConfigureMutation,
-        variables: {
-            ready,
-            externalHandle,
-        },
-    }
-    const response = await axios({
-        url: SHOPIFY_GRAPH_QL_ENDPOINT,
-        method: 'POST',
-        headers: headers,
-        data: graphqlQuery,
-    })
-}
+  const headers = {
+    "content-type": "application/graphql",
+    "X-Shopify-Access-Token": "<token>",
+  };
+  const graphqlQuery = {
+    operationName: "paymentsAppConfigure",
+    query: paymentsAppConfigureMutation,
+    variables: {
+      ready,
+      externalHandle,
+    },
+  };
+  const response = await axios({
+    url: SHOPIFY_GRAPH_QL_ENDPOINT,
+    method: "POST",
+    headers: headers,
+    data: graphqlQuery,
+  });
+};

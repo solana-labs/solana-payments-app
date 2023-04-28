@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { shopifyGraphQLEndpoint } from '../config/endpoints.config'
+import axios from "axios";
+import { shopifyGraphQLEndpoint } from "../config/endpoints.config";
 
 const refundSessionResolveMutation = `mutation refundSessionResolve($id: ID!) {
     refundSessionResolve(id: $id) {
@@ -13,28 +13,28 @@ const refundSessionResolveMutation = `mutation refundSessionResolve($id: ID!) {
         }
     }
 }
-`
+`;
 
 export const refundSessionResolve = async (
-    id: string,
-    shop: string,
-    token: string
+  id: string,
+  shop: string,
+  token: string
 ) => {
-    const headers = {
-        'content-type': 'application/graphql',
-        'X-Shopify-Access-Token': token,
-    }
-    const graphqlQuery = {
-        operationName: 'refundSessionResolve',
-        query: refundSessionResolveMutation,
-        variables: {
-            id,
-        },
-    }
-    const response = await axios({
-        url: shopifyGraphQLEndpoint(shop),
-        method: 'POST',
-        headers: headers,
-        data: graphqlQuery,
-    })
-}
+  const headers = {
+    "content-type": "application/graphql",
+    "X-Shopify-Access-Token": token,
+  };
+  const graphqlQuery = {
+    operationName: "refundSessionResolve",
+    query: refundSessionResolveMutation,
+    variables: {
+      id,
+    },
+  };
+  const response = await axios({
+    url: shopifyGraphQLEndpoint(shop),
+    method: "POST",
+    headers: headers,
+    data: graphqlQuery,
+  });
+};

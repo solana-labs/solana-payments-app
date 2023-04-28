@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { instalController } from '../controllers/install.controller'
+import { Router } from "express";
+import { instalController } from "../controllers/install.controller";
 
-const router = Router()
+const router = Router();
 
-router.get('/', instalController)
+router.get("/", instalController);
 
-export default router
+export default router;

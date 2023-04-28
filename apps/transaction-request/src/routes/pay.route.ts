@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { payController } from '../controllers/pay.controller'
+import { Router } from "express";
+import { payController } from "../controllers/pay.controller";
 
-const router = Router()
+const router = Router();
 
-router.post('/', payController)
+router.post("/", payController);
 
-export default router
+export default router;

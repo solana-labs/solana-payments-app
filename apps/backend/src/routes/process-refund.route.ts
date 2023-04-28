@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { processRefundController } from '../controllers/process-refund.controller'
+import { Router } from "express";
+import { processRefundController } from "../controllers/process-refund.controller";
 
-const router = Router()
+const router = Router();
 
-router.get('/', processRefundController)
+router.get("/", processRefundController);
 
-export default router
+export default router;
