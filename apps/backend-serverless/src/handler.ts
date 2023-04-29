@@ -1,19 +1,13 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { PrismaClient } from '@prisma/client'
+import { requestErrorResponse } from './utilities/request-response.utility'
 
 const prisma = new PrismaClient()
 
 export const hello = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify(
-            {
-                merchants: 'ripper..',
-            },
-            null,
-            2
-        ),
-    }
+    const error = new Error('hello error')
+
+    return requestErrorResponse(error)
 }
