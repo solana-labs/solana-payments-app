@@ -3,6 +3,10 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+package:
+  excludeDevDependencies: false
+  patterns:
+    - 'node_modules/.prisma/**' # no need to add this, this plugin does it for you
 functions:
   api:
     handler: src/handler.hello
@@ -30,4 +34,6 @@ functions:
           method: get
 plugins:
   - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
 useDotenv: true
