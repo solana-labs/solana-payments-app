@@ -35,4 +35,5 @@ functions:
           method: get
 plugins:
   - serverless-plugin-typescript
+  
 useDotenv: true
