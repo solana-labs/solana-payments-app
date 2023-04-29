@@ -1,13 +1,8 @@
 service: backend-serverless
 frameworkVersion: '3'
-package:
-  include:
-    - node_modules/**
-    - src/**
 provider:
   name: aws
   runtime: nodejs18.x
-
 functions:
   api:
     handler: src/handler.hello
@@ -35,5 +30,9 @@ functions:
           method: get
 plugins:
   - serverless-plugin-typescript
+package:
+  include:
+    - src/**
+    - node_modules/**
   
 useDotenv: true
