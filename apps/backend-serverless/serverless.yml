@@ -1,6 +1,9 @@
 service: backend-serverless
 frameworkVersion: '3'
-
+package:
+  include:
+    - node_modules/**
+    - src/**
 provider:
   name: aws
   runtime: nodejs18.x
@@ -23,6 +26,12 @@ functions:
     events:
       - httpApi:
           path: /redirect
+          method: get
+  helius:
+    handler: src/handlers/helius.helius
+    events:
+      - httpApi:
+          path: /helius
           method: get
 plugins:
   - serverless-plugin-typescript
