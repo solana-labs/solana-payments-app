@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^4.9.0",
+    "@prisma/client": "^4.4.0",
     "@project-serum/anchor": "^0.26.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@solana/qr-code-styling": "^1.6.0",

@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "apps/payment-ui",
-    "packages/token-price"
+    "packages/token-price",
+    "apps/backend-serverless"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -20,6 +21,8 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "typescript": "^5.0.4"
+  },
   "packageManager": "npm@8.5.2"
 }

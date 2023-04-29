@@ -10,10 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Rip {
-  id Int @id @default(autoincrement())
-  // shop        String  @unique
-  // accessToken String?
-  // scopes      String?
-  // lastNonce   String
+model Merchant {
+  id          Int     @id @default(autoincrement())
+  shop        String  @unique
+  accessToken String?
+  scopes      String?
+  lastNonce   String
 }
