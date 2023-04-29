@@ -30,9 +30,4 @@ functions:
           method: get
 plugins:
   - serverless-plugin-typescript
-package:
-  include:
-    - src/**
-    - node_modules/**
-  
 useDotenv: true

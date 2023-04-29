@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PrismaClient, Merchant } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -10,7 +10,7 @@ export const hello = async (
         statusCode: 200,
         body: JSON.stringify(
             {
-                merchants: 'ripper...',
+                merchants: 'ripper..',
             },
             null,
             2
