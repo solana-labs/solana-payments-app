@@ -53,7 +53,6 @@ export let heliusEnhancedTransactionModelSchema = object().shape({
     signature: string().required(),
     slot: number().required(),
     timestamp: number().required(),
-    nativeTransfers: 
 })
 
 export interface HeliusEnhancedTransaction
