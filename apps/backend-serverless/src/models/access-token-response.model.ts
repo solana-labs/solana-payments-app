@@ -1,8 +1,8 @@
-import { object, string, InferType } from 'yup'
+import { object, string, InferType } from "yup";
 
 export const accessTokenResponseSchema = object().shape({
-    access_token: string().required(),
-    scope: string().required(),
-})
+  access_token: string().required(),
+  scope: string().required(),
+});
 
-export type AccessTokenResponse = InferType<typeof accessTokenResponseSchema>
+export type AccessTokenResponse = InferType<typeof accessTokenResponseSchema>;

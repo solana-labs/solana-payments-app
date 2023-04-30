@@ -6,16 +6,16 @@ Note: Given we are in the very early stages of development, this should change o
 
 ## Components
 
--   Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
--   Mertchant UI - General merchant managment portal
--   Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
--   Transaction Request Server - Generalized transaction building engine for payments
+- Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
+- Mertchant UI - General merchant managment portal
+- Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
+- Transaction Request Server - Generalized transaction building engine for payments
 
 ## Main Flows
 
--   Payment Flow
--   Refund Flow
--   Auth Flow
+- Payment Flow
+- Refund Flow
+- Auth Flow
 
 ### Payment Flow
 

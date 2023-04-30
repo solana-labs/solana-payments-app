@@ -1,16 +1,16 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 export const helius = async (
-    event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify(
-            {
-                message: 'Helius! Helius! Helius!',
-            },
-            null,
-            2
-        ),
-    }
-}
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      {
+        message: "Helius! Helius! Helius!",
+      },
+      null,
+      2
+    ),
+  };
+};

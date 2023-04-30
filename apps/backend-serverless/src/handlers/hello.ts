@@ -1,21 +1,21 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PrismaClient } from '@prisma/client'
-import { requestErrorResponse } from '../utilities/request-response.utility.js'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { PrismaClient } from "@prisma/client";
+import { requestErrorResponse } from "../utilities/request-response.utility.js";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export const hello = async (
-    event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 500,
-        body: JSON.stringify(
-            {
-                event: event,
-                hello: 'world',
-            },
-            null,
-            2
-        ),
-    }
-}
+  return {
+    statusCode: 500,
+    body: JSON.stringify(
+      {
+        event: event,
+        hello: "world",
+      },
+      null,
+      2
+    ),
+  };
+};

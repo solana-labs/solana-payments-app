@@ -1,10 +1,10 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 export const refund = async (
-    event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({}, null, 2),
-    }
-}
+  return {
+    statusCode: 200,
+    body: JSON.stringify({}, null, 2),
+  };
+};
