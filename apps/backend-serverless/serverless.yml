@@ -1,15 +1,22 @@
 service: backend-serverless
 frameworkVersion: '3'
+useDotenv: true
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
+    SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
+    BASE_URL: ${env:BASE_URL}
+    MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
+    DATABASE_URL: ${env:DATABASE_URL}
 package:
   excludeDevDependencies: false
   patterns:
     - 'node_modules/.prisma/**' # no need to add this, this plugin does it for you
 functions:
   api:
-    handler: src/handler.hello
+    handler: src/handlers/hello.hello
     events:
       - httpApi:
           path: /
@@ -26,6 +33,18 @@ functions:
       - httpApi:
           path: /redirect
           method: get
+  payment:
+    handler: src/handlers/payment.payment
+    events:
+      - httpApi:
+          path: /payment
+          method: post
+  refund:
+    handler: src/handlers/refund.refund
+    events:
+      - httpApi:
+          path: /refund
+          method: post
   helius:
     handler: src/handlers/helius.helius
     events:
@@ -36,4 +55,3 @@ plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
-useDotenv: true

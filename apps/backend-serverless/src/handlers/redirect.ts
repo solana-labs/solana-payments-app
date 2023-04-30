@@ -41,9 +41,9 @@ export const redirect = async (
         },
     })
 
-    await paymentAppConfigure(
+    const configure = await paymentAppConfigure(
         'greatMerchant123',
-        false,
+        true,
         shop,
         accessTokenResponse.access_token
     )
@@ -51,14 +51,14 @@ export const redirect = async (
     const redirectUrl = `https://www.apple.com/`
 
     return {
-        statusCode: 302,
-        headers: {
-            Location: redirectUrl,
-            'Content-Type': 'text/html',
-        },
+        statusCode: 200,
+        // headers: {
+        //     Location: redirectUrl,
+        //     'Content-Type': 'text/html',
+        // },
         body: JSON.stringify(
             {
-                message: 'Redirect! Redirect! Redirect!',
+                message: configure,
             },
             null,
             2

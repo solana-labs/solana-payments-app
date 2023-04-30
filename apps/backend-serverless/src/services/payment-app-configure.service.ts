@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { shopifyGraphQLEndpoint } from '../configs/endpoints.config.js'
 
-const paymentAppConfigureMutation = `mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
+const paymentAppConfigureMutation = `
+    mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
         paymentsAppConfigure(externalHandle: $externalHandle, ready: $ready) {
             userErrors{
                 field
@@ -22,7 +23,6 @@ export const paymentAppConfigure = async (
         'X-Shopify-Access-Token': token,
     }
     const graphqlQuery = {
-        operationName: 'paymentAppConfigure',
         query: paymentAppConfigureMutation,
         variables: {
             externalHandle,
@@ -31,18 +31,17 @@ export const paymentAppConfigure = async (
     }
 
     try {
+        const response = await axios({
+            url: shopifyGraphQLEndpoint(shop),
+            method: 'POST',
+            headers: headers,
+            data: JSON.stringify(graphqlQuery),
+        })
+
+        return response.data
     } catch (e) {
         if (e instanceof Error) {
             throw e
         }
     }
-
-    const response = await axios({
-        url: shopifyGraphQLEndpoint(shop),
-        method: 'POST',
-        headers: headers,
-        data: JSON.stringify(graphqlQuery),
-    })
-
-    console.log(response.data)
 }

@@ -25,7 +25,7 @@ export const install = async (
     const shop = parsedAppInstallQuery.shop
 
     try {
-        const merchant = await prisma.merchant.findUnique({
+        const merchant = await prisma.merchant.findFirst({
             where: {
                 shop: shop,
             },

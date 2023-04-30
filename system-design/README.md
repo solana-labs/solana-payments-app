@@ -6,28 +6,36 @@ Note: Given we are in the very early stages of development, this should change o
 
 ## Components
 
-- Backend App - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
-- Mertchant UI - General merchant managment portal
-- Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
-- Transaction Request Server - Generalized transaction building engine for payments
-- Commerce Protocol - Lightweight on chain entities and actions to paticipate in commerce
+-   Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
+-   Mertchant UI - General merchant managment portal
+-   Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
+-   Transaction Request Server - Generalized transaction building engine for payments
 
 ## System Design Goals
 
-- Serve multiple platforms with reusable infrastructure
-- Leverage Solana where possible to remove dependecies on hosted services
-- Easy to deploy and host your own instance of the payments app
+-   Serve multiple platforms with reusable infrastructure
+-   Leverage Solana where possible to remove dependecies on hosted services
+-   Easy to deploy and host your own instance of the payments app
 
 ## Main Flows
 
-- Payment Flow
-- Refund Flow
-- Auth Flow
+-   Payment Flow
+-   Refund Flow
+-   Auth Flow
 
 ### Payment Flow
 
+The Payment Flow is broken up into three phases.
+
+Phase One: Shopify notifies the payment's app backend of a payment that needs to be made. We will respond with a url that the customer can checkout from.
+
+Phase Two: The customer requests a payment transaction from the backend.
+
+Phase Three: We discover a completed transaction, notify Shopify it's been completed, and send the customer back to Shopify.
+
 ```mermaid
 sequenceDiagram
+    title Payment Flow: Phase One
     autonumber
     participant Helius
     participant Solana as Solana Blockchain
@@ -41,11 +49,27 @@ sequenceDiagram
     participant TRS as Transaction Request Server
     Alice-xSHOP: selects Solana Pay as her payment method
     SHOP->>BACKEND: /payment
-    BACKEND->TRS: /paymentRecord
-    TRS-->>BACKEND: 200 { tx: string, message: string }
-    BACKEND->S3: fetch platform authority keypair
-    BACKEND->BACKEND: sign transaction
-    BACKEND->Solana: sendRawTransaction
+    BACKEND->DATABASE: CREATE PaymentRecord
+    BACKEND->>SHOP: 200 { redirect_url: string }
+    SHOP->>Alice: 301 { redirect_url: string }
+```
+
+```mermaid
+sequenceDiagram
+    title Payment Flow: Phase Two
+    autonumber
+    participant Helius
+    participant Solana as Solana Blockchain
+    participant Wallet as Alice's Wallet
+    participant Alice as Alice's Browser
+    participant SHOP as Shopify Backend
+    participant BACKEND as Payment App Backend
+    participant DATABASE as Payment App Database
+    participant S3
+    participant TRM as TRM Labs
+    participant TRS as Transaction Request Server
+    Alice-xSHOP: selects Solana Pay as her payment method
+    SHOP->>BACKEND: /payment
     BACKEND->DATABASE: CREATE PaymentRecord
     BACKEND->>SHOP: 200 { redirect_url: string }
     SHOP->>Alice: 301 { redirect_url: string }

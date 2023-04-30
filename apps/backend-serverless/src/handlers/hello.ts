@@ -7,7 +7,14 @@ const prisma = new PrismaClient()
 export const hello = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    const error = new Error('hello error')
-
-    return requestErrorResponse(error)
+    return {
+        statusCode: 500,
+        body: JSON.stringify(
+            {
+                event: event,
+            },
+            null,
+            2
+        ),
+    }
 }
