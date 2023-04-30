@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 export const hello = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    const error = new Error('hello error boi')
+    const error = new Error('hello error')
 
     return requestErrorResponse(error)
 }
