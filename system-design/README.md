@@ -68,12 +68,7 @@ sequenceDiagram
     participant S3
     participant TRM as TRM Labs
     participant TRS as Transaction Request Server
-    Alice-xSHOP: selects Solana Pay as her payment method
-    SHOP->>BACKEND: /payment
-    BACKEND->DATABASE: CREATE PaymentRecord
-    BACKEND->>SHOP: 200 { redirect_url: string }
-    SHOP->>Alice: 301 { redirect_url: string }
-    Alice->>BACKEND: /transaction
+    Alice->>BACKEND: /pay-transaction
     BACKEND->DATABASE: SELECT PaymentRecord
     BACKEND->>TRS: /transaction
     TRS-->>BACKEND: 200 { tx: string, message: string }
@@ -83,13 +78,26 @@ sequenceDiagram
     BACKEND->BACKEND: sign transaction
     BACKEND->>DATABASE: UPDATE PaymentRecord
     BACKEND->>Alice: 200 { tx: string, message: string }
-    Alice->>Wallet: signTransaction
-    Wallet->>Alice: signed transaction
-    Alice->>Solana: sendRawTransaction
+```
+
+```mermaid
+sequenceDiagram
+    title Payment Flow: Phase Three
+    autonumber
+    participant Helius
+    participant Solana as Solana Blockchain
+    participant Wallet as Alice's Wallet
+    participant Alice as Alice's Browser
+    participant SHOP as Shopify Backend
+    participant BACKEND as Payment App Backend
+    participant DATABASE as Payment App Database
+    participant S3
+    participant TRM as TRM Labs
+    participant TRS as Transaction Request Server
     Helius->>BACKEND: /helius
-    BACKEND->DATABASE: SELECTT PaymentRecord
+    BACKEND->DATABASE: SELECT PaymentRecord
     BACKEND->DATABASE: UPDATE PaymentRecord
-    BACKEND->DATABASE: SELECT ShopifyAccess
+    BACKEND->DATABASE: SELECT Merchant
     BACKEND->>Shop: mut paymentSessionResolve
     Shop-->>BACKEND: 200 { redirect_url: string }
     BACKEND->>DATABASE: UPDATE PaymentRecord
