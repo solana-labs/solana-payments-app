@@ -11,6 +11,8 @@
       "lib": ["es2015"],
       "rootDir": "./",
       "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true  
-    }
+      "allowSyntheticDefaultImports": true
+    },
+    "include": ["src/**/*.ts", "src"],
+    "exclude": ["node_modules"]
   }

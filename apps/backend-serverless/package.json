@@ -8,6 +8,7 @@
             "**"
         ]
     },
+    "type": "module",
     "scripts": {},
     "keywords": [],
     "author": "@tj_littlejohn",
@@ -25,7 +26,9 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.101",
         "@types/crypto-js": "4.1.1",
+        "esbuild": "^0.17.18",
         "serverless": "^3.21.0",
+        "serverless-esbuild": "^1.43.1",
         "serverless-offline": "^9.1.6",
         "serverless-plugin-common-excludes": "^4.0.0",
         "serverless-plugin-include-dependencies": "^5.1.0",
