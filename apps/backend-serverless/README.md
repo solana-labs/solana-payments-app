@@ -1,11 +1,20 @@
-## Trying to get this to deploy and be usable :)
+# Trying to get this to deploy and be usable :)
 
-To deploy:
+## To Deploy and Run Remote
 
 1. cd apps/backend-serverless
 2. yarn
 3. npx prisma generate
 4. serverless deploy
+5. serverless invoke -f api --log
+
+## To Deploy and Run Locally:
+
+1. cd apps/backend-serverless
+2. yarn
+3. npx prisma generate
+4. serverless package
+5. serverless invoke local -f api
 
 I'm not married to any of the settings, I just have been playing around all day for the right combo to get this to
 
