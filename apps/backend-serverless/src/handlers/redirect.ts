@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { AppRedirectQueryParam } from '../models/redirect-query-params.model'
-import { fetchAccessToken } from '../services/fetch-access-token.service'
-import { requestErrorResponse } from '../utilities/request-response.utility'
-import { verifyAndParseShopifyRedirectRequest } from '../utilities/shopify-redirect-request.utility'
-import { paymentAppConfigure } from '../services/payment-app-configure.service'
+import { AppRedirectQueryParam } from '../models/redirect-query-params.model.js'
+import { fetchAccessToken } from '../services/fetch-access-token.service.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
+import { verifyAndParseShopifyRedirectRequest } from '../utilities/shopify-redirect-request.utility.js'
+import { paymentAppConfigure } from '../services/payment-app-configure.service.js'
 
 export const redirect = async (
     event: APIGatewayProxyEvent

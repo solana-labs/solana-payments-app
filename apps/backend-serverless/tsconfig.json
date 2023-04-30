@@ -7,7 +7,7 @@
       "allowJs": false,
       "target": "es5",
       "outDir": ".build",
-      "moduleResolution": "node",
+      "moduleResolution": "nodenext",
       "lib": ["es2015"],
       "rootDir": "./",
       "esModuleInterop": true,

@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { PrismaClient } from '@prisma/client'
-import { requestErrorResponse } from './utilities/request-response.utility'
+import { requestErrorResponse } from './utilities/request-response.utility.js'
 
 const prisma = new PrismaClient()
 

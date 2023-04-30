@@ -1,16 +1,16 @@
 import { object, string, InferType, number, array } from 'yup'
 
-export let heliusRawTokenAmountSchema = object().shape({
+export const heliusRawTokenAmountSchema = object().shape({
     tokenAmount: string().required(),
     decimals: number().required(),
 })
 
-export let heliusNftSchema = object().shape({
+export const heliusNftSchema = object().shape({
     mint: string().required(),
     tokenStandard: string().required(),
 })
 
-export let heliusNftEventSchema = object().shape({
+export const heliusNftEventSchema = object().shape({
     description: string().required(),
     type: string().required(),
     source: string().required(),
@@ -27,29 +27,29 @@ export let heliusNftEventSchema = object().shape({
     nfts: array().of(heliusNftSchema).required(),
 })
 
-export let heliusSwapTokenOutputSchema = object().shape({
+export const heliusSwapTokenOutputSchema = object().shape({
     account: string().required(),
     amount: string().required(),
 })
 
-export let heliusSwapTokenInputSchema = object().shape({
+export const heliusSwapTokenInputSchema = object().shape({
     userAccount: string().required(),
     tokenAccount: string().required(),
     mint: string().required(),
     rawTokenAmount: heliusRawTokenAmountSchema.required(),
 })
 
-export let heliusSwapNativeOutputSchema = object().shape({
+export const heliusSwapNativeOutputSchema = object().shape({
     account: string().required(),
     amount: string().required(),
 })
 
-export let heliusSwapNativeInputSchema = object().shape({
+export const heliusSwapNativeInputSchema = object().shape({
     account: string().required(),
     amount: string().required(),
 })
 
-export let heliusSwapEventSchema = object().shape({
+export const heliusSwapEventSchema = object().shape({
     nativeInput: heliusSwapNativeInputSchema.required(),
     nativeOutput: heliusSwapNativeOutputSchema.required(),
     tokenInputs: string().required(),
@@ -59,36 +59,36 @@ export let heliusSwapEventSchema = object().shape({
     innerSwaps: string().required(),
 })
 
-export let heliusEventsSchema = object().shape({
+export const heliusEventsSchema = object().shape({
     nft: array().of(string()).required(),
     swap: string().required(),
 })
 
-export let heliusInnerInstructionSchema = object().shape({
+export const heliusInnerInstructionSchema = object().shape({
     accounts: array().of(string()).required(),
     data: string().required(),
     programId: string().required(),
 })
 
-export let heliusInstructionSchema = object().shape({
+export const heliusInstructionSchema = object().shape({
     accounts: array().of(string()).required(),
     data: string().required(),
     programId: string().required(),
     innerInstructions: array().of(heliusInnerInstructionSchema).required(),
 })
 
-export let heliusTransactionErrorSchema = object().shape({
+export const heliusTransactionErrorSchema = object().shape({
     error: string().required(),
 })
 
-export let heliusTokenBalanceChangeSchema = object().shape({
+export const heliusTokenBalanceChangeSchema = object().shape({
     userAccount: string().required(),
     tokenAccount: number().required(),
     mint: string().required(),
     rawTokenAmount: heliusRawTokenAmountSchema.required(),
 })
 
-export let heliusAccountTransferSchema = object().shape({
+export const heliusAccountTransferSchema = object().shape({
     account: string().required(),
     nativeBalanceChange: number().required(),
     tokenBalanceChange: string().required(),
@@ -97,7 +97,7 @@ export let heliusAccountTransferSchema = object().shape({
     mint: string().required()
 })
 
-export let heliusTokenTransferSchema = object().shape({
+export const heliusTokenTransferSchema = object().shape({
     fromUserAccount: string().required(),
     toUserAccount: string().required(),
     fromTokenAccount: string().required(),
@@ -106,13 +106,13 @@ export let heliusTokenTransferSchema = object().shape({
     mint: string().required()
 })
 
-export let heliusNativeTransferSchema = object().shape({
+export const heliusNativeTransferSchema = object().shape({
     fromUserAccount: string().required(),
     toUserAccount: string().required(),
     amount: number().required(),
 })
 
-export let heliusEnhancedTransactionModelSchema = object().shape({
+export const heliusEnhancedTransactionModelSchema = object().shape({
     description: string().required(),
     type: string().required(),
     source: string().required(),
@@ -128,5 +128,4 @@ export let heliusEnhancedTransactionModelSchema = object().shape({
     instructions: array().of(heliusInstructionSchema).required(),
 })
 
-export interface HeliusEnhancedTransaction
-    extends InferType<typeof heliusEnhancedTransactionModelSchema> {}
+export type HeliusEnhancedTransaction = InferType<typeof heliusEnhancedTransactionModelSchema>

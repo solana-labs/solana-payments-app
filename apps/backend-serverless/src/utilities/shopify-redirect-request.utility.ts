@@ -1,7 +1,7 @@
 import {
     AppRedirectQueryParam,
     appRedirectQueryParmSchema,
-} from '../models/redirect-query-params.model'
+} from '../models/redirect-query-params.model.js'
 import queryString from 'query-string'
 import crypto from 'crypto-js'
 
