@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { AppInstallQueryParam } from '../models/install-query-params.model'
-import { requestErrorResponse } from '../utilities/request-response.utility'
+import { AppInstallQueryParam } from '../models/install-query-params.model.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import {
     verifyAndParseShopifyInstallRequest,
     createShopifyOAuthGrantRedirectUrl,
-} from '../utilities/shopify-install-request.utility'
+} from '../utilities/shopify-install-request.utility.js'
 
 export const install = async (
     event: APIGatewayProxyEvent

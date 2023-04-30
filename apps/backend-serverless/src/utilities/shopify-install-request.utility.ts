@@ -1,7 +1,7 @@
 import {
     AppInstallQueryParam,
     appInstallQueryParmSchema,
-} from '../models/install-query-params.model'
+} from '../models/install-query-params.model.js'
 import queryString from 'query-string'
 import crypto from 'crypto-js'
 
@@ -9,7 +9,7 @@ export const verifyAndParseShopifyInstallRequest = (
     appInstallQuery: any
 ): AppInstallQueryParam => {
     // Verify that the object passed in can be parsed into an AppInstallQueryParam object
-    let parsedAppInstallQuery: AppInstallQueryParam =
+    const parsedAppInstallQuery: AppInstallQueryParam =
         parseAppInstallQueryParms(appInstallQuery)
 
     // Save the hmac, remove it from the object, get the query string after removing

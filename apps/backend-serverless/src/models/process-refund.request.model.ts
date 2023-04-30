@@ -1,6 +1,6 @@
 import { object, string, InferType } from 'yup'
 
-export let shopifyRefundInitiationScheme = object().shape({
+export const shopifyRefundInitiationScheme = object().shape({
     id: string().required(),
     gid: string().required(),
     payment_id: string().required(),

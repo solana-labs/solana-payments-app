@@ -34,7 +34,7 @@ const paymentMethodSchema = object().shape({
     data: paymentMethodDataSchema.required(),
 })
 
-export let shopifyPaymentInitiationScheme = object().shape({
+export const shopifyPaymentInitiationScheme = object().shape({
     id: string().required(),
     gid: string().required(),
     group: string().required(),

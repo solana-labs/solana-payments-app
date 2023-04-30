@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { accessTokenEndpoint } from '../utilities/endpoints.utility'
+import { accessTokenEndpoint } from '../utilities/endpoints.utility.js'
 import {
     accessTokenResponseSchema,
     AccessTokenResponse,
