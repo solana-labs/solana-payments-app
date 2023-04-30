@@ -1,7 +1,8 @@
 {
   "baseBranch": "main",
-  "packageManager": "pnpm",
+  "packageManager": "yarn",
   "packages": {
-    "apps/*": {}
+    "apps/*": {},
+    "packages/*": {}
   }
 }

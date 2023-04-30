@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { PrismaClient } from '@prisma/client'
-import { requestErrorResponse } from './utilities/request-response.utility.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
 
 const prisma = new PrismaClient()
 
@@ -12,6 +12,7 @@ export const hello = async (
         body: JSON.stringify(
             {
                 event: event,
+                hello: 'world',
             },
             null,
             2
