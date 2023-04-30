@@ -15,6 +15,10 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 -   The endpoints are all defined in serverless.yml and the handlers are in serverless-backed/src/handlers/
 -   The database schema can be found in serverless-backed/prisma/schema.prisma
 
+## Patterns to Use
+
+-   For parsing responses and query parameters we use yup, you can find all of the models in serverless-backend/src/models/
+
 ## Notes
 
 -   Even though we are using turborepo, we must not hoist the dependecies for this app. They need to remain here for the Serverless Framework to package them

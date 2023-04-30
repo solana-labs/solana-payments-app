@@ -2,25 +2,6 @@
 
 In need of documentation. Coming soon!
 
-## Set up your env vars ( .env at root )
-
-MYSQL_ROOT_PASSWORD=
-MYSQL_DATABASE=
-MYSQL_USER=
-MYSQL_PASSWORD=
-
-SHOPIFY_CLIENT_ID=
-SHOPIFY_SECRET_KEY=
-
-AUTH_0_CLIENT_ID=
-AUTH_0_CLIENT_SECRET=
-AUTH_0_DOMAIN=
-
-DATABASE_PORT=
-BACKEND_PORT=
-MERCHANT_UI_PORT=
-PAYMENT_UI_PORT=
-
 ## How to start
 
 1. Get ngrok running
