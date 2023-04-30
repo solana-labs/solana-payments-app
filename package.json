@@ -4,7 +4,9 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "apps/backend-serverless"
+      "apps/backend-serverless",
+      "apps/payment-ui",
+      "packages/token-price"
     ],
     "nohoist": [
       "**/backend-serverless/**"

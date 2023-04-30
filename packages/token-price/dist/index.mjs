@@ -2,8 +2,22 @@ var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
@@ -742,9 +756,9 @@ var require_xhr = __commonJS({
   }
 });
 
-// node_modules/ms/index.js
+// ../../node_modules/debug/node_modules/ms/index.js
 var require_ms = __commonJS({
-  "node_modules/ms/index.js"(exports, module) {
+  "../../node_modules/debug/node_modules/ms/index.js"(exports, module) {
     var s = 1e3;
     var m = s * 60;
     var h = m * 60;
@@ -858,9 +872,9 @@ var require_ms = __commonJS({
   }
 });
 
-// node_modules/debug/src/common.js
+// ../../node_modules/debug/src/common.js
 var require_common = __commonJS({
-  "node_modules/debug/src/common.js"(exports, module) {
+  "../../node_modules/debug/src/common.js"(exports, module) {
     function setup(env) {
       createDebug.debug = createDebug;
       createDebug.default = createDebug;
@@ -1021,9 +1035,9 @@ var require_common = __commonJS({
   }
 });
 
-// node_modules/debug/src/browser.js
+// ../../node_modules/debug/src/browser.js
 var require_browser = __commonJS({
-  "node_modules/debug/src/browser.js"(exports, module) {
+  "../../node_modules/debug/src/browser.js"(exports, module) {
     exports.formatArgs = formatArgs;
     exports.save = save;
     exports.load = load;
@@ -1190,9 +1204,9 @@ var require_browser = __commonJS({
   }
 });
 
-// node_modules/has-flag/index.js
+// ../../node_modules/supports-color/node_modules/has-flag/index.js
 var require_has_flag = __commonJS({
-  "node_modules/has-flag/index.js"(exports, module) {
+  "../../node_modules/supports-color/node_modules/has-flag/index.js"(exports, module) {
     "use strict";
     module.exports = (flag, argv = process.argv) => {
       const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
@@ -1203,27 +1217,29 @@ var require_has_flag = __commonJS({
   }
 });
 
-// node_modules/supports-color/index.js
+// ../../node_modules/supports-color/index.js
 var require_supports_color = __commonJS({
-  "node_modules/supports-color/index.js"(exports, module) {
+  "../../node_modules/supports-color/index.js"(exports, module) {
     "use strict";
     var os = __require("os");
     var tty = __require("tty");
     var hasFlag = require_has_flag();
     var { env } = process;
-    var forceColor;
+    var flagForceColor;
     if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
-      forceColor = 0;
+      flagForceColor = 0;
     } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
-      forceColor = 1;
+      flagForceColor = 1;
     }
-    if ("FORCE_COLOR" in env) {
-      if (env.FORCE_COLOR === "true") {
-        forceColor = 1;
-      } else if (env.FORCE_COLOR === "false") {
-        forceColor = 0;
-      } else {
-        forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+    function envForceColor() {
+      if ("FORCE_COLOR" in env) {
+        if (env.FORCE_COLOR === "true") {
+          return 1;
+        }
+        if (env.FORCE_COLOR === "false") {
+          return 0;
+        }
+        return env.FORCE_COLOR.length === 0 ? 1 : Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
       }
     }
     function translateLevel(level) {
@@ -1237,15 +1253,22 @@ var require_supports_color = __commonJS({
         has16m: level >= 3
       };
     }
-    function supportsColor(haveStream, streamIsTTY) {
+    function supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
+      const noFlagForceColor = envForceColor();
+      if (noFlagForceColor !== void 0) {
+        flagForceColor = noFlagForceColor;
+      }
+      const forceColor = sniffFlags ? flagForceColor : noFlagForceColor;
       if (forceColor === 0) {
         return 0;
       }
-      if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
-        return 3;
-      }
-      if (hasFlag("color=256")) {
-        return 2;
+      if (sniffFlags) {
+        if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
+          return 3;
+        }
+        if (hasFlag("color=256")) {
+          return 2;
+        }
       }
       if (haveStream && !streamIsTTY && forceColor === void 0) {
         return 0;
@@ -1262,7 +1285,7 @@ var require_supports_color = __commonJS({
         return 1;
       }
       if ("CI" in env) {
-        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env) || env.CI_NAME === "codeship") {
+        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE", "DRONE"].some((sign) => sign in env) || env.CI_NAME === "codeship") {
           return 1;
         }
         return min;
@@ -1274,7 +1297,7 @@ var require_supports_color = __commonJS({
         return 3;
       }
       if ("TERM_PROGRAM" in env) {
-        const version = parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+        const version = Number.parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
         switch (env.TERM_PROGRAM) {
           case "iTerm.app":
             return version >= 3 ? 3 : 2;
@@ -1293,21 +1316,23 @@ var require_supports_color = __commonJS({
       }
       return min;
     }
-    function getSupportLevel(stream) {
-      const level = supportsColor(stream, stream && stream.isTTY);
+    function getSupportLevel(stream, options = {}) {
+      const level = supportsColor(stream, __spreadValues({
+        streamIsTTY: stream && stream.isTTY
+      }, options));
       return translateLevel(level);
     }
     module.exports = {
       supportsColor: getSupportLevel,
-      stdout: translateLevel(supportsColor(true, tty.isatty(1))),
-      stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+      stdout: getSupportLevel({ isTTY: tty.isatty(1) }),
+      stderr: getSupportLevel({ isTTY: tty.isatty(2) })
     };
   }
 });
 
-// node_modules/debug/src/node.js
+// ../../node_modules/debug/src/node.js
 var require_node = __commonJS({
-  "node_modules/debug/src/node.js"(exports, module) {
+  "../../node_modules/debug/src/node.js"(exports, module) {
     var tty = __require("tty");
     var util = __require("util");
     exports.init = init;
@@ -1479,9 +1504,9 @@ var require_node = __commonJS({
   }
 });
 
-// node_modules/debug/src/index.js
+// ../../node_modules/debug/src/index.js
 var require_src = __commonJS({
-  "node_modules/debug/src/index.js"(exports, module) {
+  "../../node_modules/debug/src/index.js"(exports, module) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module.exports = require_browser();
     } else {
@@ -1490,9 +1515,9 @@ var require_src = __commonJS({
   }
 });
 
-// node_modules/follow-redirects/debug.js
+// ../../node_modules/follow-redirects/debug.js
 var require_debug = __commonJS({
-  "node_modules/follow-redirects/debug.js"(exports, module) {
+  "../../node_modules/follow-redirects/debug.js"(exports, module) {
     var debug;
     module.exports = function() {
       if (!debug) {
@@ -1510,9 +1535,9 @@ var require_debug = __commonJS({
   }
 });
 
-// node_modules/follow-redirects/index.js
+// ../../node_modules/follow-redirects/index.js
 var require_follow_redirects = __commonJS({
-  "node_modules/follow-redirects/index.js"(exports, module) {
+  "../../node_modules/follow-redirects/index.js"(exports, module) {
     var url = __require("url");
     var URL = url.URL;
     var http = __require("http");

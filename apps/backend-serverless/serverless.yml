@@ -13,7 +13,7 @@ provider:
 package:
   excludeDevDependencies: false
   patterns:
-    - 'node_modules/.prisma/**' # no need to add this, this plugin does it for you
+    - 'node_modules/.prisma/**'
 functions:
   api:
     handler: src/handlers/hello.hello

@@ -1,8 +1,34 @@
 {
-  "baseBranch": "main",
-  "packageManager": "yarn",
-  "packages": {
-    "apps/*": {},
-    "packages/*": {}
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "pipeline": {
+    "build:token-price": {
+      "cache": true,
+      "outputs": [
+        "./packages/token-price/dist/**"
+      ]
+    },
+    "build:payment-ui": {
+      "dependsOn": [
+        "build:token-price"
+      ],
+      "outputs": [
+        "./apps/payment-ui/.next/**"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "build:payment-ui"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false
+    }
   }
 }
