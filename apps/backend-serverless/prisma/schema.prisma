@@ -12,9 +12,34 @@ datasource db {
 }
 
 model Merchant {
-  id          Int     @id @default(autoincrement())
-  shop        String  @unique
-  accessToken String?
-  scopes      String?
-  lastNonce   String
+  id             Int             @id @default(autoincrement())
+  shop           String          @unique
+  accessToken    String?
+  scopes         String?
+  lastNonce      String
+  paymentRecords PaymentRecord[]
+}
+
+model PaymentRecord {
+  id              Int                 @id @default(autoincrement())
+  status          String
+  shopId          String
+  shopGid         String?
+  shopGroup       String
+  test            Boolean
+  amount          Float
+  currency        String
+  transactions    TransactionRecord[]
+  merchant        Merchant            @relation(fields: [merchantId], references: [id])
+  merchantId      Int
+  customerAddress String?
+}
+
+model TransactionRecord {
+  id              Int            @id @default(autoincrement())
+  signature       String
+  type            String
+  createdAt       String
+  paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+  paymentRecordId Int?
 }
