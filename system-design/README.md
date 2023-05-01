@@ -6,16 +6,16 @@ Note: Given we are in the very early stages of development, this should change o
 
 ## Components
 
-- Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
-- Mertchant UI - General merchant managment portal
-- Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
-- Transaction Request Server - Generalized transaction building engine for payments
+-   Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
+-   Mertchant UI - General merchant managment portal
+-   Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
+-   Transaction Request Server - Generalized transaction building engine for payments
 
 ## Main Flows
 
-- Payment Flow
-- Refund Flow
-- Auth Flow
+-   Payment Flow
+-   Refund Flow
+-   Auth Flow
 
 ### Payment Flow
 
@@ -64,13 +64,13 @@ sequenceDiagram
     participant TRS as Transaction Request Server
     Alice->>BACKEND: /pay-transaction
     BACKEND->DATABASE: SELECT PaymentRecord
-    BACKEND->>TRS: /transaction
+    BACKEND->>TRS: /pay
     TRS-->>BACKEND: 200 { tx: string, message: string }
     BACKEND->>TRM: /riskApi
     TRM-->>BACKEND: 200 { riskLevel: int }
     BACKEND->S3: fetch gas keypair
     BACKEND->BACKEND: sign transaction
-    BACKEND->>DATABASE: UPDATE PaymentRecord
+    BACKEND->>DATABASE: CREATE TransactionRecord
     BACKEND->>Alice: 200 { tx: string, message: string }
 ```
 
@@ -89,7 +89,9 @@ sequenceDiagram
     participant TRM as TRM Labs
     participant TRS as Transaction Request Server
     Helius->>BACKEND: /helius
+    BACKEND->DATABASE: SELECT TransactionRecord
     BACKEND->DATABASE: SELECT PaymentRecord
+    BACKEND->BACKEND: Validate transaction wrt PaymentRecord
     BACKEND->DATABASE: UPDATE PaymentRecord
     BACKEND->DATABASE: SELECT Merchant
     BACKEND->>Shop: mut paymentSessionResolve
@@ -123,6 +125,7 @@ sequenceDiagram
     participant Backend as Payment App Backend
     participant Database as Payment App Database
     participant S3
+    participant TRM as TRM Labs
     participant TRS as Transaction Request Server
     Merchant-xShop: initiate a refund
     Shop->>Backend: /refund
@@ -145,19 +148,22 @@ sequenceDiagram
     participant Backend as Payment App Backend
     participant Database as Payment App Database
     participant S3
+    participant TRM as TRM Labs
     participant TRS as Transaction Request Server
     Merchant-xPortal: visits the merhcant portal
     Portal->>Backend: /refunds
     Backend->>Database: SELECT RefundRecord
     Backend-->>Portal: 200 { refunds: [ ... ] }
     Merchant-xPortal: select refund to process
-    Portal->>Backend: /transaction
+    Portal->>Backend: /refund-transaction
     Backend->Database: SELECT RefundRecord
-    Backend->TRS: /transaction
+    Backend->TRS: /pay
     TRS-->>Backend: 200 { tx: string, message: string }
+    BACKEND->>TRM: /riskApi
+    TRM-->>BACKEND: 200 { riskLevel: int }
     Backend->S3: fetch gas keypair
     Backend->>Backend: sign transaction
-    Backend->Database: UPDATE RefundRecord
+    BACKEND->>DATABASE: CREATE TransactionRecord
     Backend-->>Portal: 200 { tx: string, message: string }
 ```
 
@@ -174,34 +180,7 @@ sequenceDiagram
     participant Backend as Payment App Backend
     participant Database as Payment App Database
     participant S3
-    participant TRS as Transaction Request Server
-    Portal->>Wallet: signTransaction
-    Wallet-->>Portal: signed transaction
-    Portal->>Solana: sendRawTransaction
-    Helius->>Backend: /helius
-    Backend->Database: SELECT RefundRecord
-    Backend->Database: UPDATE RefundRecord
-    Backend->Database: SELECT ShopifyAccess
-    Backend->>Shop: mut resolveRefundSession
-    Shop-->>Backend: 200 Ok
-    Backend->Database: UPDATE RefundRecord
-```
-
-### Refund Flow
-
-```mermaid
-sequenceDiagram
-    title Refund Flow: Phase Three
-    autonumber
-    participant Helius
-    participant Solana as Solana Blockchain
-    participant Wallet as Merchant's Wallet
-    participant Portal as Merchant's UI
-    actor Merchant
-    participant Shop as Shopify Backend
-    participant Backend as Payment App Backend
-    participant Database as Payment App Database
-    participant S3
+    participant TRM as TRM Labs
     participant TRS as Transaction Request Server
     Portal->>Wallet: signTransaction
     Wallet-->>Portal: signed transaction
@@ -235,7 +214,7 @@ sequenceDiagram
 
 ## Database Schema
 
-### Shopify Access
+### Merchant
 
 |    name     |  type  |           notes            |
 | :---------: | :----: | :------------------------: |
@@ -245,10 +224,44 @@ sequenceDiagram
 |   scopes    | String | Most Recent Shopify Scopes |
 |  lastNonce  | String |   Most Recent Auth Nonce   |
 
-### Payment Record
+### PaymentRecord
 
-|   name    |  type  |               notes               |
-| :-------: | :----: | :-------------------------------: |
-| paymentId | String |        Given From Shopify         |
-| shopifyId | String |            Auth Token             |
-|  amount   | String | Scopes returned with access token |
+|      name       |  type   |                            notes                            |
+| :-------------: | :-----: | :---------------------------------------------------------: |
+|     status      | String  |              tracks the progress of a payment               |
+|   merchantId    | String  |              links the merchant to the payment              |
+|     amount      | Number  | how much fiat the payment was for in the currency specified |
+|    currency     | String  |             currency that the amount specifies              |
+|     shopId      | String  |            'id' value passed to us from shopify             |
+|     shopGid     | String  |            'gid' value passed to us from shopify            |
+|    shopGroup    | String  |           'group' value passed to us from shopify           |
+|      test       |  Bool   |            payment is just for merchant testing             |
+|       id        | String  |                     internal unique id                      |
+|  transactionId  | String? |      links the payment to the transaction that paid it      |
+| customerAddress | String? |            customer we attribute to the payment             |
+
+### RefundRecord
+
+|      name       |  type   |                           notes                            |
+| :-------------: | :-----: | :--------------------------------------------------------: |
+|     status      | String  |              tracks the progress of a refund               |
+|   merchantId    | String  |              links the merchant to the refund              |
+|     amount      | String  | how much fiat the refund was for in the currency specified |
+|    currency     | String  |             currency that the amount specifies             |
+|     shopId      | String  |            'id' value passed to us from shopify            |
+|     shopGid     | String  |           'gid' value passed to us from shopify            |
+|  shopPaymentId  | String  |        'payment_id' value passed to us from shopify        |
+|      test       |  Bool   |            refund is just for merchant testing             |
+|       id        | String  |                     internal unique id                     |
+|  transactionId  | String? |      links the refund to the transaction that paid it      |
+| customerAddress | String  |            customer we attribute to the refund             |
+
+### TransactionRecord
+
+|      name       |  type   |                     notes                      |
+| :-------------: | :-----: | :--------------------------------------------: |
+|    signature    | String  |             transaction Signature              |
+|      type       | String  |             'payment' or 'refund'              |
+|    createdAt    | String  | timestamp the transaction was built and signed |
+| paymentRecordId | String? |      links the transaction to the payment      |
+| refundRecordId  | String? |      links the transaction to the refund       |
