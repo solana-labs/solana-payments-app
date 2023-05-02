@@ -52,6 +52,18 @@ functions:
       - httpApi:
           path: /helius
           method: get
+  payment-transaction:
+    handler: src/handlers/pay-transaction.paymentStatus
+    events:
+      - httpApi:
+          path: /payment-transaction
+          method: post
+  payment-status:
+    handler: src/handlers/pay-transaction.paymentStatus
+    events:
+      - httpApi:
+          path: /payment-status
+          method: get
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
