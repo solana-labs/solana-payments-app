@@ -5,12 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "npx prisma generate",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^4.9.0",
     "@project-serum/anchor": "^0.26.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@solana/qr-code-styling": "^1.6.0",
@@ -31,7 +29,6 @@
     "react-dom": "latest",
     "react-icons": "^4.8.0",
     "react-redux": "^8.0.5",
-    "token-price": "../packages/token-price",
     "typescript": "4.9.5",
     "yup": "^0.32.11"
   },

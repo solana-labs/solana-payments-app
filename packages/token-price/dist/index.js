@@ -755,9 +755,9 @@ var require_xhr = __commonJS({
   }
 });
 
-// ../../node_modules/ms/index.js
+// ../../node_modules/debug/node_modules/ms/index.js
 var require_ms = __commonJS({
-  "../../node_modules/ms/index.js"(exports, module2) {
+  "../../node_modules/debug/node_modules/ms/index.js"(exports, module2) {
     var s = 1e3;
     var m = s * 60;
     var h = m * 60;
@@ -1203,9 +1203,9 @@ var require_browser = __commonJS({
   }
 });
 
-// ../../node_modules/has-flag/index.js
+// ../../node_modules/supports-color/node_modules/has-flag/index.js
 var require_has_flag = __commonJS({
-  "../../node_modules/has-flag/index.js"(exports, module2) {
+  "../../node_modules/supports-color/node_modules/has-flag/index.js"(exports, module2) {
     "use strict";
     module2.exports = (flag, argv = process.argv) => {
       const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
