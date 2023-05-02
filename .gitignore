@@ -40,3 +40,10 @@ apps/backend/dist
 
 #packages-dist
 packages/transaction-builder/dist/*
+
+#apps
+apps/transaction-request-serverless/.serverless
+apps/transaction-request-serverless/.serverless/*
+
+apps/backend-serverless/.serverless
+apps/backend-serverless/.serverless/*
