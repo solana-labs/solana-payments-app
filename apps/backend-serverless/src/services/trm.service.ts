@@ -35,8 +35,7 @@ export const screenAddress = async (address: string) => {
     data: body,
   });
 
-  const parsedResponse = validateTrmResponse(response.data);
-  return parsedResponse;
+  return validateTrmResponse(response.data);
 };
 
 export const validateTrmResponse = (response: any): TrmWalletScreenResponse => {
@@ -48,18 +47,3 @@ export const validateTrmResponse = (response: any): TrmWalletScreenResponse => {
   }
   return parsedResponse;
 };
-
-// export const validateTrmResponse = async (
-//   response: any
-// ): Promise<TrmWalletScreenResponse> => {
-//   try {
-//     const validatedResponse = (await trmWalletScreenResponseSchema.cast(
-//       response.data
-//     )) as TrmWalletScreenResponse;
-//     // throw error
-//     // throw new Error('Parameter is not a number!');
-//     return validatedResponse;
-//   } catch (error) {
-//     throw new Error(`Validation error: ${error.message}`);
-//   }
-// };
