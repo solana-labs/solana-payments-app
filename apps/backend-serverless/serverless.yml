@@ -11,6 +11,7 @@ provider:
     MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
+    TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
   httpApi:
     cors: true
 package:
@@ -55,7 +56,7 @@ functions:
           path: /helius
           method: get
   payment-transaction:
-    handler: src/handlers/pay-transaction.paymentStatus
+    handler: src/handlers/payment-transaction.paymentTransaction
     events:
       - httpApi:
           path: /payment-transaction

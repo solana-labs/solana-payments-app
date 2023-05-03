@@ -8,7 +8,7 @@ export const hello = async (
         body: JSON.stringify(
             {
                 event: event,
-                hello: 'world',
+                hello: 'hello world',
             },
             null,
             2
