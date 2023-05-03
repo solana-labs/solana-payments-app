@@ -29,10 +29,12 @@ model PaymentRecord {
   test            Boolean
   amount          Float
   currency        String
+  cancelURL       String
   transactions    TransactionRecord[]
   merchant        Merchant            @relation(fields: [merchantId], references: [id])
   merchantId      Int
   customerAddress String?
+  redirectUrl     String?
 }
 
 model TransactionRecord {

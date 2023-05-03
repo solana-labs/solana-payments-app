@@ -47,13 +47,16 @@ export const paymentStatus = async (
         merchantDisplayName: 'Starbucks Coffee',
         totalAmountFiatDisplay: `${paymentRecord.amount} ${paymentRecord.currency}`,
         totalAmountUSDCDisplay: `${paymentRecord.amount} ${paymentRecord.currency}`,
-        cancelUrl: 'https://example.com/cancel',
-        redirectUrl: 'https://example.com/complete',
+        cancelUrl: paymentRecord.cancelURL,
         completed: false,
     }
 
     return {
-        statusCode: 500,
+        statusCode: 200,
         body: JSON.stringify(paymentStatusResponse, null, 2),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': true,
+        },
     }
 }

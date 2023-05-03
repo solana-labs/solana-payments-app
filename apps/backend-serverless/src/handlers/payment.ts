@@ -63,6 +63,7 @@ export const payment = async (
                     currency: paymentInitiation.currency,
                     customerAddress: null,
                     merchantId: merchant.id,
+                    cancelURL: paymentInitiation.payment_method.data.cancel_url,
                 },
             })
         }

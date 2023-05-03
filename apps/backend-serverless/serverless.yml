@@ -11,6 +11,8 @@ provider:
     MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
+  httpApi:
+    cors: true
 package:
   excludeDevDependencies: false
   patterns:
