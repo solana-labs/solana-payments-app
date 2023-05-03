@@ -27,41 +27,26 @@ export enum PayingToken {
     SOL = 'SOL',
 }
 
+const initialPaymentDetails: PaymentDetails = {
+    merchantDisplayName: 'Loading...',
+    totalAmountUSDCDisplay: 'Loading...',
+    totalAmountFiatDisplay: 'Loading...',
+    cancelUrl: null,
+    completed: false,
+    redirectUrl: null,
+}
+
 const initalState: PayState = {
     paymentMethod: 'connect-wallet',
     paymentId: null,
     payerAccount: null,
-    paymentDetails: {
-        merchantDisplayName: 'Loading...',
-        totalAmountUSDCDisplay: 'Loading...',
-        totalAmountFiatDisplay: 'Loading...',
-        cancelUrl: null,
-        completed: false,
-        redirectUrl: null,
-    },
+    paymentDetails: initialPaymentDetails,
     payingToken: PayingToken.USDC,
 }
 
 export const fetchPaymentDetails = createAsyncThunk<void, void>(
     'pay/fetchPaymentDetails',
     async () => {}
-)
-
-export const fetchTransaction = createAsyncThunk<void, string>(
-    'pay/fetchTransaction',
-    async (account: string) => {
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-
-        const response = await axios.post(
-            `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-transaction`,
-            { account: account },
-            { headers: headers }
-        )
-
-        console.log(response.data)
-    }
 )
 
 export const fetchPayingTokenConversion = createAsyncThunk<void, void>(
@@ -162,7 +147,4 @@ export const getRedirectUrl = (state: any): string | null =>
 export const getPayerAccount = (state: any): string => state.pay.payerAccount
 
 export const getPaymentDetails = (state: any): PaymentDetails =>
-    state.pay.paymentDetails ?? {
-        merchantDisplayName: 'DEFAULT NAME',
-        totalAmountUSD: 0,
-    }
+    state.pay.paymentDetails ?? initialPaymentDetails

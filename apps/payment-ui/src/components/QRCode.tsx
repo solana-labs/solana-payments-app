@@ -1,15 +1,18 @@
-import { getPayingToken, getPaymentMethod } from "../features/pay-tab/paySlice";
+import { getPayingToken, getPaymentId, getPaymentMethod } from "../features/pay-tab/paySlice";
 import QRCodeStyling from "@solana/qr-code-styling";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { createQROptions } from "./SolanaPayQRCode";
+import { buildPaymentTransactionRequestEndpoint } from "@/utility/endpoints.utility";
 
 export const QRCode: FC = () => {
+  
   const [size, setSize] = useState(() =>
     typeof window === "undefined"
       ? 400
       : Math.min(window.screen.availWidth - 48, 400)
   );
+  const paymentId = useSelector(getPaymentId)
   useEffect(() => {
     const listener = () =>
       setSize(Math.min(window.screen.availWidth - 48, 400));
@@ -18,9 +21,10 @@ export const QRCode: FC = () => {
     return () => window.removeEventListener("resize", listener);
   }, []);
 
-  const payingToken = useSelector(getPayingToken);
+  const payingToken = useSelector(getPayingToken); 
 
-  const url = "solana:https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-transaction";
+  const endpoint = buildPaymentTransactionRequestEndpoint(paymentId)
+  const url = `solana:${endpoint}`;
   const options = useMemo(
     () => createQROptions(url, size, "transparent", "black"),
     [url, size]

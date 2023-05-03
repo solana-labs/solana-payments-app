@@ -8,11 +8,11 @@ import axios from "axios";
 import { send } from "process";
 import { web3 } from "@project-serum/anchor";
 import { getPaymentId } from "@/features/pay-tab/paySlice";
+import { buildPaymentTransactionRequestEndpoint } from "@/utility/endpoints.utility";
 // import { fetchTransaction } from "@/features/pay-tab/paySlice";
 
 const BuyButton = () => {
 
-  const dispatch = useDispatch<AppDispatch>();
   const paymentId = useSelector(getPaymentId)
   const { publicKey, sendTransaction } = useWallet();
 
@@ -25,7 +25,7 @@ const BuyButton = () => {
     // TODO: FIX THIS AND MAKE IT NICER AND CLEANER
     if ( paymentId != null ) {
       const response = await axios.post(
-        `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-transaction?paymentId=${paymentId}`,
+        buildPaymentTransactionRequestEndpoint(paymentId),
         { account: publicKey ? publicKey.toBase58() : '' },
         { headers: headers }
       )
