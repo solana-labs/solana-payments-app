@@ -11,7 +11,7 @@ export const fetchPaymentTransaction = async (
     account: string
 ): Promise<PaymentTransactionResponse> => {
     const endpoint = buildPaymentTransactionRequestEndpoint(
-        '5rPoLqhSC2VnMULYfzYX4712GEFNFv8nof6K6nP7GX8E',
+        'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
         account,
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
@@ -22,7 +22,7 @@ export const fetchPaymentTransaction = async (
         'true'
     )
     const headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
     }
 
     console.log(endpoint)
@@ -32,8 +32,6 @@ export const fetchPaymentTransaction = async (
         { account: account },
         { headers: headers }
     )
-
-    throw new Error('shit fuck')
 
     if (response.status != 200) {
         throw new Error('Error fetching payment transaction.')

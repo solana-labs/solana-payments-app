@@ -17,14 +17,14 @@ const MainSection = () => {
   }
 
   const dispatch = useDispatch<AppDispatch>();
-  const paymentId = useSelector(getPaymentId)
-  const { payment_id } = router.query
+  const payId = useSelector(getPaymentId)
+  const { paymentId } = router.query
 
   useEffect(() => {
-    const paymentId = payment_id as string
+    const id = paymentId as string
     // TODO: validate paymentId
-    dispatch(setPaymentId(paymentId))
-  }, [dispatch, paymentId]);
+    dispatch(setPaymentId(id))
+  }, [dispatch, payId]);
 
   return (
     <div className="flex flex-col h-[100vh] w-full max-w-2xl mx-auto">

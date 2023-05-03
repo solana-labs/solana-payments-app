@@ -7,6 +7,7 @@ export type PaymentMethod = 'qr-code' | 'connect-wallet'
 interface PayState {
     paymentMethod: PaymentMethod
     paymentId: string | null
+    payerAccount: string | null
     paymentDetails: PaymentDetails | null
     payingToken: PayingToken
 }
@@ -29,6 +30,7 @@ export enum PayingToken {
 const initalState: PayState = {
     paymentMethod: 'connect-wallet',
     paymentId: null,
+    payerAccount: null,
     paymentDetails: {
         merchantDisplayName: 'Loading...',
         totalAmountUSDCDisplay: 'Loading...',
@@ -45,24 +47,27 @@ export const fetchPaymentDetails = createAsyncThunk<void, void>(
     async () => {}
 )
 
+export const fetchTransaction = createAsyncThunk<void, string>(
+    'pay/fetchTransaction',
+    async (account: string) => {
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+
+        const response = await axios.post(
+            `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-transaction`,
+            { account: account },
+            { headers: headers }
+        )
+
+        console.log(response.data)
+    }
+)
+
 export const fetchPayingTokenConversion = createAsyncThunk<void, void>(
     'pay/fetchPayingTokenConversion',
     async () => {}
 )
-
-// export const authStatus = createAsyncThunk<UserAuthInfo | null, void>(
-//     'auth/authStatus',
-//     async (): Promise<UserAuthInfo | null> => {
-//         console.log('status before check login ' + web3auth.status)
-
-//         try {
-//             const user = await web3auth.authenticateUser()
-//             return user
-//         } catch {
-//             return null
-//         }
-//     }
-// )
 
 export const timerTick = createAsyncThunk<PaymentDetails, void>(
     'pay/timerTick',
@@ -95,11 +100,6 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
     }
 )
 
-export const fetchTransaction = createAsyncThunk<void, void>(
-    'pay/fetchTransaction',
-    async () => {}
-)
-
 const paySlice = createSlice({
     name: 'pay',
     initialState: initalState,
@@ -112,6 +112,9 @@ const paySlice = createSlice({
         },
         setPaymentId: (state, action: PayloadAction<string>) => {
             state.paymentId = action.payload
+        },
+        setPayerAccount: (state, action: PayloadAction<string>) => {
+            state.payerAccount = action.payload
         },
     },
     extraReducers(builder) {
@@ -152,6 +155,8 @@ export const getPaymentMethod = (state: any): PaymentMethod =>
 export const getPayingToken = (state: any): PayingToken => state.pay.payingToken
 
 export const getPaymentId = (state: any): PayingToken => state.pay.paymentId
+
+export const getPayerAccount = (state: any): string => state.pay.payerAccount
 
 export const getPaymentDetails = (state: any): PaymentDetails =>
     state.pay.paymentDetails ?? {

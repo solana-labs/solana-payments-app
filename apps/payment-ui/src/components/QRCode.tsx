@@ -20,7 +20,7 @@ export const QRCode: FC = () => {
 
   const payingToken = useSelector(getPayingToken);
 
-  const url = "https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment/pay-transaction?payment=";
+  const url = "solana:https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-transaction";
   const options = useMemo(
     () => createQROptions(url, size, "transparent", "black"),
     [url, size]

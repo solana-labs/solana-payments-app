@@ -16,13 +16,13 @@ export const pay = async (
 ): Promise<APIGatewayProxyResult> => {
     let payRequest: PayRequest
     let paymentTransactionRequest: PaymentTransactionRequest
-    // const decodedBody = event.body ? decode(event.body) : ''
-    // const body = queryString.parse(decodedBody)
-    // const account = body['account'] as string | null
+    const decodedBody = event.body ? decode(event.body) : ''
+    const body = queryString.parse(decodedBody)
+    const account = body['account'] as string | null
     // JSON.parse(event.body)
 
-    const body = event.body ? JSON.parse(event.body) : {}
-    const account = body['account']
+    // const body = event.body ? JSON.parse(event.body) : {}
+    // const account = body['account']
 
     if (account == null) {
         return {
@@ -51,6 +51,8 @@ export const pay = async (
     //         body: JSON.stringify(error, null, 2),
     //     }
     // }
+
+    console.log('yeee')
 
     try {
         paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(

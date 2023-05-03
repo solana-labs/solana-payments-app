@@ -13,9 +13,6 @@ const PayWithWalletSection = () => {
       <div className="pb-4">
         <Wallet />
       </div>
-      <div className="pb-28">
-        <BuyButton />
-      </div>
     </div>
   );
 };

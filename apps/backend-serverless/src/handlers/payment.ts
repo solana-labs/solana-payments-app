@@ -91,7 +91,7 @@ export const payment = async (
         statusCode: 200,
         body: JSON.stringify(
             {
-                redirect_url: paymentUiUrl + '?payment_id=' + paymentRecord.id,
+                redirect_url: paymentUiUrl + '?paymentId=' + paymentRecord.id,
             },
             null,
             2

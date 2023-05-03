@@ -1,14 +1,7 @@
 import { object, string, InferType, boolean, number } from 'yup'
 
 export const paymentTransactionRequestScheme = object().shape({
-    receiver: string().required(),
-    sendingToken: string().required(),
-    receivingToken: string().required(),
-    feePayer: string().required(),
-    receivingAmount: string().required(),
-    amountType: string().required(),
-    transactionType: string().required(),
-    createAta: string().required(),
+    paymentId: number().required(),
 })
 
 export type PaymentTransactionRequest = InferType<

@@ -38,7 +38,7 @@ export const paymentTransaction = async (
     try {
         paymentRecord = await prisma.paymentRecord.findFirstOrThrow({
             where: {
-                id: 1,
+                id: paymentRequest.paymentId,
             },
         })
     } catch (error) {
@@ -57,5 +57,21 @@ export const paymentTransaction = async (
     return {
         statusCode: 200,
         body: JSON.stringify(paymentTransaction, null, 2),
+    }
+}
+
+export const paymentMetadata = async (
+    event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify(
+            {
+                label: 'Solana Payment App',
+                icon: 'https://solana.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FsolanaGradient.cc822962.png&w=3840&q=75',
+            },
+            null,
+            2
+        ),
     }
 }
