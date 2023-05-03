@@ -54,7 +54,7 @@ functions:
     events:
       - httpApi:
           path: /helius
-          method: get
+          method: post
   payment-transaction:
     handler: src/handlers/payment-transaction.paymentTransaction
     events:

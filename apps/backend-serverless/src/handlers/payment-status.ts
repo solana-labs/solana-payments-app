@@ -62,7 +62,8 @@ export const paymentStatus = async (
         totalAmountFiatDisplay: `${paymentRecord.amount} ${paymentRecord.currency}`,
         totalAmountUSDCDisplay: `${paymentRecord.amount} ${paymentRecord.currency}`,
         cancelUrl: paymentRecord.cancelURL,
-        completed: false,
+        redirectUrl: paymentRecord.redirectUrl,
+        completed: paymentRecord.redirectUrl ? true : false,
     }
 
     return {

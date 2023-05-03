@@ -156,6 +156,9 @@ export const getPayingToken = (state: any): PayingToken => state.pay.payingToken
 
 export const getPaymentId = (state: any): PayingToken => state.pay.paymentId
 
+export const getRedirectUrl = (state: any): string | null =>
+    state.pay.redirectUrl
+
 export const getPayerAccount = (state: any): string => state.pay.payerAccount
 
 export const getPaymentDetails = (state: any): PaymentDetails =>
