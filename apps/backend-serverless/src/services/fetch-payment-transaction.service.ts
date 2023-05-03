@@ -8,14 +8,15 @@ import { PaymentRecord } from '@prisma/client'
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
-    account: string
+    account: string,
+    gas: string
 ): Promise<PaymentTransactionResponse> => {
     const endpoint = buildPaymentTransactionRequestEndpoint(
         'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
         account,
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-        account,
+        gas,
         '1',
         'size',
         'blockhash',

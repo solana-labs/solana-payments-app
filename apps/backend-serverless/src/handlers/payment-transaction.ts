@@ -7,9 +7,14 @@ import {
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js'
+// import { decode, encodeBufferToBase58 } from '../utilities/string.utility.js'
+import { encodeBufferToBase58 } from '../utilities/encode-transaction.utility.js'
 import { decode } from '../utilities/string.utility.js'
 import queryString from 'query-string'
-
+import { encodeTransaction } from '../utilities/encode-transaction.utility.js'
+import { web3 } from '@project-serum/anchor'
+import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
+import { table } from 'console'
 const prisma = new PrismaClient()
 
 export const paymentTransaction = async (
@@ -18,6 +23,7 @@ export const paymentTransaction = async (
     let paymentRecord: PaymentRecord
     let paymentTransaction: PaymentTransactionResponse
     let paymentRequest: PaymentTransactionRequest
+    let transaction: web3.Transaction
 
     const decodedBody = event.body ? decode(event.body) : ''
     const body = queryString.parse(decodedBody)
@@ -35,6 +41,8 @@ export const paymentTransaction = async (
         return requestErrorResponse(error)
     }
 
+    const gasKeypair = await fetchGasKeypair()
+
     try {
         paymentRecord = await prisma.paymentRecord.findFirstOrThrow({
             where: {
@@ -48,15 +56,59 @@ export const paymentTransaction = async (
     try {
         paymentTransaction = await fetchPaymentTransaction(
             paymentRecord,
-            account
+            account,
+            gasKeypair.publicKey.toBase58()
         )
     } catch (error) {
         return requestErrorResponse(error)
     }
 
+    try {
+        transaction = encodeTransaction(paymentTransaction.transaction)
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
+
+    transaction.sign(gasKeypair)
+    const transactionSignature = transaction.signature
+
+    if (transactionSignature == null) {
+        return requestErrorResponse(new Error('No transaction signature.'))
+    }
+
+    const signatureBuffer = transactionSignature
+
+    const signatureString = encodeBufferToBase58(signatureBuffer)
+
+    try {
+        await prisma.transactionRecord.create({
+            data: {
+                signature: signatureString,
+                type: 'payment',
+                paymentRecordId: paymentRecord.id,
+                createdAt: 'fake-date-go-here',
+            },
+        })
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
+
+    const transactionBuffer = transaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+    })
+    const transactionString = transactionBuffer.toString('base64')
+
     return {
         statusCode: 200,
-        body: JSON.stringify(paymentTransaction, null, 2),
+        body: JSON.stringify(
+            {
+                transaction: transactionString,
+                message: 'gm',
+            },
+            null,
+            2
+        ),
     }
 }
 
