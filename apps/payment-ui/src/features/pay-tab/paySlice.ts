@@ -13,7 +13,11 @@ interface PayState {
 
 interface PaymentDetails {
     merchantDisplayName: string
-    totalAmountUSD: number
+    totalAmountUSDCDisplay: string
+    totalAmountFiatDisplay: string
+    cancelUrl: string | null
+    completed: boolean
+    redirectUrl: string | null
 }
 
 export enum PayingToken {
@@ -26,8 +30,12 @@ const initalState: PayState = {
     paymentMethod: 'connect-wallet',
     paymentId: null,
     paymentDetails: {
-        merchantDisplayName: 'Starbucks',
-        totalAmountUSD: 2500,
+        merchantDisplayName: 'Loading...',
+        totalAmountUSDCDisplay: 'Loading...',
+        totalAmountFiatDisplay: 'Loading...',
+        cancelUrl: null,
+        completed: false,
+        redirectUrl: null,
     },
     payingToken: PayingToken.USDC,
 }
@@ -42,21 +50,47 @@ export const fetchPayingTokenConversion = createAsyncThunk<void, void>(
     async () => {}
 )
 
-export const timerTick = createAsyncThunk<void, void>(
+// export const authStatus = createAsyncThunk<UserAuthInfo | null, void>(
+//     'auth/authStatus',
+//     async (): Promise<UserAuthInfo | null> => {
+//         console.log('status before check login ' + web3auth.status)
+
+//         try {
+//             const user = await web3auth.authenticateUser()
+//             return user
+//         } catch {
+//             return null
+//         }
+//     }
+// )
+
+export const timerTick = createAsyncThunk<PaymentDetails, void>(
     'pay/timerTick',
-    async (_, { getState }) => {
-        // Access the current state
+    async (_, { getState }): Promise<PaymentDetails> => {
         const state = getState() as RootState
         const paymentId = state.pay.paymentId
-
         if (paymentId != null) {
             const response = await axios.get(
                 `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
             )
-
             console.log(response.data)
+            return {
+                merchantDisplayName: response.data.merchantDisplayName,
+                totalAmountUSDCDisplay: response.data.totalAmountUSDCDisplay,
+                totalAmountFiatDisplay: response.data.totalAmountFiatDisplay,
+                cancelUrl: response.data.cancelUrl,
+                completed: response.data.completed,
+                redirectUrl: response.data.redirectUrl,
+            }
         } else {
-            console.log('TICKY TOCKY')
+            return {
+                merchantDisplayName: 'Failed...',
+                totalAmountUSDCDisplay: 'Failed...',
+                totalAmountFiatDisplay: 'Failed...',
+                cancelUrl: null,
+                completed: false,
+                redirectUrl: null,
+            }
         }
     }
 )
@@ -97,9 +131,13 @@ const paySlice = createSlice({
             .addCase(timerTick.rejected, (state: PayState) => {
                 // Handle timerTick.rejected if needed
             })
-            .addCase(timerTick.fulfilled, (state: PayState) => {
-                // Handle timerTick.fulfilled if needed
-            })
+            .addCase(
+                timerTick.fulfilled,
+                (state: PayState, action: PayloadAction<PaymentDetails>) => {
+                    state.paymentDetails = action.payload
+                    // Handle timerTick.fulfilled if needed
+                }
+            )
     },
 })
 
@@ -112,6 +150,8 @@ export const getPaymentMethod = (state: any): PaymentMethod =>
     state.pay.paymentMethod
 
 export const getPayingToken = (state: any): PayingToken => state.pay.payingToken
+
+export const getPaymentId = (state: any): PayingToken => state.pay.paymentId
 
 export const getPaymentDetails = (state: any): PaymentDetails =>
     state.pay.paymentDetails ?? {

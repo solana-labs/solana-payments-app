@@ -61,7 +61,7 @@ functions:
           path: /payment-transaction
           method: post
   payment-status:
-    handler: src/handlers/pay-transaction.paymentStatus
+    handler: src/handlers/payment-status.paymentStatus
     events:
       - httpApi:
           path: /payment-status

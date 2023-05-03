@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
-import { getPaymentMethod, PaymentMethod, setPaymentMethod } from "./paySlice";
+import { getPaymentMethod, PaymentMethod, setPaymentMethod, setPaymentId } from "./paySlice";
+import { useRouter } from "next/router";
 
 export const PaymentMethodTab = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -9,6 +10,8 @@ export const PaymentMethodTab = () => {
   const paymentMethodTabOption = (option: PaymentMethod, label: string) => {
     const activeTabClassName = "tab w-1/2 tab-active color-black drop-shadow";
     const defaultTabClassName = "tab w-1/2";
+    const { id } = useRouter().query
+    const paymentId = id as string
 
     return (
       <a

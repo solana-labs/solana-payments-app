@@ -7,7 +7,7 @@ const TimerHandler: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const interval = 5000; // 5 seconds
+    const interval = 2000; // 2 seconds
 
     const timer = setInterval(() => {
       dispatch(timerTick());
