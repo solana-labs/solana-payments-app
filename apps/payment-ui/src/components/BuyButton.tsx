@@ -14,7 +14,7 @@ import { buildPaymentTransactionRequestEndpoint } from "@/utility/endpoints.util
 const BuyButton = () => {
 
   const paymentId = useSelector(getPaymentId)
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, signTransaction } = useWallet();
 
   const fetchAndSendTransaction = async () => {
     
@@ -33,6 +33,7 @@ const BuyButton = () => {
       const buffer = Buffer.from(response.data.transaction, 'base64')
   
       const transaction = web3.Transaction.from( buffer )
+      // TODO: Remove RPC from here if possible
       const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e')
       await sendTransaction(transaction, connection)
     } else {
