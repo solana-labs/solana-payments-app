@@ -10,6 +10,7 @@ import { DefaultLayoutNavigation } from "./DefaultLayoutNavigation";
 interface Props {
   className?: string;
   children?: React.ReactNode;
+  accountIsActive?: boolean;
 }
 
 export function DefaultLayout(props: Props) {
@@ -40,6 +41,7 @@ export function DefaultLayout(props: Props) {
         onClick={() => setNavIsOpen(false)}
       />
       <DefaultLayoutNavigation
+        accountIsActive={props.accountIsActive}
         className={navIsOpen ? "translate-x-0" : "-translate-x-[100%]"}
       />
       <div

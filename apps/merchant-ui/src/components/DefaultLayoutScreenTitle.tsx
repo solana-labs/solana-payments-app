@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 interface Props {
   className?: string;
-  children?: string;
+  children?: React.ReactNode;
 }
 
 export function DefaultLayoutScreenTitle(props: Props) {

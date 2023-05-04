@@ -11,7 +11,7 @@ export default function Wallets() {
         <meta name="description" content="Configure your wallets" />
       </Head>
       <div className="h-screen w-screen">
-        <DefaultLayout className="h-full w-full">
+        <DefaultLayout accountIsActive className="h-full w-full">
           <WalletsSettlement />
         </DefaultLayout>
       </div>
