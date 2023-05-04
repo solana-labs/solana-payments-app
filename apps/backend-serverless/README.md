@@ -5,7 +5,7 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 ## Steps to Run
 
 1. from solana-payments-app/ run 'yarn'
-2. from solana-payments-app/apps/serverless-backed run 'npx prisma generate'
+2. from solana-payments-app/apps/serverless-backend run 'npx prisma generate'
 3. duplicate the .sample.env file and rename the new file to .env
 4. populate the .env with your values
 5. from solana-payments-app/apps/serverless-backed from 'serverless deploy'
