@@ -20,7 +20,6 @@ export const QRCode: FC = () => {
 
   const payingToken = useSelector(getPayingToken);
 
-  // TODO: CHANGE TO REAL VALUES
   const url = "https://twitter.com/tj_littlejohn";
   const options = useMemo(
     () => createQROptions(url, size, "transparent", "black"),
