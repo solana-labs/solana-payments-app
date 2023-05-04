@@ -35,10 +35,12 @@ export const screenAddress = async (address: string) => {
     data: body,
   });
 
-  return validateTrmResponse(response.data);
+  return parseAndValidateTrmResponse(response.data);
 };
 
-export const validateTrmResponse = (response: any): TrmWalletScreenResponse => {
+export const parseAndValidateTrmResponse = (
+  response: any
+): TrmWalletScreenResponse => {
   let parsedResponse: any;
   try {
     parsedResponse = trmWalletScreenResponseSchema.cast(response);
