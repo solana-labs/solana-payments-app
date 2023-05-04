@@ -27,7 +27,6 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "aws-lambda": "^1.0.7",
     "typescript": "^5.0.4"
   },
   "packageManager": "yarn@1.22.17"
