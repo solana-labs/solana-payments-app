@@ -16,10 +16,6 @@ export const helius = async (
 ): Promise<APIGatewayProxyResult> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
 
-    console.log('helius ping')
-
-    console.log(event.body)
-
     try {
         heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(
             event.body
@@ -60,6 +56,8 @@ export const helius = async (
             if (paymentRecord == null) {
                 throw new Error('Payment record not found.')
             }
+
+            // At this point we found a transaction, we should move it to a paid state here to handle failures with shopify
 
             const merchantId = paymentRecord.merchantId
 
@@ -118,6 +116,6 @@ export const helius = async (
 
     return {
         statusCode: 200,
-        body: JSON.stringify(heliusEnhancedTransactions, null, 2),
+        body: JSON.stringify({}, null, 2),
     }
 }

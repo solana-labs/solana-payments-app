@@ -1,15 +1,10 @@
 import React, { useEffect } from "react";
-import { Wallet } from "./Wallet";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { AppDispatch } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
-import { getPaymentMethod } from "@/features/pay-tab/paySlice";
+import { useSelector } from "react-redux";
 import axios from "axios";
-import { send } from "process";
 import { web3 } from "@project-serum/anchor";
 import { getPaymentId } from "@/features/pay-tab/paySlice";
 import { buildPaymentTransactionRequestEndpoint } from "@/utility/endpoints.utility";
-// import { fetchTransaction } from "@/features/pay-tab/paySlice";
 
 const BuyButton = () => {
 
