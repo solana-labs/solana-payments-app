@@ -7,3 +7,8 @@ This is the transaction request server for the [Link] Solana Payments App. We de
 1. Future proof
 2. Seperation of logic
 3. Reusablility, for example this transaction request server could also be used for something like dialect smart messages.
+
+## Steps to Run
+
+1. from solana-payments-app/ run 'yarn'
+2. from solana-payments-app/apps/transaction-request-serverless from 'serverless deploy'

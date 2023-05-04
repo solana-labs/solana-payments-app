@@ -1,0 +1,44 @@
+{
+    "name": "transaction-request-serverless",
+    "version": "0.0.1",
+    "description": "",
+    "main": "handler.js",
+    "workspaces": {
+        "nohoist": [
+            "**"
+        ]
+    },
+    "type": "module",
+    "scripts": {
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix ."
+    },
+    "keywords": [],
+    "author": "@tj_littlejohn",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node": "18.15.3",
+        "aws-lambda": "^1.0.7",
+        "@project-serum/anchor": "^0.26.0",
+        "zod": "^3.21.4",
+        "axios": "^1.3.4",
+        "yup": "^0.32.11",
+        "transaction-builder": "../../packages/transaction-builder"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.101",
+        "@types/crypto-js": "4.1.1",
+        "@typescript-eslint/eslint-plugin": "^5.59.1",
+        "@typescript-eslint/parser": "^5.59.1",
+        "esbuild": "^0.17.18",
+        "eslint": "^8.39.0",
+        "eslint-plugin-require-extensions": "^0.1.3",
+        "serverless": "^3.21.0",
+        "serverless-esbuild": "^1.43.1",
+        "serverless-offline": "^9.1.6",
+        "serverless-plugin-common-excludes": "^4.0.0",
+        "serverless-plugin-include-dependencies": "^5.1.0",
+        "serverless-plugin-typescript": "2.1.4",
+        "typescript": "^4.7.4"
+    }
+}

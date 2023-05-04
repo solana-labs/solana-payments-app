@@ -1,0 +1,25 @@
+service: transaction-request-serverless
+frameworkVersion: '3'
+provider:
+  name: aws
+  runtime: nodejs18.x
+package:
+  excludeDevDependencies: false
+functions:
+  hello:
+    handler: src/handlers/hello.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  pay:
+    handler: src/handlers/pay.pay
+    events:
+      - httpApi:
+          path: /pay
+          method: get
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
