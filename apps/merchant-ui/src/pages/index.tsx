@@ -15,15 +15,11 @@ export default function Home() {
         />
       </Head>
       <div
-        className={twMerge(
-          "gap-x-28",
-          "grid",
-          "h-screen",
-          "p-9",
-          "w-screen",
-          "md:grid-cols-2"
-        )}
+        className={twMerge("grid", "h-screen", "w-screen", "md:grid-cols-2")}
       >
+        <div className="flex justify-center py-9 px-24 md:justify-end">
+          <Welcome className="pt-14" />
+        </div>
         <div
           className={twMerge(
             "h-full",
@@ -33,10 +29,7 @@ export default function Home() {
             "md:flex"
           )}
         >
-          <WelcomeHero className="h-full w-full max-w-xl" />
-        </div>
-        <div className="flex justify-center md:justify-start">
-          <Welcome className="pt-14" />
+          <WelcomeHero className="h-full w-full" />
         </div>
       </div>
     </>

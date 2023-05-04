@@ -14,10 +14,12 @@
     "tailwindcss": "^3.2.7"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.1.1",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-menubar": "^1.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.2",
     "@radix-ui/react-select": "^1.2.1",
+    "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.5",
     "date-fns": "^2.29.3",
     "immer": "^9.0.21",

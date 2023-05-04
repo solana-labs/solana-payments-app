@@ -18,14 +18,14 @@ export function DefaultLayoutNavigationExternalLink(props: Props) {
         className={twMerge(
           "gap-x-3",
           "gap-x-4",
+          "group",
           "grid-cols-[24px,1fr,max-content]",
           "grid",
           "items-center",
           "px-3",
           "py-2",
           "rounded-md",
-          "transition-colors",
-          "hover:bg-slate-50"
+          "transition-colors"
         )}
         href={props.href}
         target="_blank"
@@ -39,7 +39,9 @@ export function DefaultLayoutNavigationExternalLink(props: Props) {
             props.icon.props.className
           ),
         })}
-        <div className="transition-all">{props.text}</div>
+        <div className="transition-all group-hover:font-semibold">
+          {props.text}
+        </div>
         <OpenInNew className="fill-indigo-500 h-6 w-6" />
       </NavigationMenu.Link>
     </NavigationMenu.Item>

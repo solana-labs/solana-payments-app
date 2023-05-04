@@ -11,7 +11,7 @@ export default function Transactions() {
         <meta name="description" content="View your transactions" />
       </Head>
       <div className="h-screen w-screen">
-        <DefaultLayout className="h-full w-full">
+        <DefaultLayout accountIsActive className="h-full w-full">
           <TransactionsScreen />
         </DefaultLayout>
       </div>

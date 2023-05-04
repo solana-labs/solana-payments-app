@@ -1,9 +1,9 @@
 import Head from "next/head";
 
 import { DefaultLayout } from "@/components/DefaultLayout";
-import { MerchantInfo } from "@/components/MerchantInfo";
+import { Refunds } from "@/components/Refunds";
 
-export default function Merchant() {
+export default function RefundsPage() {
   return (
     <>
       <Head>
@@ -12,7 +12,7 @@ export default function Merchant() {
       </Head>
       <div className="h-screen w-screen">
         <DefaultLayout accountIsActive className="h-full w-full">
-          <MerchantInfo />
+          <Refunds />
         </DefaultLayout>
       </div>
     </>

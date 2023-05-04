@@ -4,15 +4,17 @@ import Link from "next/link";
 
 import { DefaultLayoutNavigationLink } from "./DefaultLayoutNavigationLink";
 import { DefaultLayoutNavigationExternalLink } from "./DefaultLayoutNavigationExternalLink";
-import { Help } from "./icons/Help";
 import { RefundCount } from "./RefundCount";
 import { Reply } from "./icons/Reply";
 import { Description } from "./icons/Description";
 import { SolanaPayMark } from "./SolanaPayMark";
 import { Store } from "./icons/Store";
-import { StoreStatusBadge, Status } from "./StoreStatusBadge";
+import { ReceiptLong } from "./icons/ReceiptLong";
+import { Flag } from "./icons/Flag";
+import { Support } from "./icons/Support";
 
 interface Props {
+  accountIsActive?: boolean;
   className?: string;
 }
 
@@ -58,21 +60,45 @@ export function DefaultLayoutNavigation(props: Props) {
         </NavigationMenu.Item>
         <div className="mt-16 pb-6 border-b border-slate-200">
           <div className="text-black font-semibold text-lg">[shopify id]</div>
-          <StoreStatusBadge className="mt-2.5" status={Status.Inactive} />
         </div>
-        <div className="mt-6">
-          <DefaultLayoutNavigationLink
-            href="/merchant"
-            icon={<Store />}
-            text="Merchant Info"
-          />
-          <DefaultLayoutNavigationLink
-            href="/refund"
-            icon={<Reply />}
-            text="Refund"
-            renderInRhs={<RefundCount />}
-          />
-        </div>
+        {props.accountIsActive ? (
+          <div className="mt-6">
+            <DefaultLayoutNavigationLink
+              href="/transactions"
+              icon={<ReceiptLong />}
+              text="Transactions"
+            />
+            <DefaultLayoutNavigationLink
+              href="/refunds"
+              icon={<Reply />}
+              text="Refunds"
+              renderInRhs={<RefundCount />}
+            />
+            <DefaultLayoutNavigationLink
+              href="/merchant"
+              icon={<Store />}
+              text="Merchant Info"
+            />
+            <DefaultLayoutNavigationLink
+              href="/support"
+              icon={<Support />}
+              text="Support"
+            />
+          </div>
+        ) : (
+          <div className="mt-6">
+            <DefaultLayoutNavigationLink
+              href="/getting-started"
+              icon={<Flag />}
+              text="Getting Started"
+            />
+            <DefaultLayoutNavigationLink
+              href="/support"
+              icon={<Support />}
+              text="Support"
+            />
+          </div>
+        )}
       </NavigationMenu.List>
       <NavigationMenu.List>
         <div className="pr-6">
@@ -80,11 +106,6 @@ export function DefaultLayoutNavigation(props: Props) {
             href="/docs"
             icon={<Description />}
             text="Documentation"
-          />
-          <DefaultLayoutNavigationExternalLink
-            href="/support"
-            icon={<Help />}
-            text="Support"
           />
         </div>
       </NavigationMenu.List>

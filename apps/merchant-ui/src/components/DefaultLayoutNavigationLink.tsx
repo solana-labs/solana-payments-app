@@ -23,13 +23,14 @@ export function DefaultLayoutNavigationLink(props: Props) {
           className={twMerge(
             "gap-x-4",
             "gap-x-3",
+            "group",
             "grid",
             "items-center",
             "px-3",
             "py-2",
             "rounded-md",
             "transition-colors",
-            "hover:bg-slate-50",
+            isSelected && "bg-slate-50",
             props.renderInRhs
               ? "grid-cols-[24px,1fr,max-content]"
               : "grid-cols-[24px,1fr]"
@@ -47,7 +48,11 @@ export function DefaultLayoutNavigationLink(props: Props) {
             ),
           })}
           <div
-            className={twMerge("transition-all", isSelected && "font-semibold")}
+            className={twMerge(
+              "transition-all",
+              "group-hover:font-semibold",
+              isSelected && "font-semibold"
+            )}
           >
             {props.text}
           </div>
