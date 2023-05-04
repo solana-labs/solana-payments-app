@@ -9,11 +9,6 @@ import { PrismaClient, PaymentRecord } from '@prisma/client'
 export const payment = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    // the first thing I want to do is parse the body of the request
-    // then i can take that info and determine if i need to
-    // 1. create a new PaymentRecord
-    // 2. reuse an existing PaymentRecord
-
     const prisma = new PrismaClient()
 
     if (event.body == null) {
@@ -21,10 +16,6 @@ export const payment = async (
     }
 
     const merchantShop = event.headers['shopify-shop-domain']
-
-    console.log('shop domaine')
-    console.log(merchantShop)
-    console.log(event.headers)
 
     let paymentInitiation: ShopifyPaymentInitiation
 

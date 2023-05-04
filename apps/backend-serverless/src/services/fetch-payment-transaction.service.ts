@@ -17,7 +17,7 @@ export const fetchPaymentTransaction = async (
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         gas,
-        '1',
+        '0.1',
         'size',
         'blockhash',
         'true'
