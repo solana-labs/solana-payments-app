@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 export const RedirectHandler = () => {
-    const paymentDetails = useSelector(getPaymentDetails);
-  
-    useEffect(() => {
-      if ( paymentDetails.redirectUrl != null ) {
-        window.location.href = paymentDetails.redirectUrl;
-      }
-    }, [paymentDetails]);
-  
-    return null;
-  };
+  const paymentDetails = useSelector(getPaymentDetails);
+
+  useEffect(() => {
+    if (paymentDetails.redirectUrl != null) {
+      window.location.href = paymentDetails.redirectUrl;
+    }
+  }, [paymentDetails]);
+
+  return null;
+};

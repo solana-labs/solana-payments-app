@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getPayerAccount } from "@/features/pay-tab/paySlice";
 
 const WalletButton = () => {
-
   const { publicKey, sendTransaction } = useWallet();
 
   const walletDisplayString = (pubkey: web3.PublicKey | null) => {

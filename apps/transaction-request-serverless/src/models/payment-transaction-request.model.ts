@@ -1,36 +1,36 @@
-import { object, string, InferType, boolean, number } from 'yup'
+import { object, string, InferType, boolean, number } from "yup";
 
 export const paymentTransactionRequestScheme = object().shape({
-    receiver: string().required(),
-    sendingToken: string().required(),
-    receivingToken: string().required(),
-    feePayer: string().required(),
-    receivingAmount: string().required(),
-    amountType: string().required(),
-    transactionType: string().required(),
-    createAta: boolean().required(),
-})
+  receiver: string().required(),
+  sendingToken: string().required(),
+  receivingToken: string().required(),
+  feePayer: string().required(),
+  receivingAmount: string().required(),
+  amountType: string().required(),
+  transactionType: string().required(),
+  createAta: boolean().required(),
+});
 
 export type PaymentTransactionRequest = InferType<
-    typeof paymentTransactionRequestScheme
->
+  typeof paymentTransactionRequestScheme
+>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentTransactionRequestParams: any
+  paymentTransactionRequestParams: any
 ): PaymentTransactionRequest => {
-    let parsedPaymentRequest: PaymentTransactionRequest
-    try {
-        parsedPaymentRequest = paymentTransactionRequestScheme.cast(
-            paymentTransactionRequestParams
-        ) as PaymentTransactionRequest
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error
-        } else {
-            throw new Error(
-                'Could not parse the payment status request. Unknown Reason.'
-            )
-        }
+  let parsedPaymentRequest: PaymentTransactionRequest;
+  try {
+    parsedPaymentRequest = paymentTransactionRequestScheme.cast(
+      paymentTransactionRequestParams
+    ) as PaymentTransactionRequest;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error(
+        "Could not parse the payment status request. Unknown Reason."
+      );
     }
-    return parsedPaymentRequest
-}
+  }
+  return parsedPaymentRequest;
+};
