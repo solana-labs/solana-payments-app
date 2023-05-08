@@ -44,4 +44,18 @@ model TransactionRecord {
   createdAt       String
   paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId Int?
+  refundRecord    RefundRecord?  @relation(fields: [refundRecordId], references: [id])
+  refundRecordId  Int?
+}
+
+model RefundRecord {
+  id                Int                 @id @default(autoincrement()) // Internal ID
+  status            String
+  amount            Float
+  currency          String
+  shopId            String // Given Id from Shopify
+  shopGid           String // Given Gid from Shopify
+  shopPaymentId     String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  test              Boolean
+  TransactionRecord TransactionRecord[]
 }
