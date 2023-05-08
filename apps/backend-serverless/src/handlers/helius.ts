@@ -1,223 +1,215 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-<<<<<<< HEAD
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import {
-  HeliusEnhancedTransaction,
-  HeliusEnhancedTransactionArray,
-  parseAndValidateHeliusEnchancedTransaction,
-} from "../models/helius-enhanced-transaction.model.js";
-import { requestErrorResponse } from "../utilities/request-response.utility.js";
+    HeliusEnhancedTransaction,
+    HeliusEnhancedTransactionArray,
+    parseAndValidateHeliusEnchancedTransaction,
+} from '../models/helius-enhanced-transaction.model.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import {
-  Merchant,
-  PrismaClient,
-  TransactionRecord,
-  TransactionType,
-} from "@prisma/client";
-import { payment } from "./payment.js";
-import { paymentSessionResolve } from "../services/payment-session-resolve.service.js";
-import { refundSessionResolve } from "../services/refund-session-resolve.service.js";
+    Merchant,
+    PrismaClient,
+    TransactionRecord,
+    TransactionType,
+} from '@prisma/client'
+import { payment } from './payment.js'
+import { paymentSessionResolve } from '../services/payment-session-resolve.service.js'
+import { refundSessionResolve } from '../services/refund-session-resolve.service.js'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 // TODO: MASSIVE TASK
 // This callback returns an array of transactions, if any of these dont work or throw, we need to make sure we
 // 1. dont immediatly return, let's parse as many as we can and log what/why didnt work
 // 2. set ourselves up to try again later
 export const helius = async (
-  event: APIGatewayProxyEvent
+    event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
-
-  try {
-    heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(
-      event.body
-    );
-  } catch (error) {
-    console.log(error);
-    return requestErrorResponse(error);
-  }
-
-  // this is good, we just have a parsed helius transaction, then we move on to figure out what it is. might want to break up the try/catch for that reason
-  // ugh its kind of a problem that we have the for loop inside try catch, lets get for loop on the top level
-
-  for (const transaction of heliusEnhancedTransactions) {
-    let transactionRecord: TransactionRecord | null;
-    let merchantId: number | null;
-    let merchant: Merchant | null;
-    let accessToken: string | null;
-    let shopGid: string | null;
-    let shop: string;
+    let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
 
     try {
-      const transactionSignature = transaction.signature;
-
-      transactionRecord = await prisma.transactionRecord.findFirst({
-        where: {
-          signature: transactionSignature,
-        },
-      });
-
-      if (transactionRecord == null) {
-        throw new Error("Transaction not found.");
-      }
+        heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(
+            event.body
+        )
     } catch (error) {
-      return requestErrorResponse(error);
+        console.log(error)
+        return requestErrorResponse(error)
     }
 
-    try {
-      switch (transactionRecord.type) {
-        case TransactionType.payment:
-          const paymentRecordId = transactionRecord.paymentRecordId;
+    // this is good, we just have a parsed helius transaction, then we move on to figure out what it is. might want to break up the try/catch for that reason
+    // ugh its kind of a problem that we have the for loop inside try catch, lets get for loop on the top level
 
-          if (paymentRecordId == null) {
-            throw new Error("Payment record not found on transaction record.");
-          }
+    for (const transaction of heliusEnhancedTransactions) {
+        let transactionRecord: TransactionRecord | null
+        let merchantId: number | null
+        let merchant: Merchant | null
+        let accessToken: string | null
+        let shopGid: string | null
+        let shop: string
 
-          const paymentRecord = await prisma.paymentRecord.findFirst({
-            where: {
-              id: paymentRecordId,
-            },
-          });
+        try {
+            const transactionSignature = transaction.signature
 
-          if (paymentRecord == null) {
-            throw new Error("Payment record not found.");
-          }
+            transactionRecord = await prisma.transactionRecord.findFirst({
+                where: {
+                    signature: transactionSignature,
+                },
+            })
 
-          merchantId = paymentRecord.merchantId;
+            if (transactionRecord == null) {
+                throw new Error('Transaction not found.')
+            }
+        } catch (error) {
+            return requestErrorResponse(error)
+        }
 
-          if (merchantId == null) {
-            throw new Error("Merchant ID not found on payment record.");
-          }
+        try {
+            switch (transactionRecord.type) {
+                case TransactionType.payment:
+                    const paymentRecordId = transactionRecord.paymentRecordId
 
-          merchant = await prisma.merchant.findFirst({
-            where: {
-              id: merchantId,
-            },
-          });
+                    if (paymentRecordId == null) {
+                        throw new Error(
+                            'Payment record not found on transaction record.'
+                        )
+                    }
 
-          if (merchant == null) {
-            throw new Error("Merchant not found with merchant id.");
-          }
+                    const paymentRecord = await prisma.paymentRecord.findFirst({
+                        where: {
+                            id: paymentRecordId,
+                        },
+                    })
 
-          accessToken = merchant.accessToken;
+                    if (paymentRecord == null) {
+                        throw new Error('Payment record not found.')
+                    }
 
-          if (accessToken == null) {
-            throw new Error("Access token not found on merchant.");
-          }
+                    merchantId = paymentRecord.merchantId
 
-          shopGid = paymentRecord.shopGid;
+                    if (merchantId == null) {
+                        throw new Error(
+                            'Merchant ID not found on payment record.'
+                        )
+                    }
 
-          if (shopGid == null) {
-            throw new Error("Shop gid not found on payment record.");
-          }
+                    merchant = await prisma.merchant.findFirst({
+                        where: {
+                            id: merchantId,
+                        },
+                    })
 
-          shop = merchant.shop;
+                    if (merchant == null) {
+                        throw new Error('Merchant not found with merchant id.')
+                    }
 
-          const resolvePaymentResponse = await paymentSessionResolve(
-            shopGid,
-            shop,
-            accessToken
-          );
+                    accessToken = merchant.accessToken
 
-          const redirectUrl =
-            resolvePaymentResponse.data.paymentSessionResolve.paymentSession
-              .nextAction.context.redirectUrl;
+                    if (accessToken == null) {
+                        throw new Error('Access token not found on merchant.')
+                    }
 
-          await prisma.paymentRecord.update({
-            where: {
-              id: paymentRecordId,
-            },
-            data: {
-              status: "paid",
-              redirectUrl: redirectUrl,
-            },
-          });
+                    shopGid = paymentRecord.shopGid
 
-        case TransactionType.refund:
-          const refundRecordId = transactionRecord.refundRecordId;
+                    if (shopGid == null) {
+                        throw new Error('Shop gid not found on payment record.')
+                    }
 
-          if (refundRecordId == null) {
-            throw new Error("Payment record not found on transaction record.");
-          }
+                    shop = merchant.shop
 
-          const refundRecord = await prisma.refundRecord.findFirst({
-            where: {
-              id: refundRecordId,
-            },
-          });
+                    const resolvePaymentResponse = await paymentSessionResolve(
+                        shopGid,
+                        shop,
+                        accessToken
+                    )
 
-          if (refundRecord == null) {
-            throw new Error("Refund record not found.");
-          }
+                    const redirectUrl =
+                        resolvePaymentResponse.data.paymentSessionResolve
+                            .paymentSession.nextAction.context.redirectUrl
 
-          merchantId = refundRecord.merchantId;
+                    await prisma.paymentRecord.update({
+                        where: {
+                            id: paymentRecordId,
+                        },
+                        data: {
+                            status: 'paid',
+                            redirectUrl: redirectUrl,
+                        },
+                    })
 
-          if (merchantId == null) {
-            throw new Error("Merchant ID not found on refund record.");
-          }
+                case TransactionType.refund:
+                    const refundRecordId = transactionRecord.refundRecordId
 
-          merchant = await prisma.merchant.findFirst({
-            where: {
-              id: merchantId,
-            },
-          });
+                    if (refundRecordId == null) {
+                        throw new Error(
+                            'Payment record not found on transaction record.'
+                        )
+                    }
 
-          if (merchant == null) {
-            throw new Error("Merchant not found with merchant id.");
-          }
+                    const refundRecord = await prisma.refundRecord.findFirst({
+                        where: {
+                            id: refundRecordId,
+                        },
+                    })
 
-          accessToken = merchant.accessToken;
+                    if (refundRecord == null) {
+                        throw new Error('Refund record not found.')
+                    }
 
-          if (accessToken == null) {
-            throw new Error("Access token not found on merchant.");
-          }
+                    merchantId = refundRecord.merchantId
 
-          shopGid = refundRecord.shopGid;
+                    if (merchantId == null) {
+                        throw new Error(
+                            'Merchant ID not found on refund record.'
+                        )
+                    }
 
-          if (shopGid == null) {
-            throw new Error("Shop gid not found on refund record.");
-          }
+                    merchant = await prisma.merchant.findFirst({
+                        where: {
+                            id: merchantId,
+                        },
+                    })
 
-          shop = merchant.shop;
+                    if (merchant == null) {
+                        throw new Error('Merchant not found with merchant id.')
+                    }
 
-          const resolveRefunndResponse = await refundSessionResolve(
-            shopGid,
-            shop,
-            accessToken
-          );
+                    accessToken = merchant.accessToken
 
-          // TODO: check values from resolveRefundResponse here
+                    if (accessToken == null) {
+                        throw new Error('Access token not found on merchant.')
+                    }
 
-          await prisma.paymentRecord.update({
-            where: {
-              id: refundRecordId,
-            },
-            data: {
-              status: "paid",
-            },
-          });
-      }
-    } catch (error) {
-      return requestErrorResponse(error);
+                    shopGid = refundRecord.shopGid
+
+                    if (shopGid == null) {
+                        throw new Error('Shop gid not found on refund record.')
+                    }
+
+                    shop = merchant.shop
+
+                    const resolveRefunndResponse = await refundSessionResolve(
+                        shopGid,
+                        shop,
+                        accessToken
+                    )
+
+                    // TODO: check values from resolveRefundResponse here
+
+                    await prisma.paymentRecord.update({
+                        where: {
+                            id: refundRecordId,
+                        },
+                        data: {
+                            status: 'paid',
+                        },
+                    })
+            }
+        } catch (error) {
+            return requestErrorResponse(error)
+        }
     }
-  }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({}, null, 2),
-=======
-
-export const helius = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: "Helius! Helius! Helius!",
-      },
-      null,
-      2
-    ),
->>>>>>> main
-  };
-};
+    return {
+        statusCode: 200,
+        body: JSON.stringify({}, null, 2),
+    }
+}

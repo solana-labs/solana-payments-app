@@ -2,20 +2,10 @@
   "name": "solana-payments-app",
   "version": "0.0.0",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "apps/backend-serverless",
-      "apps/payment-ui",
-<<<<<<< HEAD
-=======
-      "apps/merchant-ui",
->>>>>>> main
-      "packages/token-price"
-    ],
-    "nohoist": [
-      "**/backend-serverless/**"
-    ]
-  },
+  "workspaces": [
+    "apps/payment-ui",
+    "packages/token-price"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -31,15 +21,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-<<<<<<< HEAD
     "typescript": "^5.0.4"
   },
   "packageManager": "yarn@1.22.17"
 }
-=======
-    "aws-lambda": "^1.0.7",
-    "typescript": "^5.0.4"
-  },
-  "packageManager": "yarn@1.22.17"
-}
->>>>>>> main

@@ -27,7 +27,6 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 
 - Even though we are using turborepo, we must not hoist the dependecies for this app. They need to remain here for the Serverless Framework to package them
 - you will need to run 'npx prisma migrate dev' after you make a change to the database schema or if you're connecting to a new database for the first time
-<<<<<<< HEAD
 
 ## Fetures Completed & Upcoming
 
@@ -37,5 +36,3 @@ This is a list of supported features. Before merging into main, please test all 
 - [x] Canceling an open payment
 - [x] Rejecting an open refund
 - [ ] Refunding a completed payment
-=======
->>>>>>> main

@@ -1,10 +1,9 @@
-import axios from "axios";
-import { shopifyGraphQLEndpoint } from "../configs/endpoints.config.js";
-<<<<<<< HEAD
+import axios from 'axios'
+import { shopifyGraphQLEndpoint } from '../configs/endpoints.config.js'
 import {
-  ResolvePaymentResponse,
-  parseAndValidateResolvePaymentResponse,
-} from "../models/shopify-graphql-responses/resolve-payment-response.model.js";
+    ResolvePaymentResponse,
+    parseAndValidateResolvePaymentResponse,
+} from '../models/shopify-graphql-responses/resolve-payment-response.model.js'
 
 const paymentSessionResolveMutation = `mutation PaymentSessionResolve($id: ID!) {
     paymentSessionResolve(id: $id) {
@@ -23,13 +22,6 @@ const paymentSessionResolveMutation = `mutation PaymentSessionResolve($id: ID!) 
                 }
               }
             }
-=======
-
-const paymentSessionResolveMutation = `mutation paymentSessionResolve($id: ID!) {
-    paymentSessionResolve(id: $id) {
-        paymentSession {
-            id
->>>>>>> main
         }
         userErrors {
             field
@@ -37,62 +29,43 @@ const paymentSessionResolveMutation = `mutation paymentSessionResolve($id: ID!) 
         }
     }
 }
-`;
+`
 
 export const paymentSessionResolve = async (
-  id: string,
-  shop: string,
-  token: string
-<<<<<<< HEAD
+    id: string,
+    shop: string,
+    token: string
 ): Promise<ResolvePaymentResponse> => {
-  const headers = {
-    "content-type": "application/json",
-    "X-Shopify-Access-Token": token,
-  };
-  const graphqlQuery = {
-=======
-) => {
-  const headers = {
-    "content-type": "application/graphql",
-    "X-Shopify-Access-Token": token,
-  };
-  const graphqlQuery = {
-    operationName: "paymentSessionResolve",
->>>>>>> main
-    query: paymentSessionResolveMutation,
-    variables: {
-      id,
-    },
-  };
-  const response = await axios({
-    url: shopifyGraphQLEndpoint(shop),
-    method: "POST",
-    headers: headers,
-<<<<<<< HEAD
-    data: JSON.stringify(graphqlQuery),
-  });
+    const headers = {
+        'content-type': 'application/json',
+        'X-Shopify-Access-Token': token,
+    }
+    const graphqlQuery = {
+        query: paymentSessionResolveMutation,
+        variables: {
+            id,
+        },
+    }
+    const response = await axios({
+        url: shopifyGraphQLEndpoint(shop),
+        method: 'POST',
+        headers: headers,
+        data: JSON.stringify(graphqlQuery),
+    })
 
-  if (response.status != 200) {
-    throw new Error("Error resolving payment session.");
-  }
+    if (response.status != 200) {
+        throw new Error('Error resolving payment session.')
+    }
 
-  console.log("smuckkk");
+    let resolvePaymentResponse: ResolvePaymentResponse
 
-  console.log(response.data);
+    try {
+        resolvePaymentResponse = parseAndValidateResolvePaymentResponse(
+            response.data
+        )
+    } catch (error) {
+        throw error
+    }
 
-  let resolvePaymentResponse: ResolvePaymentResponse;
-
-  try {
-    resolvePaymentResponse = parseAndValidateResolvePaymentResponse(
-      response.data
-    );
-  } catch (error) {
-    throw error;
-  }
-
-  return resolvePaymentResponse;
-=======
-    data: graphqlQuery,
-  });
->>>>>>> main
-};
+    return resolvePaymentResponse
+}
