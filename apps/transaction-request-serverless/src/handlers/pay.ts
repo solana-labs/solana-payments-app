@@ -19,10 +19,6 @@ export const pay = async (
   const decodedBody = event.body ? decode(event.body) : "";
   const body = queryString.parse(decodedBody);
   const account = body["account"] as string | null;
-  // JSON.parse(event.body)
-
-  // const body = event.body ? JSON.parse(event.body) : {}
-  // const account = body['account']
 
   if (account == null) {
     return {
@@ -30,29 +26,6 @@ export const pay = async (
       body: JSON.stringify({ error: body }, null, 2),
     };
   }
-
-  // return {
-  //     statusCode: 500,
-  //     body: JSON.stringify(body, null, 2),
-  // }
-
-  // if (event.body == null) {
-  //     return {
-  //         statusCode: 500,
-  //         body: JSON.stringify({ error: 'nothing' }, null, 2),
-  //     }
-  // }
-
-  // try {
-  //     const account = JSON.parse(event.body)
-  // } catch (error) {
-  //     return {
-  //         statusCode: 500,
-  //         body: JSON.stringify(error, null, 2),
-  //     }
-  // }
-
-  console.log("yeee");
 
   try {
     paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(
