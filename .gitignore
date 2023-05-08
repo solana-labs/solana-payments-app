@@ -39,3 +39,4 @@ apps/backend/dist
 
 #packages-dist
 packages/transaction-builder/dist/*
+packages/token-price/dist/*
