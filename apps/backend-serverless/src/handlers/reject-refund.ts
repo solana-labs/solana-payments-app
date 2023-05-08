@@ -8,7 +8,7 @@ import {
     parseAndValidateRejectRefundRequest,
 } from '../models/reject-refund-request.model.js'
 import { refundSessionReject } from '../services/refund-session-reject.service.js'
-import { RejectRefundResponse } from '../models/reject-refund-response.model.js'
+import { RejectRefundResponse } from '../models/shopify-graphql-responses/reject-refund-response.model.js'
 
 export const rejectRefund = async (
     event: APIGatewayProxyEvent
