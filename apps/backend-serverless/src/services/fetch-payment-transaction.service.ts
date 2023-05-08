@@ -3,7 +3,7 @@ import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.u
 import {
     PaymentTransactionResponse,
     parseAndValidatePaymentTransactionResponse,
-} from '../models/payment-transaction-response.model.js'
+} from '../models/transaction-request-response.model.js'
 import { PaymentRecord } from '@prisma/client'
 
 export const fetchPaymentTransaction = async (

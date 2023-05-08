@@ -9,12 +9,12 @@ import {
     parseAndValidateRefundTransactionRequest,
 } from '../models/refund-transaction-request.model.js'
 import { web3 } from '@project-serum/anchor'
-import { PaymentTransactionResponse } from '../models/payment-transaction-response.model.js'
-import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js'
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
 import {
     encodeBufferToBase58,
     encodeTransaction,
 } from '../utilities/encode-transaction.utility.js'
+import { fetchRefundTransaction } from '../services/fetch-refund-transaction.service.js'
 
 export const refundTransaction = async (
     event: APIGatewayProxyEvent
@@ -23,7 +23,7 @@ export const refundTransaction = async (
 
     let refundRecord: RefundRecord
     let refundRequest: RefundTransactionRequest
-    let paymentTransaction: PaymentTransactionResponse
+    let refundTransaction: TransactionRequestResponse
     let transaction: web3.Transaction
 
     const decodedBody = event.body ? decode(event.body) : ''
@@ -54,8 +54,16 @@ export const refundTransaction = async (
         return requestErrorResponse(error)
     }
 
+    // this sould def be a service to fetch a refund transaction, but i would
+    // imagine under the hood we can reuse most of the logic
+    // from this moment on, what's happening?
+    // 1. we get the transaction from the TRS
+    // 2. we encode it into a transaction object
+    // 3. we sign it with the gas keypair and veryify the signature
+    // 4. we create a transaction record in the db, these could def be different services
+    // 5. we serialize the transaction and return it to the client
     try {
-        paymentTransaction = await fetchPaymentTransaction(
+        refundTransaction = await fetchRefundTransaction(
             refundRecord,
             account,
             gasKeypair.publicKey.toBase58()
@@ -65,7 +73,7 @@ export const refundTransaction = async (
     }
 
     try {
-        transaction = encodeTransaction(paymentTransaction.transaction)
+        transaction = encodeTransaction(refundTransaction.transaction)
     } catch (error) {
         return requestErrorResponse(error)
     }
@@ -85,7 +93,7 @@ export const refundTransaction = async (
         await prisma.transactionRecord.create({
             data: {
                 signature: signatureString,
-                type: 'payment',
+                type: 'refund',
                 refundRecordId: refundRecord.id,
                 createdAt: 'fake-date-go-here',
             },

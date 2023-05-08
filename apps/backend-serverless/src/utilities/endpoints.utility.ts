@@ -5,8 +5,30 @@ export const accessTokenEndpoint = (shop: string, authCode: string) => {
     return `https://${shop}/admin/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${authCode}`
 }
 
-// url to request access token as described here: https://shopify.dev/apps/auth/oauth/getting-started#step-5-get-an-access-token
 export const buildPaymentTransactionRequestEndpoint = (
+    receiver: string,
+    sender: string,
+    receivingToken: string,
+    sendingToken: string,
+    feePayer: string,
+    receivingAmount: string,
+    amountType: string,
+    transactionType: string,
+    createAta: string
+) => {
+    const TRANSACTION_REQUEST_SERVER_URL =
+        process.env.TRANSACTION_REQUEST_SERVER_URL
+
+    if (TRANSACTION_REQUEST_SERVER_URL == null) {
+        throw new Error(
+            'Missing TRANSACTION_REQUEST_SERVER_URL environment variable.'
+        )
+    }
+
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}`
+}
+
+export const buildRefundTransactionRequestEndpoint = (
     receiver: string,
     sender: string,
     receivingToken: string,
