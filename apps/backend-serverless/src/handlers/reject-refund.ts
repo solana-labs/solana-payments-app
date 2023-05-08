@@ -98,13 +98,6 @@ export const rejectRefund = async (
     // TODO: Define what the response should be
     return {
         statusCode: 200,
-        body: JSON.stringify(
-            {
-                weGoing: 'up',
-                wen: 'foeva',
-            },
-            null,
-            2
-        ),
+        body: JSON.stringify(rejectRefundResponse, null, 2),
     }
 }

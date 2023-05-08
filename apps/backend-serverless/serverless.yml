@@ -67,6 +67,12 @@ functions:
       - httpApi:
           path: /refund-transaction
           method: post
+  reject-refund:
+    handler: src/handlers/reject-refund.rejectRefund
+    events:
+      - httpApi:
+          path: /reject-refund
+          method: post
   payment-metadata:
     handler: src/handlers/payment-transaction.paymentMetadata
     events:
