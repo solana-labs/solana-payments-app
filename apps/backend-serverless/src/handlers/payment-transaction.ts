@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PaymentRecord, PrismaClient } from '@prisma/client'
+import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client'
 import { requestErrorResponse } from '../utilities/request-response.utility.js'
-import { PaymentTransactionResponse } from '../models/transaction-request-response.model.js'
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
 import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js'
 import {
     PaymentTransactionRequest,
@@ -21,7 +21,7 @@ export const paymentTransaction = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     let paymentRecord: PaymentRecord
-    let paymentTransaction: PaymentTransactionResponse
+    let paymentTransaction: TransactionRequestResponse
     let paymentRequest: PaymentTransactionRequest
     let transaction: web3.Transaction
 
@@ -84,7 +84,7 @@ export const paymentTransaction = async (
         await prisma.transactionRecord.create({
             data: {
                 signature: signatureString,
-                type: 'payment',
+                type: TransactionType.payment,
                 paymentRecordId: paymentRecord.id,
                 createdAt: 'fake-date-go-here',
             },

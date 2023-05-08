@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js'
 import {
-    PaymentTransactionResponse,
-    parseAndValidatePaymentTransactionResponse,
+    TransactionRequestResponse,
+    parseAndValidateTransactionRequestResponse,
 } from '../models/transaction-request-response.model.js'
 import { PaymentRecord } from '@prisma/client'
 
@@ -10,7 +10,7 @@ export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
     account: string,
     gas: string
-): Promise<PaymentTransactionResponse> => {
+): Promise<TransactionRequestResponse> => {
     const endpoint = buildPaymentTransactionRequestEndpoint(
         'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
         account,
@@ -26,8 +26,6 @@ export const fetchPaymentTransaction = async (
         'Content-Type': 'application/x-www-form-urlencoded',
     }
 
-    console.log(endpoint)
-
     const response = await axios.post(
         endpoint,
         { account: account },
@@ -38,10 +36,10 @@ export const fetchPaymentTransaction = async (
         throw new Error('Error fetching payment transaction.')
     }
 
-    let paymentTransactionResponse: PaymentTransactionResponse
+    let paymentTransactionResponse: TransactionRequestResponse
 
     try {
-        paymentTransactionResponse = parseAndValidatePaymentTransactionResponse(
+        paymentTransactionResponse = parseAndValidateTransactionRequestResponse(
             response.data
         )
     } catch (error) {

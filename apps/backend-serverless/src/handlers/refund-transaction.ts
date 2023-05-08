@@ -1,5 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PaymentRecord, PrismaClient, RefundRecord } from '@prisma/client'
+import {
+    PaymentRecord,
+    PrismaClient,
+    RefundRecord,
+    TransactionType,
+} from '@prisma/client'
 import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
 import queryString from 'query-string'
 import { decode } from '../utilities/string.utility.js'
@@ -93,7 +98,7 @@ export const refundTransaction = async (
         await prisma.transactionRecord.create({
             data: {
                 signature: signatureString,
-                type: 'refund',
+                type: TransactionType.refund,
                 refundRecordId: refundRecord.id,
                 createdAt: 'fake-date-go-here',
             },
