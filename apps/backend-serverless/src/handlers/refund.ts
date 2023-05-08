@@ -14,7 +14,6 @@ import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
 } from '../models/process-refund.request.model.js'
-import { payment } from './payment.js'
 
 export const refund = async (
     event: APIGatewayProxyEvent
@@ -95,6 +94,7 @@ export const refund = async (
                 shopGid: refundInitiation.gid,
                 shopPaymentId: refundInitiation.payment_id,
                 test: refundInitiation.test,
+                merchantId: merchant.id,
             },
         })
     } catch (error) {
