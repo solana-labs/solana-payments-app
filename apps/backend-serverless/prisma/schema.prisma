@@ -18,6 +18,7 @@ model Merchant {
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
+  RefundRecord   RefundRecord[]
 }
 
 model PaymentRecord {
@@ -37,11 +38,33 @@ model PaymentRecord {
   redirectUrl     String?
 }
 
+enum TransactionType {
+  payment
+  refund
+}
+
 model TransactionRecord {
-  id              Int            @id @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   signature       String
-  type            String
+  type            TransactionType
   createdAt       String
-  paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+  paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId Int?
+  refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
+  refundRecordId  Int?
+}
+
+model RefundRecord {
+  id            Int      @id @default(autoincrement()) // Internal ID
+  status        String
+  amount        Float
+  currency      String
+  shopId        String // Given Id from Shopify
+  shopGid       String // Given Gid from Shopify
+  shopPaymentId String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  test          Boolean
+  merchant      Merchant @relation(fields: [merchantId], references: [id])
+  merchantId    Int
+
+  TransactionRecord TransactionRecord[]
 }

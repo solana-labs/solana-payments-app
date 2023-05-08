@@ -48,20 +48,18 @@ export const redirect = async (
         accessTokenResponse.access_token
     )
 
-    const redirectUrl = `https://www.apple.com/`
+    const redirectUrl = process.env.MERCHANT_UI_URL
+
+    if (redirectUrl == null) {
+        return requestErrorResponse('Merchant redirect location is not set')
+    }
 
     return {
-        statusCode: 200,
-        // headers: {
-        //     Location: redirectUrl,
-        //     'Content-Type': 'text/html',
-        // },
-        body: JSON.stringify(
-            {
-                message: configure,
-            },
-            null,
-            2
-        ),
+        statusCode: 301,
+        headers: {
+            Location: redirectUrl,
+            'Content-Type': 'text/html',
+        },
+        body: JSON.stringify({}, null, 2),
     }
 }

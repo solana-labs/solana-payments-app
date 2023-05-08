@@ -1,23 +1,23 @@
 import axios from 'axios'
-import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js'
+import { buildRefundTransactionRequestEndpoint } from '../utilities/endpoints.utility.js'
+import { RefundRecord } from '@prisma/client'
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
 } from '../models/transaction-request-response.model.js'
-import { PaymentRecord } from '@prisma/client'
 
-export const fetchPaymentTransaction = async (
-    paymentRecord: PaymentRecord,
+export const fetchRefundTransaction = async (
+    refundRecord: RefundRecord,
     account: string,
     gas: string
 ): Promise<TransactionRequestResponse> => {
-    const endpoint = buildPaymentTransactionRequestEndpoint(
-        'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
-        account,
+    const endpoint = buildRefundTransactionRequestEndpoint(
+        'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx', // this needs to be the customer
+        account, // this needs to be passed in from the request but the payment will be the merchant
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         gas,
-        '0.1',
+        '0.1', // will leave at 0.1 for now but this should be the size of the refund
         'size',
         'blockhash',
         'true'
@@ -33,13 +33,13 @@ export const fetchPaymentTransaction = async (
     )
 
     if (response.status != 200) {
-        throw new Error('Error fetching payment transaction.')
+        throw new Error('Error fetching refund transaction.')
     }
 
-    let paymentTransactionResponse: TransactionRequestResponse
+    let transactionRequestResponse: TransactionRequestResponse
 
     try {
-        paymentTransactionResponse = parseAndValidateTransactionRequestResponse(
+        transactionRequestResponse = parseAndValidateTransactionRequestResponse(
             response.data
         )
     } catch (error) {
@@ -52,5 +52,5 @@ export const fetchPaymentTransaction = async (
         }
     }
 
-    return paymentTransactionResponse
+    return transactionRequestResponse
 }

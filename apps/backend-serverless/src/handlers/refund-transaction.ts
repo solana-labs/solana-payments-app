@@ -1,28 +1,34 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client'
-import { requestErrorResponse } from '../utilities/request-response.utility.js'
-import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
-import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js'
 import {
-    PaymentTransactionRequest,
-    parseAndValidatePaymentTransactionRequest,
-} from '../models/payment-transaction-request.model.js'
-// import { decode, encodeBufferToBase58 } from '../utilities/string.utility.js'
-import { encodeBufferToBase58 } from '../utilities/encode-transaction.utility.js'
-import { decode } from '../utilities/string.utility.js'
-import queryString from 'query-string'
-import { encodeTransaction } from '../utilities/encode-transaction.utility.js'
-import { web3 } from '@project-serum/anchor'
+    PaymentRecord,
+    PrismaClient,
+    RefundRecord,
+    TransactionType,
+} from '@prisma/client'
 import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
-import { table } from 'console'
-const prisma = new PrismaClient()
+import queryString from 'query-string'
+import { decode } from '../utilities/string.utility.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
+import {
+    RefundTransactionRequest,
+    parseAndValidateRefundTransactionRequest,
+} from '../models/refund-transaction-request.model.js'
+import { web3 } from '@project-serum/anchor'
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
+import {
+    encodeBufferToBase58,
+    encodeTransaction,
+} from '../utilities/encode-transaction.utility.js'
+import { fetchRefundTransaction } from '../services/fetch-refund-transaction.service.js'
 
-export const paymentTransaction = async (
+export const refundTransaction = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    let paymentRecord: PaymentRecord
-    let paymentTransaction: TransactionRequestResponse
-    let paymentRequest: PaymentTransactionRequest
+    const prisma = new PrismaClient()
+
+    let refundRecord: RefundRecord
+    let refundRequest: RefundTransactionRequest
+    let refundTransaction: TransactionRequestResponse
     let transaction: web3.Transaction
 
     const decodedBody = event.body ? decode(event.body) : ''
@@ -34,7 +40,7 @@ export const paymentTransaction = async (
     }
 
     try {
-        paymentRequest = parseAndValidatePaymentTransactionRequest(
+        refundRequest = parseAndValidateRefundTransactionRequest(
             event.queryStringParameters
         )
     } catch (error) {
@@ -44,18 +50,26 @@ export const paymentTransaction = async (
     const gasKeypair = await fetchGasKeypair()
 
     try {
-        paymentRecord = await prisma.paymentRecord.findFirstOrThrow({
+        refundRecord = await prisma.refundRecord.findFirstOrThrow({
             where: {
-                id: paymentRequest.paymentId,
+                id: refundRequest.refundId,
             },
         })
     } catch (error) {
         return requestErrorResponse(error)
     }
 
+    // this sould def be a service to fetch a refund transaction, but i would
+    // imagine under the hood we can reuse most of the logic
+    // from this moment on, what's happening?
+    // 1. we get the transaction from the TRS
+    // 2. we encode it into a transaction object
+    // 3. we sign it with the gas keypair and veryify the signature
+    // 4. we create a transaction record in the db, these could def be different services
+    // 5. we serialize the transaction and return it to the client
     try {
-        paymentTransaction = await fetchPaymentTransaction(
-            paymentRecord,
+        refundTransaction = await fetchRefundTransaction(
+            refundRecord,
             account,
             gasKeypair.publicKey.toBase58()
         )
@@ -64,7 +78,7 @@ export const paymentTransaction = async (
     }
 
     try {
-        transaction = encodeTransaction(paymentTransaction.transaction)
+        transaction = encodeTransaction(refundTransaction.transaction)
     } catch (error) {
         return requestErrorResponse(error)
     }
@@ -84,8 +98,8 @@ export const paymentTransaction = async (
         await prisma.transactionRecord.create({
             data: {
                 signature: signatureString,
-                type: TransactionType.payment,
-                paymentRecordId: paymentRecord.id,
+                type: TransactionType.refund,
+                refundRecordId: refundRecord.id,
                 createdAt: 'fake-date-go-here',
             },
         })
@@ -104,23 +118,7 @@ export const paymentTransaction = async (
         body: JSON.stringify(
             {
                 transaction: transactionString,
-                message: 'gm',
-            },
-            null,
-            2
-        ),
-    }
-}
-
-export const paymentMetadata = async (
-    event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify(
-            {
-                label: 'Solana Payment App',
-                icon: 'https://solana.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FsolanaGradient.cc822962.png&w=3840&q=75',
+                message: 'gn',
             },
             null,
             2
