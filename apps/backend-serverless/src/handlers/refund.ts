@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+<<<<<<< HEAD
 import {
   PrismaClient,
   PaymentRecord,
@@ -14,10 +15,13 @@ import {
   ShopifyRefundInitiation,
   parseAndValidateShopifyRefundInitiation,
 } from "../models/process-refund.request.model.js";
+=======
+>>>>>>> main
 
 export const refund = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+<<<<<<< HEAD
   const prisma = new PrismaClient();
 
   if (event.body == null) {
@@ -108,6 +112,10 @@ export const refund = async (
   // We return 201 status code here per shopify's documentation: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
   return {
     statusCode: 201,
+=======
+  return {
+    statusCode: 200,
+>>>>>>> main
     body: JSON.stringify({}, null, 2),
   };
 };

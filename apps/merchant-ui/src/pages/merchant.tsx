@@ -11,7 +11,7 @@ export default function Merchant() {
         <meta name="description" content="Update merchant information" />
       </Head>
       <div className="h-screen w-screen">
-        <DefaultLayout className="h-full w-full">
+        <DefaultLayout accountIsActive className="h-full w-full">
           <MerchantInfo />
         </DefaultLayout>
       </div>

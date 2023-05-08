@@ -1,14 +1,18 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+<<<<<<< HEAD
 import {
   ShopifyPaymentInitiation,
   parseAndValidateShopifyPaymentInitiation,
 } from "../models/process-payment-request.model.js";
 import { requestErrorResponse } from "../utilities/request-response.utility.js";
 import { PrismaClient, PaymentRecord } from "@prisma/client";
+=======
+>>>>>>> main
 
 export const payment = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+<<<<<<< HEAD
   const prisma = new PrismaClient();
 
   if (event.body == null) {
@@ -63,6 +67,8 @@ export const payment = async (
     return requestErrorResponse(error);
   }
 
+=======
+>>>>>>> main
   const paymentUiUrl = process.env.PAYMENT_UI_URL;
 
   if (paymentUiUrl == null) {
@@ -82,7 +88,11 @@ export const payment = async (
     statusCode: 200,
     body: JSON.stringify(
       {
+<<<<<<< HEAD
         redirect_url: paymentUiUrl + "?paymentId=" + paymentRecord.id,
+=======
+        redirect_url: paymentUiUrl,
+>>>>>>> main
       },
       null,
       2

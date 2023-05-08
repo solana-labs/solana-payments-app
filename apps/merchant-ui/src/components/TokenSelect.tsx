@@ -9,6 +9,13 @@ export enum Token {
   USDC,
 }
 
+function getTokenIcon(token: Token): JSX.Element {
+  switch (token) {
+    default:
+      return <div className="h-6 w-6 rounded-full bg-gray-300" />;
+  }
+}
+
 function getTokenName(token: Token): string {
   switch (token) {
     case Token.Sol:
@@ -73,10 +80,10 @@ export function TokenSelect(props: Props) {
       >
         <Select.Value asChild>
           <div className="flex items-center">
-            <div className="font-medium text-black mr-2">
-              {getTokenSymbol(props.token)}
+            <div className="grid items-center pr-2.5 mr-2.5 border-r h-11 border-gray-300">
+              {getTokenIcon(props.token)}
             </div>
-            <div className="text-slate-600">{getTokenName(props.token)}</div>
+            <div className="text-slate-600">{getTokenSymbol(props.token)}</div>
           </div>
         </Select.Value>
         {!props.disabled && (
@@ -119,10 +126,12 @@ export function TokenSelect(props: Props) {
               >
                 <Select.ItemText asChild>
                   <div className="flex items-center">
-                    <div className="font-medium text-black mr-2">
+                    <div className="grid items-center pr-2.5 mr-2.5 border-r h-11 border-gray-300">
+                      {getTokenIcon(token)}
+                    </div>
+                    <div className="text-slate-600">
                       {getTokenSymbol(token)}
                     </div>
-                    <div className="text-slate-600">{getTokenName(token)}</div>
                   </div>
                 </Select.ItemText>
                 {token === props.token && (

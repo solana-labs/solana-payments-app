@@ -1,5 +1,6 @@
 import axios from "axios";
 import { shopifyGraphQLEndpoint } from "../configs/endpoints.config.js";
+<<<<<<< HEAD
 import {
   RejectRefundResponse,
   parseAndValidateRejectRefundResponse,
@@ -21,12 +22,26 @@ const refundSessionRejectMutation = `mutation RefundSessionReject($id: ID!, $rea
           field
           message
       }
+=======
+
+const refundSessionRejectMutation = `mutation refundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
+    refundSessionReject(id: $id, reason: $reason) {
+        paymentSession {
+            id
+        }
+        userErrors {
+            code
+            field
+            message
+        }
+>>>>>>> main
     }
 }
 `;
 
 export const refundSessionReject = async (
   id: string,
+<<<<<<< HEAD
   code: string,
   merchantMessage: string,
   shop: string,
@@ -37,20 +52,40 @@ export const refundSessionReject = async (
     "X-Shopify-Access-Token": token,
   };
   const graphqlQuery = {
+=======
+  reason: string,
+  shop: string,
+  token: string
+) => {
+  const headers = {
+    "content-type": "application/graphql",
+    "X-Shopify-Access-Token": token,
+  };
+  const graphqlQuery = {
+    operationName: "refundSessionReject",
+>>>>>>> main
     query: refundSessionRejectMutation,
     variables: {
       id,
       reason: {
+<<<<<<< HEAD
         code,
         merchantMessage,
       },
     },
   };
 
+=======
+        code: reason,
+      },
+    },
+  };
+>>>>>>> main
   const response = await axios({
     url: shopifyGraphQLEndpoint(shop),
     method: "POST",
     headers: headers,
+<<<<<<< HEAD
     data: JSON.stringify(graphqlQuery),
   });
 
@@ -67,4 +102,8 @@ export const refundSessionReject = async (
   }
 
   return rejectRefundResponse;
+=======
+    data: graphqlQuery,
+  });
+>>>>>>> main
 };

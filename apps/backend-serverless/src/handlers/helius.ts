@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+<<<<<<< HEAD
 import {
   HeliusEnhancedTransaction,
   HeliusEnhancedTransactionArray,
@@ -203,5 +204,20 @@ export const helius = async (
   return {
     statusCode: 200,
     body: JSON.stringify({}, null, 2),
+=======
+
+export const helius = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      {
+        message: "Helius! Helius! Helius!",
+      },
+      null,
+      2
+    ),
+>>>>>>> main
   };
 };

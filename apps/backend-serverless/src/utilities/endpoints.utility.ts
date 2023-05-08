@@ -4,6 +4,7 @@ export const accessTokenEndpoint = (shop: string, authCode: string) => {
   const clientSecret = process.env.SHOPIFY_SECRET_KEY;
   return `https://${shop}/admin/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${authCode}`;
 };
+<<<<<<< HEAD
 
 export const buildPaymentTransactionRequestEndpoint = (
   receiver: string,
@@ -50,3 +51,5 @@ export const buildRefundTransactionRequestEndpoint = (
 
   return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}`;
 };
+=======
+>>>>>>> main

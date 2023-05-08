@@ -26,8 +26,12 @@ export const QRCode: FC = () => {
 
   const payingToken = useSelector(getPayingToken);
 
+<<<<<<< HEAD
   const endpoint = buildPaymentTransactionRequestEndpoint(paymentId);
   const url = `solana:${endpoint}`;
+=======
+  const url = "https://twitter.com/tj_littlejohn";
+>>>>>>> main
   const options = useMemo(
     () => createQROptions(url, size, "transparent", "black"),
     [url, size]

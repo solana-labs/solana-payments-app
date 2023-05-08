@@ -6,6 +6,10 @@
     "packages": [
       "apps/backend-serverless",
       "apps/payment-ui",
+<<<<<<< HEAD
+=======
+      "apps/merchant-ui",
+>>>>>>> main
       "packages/token-price"
     ],
     "nohoist": [
@@ -27,7 +31,15 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
+<<<<<<< HEAD
     "typescript": "^5.0.4"
   },
   "packageManager": "yarn@1.22.17"
 }
+=======
+    "aws-lambda": "^1.0.7",
+    "typescript": "^5.0.4"
+  },
+  "packageManager": "yarn@1.22.17"
+}
+>>>>>>> main

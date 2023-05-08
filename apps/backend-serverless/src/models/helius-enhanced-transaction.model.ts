@@ -77,11 +77,17 @@ export const heliusInstructionSchema = object().shape({
   innerInstructions: array().of(heliusInnerInstructionSchema).required(),
 });
 
+<<<<<<< HEAD
 export const heliusTransactionErrorSchema = object()
   .shape({
     error: string().required(),
   })
   .nullable();
+=======
+export const heliusTransactionErrorSchema = object().shape({
+  error: string().required(),
+});
+>>>>>>> main
 
 export const heliusTokenBalanceChangeSchema = object().shape({
   userAccount: string().required(),
@@ -126,6 +132,7 @@ export const heliusEnhancedTransactionModelSchema = object().shape({
   nativeTransfers: array().of(heliusNativeTransferSchema).required(),
   tokenTransfers: array().of(heliusTokenTransferSchema).required(),
   accountData: array().of(heliusAccountTransferSchema).required(),
+<<<<<<< HEAD
   transactionError: heliusTransactionErrorSchema.optional(),
   instructions: array().of(heliusInstructionSchema).required(),
 });
@@ -162,3 +169,12 @@ export const parseAndValidateHeliusEnchancedTransaction = (
   }
   return parsedHeliusEnhancedTransactions;
 };
+=======
+  transactionError: heliusTransactionErrorSchema.required(),
+  instructions: array().of(heliusInstructionSchema).required(),
+});
+
+export type HeliusEnhancedTransaction = InferType<
+  typeof heliusEnhancedTransactionModelSchema
+>;
+>>>>>>> main

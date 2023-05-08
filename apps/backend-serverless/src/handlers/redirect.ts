@@ -48,6 +48,7 @@ export const redirect = async (
     accessTokenResponse.access_token
   );
 
+<<<<<<< HEAD
   const redirectUrl = process.env.MERCHANT_UI_URL;
 
   if (redirectUrl == null) {
@@ -61,5 +62,22 @@ export const redirect = async (
       "Content-Type": "text/html",
     },
     body: JSON.stringify({}, null, 2),
+=======
+  const redirectUrl = `https://www.apple.com/`;
+
+  return {
+    statusCode: 200,
+    // headers: {
+    //     Location: redirectUrl,
+    //     'Content-Type': 'text/html',
+    // },
+    body: JSON.stringify(
+      {
+        message: configure,
+      },
+      null,
+      2
+    ),
+>>>>>>> main
   };
 };

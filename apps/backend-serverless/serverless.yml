@@ -19,7 +19,7 @@ package:
   patterns:
     - 'node_modules/.prisma/**'
 functions:
-  api:
+  hello:
     handler: src/handlers/hello.hello
     events:
       - httpApi:
@@ -49,6 +49,12 @@ functions:
       - httpApi:
           path: /refund
           method: post
+  screenWallet:
+    handler: src/handlers/screenWallet.screenWallet
+    events:
+      - httpApi:
+          path: /screenWallet
+          method: get
   helius:
     handler: src/handlers/helius.helius
     events:

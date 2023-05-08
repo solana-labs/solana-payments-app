@@ -5,3 +5,7 @@ jspm_packages
 # Serverless directories
 .serverless
 .build
+<<<<<<< HEAD
+=======
+**/**.lock
+>>>>>>> main

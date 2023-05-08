@@ -4,9 +4,12 @@ import { CheckmarkCircle } from "./icons/CheckmarkCircle";
 import * as Button from "./Button";
 
 interface Props {
+  additionalText?: string;
   className?: string;
   completed?: boolean;
+  img: string;
   title: string;
+  renderTrigger: (props: Omit<Props, "renderTrigger">) => JSX.Element;
   onStart?(): void;
 }
 
@@ -14,26 +17,51 @@ export function FinishAccountSetupPromptListItem(props: Props) {
   return (
     <div
       className={twMerge(
-        "gap-x-3",
+        "gap-x-5",
         "grid",
-        props.completed
-          ? "grid-cols-[max-content,1fr]"
-          : "grid-cols-[1fr,max-content]",
+        "grid-cols-[max-content,1fr,max-content]",
+        "items-center",
         props.className
       )}
     >
-      {props.completed && (
-        <CheckmarkCircle className="fill-green-600 h-5 mt-1 w-5" />
-      )}
-      <div>
-        <div className="text-black">{props.title}</div>
-        <div className="text-sm text-neutral-600">
-          {props.completed ? "Approved" : "Required"}
-        </div>
+      <img
+        src={props.img}
+        className="bg-slate-200 h-10 overflow-hidden w-10 rounded-full"
+      />
+      <div className="text-black">{props.title}</div>
+      <div className="flex items-center space-x-6">
+        {props.completed ? (
+          <div />
+        ) : (
+          <div className="font-semibold text-black text-sm">
+            Required{props.additionalText && ` ${props.additionalText}`}
+          </div>
+        )}
+        {props.completed ? (
+          <div
+            className={twMerge(
+              "fill-emerald-700",
+              "flex",
+              "font-semibold",
+              "items-center",
+              "space-x-2.5",
+              "text-emerald-700",
+              "text-sm"
+            )}
+          >
+            <div>Complete</div>
+            <CheckmarkCircle className="h-5 w-5" />
+          </div>
+        ) : (
+          props.renderTrigger(props)
+        )}
       </div>
-      {!props.completed && (
-        <Button.Primary onClick={props.onStart}>Start</Button.Primary>
-      )}
     </div>
   );
 }
+
+FinishAccountSetupPromptListItem.defaultProps = {
+  renderTrigger: (props: Omit<Props, "renderTrigger">) => (
+    <Button.Primary onClick={props.onStart}>Start</Button.Primary>
+  ),
+};
