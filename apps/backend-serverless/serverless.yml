@@ -65,7 +65,7 @@ functions:
     handler: src/handlers/refund-transaction.refundTransaction
     events:
       - httpApi:
-          path: /payment-transaction
+          path: /refund-transaction
           method: post
   payment-metadata:
     handler: src/handlers/payment-transaction.paymentMetadata
