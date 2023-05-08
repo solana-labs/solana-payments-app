@@ -12,9 +12,59 @@ datasource db {
 }
 
 model Merchant {
-  id          Int     @id @default(autoincrement())
-  shop        String  @unique
-  accessToken String?
-  scopes      String?
-  lastNonce   String
+  id             Int             @id @default(autoincrement())
+  shop           String          @unique
+  accessToken    String?
+  scopes         String?
+  lastNonce      String
+  paymentRecords PaymentRecord[]
+  RefundRecord   RefundRecord[]
+}
+
+model PaymentRecord {
+  id              Int                 @id @default(autoincrement())
+  status          String
+  shopId          String
+  shopGid         String?
+  shopGroup       String
+  test            Boolean
+  amount          Float
+  currency        String
+  cancelURL       String
+  transactions    TransactionRecord[]
+  merchant        Merchant            @relation(fields: [merchantId], references: [id])
+  merchantId      Int
+  customerAddress String?
+  redirectUrl     String?
+}
+
+enum TransactionType {
+  payment
+  refund
+}
+
+model TransactionRecord {
+  id              Int             @id @default(autoincrement())
+  signature       String
+  type            TransactionType
+  createdAt       String
+  paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
+  paymentRecordId Int?
+  refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
+  refundRecordId  Int?
+}
+
+model RefundRecord {
+  id            Int      @id @default(autoincrement()) // Internal ID
+  status        String
+  amount        Float
+  currency      String
+  shopId        String // Given Id from Shopify
+  shopGid       String // Given Gid from Shopify
+  shopPaymentId String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  test          Boolean
+  merchant      Merchant @relation(fields: [merchantId], references: [id])
+  merchantId    Int
+
+  TransactionRecord TransactionRecord[]
 }

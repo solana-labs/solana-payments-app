@@ -4,10 +4,14 @@ import { shopifyGraphQLEndpoint } from "../configs/endpoints.config.js";
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
         paymentsAppConfigure(externalHandle: $externalHandle, ready: $ready) {
-            userErrors{
-                field
-                message
-            }
+          paymentsAppConfiguration {
+            externalHandle
+            ready
+          }
+          userErrors{
+              field
+              message
+          }
         }
     }
 `;

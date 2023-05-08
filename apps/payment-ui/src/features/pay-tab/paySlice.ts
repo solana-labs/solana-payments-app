@@ -1,17 +1,24 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RootState } from "../../store";
 
 export type PaymentMethod = "qr-code" | "connect-wallet";
 
 interface PayState {
   paymentMethod: PaymentMethod;
+  paymentId: string | null;
+  payerAccount: string | null;
   paymentDetails: PaymentDetails | null;
   payingToken: PayingToken;
 }
 
 interface PaymentDetails {
   merchantDisplayName: string;
-  totalAmountUSD: number;
+  totalAmountUSDCDisplay: string;
+  totalAmountFiatDisplay: string;
+  cancelUrl: string | null;
+  completed: boolean;
+  redirectUrl: string | null;
 }
 
 export enum PayingToken {
@@ -20,12 +27,20 @@ export enum PayingToken {
   SOL = "SOL",
 }
 
+const initialPaymentDetails: PaymentDetails = {
+  merchantDisplayName: "Loading...",
+  totalAmountUSDCDisplay: "Loading...",
+  totalAmountFiatDisplay: "Loading...",
+  cancelUrl: null,
+  completed: false,
+  redirectUrl: null,
+};
+
 const initalState: PayState = {
   paymentMethod: "connect-wallet",
-  paymentDetails: {
-    merchantDisplayName: "Starbucks",
-    totalAmountUSD: 2500,
-  },
+  paymentId: null,
+  payerAccount: null,
+  paymentDetails: initialPaymentDetails,
   payingToken: PayingToken.USDC,
 };
 
@@ -39,16 +54,35 @@ export const fetchPayingTokenConversion = createAsyncThunk<void, void>(
   async () => {}
 );
 
-export const timerTick = createAsyncThunk<void, void>(
+export const timerTick = createAsyncThunk<PaymentDetails, void>(
   "pay/timerTick",
-  async () => {
-    console.log("I DID A TIMER TICK");
+  async (_, { getState }): Promise<PaymentDetails> => {
+    const state = getState() as RootState;
+    const paymentId = state.pay.paymentId;
+    if (paymentId != null) {
+      const response = await axios.get(
+        `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
+      );
+      console.log(response.data);
+      return {
+        merchantDisplayName: response.data.merchantDisplayName,
+        totalAmountUSDCDisplay: response.data.totalAmountUSDCDisplay,
+        totalAmountFiatDisplay: response.data.totalAmountFiatDisplay,
+        cancelUrl: response.data.cancelUrl,
+        completed: response.data.completed,
+        redirectUrl: response.data.redirectUrl,
+      };
+    } else {
+      return {
+        merchantDisplayName: "Failed...",
+        totalAmountUSDCDisplay: "Failed...",
+        totalAmountFiatDisplay: "Failed...",
+        cancelUrl: null,
+        completed: false,
+        redirectUrl: null,
+      };
+    }
   }
-);
-
-export const fetchTransaction = createAsyncThunk<void, void>(
-  "pay/fetchTransaction",
-  async () => {}
 );
 
 const paySlice = createSlice({
@@ -60,6 +94,12 @@ const paySlice = createSlice({
     },
     setPayingToken: (state, action: PayloadAction<PayingToken>) => {
       state.payingToken = action.payload;
+    },
+    setPaymentId: (state, action: PayloadAction<string>) => {
+      state.paymentId = action.payload;
+    },
+    setPayerAccount: (state, action: PayloadAction<string>) => {
+      state.payerAccount = action.payload;
     },
   },
   extraReducers(builder) {
@@ -79,13 +119,18 @@ const paySlice = createSlice({
       .addCase(timerTick.rejected, (state: PayState) => {
         // Handle timerTick.rejected if needed
       })
-      .addCase(timerTick.fulfilled, (state: PayState) => {
-        // Handle timerTick.fulfilled if needed
-      });
+      .addCase(
+        timerTick.fulfilled,
+        (state: PayState, action: PayloadAction<PaymentDetails>) => {
+          state.paymentDetails = action.payload;
+          // Handle timerTick.fulfilled if needed
+        }
+      );
   },
 });
 
-export const { setPaymentMethod, setPayingToken } = paySlice.actions;
+export const { setPaymentMethod, setPayingToken, setPaymentId } =
+  paySlice.actions;
 
 export default paySlice.reducer;
 
@@ -95,8 +140,12 @@ export const getPaymentMethod = (state: any): PaymentMethod =>
 export const getPayingToken = (state: any): PayingToken =>
   state.pay.payingToken;
 
+export const getPaymentId = (state: any): PayingToken => state.pay.paymentId;
+
+export const getRedirectUrl = (state: any): string | null =>
+  state.pay.redirectUrl;
+
+export const getPayerAccount = (state: any): string => state.pay.payerAccount;
+
 export const getPaymentDetails = (state: any): PaymentDetails =>
-  state.pay.paymentDetails ?? {
-    merchantDisplayName: "DEFAULT NAME",
-    totalAmountUSD: 0,
-  };
+  state.pay.paymentDetails ?? initialPaymentDetails;

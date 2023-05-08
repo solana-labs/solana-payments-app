@@ -12,6 +12,7 @@ import {
 } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import WalletButton from "./WalletButton";
+import BuyButton from "./BuyButton";
 
 // Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css");
@@ -56,6 +57,9 @@ export const Wallet: FC = () => {
             </div>
             <div className="py-2">
               <WalletButton />
+            </div>
+            <div className="py-2">
+              <BuyButton />
             </div>
           </div>
         </WalletModalProvider>

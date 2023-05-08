@@ -194,36 +194,6 @@ sequenceDiagram
     Backend->Database: UPDATE RefundRecord
 ```
 
-# <<<<<<< HEAD
-
-### Refund Flow
-
-```mermaid
-sequenceDiagram
-    title Refund Flow: Phase Three
-    autonumber
-    participant Helius
-    participant Solana as Solana Blockchain
-    participant Wallet as Merchant's Wallet
-    participant Portal as Merchant's UI
-    actor Merchant
-    participant Shop as Shopify Backend
-    participant Backend as Payment App Backend
-    participant Database as Payment App Database
-    participant S3
-    participant TRS as Transaction Request Server
-    Portal->>Wallet: signTransaction
-    Wallet-->>Portal: signed transaction
-    Portal->>Solana: sendRawTransaction
-    Helius->>Backend: /helius
-    Backend->Database: SELECT RefundRecord
-    Backend->Database: UPDATE RefundRecord
-    Backend->Database: SELECT ShopifyAccess
-    Backend->>Shop: mut resolveRefundSession
-    Shop-->>Backend: 200 Ok
-    Backend->Database: UPDATE RefundRecord
-```
-
 ### Auth Flow
 
 ```mermaid

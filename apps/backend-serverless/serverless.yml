@@ -11,6 +11,9 @@ provider:
     MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
+    TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
+  httpApi:
+    cors: true
 package:
   excludeDevDependencies: false
   patterns:
@@ -57,6 +60,36 @@ functions:
     events:
       - httpApi:
           path: /helius
+          method: post
+  payment-transaction:
+    handler: src/handlers/payment-transaction.paymentTransaction
+    events:
+      - httpApi:
+          path: /payment-transaction
+          method: post
+  refund-transaction:
+    handler: src/handlers/refund-transaction.refundTransaction
+    events:
+      - httpApi:
+          path: /refund-transaction
+          method: post
+  reject-refund:
+    handler: src/handlers/reject-refund.rejectRefund
+    events:
+      - httpApi:
+          path: /reject-refund
+          method: post
+  payment-metadata:
+    handler: src/handlers/payment-transaction.paymentMetadata
+    events:
+      - httpApi:
+          path: /payment-transaction
+          method: get
+  payment-status:
+    handler: src/handlers/payment-status.paymentStatus
+    events:
+      - httpApi:
+          path: /payment-status
           method: get
 plugins:
   - serverless-plugin-typescript

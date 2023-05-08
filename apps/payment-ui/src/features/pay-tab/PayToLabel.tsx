@@ -43,10 +43,12 @@ export const PayToLabel = () => {
           {"Pay to " + paymentDetails.merchantDisplayName}
         </div>
         <div className="text-5xl text-black">
-          {convertToDollarString(paymentDetails.totalAmountUSD)}
+          {paymentDetails.totalAmountFiatDisplay}
         </div>
         <div className="flex flex-row w-full justify-between items-center">
-          <div className="text-black text-lg w-1/3">{payingToken}</div>
+          <div className="text-black text-lg w-1/3">
+            {paymentDetails.totalAmountUSDCDisplay}{" "}
+          </div>
           <div className="w-2/3">
             <PaymentTokenSelector />
           </div>
@@ -58,7 +60,7 @@ export const PayToLabel = () => {
       <div className="flex flex-row w-full justify-between">
         <div className="label-text">Cart</div>
         <div className="text-gray-500 w-16 flex justify-center rounded-md h-8 items-center">
-          {convertToDollarString(paymentDetails.totalAmountUSD)}
+          {paymentDetails.totalAmountFiatDisplay}
         </div>
       </div>
       <div className="flex flex-row w-full justify-between">

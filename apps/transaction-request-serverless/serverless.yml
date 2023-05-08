@@ -17,7 +17,11 @@ functions:
     events:
       - httpApi:
           path: /pay
+<<<<<<< HEAD
+          method: post
+=======
           method: get
+>>>>>>> main
 
 plugins:
   - serverless-plugin-typescript
