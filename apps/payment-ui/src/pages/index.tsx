@@ -19,6 +19,3 @@ export default function Home() {
     </>
   );
 }
-function getAuthStatus(state: unknown): unknown {
-  throw new Error("Function not implemented.");
-}
