@@ -5,16 +5,20 @@ import {
     parseAndValidateResolveRefundResponse,
 } from '../models/resolve-refund-response.model.js'
 
-const refundSessionResolveMutation = `mutation refundSessionResolve($id: ID!) {
+const refundSessionResolveMutation = `mutation RefundSessionResolve($id: ID!) {
     refundSessionResolve(id: $id) {
-        paymentSession {
-            id
-        }
-        userErrors {
+      refundSession {
+        id
+        state {
+          ... on RefundSessionStateResolved {
             code
-            field
-            message
+          }
         }
+      }
+      userErrors {
+          field
+          message
+      }
     }
 }
 `
@@ -25,11 +29,10 @@ export const refundSessionResolve = async (
     token: string
 ) => {
     const headers = {
-        'content-type': 'application/graphql',
+        'content-type': 'application/json',
         'X-Shopify-Access-Token': token,
     }
     const graphqlQuery = {
-        operationName: 'refundSessionResolve',
         query: refundSessionResolveMutation,
         variables: {
             id,
@@ -39,7 +42,7 @@ export const refundSessionResolve = async (
         url: shopifyGraphQLEndpoint(shop),
         method: 'POST',
         headers: headers,
-        data: graphqlQuery,
+        data: JSON.stringify(graphqlQuery),
     })
 
     if (response.status != 200) {
