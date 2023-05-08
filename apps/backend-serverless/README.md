@@ -12,14 +12,23 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 
 ## Where to Find Stuff
 
-- The endpoints are all defined in serverless.yml and the handlers are in serverless-backed/src/handlers/
-- The database schema can be found in serverless-backed/prisma/schema.prisma
+-   The endpoints are all defined in serverless.yml and the handlers are in serverless-backed/src/handlers/
+-   The database schema can be found in serverless-backed/prisma/schema.prisma
 
 ## Patterns to Use
 
-- For parsing responses and query parameters we use yup, you can find all of the models in serverless-backend/src/models/
+-   For parsing responses and query parameters we use yup, you can find all of the models in serverless-backend/src/models/
 
 ## Notes
 
-- Even though we are using turborepo, we must not hoist the dependecies for this app. They need to remain here for the Serverless Framework to package them
-- you will need to run 'npx prisma migrate dev' after you make a change to the database schema or if you're connecting to a new database for the first time
+-   Even though we are using turborepo, we must not hoist the dependecies for this app. They need to remain here for the Serverless Framework to package them
+-   you will need to run 'npx prisma migrate dev' after you make a change to the database schema or if you're connecting to a new database for the first time
+
+## Fetures Completed & Upcoming
+
+This is a list of supported features. Before merging into main, please test all selected items
+
+-   [ ] Paying for an order in Shopify
+-   [x] Canceling an open payment
+-   [x] Rejecting an open refund
+-   [ ] Refunding a completed payment
