@@ -1,5 +1,4 @@
 import { PrismaClient, Merchant } from '@prisma/client'
-import { up } from 'inquirer/lib/utils/readline.js'
 
 export type LastNonceUpdate = {
     lastNonce: string

@@ -14,8 +14,7 @@ import {
 import { payment } from './payment.js'
 import { paymentSessionResolve } from '../services/payment-session-resolve.service.js'
 import { refundSessionResolve } from '../services/refund-session-resolve.service.js'
-
-const prisma = new PrismaClient()
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 
 // TODO: MASSIVE TASK
 // This callback returns an array of transactions, if any of these dont work or throw, we need to make sure we
@@ -25,6 +24,8 @@ export const helius = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
+    const prisma = new PrismaClient()
+    const paymentRecordService = new PaymentRecordService(prisma)
 
     try {
         heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(
@@ -125,15 +126,10 @@ export const helius = async (
                         resolvePaymentResponse.data.paymentSessionResolve
                             .paymentSession.nextAction.context.redirectUrl
 
-                    await prisma.paymentRecord.update({
-                        where: {
-                            id: paymentRecordId,
-                        },
-                        data: {
-                            status: 'paid',
-                            redirectUrl: redirectUrl,
-                        },
-                    })
+                    await paymentRecordService.updatePaymentRecord(
+                        paymentRecord,
+                        { status: 'paid', redirectUrl: redirectUrl }
+                    )
 
                 case TransactionType.refund:
                     const refundRecordId = transactionRecord.refundRecordId
@@ -193,7 +189,7 @@ export const helius = async (
                     )
 
                     // TODO: check values from resolveRefundResponse here
-
+                    // TODO: refundRecordService update refundRecord.update
                     await prisma.paymentRecord.update({
                         where: {
                             id: refundRecordId,
