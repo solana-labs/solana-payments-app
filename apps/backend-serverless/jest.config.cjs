@@ -1,9 +1,9 @@
-const { defaults } = require('jest-config');
-
+// jest.config.cjs
 module.exports = {
-  ...defaults,
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+  roots: ["<rootDir>/__tests__"],
+  transform: {
+    "^.+\\.tsx?$": "ts-jest",
   },
-  testEnvironment: 'node',
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 };
