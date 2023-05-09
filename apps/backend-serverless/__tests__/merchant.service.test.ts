@@ -99,7 +99,7 @@ describe('Merchant Testing Suite', () => {
 
         const merchant = await merchantService.updateMerchant(
             mockMerchantBeforeUpdate,
-            'efgh-5678'
+            { lastNonce: 'efgh-5678' }
         )
 
         expect(merchant).toEqual(mockMerchantAfterUpdate)
@@ -133,10 +133,9 @@ describe('Merchant Testing Suite', () => {
         )
 
         await expect(
-            merchantService.updateMerchant(
-                mockMerchantThatDoesNotExist,
-                'efgh-5678'
-            )
+            merchantService.updateMerchant(mockMerchantThatDoesNotExist, {
+                lastNonce: 'efgh-5678',
+            })
         ).rejects.toThrow()
     })
 })

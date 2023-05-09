@@ -34,7 +34,9 @@ export const install = async (
         if (merchant == null) {
             await merchantService.createMerchant(shop, newNonce)
         } else {
-            await merchantService.updateMerchant(merchant, newNonce)
+            await merchantService.updateMerchant(merchant, {
+                lastNonce: newNonce,
+            })
         }
     } catch (error: unknown) {
         return requestErrorResponse(error)

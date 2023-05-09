@@ -1,4 +1,16 @@
 import { PrismaClient, Merchant } from '@prisma/client'
+import { up } from 'inquirer/lib/utils/readline.js'
+
+export type LastNonceUpdate = {
+    lastNonce: string
+}
+
+export type RedirectUpdate = {
+    accessToken: string
+    scopes: string
+}
+
+export type MerchantUpdate = LastNonceUpdate | RedirectUpdate
 
 export class MerchantService {
     private prisma: PrismaClient
@@ -38,16 +50,14 @@ export class MerchantService {
 
     async updateMerchant(
         merchant: Merchant,
-        lastNonce: string
+        update: MerchantUpdate
     ): Promise<Merchant> {
         try {
             return await this.prisma.merchant.update({
                 where: {
                     id: merchant.id,
                 },
-                data: {
-                    lastNonce: lastNonce,
-                },
+                data: update,
             })
         } catch {
             throw new Error('Failed to update merchant')
