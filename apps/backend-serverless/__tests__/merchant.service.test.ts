@@ -9,7 +9,7 @@ describe('Merchant Testing Suite', () => {
         merchantService = new MerchantService(prismaMock)
     })
 
-    it('find a merchant', async () => {
+    it('find a merchant with shop', async () => {
         const mockMerchant = {
             id: 1,
             shop: 'mock-merchant.myshopify.com',
@@ -23,6 +23,22 @@ describe('Merchant Testing Suite', () => {
         const merchant = await merchantService.getMerchant(
             'mock-merchant.myshopify.com'
         )
+
+        expect(merchant).toEqual(mockMerchant)
+    })
+
+    it('find a merchant with id', async () => {
+        const mockMerchant = {
+            id: 1,
+            shop: 'mock-merchant.myshopify.com',
+            lastNonce: 'abcd-1234',
+            accessToken: null,
+            scopes: null,
+        }
+
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant)
+
+        const merchant = await merchantService.getMerchant(1)
 
         expect(merchant).toEqual(mockMerchant)
     })
@@ -60,5 +76,67 @@ describe('Merchant Testing Suite', () => {
         )
 
         expect(merchant).not.toEqual(mockMerchant)
+    })
+
+    it('update a merchant', async () => {
+        const mockMerchantBeforeUpdate = {
+            id: 1,
+            shop: 'mock-merchant.myshopify.com',
+            lastNonce: 'abcd-1234',
+            accessToken: null,
+            scopes: null,
+        }
+
+        const mockMerchantAfterUpdate = {
+            id: 1,
+            shop: 'mock-merchant.myshopify.com',
+            lastNonce: 'efgh-5678',
+            accessToken: null,
+            scopes: null,
+        }
+
+        prismaMock.merchant.update.mockResolvedValue(mockMerchantAfterUpdate)
+
+        const merchant = await merchantService.updateMerchant(
+            mockMerchantBeforeUpdate,
+            'efgh-5678'
+        )
+
+        expect(merchant).toEqual(mockMerchantAfterUpdate)
+    })
+
+    it('update a merchant failing', async () => {
+        const mockMerchantBeforeUpdate = {
+            id: 1,
+            shop: 'mock-merchant.myshopify.com',
+            lastNonce: 'abcd-1234',
+            accessToken: null,
+            scopes: null,
+        }
+
+        const mockMerchantThatDoesNotExist = {
+            id: 2,
+            shop: 'mock-merchant-dne.myshopify.com',
+            lastNonce: 'wxyz-4321',
+            accessToken: null,
+            scopes: null,
+        }
+
+        prismaMock.merchant.create.mockResolvedValue(mockMerchantBeforeUpdate)
+        prismaMock.merchant.update.mockRejectedValue(
+            new Error('Failed to update merchant')
+        ) // Add this line
+
+        const merchant = await merchantService.createMerchant(
+            'mock-merchant.myshopify.com',
+            'abcd-1234'
+        )
+
+        await expect(
+            merchantService.updateMerchant(
+                mockMerchantThatDoesNotExist,
+                'efgh-5678'
+            )
+        ).rejects.toThrow()
     })
 })
