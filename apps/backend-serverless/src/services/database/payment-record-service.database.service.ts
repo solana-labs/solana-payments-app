@@ -13,7 +13,7 @@ export type StatusUpdate = {
 export type PaymentRecordUpdate = PaidUpdate | StatusUpdate
 
 export type ShopIdQuery = {
-    shopId: string
+    id: number
 }
 
 export type PaymentRecordQuery = ShopIdQuery

@@ -125,7 +125,7 @@ describe('Merchant Testing Suite', () => {
         prismaMock.merchant.create.mockResolvedValue(mockMerchantBeforeUpdate)
         prismaMock.merchant.update.mockRejectedValue(
             new Error('Failed to update merchant')
-        ) // Add this line
+        )
 
         const merchant = await merchantService.createMerchant(
             'mock-merchant.myshopify.com',

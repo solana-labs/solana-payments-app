@@ -28,35 +28,11 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord)
 
         const paymentRecord = await paymentRecordService.getPaymentRecord({
-            shopId: '1234',
+            id: 1,
         })
 
         expect(paymentRecord).toEqual(mockPaymentRecord)
     })
-
-    // it('create a payment record', async () => {
-    //     const mockPaymentRecord = {
-    //         status: 'pending',
-    //         id: 1,
-    //         shopId: '1234',
-    //         shopGid: 'abcd',
-    //         shopGroup: 'efgh',
-    //         test: true,
-    //         amount: 19.94,
-    //         currency: 'USD',
-    //         customerAddress: null,
-    //         merchantId: 1,
-    //         cancelURL: 'https://example.com',
-    //         redirectUrl: null,
-    //     }
-
-    //     prismaMock.paymentRecord.create.mockResolvedValue(mockPaymentRecord)
-
-    //     // does creating a payment record off payment initiation make sense?
-    //     // const paymentRecord = await paymentRecordService.createPaymentRecord()
-
-    //     // expect(paymentRecord).toEqual(mockPaymentRecord)
-    // })
 
     it('update a payment record', async () => {
         const mockPaymentRecordBeforeUpdate = {
@@ -95,7 +71,7 @@ describe('Payment Record Testing Suite', () => {
 
         const paymentRecordBeforeUpdate =
             await paymentRecordService.getPaymentRecord({
-                shopId: 'abcd',
+                id: 1,
             })
 
         if (paymentRecordBeforeUpdate === null) {

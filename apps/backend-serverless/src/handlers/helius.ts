@@ -38,7 +38,7 @@ export const helius = async (
 
     // this is good, we just have a parsed helius transaction, then we move on to figure out what it is. might want to break up the try/catch for that reason
     // ugh its kind of a problem that we have the for loop inside try catch, lets get for loop on the top level
-
+    console.log('HELIUS', heliusEnhancedTransactions.length)
     for (const transaction of heliusEnhancedTransactions) {
         let transactionRecord: TransactionRecord | null
         let merchantId: number | null
