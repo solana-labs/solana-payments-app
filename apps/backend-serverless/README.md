@@ -30,5 +30,5 @@ This is a list of supported features. Before merging into main, please test all 
 
 -   [x] Paying for an order in Shopify
 -   [ ] Canceling an open payment
--   [ ] Rejecting an open refund
--   [x] Refunding a completed payment
+-   [x] Rejecting an open refund
+-   [ ] Refunding a completed payment
