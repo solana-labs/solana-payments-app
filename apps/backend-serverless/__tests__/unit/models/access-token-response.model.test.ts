@@ -15,11 +15,23 @@ describe('Merchant Testing Suite', () => {
         }).not.toThrow()
     })
 
-    it('invalid access token response', () => {
+    it('invalid access token response, missing access_token key', () => {
         const scopeValue = 'read_products,write_products'
 
         const validAccessTokenResponseBody = {
             scope: scopeValue,
+        }
+
+        expect(() => {
+            parseAndValidateAccessTokenResponse(validAccessTokenResponseBody)
+        }).toThrow()
+    })
+
+    it('invalid access token response, missing scope key', () => {
+        const accessTokenValue = 'abcd-efgh'
+
+        const validAccessTokenResponseBody = {
+            access_token: accessTokenValue,
         }
 
         expect(() => {
