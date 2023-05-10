@@ -8,6 +8,7 @@ import { PaymentRecordService } from './database/payment-record-service.database
 import { MerchantService } from './database/merchant-service.database.service.js'
 import { paymentSessionResolve } from './payment-session-resolve.service.js'
 
+// I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
     transaction: HeliusEnhancedTransaction,
@@ -15,7 +16,8 @@ export const processDiscoveredPaymentTransaction = async (
 ) => {
     // we should probably do some validation here to make sure the transaction
     // actually matches the payment record that the transaction is associated with
-    // for now i will ignore that
+    // for now i will ignore that, mocked the function for now
+    validateDiscoveredPaymentTransaction(transactionRecord, transaction)
 
     const paymentRecordService = new PaymentRecordService(prisma)
     const merchantService = new MerchantService(prisma)
@@ -87,4 +89,12 @@ export const processDiscoveredPaymentTransaction = async (
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
     }
+}
+
+const validateDiscoveredPaymentTransaction = (
+    transactionRecord: TransactionRecord,
+    transaction: HeliusEnhancedTransaction
+) => {
+    transactionRecord
+    transaction
 }
