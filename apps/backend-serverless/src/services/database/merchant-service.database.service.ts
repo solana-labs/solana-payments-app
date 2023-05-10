@@ -1,5 +1,15 @@
 import { PrismaClient, Merchant } from '@prisma/client'
 
+export type ShopQuery = {
+    shop: string
+}
+
+export type IdQuery = {
+    id: number
+}
+
+export type MerchantQuery = ShopQuery | IdQuery
+
 export type LastNonceUpdate = {
     lastNonce: string
 }
@@ -18,24 +28,10 @@ export class MerchantService {
         this.prisma = prismaClient
     }
 
-    // function overloads to query the database by shop or id
-    async getMerchant(shop: string): Promise<Merchant | null>
-    async getMerchant(id: number): Promise<Merchant | null>
-    async getMerchant(query: string | number): Promise<Merchant | null> {
-        switch (typeof query) {
-            case 'string':
-                return await this.prisma.merchant.findUnique({
-                    where: {
-                        shop: query,
-                    },
-                })
-            case 'number':
-                return await this.prisma.merchant.findUnique({
-                    where: {
-                        id: query,
-                    },
-                })
-        }
+    async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
+        return await this.prisma.merchant.findUnique({
+            where: query,
+        })
     }
 
     async createMerchant(shop: string, lastNonce: string): Promise<Merchant> {

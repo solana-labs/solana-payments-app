@@ -33,7 +33,7 @@ export const redirect = async (
         return requestErrorResponse(error)
     }
 
-    const merchant = await merchantService.getMerchant(shop)
+    const merchant = await merchantService.getMerchant({ shop: shop })
 
     if (merchant == null) {
         return requestErrorResponse(new Error('Merchant not found'))

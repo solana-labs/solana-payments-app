@@ -20,9 +20,9 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant)
 
-        const merchant = await merchantService.getMerchant(
-            'mock-merchant.myshopify.com'
-        )
+        const merchant = await merchantService.getMerchant({
+            shop: 'mock-merchant.myshopify.com',
+        })
 
         expect(merchant).toEqual(mockMerchant)
     })
@@ -38,7 +38,7 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant)
 
-        const merchant = await merchantService.getMerchant(1)
+        const merchant = await merchantService.getMerchant({ id: 1 })
 
         expect(merchant).toEqual(mockMerchant)
     })
@@ -71,9 +71,9 @@ describe('Merchant Testing Suite', () => {
             scopes: null,
         }
 
-        const merchant = await merchantService.getMerchant(
-            'mock-merchant-create.myshopify.com'
-        )
+        const merchant = await merchantService.getMerchant({
+            shop: 'mock-merchant-create.myshopify.com',
+        })
 
         expect(merchant).not.toEqual(mockMerchant)
     })

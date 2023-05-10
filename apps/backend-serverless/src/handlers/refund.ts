@@ -59,9 +59,9 @@ export const refund = async (
             throw new Error('Payment record not found.')
         }
 
-        merchant = await merchantService.getMerchant(
-            requestHeaders['shopify-shop-domain']
-        )
+        merchant = await merchantService.getMerchant({
+            shop: requestHeaders['shopify-shop-domain'],
+        })
 
         if (merchant == null) {
             throw new Error('Merchant not found.')

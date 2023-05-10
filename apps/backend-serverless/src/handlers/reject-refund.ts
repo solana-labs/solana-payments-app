@@ -45,7 +45,9 @@ export const rejectRefund = async (
     }
 
     try {
-        merchant = await merchantService.getMerchant(refundRecord.merchantId)
+        merchant = await merchantService.getMerchant({
+            id: refundRecord.merchantId,
+        })
     } catch (error) {
         return requestErrorResponse(error)
     }

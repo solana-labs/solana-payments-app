@@ -27,7 +27,7 @@ export const install = async (
     const shop = parsedAppInstallQuery.shop
 
     try {
-        const merchant = await merchantService.getMerchant(shop)
+        const merchant = await merchantService.getMerchant({ shop: shop })
 
         const newNonce = 'a'
 

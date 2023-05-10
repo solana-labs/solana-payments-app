@@ -44,7 +44,9 @@ export const paymentStatus = async (
             )
         }
 
-        merchant = await merchantService.getMerchant(paymentRecord.merchantId)
+        merchant = await merchantService.getMerchant({
+            id: paymentRecord.merchantId,
+        })
 
         if (merchant == null) {
             return requestErrorResponse(

@@ -39,7 +39,7 @@ export const payment = async (
     let paymentRecord: PaymentRecord | null
 
     try {
-        const merchant = await merchantService.getMerchant(shop)
+        const merchant = await merchantService.getMerchant({ shop: shop })
 
         if (merchant == null) {
             throw new Error('Merchant not found.')
