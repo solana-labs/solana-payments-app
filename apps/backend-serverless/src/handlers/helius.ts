@@ -1,6 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import {
-    HeliusEnhancedTransaction,
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
 } from '../models/helius-enhanced-transaction.model.js'
@@ -11,7 +10,6 @@ import {
     TransactionRecord,
     TransactionType,
 } from '@prisma/client'
-import { payment } from './payment.js'
 import { paymentSessionResolve } from '../services/payment-session-resolve.service.js'
 import { refundSessionResolve } from '../services/refund-session-resolve.service.js'
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
