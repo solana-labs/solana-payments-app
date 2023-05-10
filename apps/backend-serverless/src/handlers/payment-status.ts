@@ -4,11 +4,9 @@ import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
-    PaymentStatusResponse,
 } from '../models/payment-status.model.js'
-import { payment } from './payment.js'
-
-const prisma = new PrismaClient()
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 
 export const paymentStatus = async (
     event: APIGatewayProxyEvent
@@ -19,6 +17,9 @@ export const paymentStatus = async (
 
     const prisma = new PrismaClient()
 
+    const merchantService = new MerchantService(prisma)
+    const paymentRecordService = new PaymentRecordService(prisma)
+
     try {
         parsedPaymentStatusQuery = await parseAndValidatePaymentStatusRequest(
             event.queryStringParameters
@@ -28,10 +29,8 @@ export const paymentStatus = async (
     }
 
     try {
-        paymentRecord = await prisma.paymentRecord.findFirst({
-            where: {
-                id: parsedPaymentStatusQuery.id,
-            },
+        paymentRecord = await paymentRecordService.getPaymentRecord({
+            id: parsedPaymentStatusQuery.id,
         })
 
         if (paymentRecord == null) {
@@ -41,10 +40,8 @@ export const paymentStatus = async (
             )
         }
 
-        merchant = await prisma.merchant.findUnique({
-            where: {
-                id: paymentRecord.merchantId,
-            },
+        merchant = await merchantService.getMerchant({
+            id: paymentRecord.merchantId,
         })
 
         if (merchant == null) {

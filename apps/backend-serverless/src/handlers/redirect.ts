@@ -5,13 +5,17 @@ import { fetchAccessToken } from '../services/fetch-access-token.service.js'
 import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import { verifyAndParseShopifyRedirectRequest } from '../utilities/shopify-redirect-request.utility.js'
 import { paymentAppConfigure } from '../services/payment-app-configure.service.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { AccessTokenResponse } from '../models/access-token-response.model.js'
 
 export const redirect = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient()
+    const merchantService = new MerchantService(prisma)
 
     let parsedAppRedirectQuery: AppRedirectQueryParam
+    let accessTokenResponse: AccessTokenResponse
 
     // Verify the security of the request given to install the shopify app
     try {
@@ -26,19 +30,20 @@ export const redirect = async (
     const code = parsedAppRedirectQuery.code
 
     try {
-        var accessTokenResponse = await fetchAccessToken(shop, code)
+        accessTokenResponse = await fetchAccessToken(shop, code)
     } catch (error: unknown) {
         return requestErrorResponse(error)
     }
 
-    await prisma.merchant.update({
-        where: {
-            shop: shop,
-        },
-        data: {
-            accessToken: accessTokenResponse.access_token,
-            scopes: accessTokenResponse.scope,
-        },
+    const merchant = await merchantService.getMerchant({ shop: shop })
+
+    if (merchant == null) {
+        return requestErrorResponse(new Error('Merchant not found'))
+    }
+
+    await merchantService.updateMerchant(merchant, {
+        accessToken: accessTokenResponse.access_token,
+        scopes: accessTokenResponse.scope,
     })
 
     const configure = await paymentAppConfigure(

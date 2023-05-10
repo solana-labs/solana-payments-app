@@ -14,11 +14,17 @@ import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
 } from '../models/process-refund.request.model.js'
+import { RefundRecordService } from '../services/database/refund-record-service.database.service.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 
 export const refund = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient()
+    const refundRecordService = new RefundRecordService(prisma)
+    const merchantService = new MerchantService(prisma)
+    const paymentRecordService = new PaymentRecordService(prisma)
 
     if (event.body == null) {
         return requestErrorResponse(new Error('Missing body.'))
@@ -45,30 +51,24 @@ export const refund = async (
     let existingRefundRecord: RefundRecord | null
 
     try {
-        paymentRecord = await prisma.paymentRecord.findFirst({
-            where: {
-                shopId: refundInitiation.payment_id,
-            },
+        paymentRecord = await paymentRecordService.getPaymentRecord({
+            shopId: refundInitiation.payment_id,
         })
 
         if (paymentRecord == null) {
             throw new Error('Payment record not found.')
         }
 
-        merchant = await prisma.merchant.findFirst({
-            where: {
-                shop: requestHeaders['shopify-shop-domain'],
-            },
+        merchant = await merchantService.getMerchant({
+            shop: requestHeaders['shopify-shop-domain'],
         })
 
         if (merchant == null) {
             throw new Error('Merchant not found.')
         }
 
-        existingRefundRecord = await prisma.refundRecord.findFirst({
-            where: {
-                shopId: refundInitiation.id,
-            },
+        existingRefundRecord = await refundRecordService.getRefundRecord({
+            shopId: refundInitiation.id,
         })
     } catch (error) {
         return requestErrorResponse(error)
@@ -85,18 +85,10 @@ export const refund = async (
     let refundRecord: RefundRecord
 
     try {
-        refundRecord = await prisma.refundRecord.create({
-            data: {
-                status: 'pending',
-                amount: refundInitiation.amount,
-                currency: refundInitiation.currency,
-                shopId: refundInitiation.id,
-                shopGid: refundInitiation.gid,
-                shopPaymentId: refundInitiation.payment_id,
-                test: refundInitiation.test,
-                merchantId: merchant.id,
-            },
-        })
+        refundRecord = await refundRecordService.createRefundRecord(
+            refundInitiation,
+            merchant
+        )
     } catch (error) {
         return requestErrorResponse(error)
     }

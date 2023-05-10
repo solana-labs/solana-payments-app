@@ -1,127 +1,128 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client'
+import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
+import queryString from 'query-string'
+import { decode } from '../utilities/string.utility.js'
+import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import {
-  PaymentRecord,
-  PrismaClient,
-  RefundRecord,
-  TransactionType,
-} from "@prisma/client";
-import { fetchGasKeypair } from "../services/fetch-gas-keypair.service.js";
-import queryString from "query-string";
-import { decode } from "../utilities/string.utility.js";
-import { requestErrorResponse } from "../utilities/request-response.utility.js";
+    RefundTransactionRequest,
+    parseAndValidateRefundTransactionRequest,
+} from '../models/refund-transaction-request.model.js'
+import { web3 } from '@project-serum/anchor'
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
 import {
-  RefundTransactionRequest,
-  parseAndValidateRefundTransactionRequest,
-} from "../models/refund-transaction-request.model.js";
-import { web3 } from "@project-serum/anchor";
-import { TransactionRequestResponse } from "../models/transaction-request-response.model.js";
-import {
-  encodeBufferToBase58,
-  encodeTransaction,
-} from "../utilities/encode-transaction.utility.js";
-import { fetchRefundTransaction } from "../services/fetch-refund-transaction.service.js";
+    encodeBufferToBase58,
+    encodeTransaction,
+} from '../utilities/encode-transaction.utility.js'
+import { fetchRefundTransaction } from '../services/fetch-refund-transaction.service.js'
+import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
+import { RefundRecordService } from '../services/database/refund-record-service.database.service.js'
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 
 export const refundTransaction = async (
-  event: APIGatewayProxyEvent
+    event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const prisma = new PrismaClient();
+    const prisma = new PrismaClient()
+    const transactionRecordService = new TransactionRecordService(prisma)
+    const refundRecordService = new RefundRecordService(prisma)
 
-  let refundRecord: RefundRecord;
-  let refundRequest: RefundTransactionRequest;
-  let refundTransaction: TransactionRequestResponse;
-  let transaction: web3.Transaction;
+    let refundRecord: RefundRecord | null
+    let refundRequest: RefundTransactionRequest
+    let refundTransaction: TransactionRequestResponse
+    let transaction: web3.Transaction
 
-  const decodedBody = event.body ? decode(event.body) : "";
-  const body = queryString.parse(decodedBody);
-  const account = body["account"] as string | null;
+    const decodedBody = event.body ? decode(event.body) : ''
+    const body = queryString.parse(decodedBody)
+    const account = body['account'] as string | null
 
-  if (account == null) {
-    return requestErrorResponse(new Error("No account provided."));
-  }
+    if (account == null) {
+        return requestErrorResponse(new Error('No account provided.'))
+    }
 
-  try {
-    refundRequest = parseAndValidateRefundTransactionRequest(
-      event.queryStringParameters
-    );
-  } catch (error) {
-    return requestErrorResponse(error);
-  }
+    try {
+        refundRequest = parseAndValidateRefundTransactionRequest(
+            event.queryStringParameters
+        )
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
 
-  const gasKeypair = await fetchGasKeypair();
+    const gasKeypair = await fetchGasKeypair()
 
-  try {
-    refundRecord = await prisma.refundRecord.findFirstOrThrow({
-      where: {
-        id: refundRequest.refundId,
-      },
-    });
-  } catch (error) {
-    return requestErrorResponse(error);
-  }
+    try {
+        refundRecord = await refundRecordService.getRefundRecord({
+            id: refundRequest.refundId,
+        })
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
 
-  // this sould def be a service to fetch a refund transaction, but i would
-  // imagine under the hood we can reuse most of the logic
-  // from this moment on, what's happening?
-  // 1. we get the transaction from the TRS
-  // 2. we encode it into a transaction object
-  // 3. we sign it with the gas keypair and veryify the signature
-  // 4. we create a transaction record in the db, these could def be different services
-  // 5. we serialize the transaction and return it to the client
-  try {
-    refundTransaction = await fetchRefundTransaction(
-      refundRecord,
-      account,
-      gasKeypair.publicKey.toBase58()
-    );
-  } catch (error) {
-    return requestErrorResponse(error);
-  }
+    if (refundRecord == null) {
+        return requestErrorResponse(new Error('No refund record found.'))
+    }
 
-  try {
-    transaction = encodeTransaction(refundTransaction.transaction);
-  } catch (error) {
-    return requestErrorResponse(error);
-  }
+    // this sould def be a service to fetch a refund transaction, but i would
+    // imagine under the hood we can reuse most of the logic
+    // from this moment on, what's happening?
+    // 1. we get the transaction from the TRS
+    // 2. we encode it into a transaction object
+    // 3. we sign it with the gas keypair and veryify the signature
+    // 4. we create a transaction record in the db, these could def be different services
+    // 5. we serialize the transaction and return it to the client
+    try {
+        refundTransaction = await fetchRefundTransaction(
+            refundRecord,
+            account,
+            gasKeypair.publicKey.toBase58()
+        )
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
 
-  transaction.sign(gasKeypair);
-  const transactionSignature = transaction.signature;
+    try {
+        transaction = encodeTransaction(refundTransaction.transaction)
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
 
-  if (transactionSignature == null) {
-    return requestErrorResponse(new Error("No transaction signature."));
-  }
+    transaction.sign(gasKeypair)
+    const transactionSignature = transaction.signature
 
-  const signatureBuffer = transactionSignature;
+    if (transactionSignature == null) {
+        return requestErrorResponse(new Error('No transaction signature.'))
+    }
 
-  const signatureString = encodeBufferToBase58(signatureBuffer);
+    const signatureBuffer = transactionSignature
 
-  try {
-    await prisma.transactionRecord.create({
-      data: {
-        signature: signatureString,
-        type: TransactionType.refund,
-        refundRecordId: refundRecord.id,
-        createdAt: "fake-date-go-here",
-      },
-    });
-  } catch (error) {
-    return requestErrorResponse(error);
-  }
+    const signatureString = encodeBufferToBase58(signatureBuffer)
 
-  const transactionBuffer = transaction.serialize({
-    verifySignatures: false,
-    requireAllSignatures: false,
-  });
-  const transactionString = transactionBuffer.toString("base64");
+    try {
+        await transactionRecordService.createTransactionRecord(
+            signatureString,
+            TransactionType.payment,
+            null,
+            refundRecord.id,
+            'fake-date'
+        )
+    } catch (error) {
+        return requestErrorResponse(error)
+    }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        transaction: transactionString,
-        message: "gn",
-      },
-      null,
-      2
-    ),
-  };
-};
+    const transactionBuffer = transaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+    })
+    const transactionString = transactionBuffer.toString('base64')
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(
+            {
+                transaction: transactionString,
+                message: 'gn',
+            },
+            null,
+            2
+        ),
+    }
+}

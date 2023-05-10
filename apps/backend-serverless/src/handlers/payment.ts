@@ -5,17 +5,26 @@ import {
 } from '../models/process-payment-request.model.js'
 import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import { PrismaClient, PaymentRecord } from '@prisma/client'
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
 
 export const payment = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient()
 
+    const paymentRecordService = new PaymentRecordService(prisma)
+    const merchantService = new MerchantService(prisma)
+
     if (event.body == null) {
         return requestErrorResponse(new Error('Missing body.'))
     }
 
-    const merchantShop = event.headers['shopify-shop-domain']
+    const shop = event.headers['shopify-shop-domain']
+
+    if (shop == null) {
+        return requestErrorResponse(new Error('Missing shop.'))
+    }
 
     let paymentInitiation: ShopifyPaymentInitiation
 
@@ -30,33 +39,21 @@ export const payment = async (
     let paymentRecord: PaymentRecord | null
 
     try {
-        const merchant = await prisma.merchant.findUniqueOrThrow({
-            where: {
-                shop: merchantShop,
-            },
-        })
+        const merchant = await merchantService.getMerchant({ shop: shop })
 
-        paymentRecord = await prisma.paymentRecord.findFirst({
-            where: {
-                shopId: paymentInitiation.id,
-            },
+        if (merchant == null) {
+            throw new Error('Merchant not found.')
+        }
+
+        paymentRecord = await paymentRecordService.getPaymentRecord({
+            shopId: paymentInitiation.id,
         })
 
         if (paymentRecord == null) {
-            paymentRecord = await prisma.paymentRecord.create({
-                data: {
-                    status: 'pending',
-                    shopId: paymentInitiation.id,
-                    shopGid: paymentInitiation.gid,
-                    shopGroup: paymentInitiation.group,
-                    test: paymentInitiation.test,
-                    amount: paymentInitiation.amount,
-                    currency: paymentInitiation.currency,
-                    customerAddress: null,
-                    merchantId: merchant.id,
-                    cancelURL: paymentInitiation.payment_method.data.cancel_url,
-                },
-            })
+            paymentRecord = await paymentRecordService.createPaymentRecord(
+                paymentInitiation,
+                merchant
+            )
         }
     } catch (error: unknown) {
         console.log(error)
