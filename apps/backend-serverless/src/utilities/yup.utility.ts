@@ -7,6 +7,7 @@ export const parseAndValidate = <T>(
 ): T => {
     let parsedData: T
     try {
+        schema.validateSync(data)
         parsedData = schema.cast(data) as T
     } catch (error) {
         if (error instanceof Error) {

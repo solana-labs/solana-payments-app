@@ -6,12 +6,24 @@ describe('Merchant Testing Suite', () => {
         const scopeValue = 'read_products,write_products'
 
         const validAccessTokenResponseBody = {
-            acccess_token: accessTokenValue,
+            access_token: accessTokenValue,
             scope: scopeValue,
         }
 
         expect(() => {
             parseAndValidateAccessTokenResponse(validAccessTokenResponseBody)
-        }).resolves.not.toThrow()
+        }).not.toThrow()
+    })
+
+    it('invalid access token response', () => {
+        const scopeValue = 'read_products,write_products'
+
+        const validAccessTokenResponseBody = {
+            scope: scopeValue,
+        }
+
+        expect(() => {
+            parseAndValidateAccessTokenResponse(validAccessTokenResponseBody)
+        }).toThrow()
     })
 })
