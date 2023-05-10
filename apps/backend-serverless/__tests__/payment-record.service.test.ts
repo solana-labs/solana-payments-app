@@ -1,5 +1,4 @@
 import { PaymentRecordService } from '../src/services/database/payment-record-service.database.service'
-import { PrismaClient } from '@prisma/client'
 import { prismaMock } from '../prisma-singleton'
 
 describe('Payment Record Testing Suite', () => {

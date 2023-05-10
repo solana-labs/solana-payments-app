@@ -1,5 +1,4 @@
 import { MerchantService } from '../src/services/database/merchant-service.database.service'
-import { PrismaClient } from '@prisma/client'
 import { prismaMock } from '../prisma-singleton'
 
 describe('Merchant Testing Suite', () => {
@@ -106,14 +105,6 @@ describe('Merchant Testing Suite', () => {
     })
 
     it('update a merchant failing', async () => {
-        const mockMerchantBeforeUpdate = {
-            id: 1,
-            shop: 'mock-merchant.myshopify.com',
-            lastNonce: 'abcd-1234',
-            accessToken: null,
-            scopes: null,
-        }
-
         const mockMerchantThatDoesNotExist = {
             id: 2,
             shop: 'mock-merchant-dne.myshopify.com',
@@ -122,14 +113,8 @@ describe('Merchant Testing Suite', () => {
             scopes: null,
         }
 
-        prismaMock.merchant.create.mockResolvedValue(mockMerchantBeforeUpdate)
         prismaMock.merchant.update.mockRejectedValue(
             new Error('Failed to update merchant')
-        )
-
-        const merchant = await merchantService.createMerchant(
-            'mock-merchant.myshopify.com',
-            'abcd-1234'
         )
 
         await expect(
