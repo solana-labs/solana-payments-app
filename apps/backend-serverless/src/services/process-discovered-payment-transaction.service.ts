@@ -7,6 +7,7 @@ import { HeliusEnhancedTransaction } from '../models/helius-enhanced-transaction
 import { PaymentRecordService } from './database/payment-record-service.database.service.js'
 import { MerchantService } from './database/merchant-service.database.service.js'
 import { paymentSessionResolve } from './payment-session-resolve.service.js'
+import { getCustomerFromHeliusEnhancedTransaction } from '../utilities/get-customer.utility.js'
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredPaymentTransaction = async (
@@ -79,12 +80,19 @@ export const processDiscoveredPaymentTransaction = async (
             resolvePaymentResponse.data.paymentSessionResolve.paymentSession
                 .nextAction.context.redirectUrl
 
+        // If we throw here, we're gonna end up retrying and that probably doesnt work out
+        const customerAddress = getCustomerFromHeliusEnhancedTransaction(
+            transaction,
+            paymentRecord
+        )
+
         // If this were to throw, then we could just try again or add it to the retry queue, adding to the retry queue
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
         // work
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: 'paid',
             redirectUrl: redirectUrl,
+            customerAddress: customerAddress,
         })
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue

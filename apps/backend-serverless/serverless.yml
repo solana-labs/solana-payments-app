@@ -91,6 +91,12 @@ functions:
       - httpApi:
           path: /payment-status
           method: get
+  payment-address:
+    handler: src/handlers/payment-address.paymentAddress
+    events:
+      - httpApi:
+          path: /payment-address
+          method: post
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies

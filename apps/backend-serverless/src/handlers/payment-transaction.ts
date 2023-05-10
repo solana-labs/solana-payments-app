@@ -15,6 +15,7 @@ import { web3 } from '@project-serum/anchor'
 import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
 import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
 
 export const paymentTransaction = async (
     event: APIGatewayProxyEvent
@@ -27,6 +28,7 @@ export const paymentTransaction = async (
     const prisma = new PrismaClient()
     const transactionRecordService = new TransactionRecordService(prisma)
     const paymentRecordService = new PaymentRecordService(prisma)
+    const merchantService = new MerchantService(prisma)
 
     const decodedBody = event.body ? decode(event.body) : ''
     const body = queryString.parse(decodedBody)
@@ -58,9 +60,18 @@ export const paymentTransaction = async (
         return requestErrorResponse(new Error('Payment record not found.'))
     }
 
+    const merchant = await merchantService.getMerchant({
+        id: paymentRecord.merchantId,
+    })
+
+    if (merchant == null) {
+        return requestErrorResponse(new Error('Merchant not found.'))
+    }
+
     try {
         paymentTransaction = await fetchPaymentTransaction(
             paymentRecord,
+            merchant,
             account,
             gasKeypair.publicKey.toBase58()
         )

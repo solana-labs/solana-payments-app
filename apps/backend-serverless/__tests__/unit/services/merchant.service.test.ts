@@ -15,6 +15,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant)
@@ -33,6 +34,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant)
@@ -49,6 +51,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         prismaMock.merchant.create.mockResolvedValue(mockMerchant)
@@ -68,6 +71,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         const merchant = await merchantService.getMerchant({
@@ -84,6 +88,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         const mockMerchantAfterUpdate = {
@@ -92,6 +97,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'efgh-5678',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         prismaMock.merchant.update.mockResolvedValue(mockMerchantAfterUpdate)
@@ -111,6 +117,7 @@ describe('Merchant Testing Suite', () => {
             lastNonce: 'wxyz-4321',
             accessToken: null,
             scopes: null,
+            paymentAddress: null,
         }
 
         prismaMock.merchant.update.mockRejectedValue(

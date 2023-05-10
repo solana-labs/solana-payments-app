@@ -19,6 +19,7 @@ model Merchant {
   lastNonce      String
   paymentRecords PaymentRecord[]
   RefundRecord   RefundRecord[]
+  paymentAddress String?
 }
 
 model PaymentRecord {

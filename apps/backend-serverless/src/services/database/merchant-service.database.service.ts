@@ -19,7 +19,14 @@ export type RedirectUpdate = {
     scopes: string
 }
 
-export type MerchantUpdate = LastNonceUpdate | RedirectUpdate
+export type PaymentAddressUpdate = {
+    paymentAddress: string
+}
+
+export type MerchantUpdate =
+    | LastNonceUpdate
+    | RedirectUpdate
+    | PaymentAddressUpdate
 
 export class MerchantService {
     private prisma: PrismaClient
