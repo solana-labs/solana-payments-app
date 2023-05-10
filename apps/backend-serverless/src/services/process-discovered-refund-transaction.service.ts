@@ -62,7 +62,7 @@ export const processDiscoveredRefundTransaction = async (
     }
 
     try {
-        const resolveRefunndResponse = await refundSessionResolve(
+        const resolveRefundResponse = await refundSessionResolve(
             refundRecord.shopGid,
             merchant.shop,
             merchant.accessToken

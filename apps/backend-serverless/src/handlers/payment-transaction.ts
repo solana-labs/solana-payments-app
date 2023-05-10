@@ -86,14 +86,13 @@ export const paymentTransaction = async (
     const signatureString = encodeBufferToBase58(signatureBuffer)
 
     try {
-        const transactionRecord =
-            await transactionRecordService.createTransactionRecord(
-                signatureString,
-                TransactionType.payment,
-                paymentRecord.id,
-                null,
-                'fake-dat'
-            )
+        await transactionRecordService.createTransactionRecord(
+            signatureString,
+            TransactionType.payment,
+            paymentRecord.id,
+            null,
+            'fake-dat'
+        )
     } catch (error) {
         return requestErrorResponse(error)
     }

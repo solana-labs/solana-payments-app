@@ -57,15 +57,9 @@ export const paymentSessionResolve = async (
         throw new Error('Error resolving payment session.')
     }
 
-    let resolvePaymentResponse: ResolvePaymentResponse
-
-    try {
-        resolvePaymentResponse = parseAndValidateResolvePaymentResponse(
-            response.data
-        )
-    } catch (error) {
-        throw error
-    }
+    const resolvePaymentResponse = parseAndValidateResolvePaymentResponse(
+        response.data
+    )
 
     return resolvePaymentResponse
 }

@@ -4,13 +4,9 @@ import { requestErrorResponse } from '../utilities/request-response.utility.js'
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
-    PaymentStatusResponse,
 } from '../models/payment-status.model.js'
-import { payment } from './payment.js'
 import { MerchantService } from '../services/database/merchant-service.database.service.js'
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
-
-const prisma = new PrismaClient()
 
 export const paymentStatus = async (
     event: APIGatewayProxyEvent
