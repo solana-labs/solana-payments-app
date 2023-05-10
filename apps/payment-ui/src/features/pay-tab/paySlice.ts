@@ -44,16 +44,6 @@ const initalState: PayState = {
     payingToken: PayingToken.USDC,
 }
 
-export const fetchPaymentDetails = createAsyncThunk<void, void>(
-    'pay/fetchPaymentDetails',
-    async () => {}
-)
-
-export const fetchPayingTokenConversion = createAsyncThunk<void, void>(
-    'pay/fetchPayingTokenConversion',
-    async () => {}
-)
-
 export const timerTick = createAsyncThunk<PaymentDetails, void>(
     'pay/timerTick',
     async (_, { getState }): Promise<PaymentDetails> => {
@@ -63,7 +53,6 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
             const response = await axios.get(
                 `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
             )
-            console.log(response.data)
             return {
                 merchantDisplayName: response.data.merchantDisplayName,
                 totalAmountUSDCDisplay: response.data.totalAmountUSDCDisplay,
@@ -104,15 +93,6 @@ const paySlice = createSlice({
     },
     extraReducers(builder) {
         builder
-            .addCase(fetchPaymentDetails.pending, (state: PayState) => {
-                // state.paymentMethod = 'connect-wallet'
-            })
-            .addCase(fetchPaymentDetails.rejected, (state: PayState) => {
-                // state.paymentMethod = 'connect-wallet'
-            })
-            .addCase(fetchPaymentDetails.fulfilled, (state: PayState) => {
-                // state.paymentMethod = 'connect-wallet'
-            })
             .addCase(timerTick.pending, (state: PayState) => {
                 // Handle timerTick.pending if needed
             })
@@ -123,7 +103,6 @@ const paySlice = createSlice({
                 timerTick.fulfilled,
                 (state: PayState, action: PayloadAction<PaymentDetails>) => {
                     state.paymentDetails = action.payload
-                    // Handle timerTick.fulfilled if needed
                 }
             )
     },

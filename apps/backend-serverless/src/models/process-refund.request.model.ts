@@ -5,7 +5,6 @@ export const shopifyRefundInitiationScheme = object().shape({
     id: string().required(),
     gid: string().required(),
     payment_id: string().required(),
-    group: string().required(),
     amount: number().required(), // must be numeric
     currency: string().required(), // three string IOS 4217 code
     test: boolean().required(),

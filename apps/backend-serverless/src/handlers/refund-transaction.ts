@@ -1,10 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import {
-    PaymentRecord,
-    PrismaClient,
-    RefundRecord,
-    TransactionType,
-} from '@prisma/client'
+import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client'
 import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
 import queryString from 'query-string'
 import { decode } from '../utilities/string.utility.js'
@@ -30,7 +25,6 @@ export const refundTransaction = async (
     const prisma = new PrismaClient()
     const transactionRecordService = new TransactionRecordService(prisma)
     const refundRecordService = new RefundRecordService(prisma)
-    const paymentRecordService = new PaymentRecordService(prisma)
 
     let refundRecord: RefundRecord | null
     let refundRequest: RefundTransactionRequest

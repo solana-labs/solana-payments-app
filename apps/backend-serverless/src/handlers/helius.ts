@@ -18,6 +18,8 @@ export const helius = async (
 ): Promise<APIGatewayProxyResult> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
 
+    console.log(event.body)
+
     const prisma = new PrismaClient()
     const transactionRecordService = new TransactionRecordService(prisma)
 
@@ -49,12 +51,14 @@ export const helius = async (
                         transaction,
                         prisma
                     )
+                    break
                 case TransactionType.refund:
                     await processDiscoveredRefundTransaction(
                         transactionRecord,
                         transaction,
                         prisma
                     )
+                    break
             }
         } catch (error) {
             // We will catch here on odd throws, valuable catches should happen elsewhere

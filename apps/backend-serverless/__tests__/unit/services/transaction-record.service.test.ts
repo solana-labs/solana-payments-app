@@ -1,6 +1,6 @@
-import { TransactionRecordService } from '../src/services/database/transaction-record-service.database.service'
+import { TransactionRecordService } from '../../../src/services/database/transaction-record-service.database.service'
 import { TransactionType } from '@prisma/client'
-import { prismaMock } from '../prisma-singleton'
+import { prismaMock } from '../../../prisma-singleton'
 
 describe('Transaction Record Testing Suite', () => {
     let transactionRecordService: TransactionRecordService

@@ -1,7 +1,5 @@
 import {
     PrismaClient,
-    PaymentRecord,
-    Merchant,
     TransactionRecord,
     TransactionType,
 } from '@prisma/client'

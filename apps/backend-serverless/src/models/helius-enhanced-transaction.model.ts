@@ -1,5 +1,5 @@
 import { object, string, InferType, number, array } from 'yup'
-
+import { parseAndValidate } from '../utilities/yup.utility.js'
 export const heliusRawTokenAmountSchema = object().shape({
     tokenAmount: string().required(),
     decimals: number().required(),
@@ -85,7 +85,7 @@ export const heliusTransactionErrorSchema = object()
 
 export const heliusTokenBalanceChangeSchema = object().shape({
     userAccount: string().required(),
-    tokenAccount: number().required(),
+    tokenAccount: string().required(),
     mint: string().required(),
     rawTokenAmount: heliusRawTokenAmountSchema.required(),
 })
@@ -93,10 +93,7 @@ export const heliusTokenBalanceChangeSchema = object().shape({
 export const heliusAccountTransferSchema = object().shape({
     account: string().required(),
     nativeBalanceChange: number().required(),
-    tokenBalanceChange: string().required(),
-    toTokenAccount: string().required(),
-    tokenAmount: number().required(),
-    mint: string().required(),
+    tokenBalanceChanges: array().of(heliusTokenBalanceChangeSchema).required(),
 })
 
 export const heliusTokenTransferSchema = object().shape({
@@ -143,22 +140,11 @@ export type HeliusEnhancedTransactionArray = InferType<
 >
 
 export const parseAndValidateHeliusEnchancedTransaction = (
-    heliusEnhancedTransactionRequest: any
+    heliusEnhancedTransactionResponseBody: unknown
 ): HeliusEnhancedTransactionArray => {
-    let parsedHeliusEnhancedTransactions: HeliusEnhancedTransactionArray
-    try {
-        parsedHeliusEnhancedTransactions =
-            heliusEnhancedTransactionResponseSchema.cast(
-                heliusEnhancedTransactionRequest
-            ) as HeliusEnhancedTransactionArray
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error
-        } else {
-            throw new Error(
-                'Could not parse the helius transaction request. Unknown Reason.'
-            )
-        }
-    }
-    return parsedHeliusEnhancedTransactions
+    return parseAndValidate(
+        heliusEnhancedTransactionResponseBody,
+        heliusEnhancedTransactionResponseSchema,
+        'Could not parse the heluis enhanced transaction body. Unknown Reason.'
+    )
 }
