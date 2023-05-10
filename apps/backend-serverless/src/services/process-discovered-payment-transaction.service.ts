@@ -92,7 +92,7 @@ export const processDiscoveredPaymentTransaction = async (
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: 'paid',
             redirectUrl: redirectUrl,
-            customerAddress: customerAddress,
+            transactionSignature: transaction.signature,
         })
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue

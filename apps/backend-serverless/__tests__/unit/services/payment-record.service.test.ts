@@ -22,6 +22,7 @@ describe('Payment Record Testing Suite', () => {
             merchantId: 1,
             cancelURL: 'https://example.com',
             redirectUrl: null,
+            transactionSignature: null,
         }
 
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord)
@@ -47,6 +48,7 @@ describe('Payment Record Testing Suite', () => {
             merchantId: 5,
             cancelURL: 'https://example.com',
             redirectUrl: null,
+            transactionSignature: null,
         }
 
         const mockPaymentRecordAfterUpdate = {
@@ -62,6 +64,7 @@ describe('Payment Record Testing Suite', () => {
             merchantId: 5,
             cancelURL: 'https://example.com',
             redirectUrl: null,
+            transactionSignature: null,
         }
 
         prismaMock.paymentRecord.findFirst.mockResolvedValue(

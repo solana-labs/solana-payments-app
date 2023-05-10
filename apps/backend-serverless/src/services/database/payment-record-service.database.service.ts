@@ -10,21 +10,21 @@ export type StatusUpdate = {
     status: string
 }
 
-export type CustomerAddressUpdate = {
-    customerAddress: string
+export type TransactionSignatureUpdate = {
+    transactionSignature: string
 }
 
-export type StatusRedirectCustomerUpdate = {
+export type StatusRedirectTransactionUpdate = {
     status: string
     redirectUrl: string
-    customerAddress: string
+    transactionSignature: string
 }
 
 export type PaymentRecordUpdate =
     | PaidUpdate
     | StatusUpdate
-    | CustomerAddressUpdate
-    | StatusRedirectCustomerUpdate
+    | TransactionSignatureUpdate
+    | StatusRedirectTransactionUpdate
 
 export type ShopIdQuery = {
     shopId: string
