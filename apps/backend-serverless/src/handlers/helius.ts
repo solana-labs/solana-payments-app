@@ -18,6 +18,8 @@ export const helius = async (
 ): Promise<APIGatewayProxyResult> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
 
+    console.log(event.body)
+
     const prisma = new PrismaClient()
     const transactionRecordService = new TransactionRecordService(prisma)
 
