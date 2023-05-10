@@ -9,7 +9,12 @@ export type StatusUpdate = {
     status: string
 }
 
-export type RefundRecordUpdate = PaidUpdate
+export type StatusTransactionUpdate = {
+    status: string
+    transactionSignature: string
+}
+
+export type RefundRecordUpdate = PaidUpdate | StatusTransactionUpdate
 
 export type ShopIdQuery = {
     shopId: string
@@ -54,6 +59,7 @@ export class RefundRecordService {
                 shopPaymentId: refundInitiation.payment_id,
                 test: refundInitiation.test,
                 merchantId: merchant.id,
+                transactionSignature: null,
             },
         })
     }

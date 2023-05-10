@@ -74,6 +74,7 @@ export const processDiscoveredRefundTransaction = async (
         // has to return so I should probably return for parity and have a validation function
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: 'paid',
+            transactionSignature: transaction.signature,
         })
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue

@@ -35,7 +35,6 @@ model PaymentRecord {
   transactions         TransactionRecord[]
   merchant             Merchant            @relation(fields: [merchantId], references: [id])
   merchantId           Int
-  customerAddress      String?
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
 }
@@ -57,17 +56,17 @@ model TransactionRecord {
 }
 
 model RefundRecord {
-  id              Int      @id @default(autoincrement()) // Internal ID
-  status          String
-  amount          Float
-  currency        String
-  shopId          String // Given Id from Shopify
-  shopGid         String // Given Gid from Shopify
-  shopPaymentId   String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
-  test            Boolean
-  merchant        Merchant @relation(fields: [merchantId], references: [id])
-  merchantId      Int
-  customerAddress String?
+  id                   Int      @id @default(autoincrement()) // Internal ID
+  status               String
+  amount               Float
+  currency             String
+  shopId               String // Given Id from Shopify
+  shopGid              String // Given Gid from Shopify
+  shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  test                 Boolean
+  merchant             Merchant @relation(fields: [merchantId], references: [id])
+  merchantId           Int
+  transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
   TransactionRecord TransactionRecord[]
 }

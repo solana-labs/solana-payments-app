@@ -67,9 +67,9 @@ export class PaymentRecordService {
                 test: paymentInitiation.test,
                 amount: paymentInitiation.amount,
                 currency: paymentInitiation.currency,
-                customerAddress: null,
                 merchantId: merchant.id,
                 cancelURL: paymentInitiation.payment_method.data.cancel_url,
+                transactionSignature: null,
             },
         })
     }

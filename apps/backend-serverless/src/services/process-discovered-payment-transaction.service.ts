@@ -80,12 +80,6 @@ export const processDiscoveredPaymentTransaction = async (
             resolvePaymentResponse.data.paymentSessionResolve.paymentSession
                 .nextAction.context.redirectUrl
 
-        // If we throw here, we're gonna end up retrying and that probably doesnt work out
-        const customerAddress = getCustomerFromHeliusEnhancedTransaction(
-            transaction,
-            paymentRecord
-        )
-
         // If this were to throw, then we could just try again or add it to the retry queue, adding to the retry queue
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
         // work
