@@ -1,10 +1,4 @@
-import {
-    PrismaClient,
-    PaymentRecord,
-    Merchant,
-    RefundRecord,
-} from '@prisma/client'
-import { ShopifyPaymentInitiation } from '../../models/process-payment-request.model.js'
+import { PrismaClient, Merchant, RefundRecord } from '@prisma/client'
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js'
 
 export type PaidUpdate = {
@@ -21,8 +15,16 @@ export type ShopIdQuery = {
     shopId: string
 }
 
-export type RefundRecordQuery = ShopIdQuery
+export type RefundIdQuery = {
+    id: number
+}
 
+export type RefundRecordQuery = ShopIdQuery | RefundIdQuery
+
+// --- RefundRecordService CRUD Operations ---
+// 1. getRefundRecord
+// 2. createRefundRecord
+// 3. updateRefundRecord
 export class RefundRecordService {
     private prisma: PrismaClient
 
@@ -30,11 +32,11 @@ export class RefundRecordService {
         this.prisma = prismaClient
     }
 
-    async getRefundRecord(id: number): Promise<RefundRecord | null> {
+    async getRefundRecord(
+        query: RefundRecordQuery
+    ): Promise<RefundRecord | null> {
         return await this.prisma.refundRecord.findFirst({
-            where: {
-                id: id,
-            },
+            where: query,
         })
     }
 

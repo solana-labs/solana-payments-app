@@ -7,6 +7,8 @@ import {
     PaymentStatusResponse,
 } from '../models/payment-status.model.js'
 import { payment } from './payment.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 
 const prisma = new PrismaClient()
 
@@ -19,6 +21,9 @@ export const paymentStatus = async (
 
     const prisma = new PrismaClient()
 
+    const merchantService = new MerchantService(prisma)
+    const paymentRecordService = new PaymentRecordService(prisma)
+
     try {
         parsedPaymentStatusQuery = await parseAndValidatePaymentStatusRequest(
             event.queryStringParameters
@@ -28,10 +33,8 @@ export const paymentStatus = async (
     }
 
     try {
-        paymentRecord = await prisma.paymentRecord.findFirst({
-            where: {
-                id: parsedPaymentStatusQuery.id,
-            },
+        paymentRecord = await paymentRecordService.getPaymentRecord({
+            id: parsedPaymentStatusQuery.id,
         })
 
         if (paymentRecord == null) {
@@ -41,11 +44,7 @@ export const paymentStatus = async (
             )
         }
 
-        merchant = await prisma.merchant.findUnique({
-            where: {
-                id: paymentRecord.merchantId,
-            },
-        })
+        merchant = await merchantService.getMerchant(paymentRecord.merchantId)
 
         if (merchant == null) {
             return requestErrorResponse(

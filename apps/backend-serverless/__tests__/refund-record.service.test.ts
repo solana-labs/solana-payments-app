@@ -23,7 +23,9 @@ describe('Refund Record Testing Suite', () => {
 
         prismaMock.refundRecord.findFirst.mockResolvedValue(mockRefundRecord)
 
-        const refundRecord = await refundRecordService.getRefundRecord(1)
+        const refundRecord = await refundRecordService.getRefundRecord({
+            id: 1,
+        })
 
         expect(refundRecord).toEqual(mockRefundRecord)
     })

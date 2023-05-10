@@ -15,6 +15,9 @@ import { payment } from './payment.js'
 import { paymentSessionResolve } from '../services/payment-session-resolve.service.js'
 import { refundSessionResolve } from '../services/refund-session-resolve.service.js'
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
+import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { RefundRecordService } from '../services/database/refund-record-service.database.service.js'
+import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
 
 // TODO: MASSIVE TASK
 // This callback returns an array of transactions, if any of these dont work or throw, we need to make sure we
@@ -24,8 +27,12 @@ export const helius = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray
+
     const prisma = new PrismaClient()
     const paymentRecordService = new PaymentRecordService(prisma)
+    const merchantService = new MerchantService(prisma)
+    const refundRecordService = new RefundRecordService(prisma)
+    const transactionRecordService = new TransactionRecordService(prisma)
 
     try {
         heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(
@@ -50,11 +57,10 @@ export const helius = async (
         try {
             const transactionSignature = transaction.signature
 
-            transactionRecord = await prisma.transactionRecord.findFirst({
-                where: {
-                    signature: transactionSignature,
-                },
-            })
+            transactionRecord =
+                await transactionRecordService.getTransactionRecord(
+                    transactionSignature
+                )
 
             if (transactionRecord == null) {
                 throw new Error('Transaction not found.')
@@ -74,11 +80,10 @@ export const helius = async (
                         )
                     }
 
-                    const paymentRecord = await prisma.paymentRecord.findFirst({
-                        where: {
+                    const paymentRecord =
+                        await paymentRecordService.getPaymentRecord({
                             id: paymentRecordId,
-                        },
-                    })
+                        })
 
                     if (paymentRecord == null) {
                         throw new Error('Payment record not found.')
@@ -92,11 +97,7 @@ export const helius = async (
                         )
                     }
 
-                    merchant = await prisma.merchant.findFirst({
-                        where: {
-                            id: merchantId,
-                        },
-                    })
+                    merchant = await merchantService.getMerchant(merchantId)
 
                     if (merchant == null) {
                         throw new Error('Merchant not found with merchant id.')
@@ -140,11 +141,10 @@ export const helius = async (
                         )
                     }
 
-                    const refundRecord = await prisma.refundRecord.findFirst({
-                        where: {
+                    const refundRecord =
+                        await refundRecordService.getRefundRecord({
                             id: refundRecordId,
-                        },
-                    })
+                        })
 
                     if (refundRecord == null) {
                         throw new Error('Refund record not found.')
@@ -158,11 +158,7 @@ export const helius = async (
                         )
                     }
 
-                    merchant = await prisma.merchant.findFirst({
-                        where: {
-                            id: merchantId,
-                        },
-                    })
+                    merchant = await merchantService.getMerchant(merchantId)
 
                     if (merchant == null) {
                         throw new Error('Merchant not found with merchant id.')
@@ -190,13 +186,8 @@ export const helius = async (
 
                     // TODO: check values from resolveRefundResponse here
                     // TODO: refundRecordService update refundRecord.update
-                    await prisma.paymentRecord.update({
-                        where: {
-                            id: refundRecordId,
-                        },
-                        data: {
-                            status: 'paid',
-                        },
+                    await refundRecordService.updateRefundRecord(refundRecord, {
+                        status: 'paid',
                     })
             }
         } catch (error) {

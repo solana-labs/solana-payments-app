@@ -56,9 +56,9 @@ export const refundTransaction = async (
     const gasKeypair = await fetchGasKeypair()
 
     try {
-        refundRecord = await refundRecordService.getRefundRecord(
-            refundRequest.refundId
-        )
+        refundRecord = await refundRecordService.getRefundRecord({
+            id: refundRequest.refundId,
+        })
     } catch (error) {
         return requestErrorResponse(error)
     }

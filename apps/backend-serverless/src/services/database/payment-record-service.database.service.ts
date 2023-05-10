@@ -13,10 +13,15 @@ export type StatusUpdate = {
 export type PaymentRecordUpdate = PaidUpdate | StatusUpdate
 
 export type ShopIdQuery = {
+    shopId: string
+}
+
+// TODO: Better name for this type
+export type IdQuery = {
     id: number
 }
 
-export type PaymentRecordQuery = ShopIdQuery
+export type PaymentRecordQuery = ShopIdQuery | IdQuery
 
 export class PaymentRecordService {
     private prisma: PrismaClient

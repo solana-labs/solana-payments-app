@@ -5,25 +5,12 @@ import {
     TransactionRecord,
     TransactionType,
 } from '@prisma/client'
-import { ShopifyPaymentInitiation } from '../../models/process-payment-request.model.js'
 
-export type FooUpdate = {
-    status: string
-    redirectUrl: string
-}
-
-export type BarUpdate = {
-    status: string
-}
-
-export type TransactionRecordUpdate = FooUpdate | BarUpdate
-
-export type ShopIdQuery = {
-    shopId: string
-}
-
-export type TransactionRecordQuery = ShopIdQuery
-
+// --- TransactionRecordService CRUD Operations ---
+// 1. getTransactionRecord
+// 2. createTransactionRecord
+//
+// We currently don't need to support updating Transaction Records
 export class TransactionRecordService {
     private prisma: PrismaClient
 
@@ -40,19 +27,6 @@ export class TransactionRecordService {
             },
         })
     }
-
-    // try {
-    //     await prisma.transactionRecord.create({
-    //       data: {
-    //         signature: signatureString,
-    //         type: TransactionType.payment,
-    //         paymentRecordId: paymentRecord.id,
-    //         createdAt: "fake-date-go-here",
-    //       },
-    //     });
-    //   } catch (error) {
-    //     return requestErrorResponse(error);
-    //   }
 
     async createTransactionRecord(
         signature: string,
