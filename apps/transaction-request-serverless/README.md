@@ -15,9 +15,9 @@ This is the transaction request server for the [Link] Solana Payments App. We de
 
 ## Currently Supported Features
 
--   [ ] Token Transfers
+-   [x] Token Transfers
 -   [ ] Token Swaps
 -   [ ] NFT Minting
 -   [ ] Compressed NFT Minting
 -   [ ] Fungible Token Minting
--   [ ] System Program Account Creation
+-   [x] System Program Account Creation
