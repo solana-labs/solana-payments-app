@@ -1,0 +1,21 @@
+import axios, { AxiosResponse } from 'axios';
+import { COIN_GECKO_API_URL } from '../configs/endpoints.config.js';
+
+const COIN_GECKO_USDC_ID = 'usd-coin';
+
+// TODO: Add axios dependency injection for testing
+export const convertAmountAndCurrencyToUsdcSize = async (givenAmount: number, currency: string): Promise<number> => {
+    const params = { ids: COIN_GECKO_USDC_ID, vs_currencies: currency };
+    try {
+        const response: AxiosResponse = await axios.get(COIN_GECKO_API_URL, { params });
+        if (response.status === 200) {
+            const usdcPriceInGivenCurrency = response.data[COIN_GECKO_USDC_ID][currency] as number;
+            return givenAmount / usdcPriceInGivenCurrency;
+        } else {
+            throw new Error('Failed to get the USDC price in the given currency');
+        }
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
