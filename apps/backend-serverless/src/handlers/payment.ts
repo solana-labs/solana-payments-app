@@ -56,16 +56,7 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const paymentUiUrl = process.env.PAYMENT_UI_URL;
 
     if (paymentUiUrl == null) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(
-                {
-                    message: 'Missing information.',
-                },
-                null,
-                2
-            ),
-        };
+        return requestErrorResponse(new Error('Missing internal config.'));
     }
 
     return {

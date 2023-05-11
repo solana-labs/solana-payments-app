@@ -3,6 +3,8 @@ import { COIN_GECKO_API_URL } from '../configs/endpoints.config.js';
 
 const COIN_GECKO_USDC_ID = 'usd-coin';
 
+// For our current curent purposes, we assume currency here is a three letter ISO 4217 currency code.
+// This is the type of value we will get from Shopify and it's the type of value Coin Gecko expects
 // TODO: Add axios dependency injection for testing
 export const convertAmountAndCurrencyToUsdcSize = async (givenAmount: number, currency: string): Promise<number> => {
     const params = { ids: COIN_GECKO_USDC_ID, vs_currencies: currency };
