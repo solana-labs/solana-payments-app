@@ -55,12 +55,8 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     return {
         statusCode: 200,
-        body: JSON.stringify(
-            {
-                redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
-            },
-            null,
-            2
-        ),
+        body: JSON.stringify({
+            redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
+        }),
     };
 };

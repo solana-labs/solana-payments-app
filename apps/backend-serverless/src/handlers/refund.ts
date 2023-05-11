@@ -9,10 +9,7 @@ import { RefundRecordService } from '../services/database/refund-record-service.
 import { MerchantService } from '../services/database/merchant-service.database.service.js';
 
 export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let refundInitiation: ShopifyRefundInitiation;
-
     const prisma = new PrismaClient();
-
     const refundRecordService = new RefundRecordService(prisma);
     const merchantService = new MerchantService(prisma);
 
@@ -32,6 +29,7 @@ export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
         throw new Error('Merchant not found.');
     }
 
+    let refundInitiation: ShopifyRefundInitiation;
     try {
         refundInitiation = parseAndValidateShopifyRefundInitiation(JSON.parse(event.body));
     } catch (error) {
@@ -53,6 +51,6 @@ export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
     // We return 201 status code here per shopify's documentation: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
     return {
         statusCode: 201,
-        body: JSON.stringify({}, null, 2),
+        body: JSON.stringify({}),
     };
 };
