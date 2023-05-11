@@ -44,8 +44,6 @@ export class PaymentRecordService {
         this.prisma = prismaClient;
     }
 
-    // function overloads to query the database by shop or id
-    // async getPaymentRecord(id: string): Promise<PaymentRecord | null>
     async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {
         return await this.prisma.paymentRecord.findFirst({
             where: query,
@@ -53,20 +51,24 @@ export class PaymentRecordService {
     }
 
     async createPaymentRecord(paymentInitiation: ShopifyPaymentInitiation, merchant: Merchant): Promise<PaymentRecord> {
-        return await this.prisma.paymentRecord.create({
-            data: {
-                status: 'pending',
-                shopId: paymentInitiation.id,
-                shopGid: paymentInitiation.gid,
-                shopGroup: paymentInitiation.group,
-                test: paymentInitiation.test,
-                amount: paymentInitiation.amount,
-                currency: paymentInitiation.currency,
-                merchantId: merchant.id,
-                cancelURL: paymentInitiation.payment_method.data.cancel_url,
-                transactionSignature: null,
-            },
-        });
+        try {
+            return await this.prisma.paymentRecord.create({
+                data: {
+                    status: 'pending',
+                    shopId: paymentInitiation.id,
+                    shopGid: paymentInitiation.gid,
+                    shopGroup: paymentInitiation.group,
+                    test: paymentInitiation.test,
+                    amount: paymentInitiation.amount,
+                    currency: paymentInitiation.currency,
+                    merchantId: merchant.id,
+                    cancelURL: paymentInitiation.payment_method.data.cancel_url,
+                    transactionSignature: null,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create payment record.');
+        }
     }
 
     async updatePaymentRecord(paymentRecord: PaymentRecord, update: PaymentRecordUpdate): Promise<PaymentRecord> {
@@ -78,7 +80,7 @@ export class PaymentRecordService {
                 data: update,
             });
         } catch {
-            throw new Error('Failed to update merchant');
+            throw new Error('Failed to update payment record.');
         }
     }
 }

@@ -39,12 +39,16 @@ export class MerchantService {
     }
 
     async createMerchant(shop: string, lastNonce: string): Promise<Merchant> {
-        return await this.prisma.merchant.create({
-            data: {
-                shop: shop,
-                lastNonce: lastNonce,
-            },
-        });
+        try {
+            return await this.prisma.merchant.create({
+                data: {
+                    shop: shop,
+                    lastNonce: lastNonce,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create merchant');
+        }
     }
 
     async updateMerchant(merchant: Merchant, update: MerchantUpdate): Promise<Merchant> {

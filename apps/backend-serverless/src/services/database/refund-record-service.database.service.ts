@@ -44,19 +44,23 @@ export class RefundRecordService {
     }
 
     async createRefundRecord(refundInitiation: ShopifyRefundInitiation, merchant: Merchant): Promise<RefundRecord> {
-        return await this.prisma.refundRecord.create({
-            data: {
-                status: 'pending',
-                amount: refundInitiation.amount,
-                currency: refundInitiation.currency,
-                shopId: refundInitiation.id,
-                shopGid: refundInitiation.gid,
-                shopPaymentId: refundInitiation.payment_id,
-                test: refundInitiation.test,
-                merchantId: merchant.id,
-                transactionSignature: null,
-            },
-        });
+        try {
+            return await this.prisma.refundRecord.create({
+                data: {
+                    status: 'pending',
+                    amount: refundInitiation.amount,
+                    currency: refundInitiation.currency,
+                    shopId: refundInitiation.id,
+                    shopGid: refundInitiation.gid,
+                    shopPaymentId: refundInitiation.payment_id,
+                    test: refundInitiation.test,
+                    merchantId: merchant.id,
+                    transactionSignature: null,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create refund record.');
+        }
     }
 
     async updateRefundRecord(refundRecord: RefundRecord, update: RefundRecordUpdate): Promise<RefundRecord> {
@@ -68,7 +72,7 @@ export class RefundRecordService {
                 data: update,
             });
         } catch {
-            throw new Error('Failed to update merchant');
+            throw new Error('Failed to update refund record.');
         }
     }
 }

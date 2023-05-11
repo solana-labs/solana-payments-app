@@ -43,25 +43,30 @@ export class TransactionRecordService {
             throw new Error('refundRecordId must be populated for refund transaction');
         }
 
+        // Create the base transaction record data
+        const transactionRecordData = {
+            signature: signature,
+            type: transactionType,
+            createdAt: createdAt,
+        };
+
+        // Depending on the transaction type, add the correct record ID
         switch (transactionType) {
             case TransactionType.payment:
-                return await this.prisma.transactionRecord.create({
-                    data: {
-                        signature: signature,
-                        type: transactionType,
-                        paymentRecordId: paymentRecordId,
-                        createdAt: createdAt,
-                    },
-                });
+                transactionRecordData['paymentRecordId'] = paymentRecordId;
+                break;
             case TransactionType.refund:
-                return await this.prisma.transactionRecord.create({
-                    data: {
-                        signature: signature,
-                        type: transactionType,
-                        refundRecordId: refundRecordId,
-                        createdAt: createdAt,
-                    },
-                });
+                transactionRecordData['refundRecordId'] = refundRecordId;
+                break;
+        }
+
+        // Create the transaction record
+        try {
+            return await this.prisma.transactionRecord.create({
+                data: transactionRecordData,
+            });
+        } catch {
+            throw new Error('Failed to create transaction record.');
         }
     }
 }
