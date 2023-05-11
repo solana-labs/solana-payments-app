@@ -1,15 +1,16 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { PayRequest } from '../models/pay-request.model.js'
+import { createSamplePayRequest } from '../utils/create-pay-transaction.util.js'
 import {
-    createPayTransaction,
-    createSamplePayRequest,
-} from '../utils/create-pay-transaction.util.js'
-import {
+    PaymentTransactionBuilder,
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js'
 import { decode } from '../utils/strings.util.js'
 import queryString from 'querystring'
+import { createConnection } from '../utils/connection.util.js'
+import { web3 } from '@project-serum/anchor'
+import { consumers } from 'stream'
 
 export const pay = async (
     event: APIGatewayProxyEvent
@@ -38,28 +39,45 @@ export const pay = async (
         }
     }
 
+    console.log(paymentTransactionRequest)
+
+    // try {
+    //     payRequest = PayRequest.parse({
+    //         receiver: paymentTransactionRequest.receiver,
+    //         sender: account,
+    //         sendingToken: paymentTransactionRequest.sendingToken,
+    //         receivingToken: paymentTransactionRequest.receivingToken,
+    //         feePayer: paymentTransactionRequest.feePayer,
+    //         receivingAmount: paymentTransactionRequest.receivingAmount,
+    //         amountType: paymentTransactionRequest.amountType,
+    //         transactionType: paymentTransactionRequest.transactionType,
+    //         createAta: paymentTransactionRequest.createAta,
+    //     })
+    // } catch (error) {
+    //     return {
+    //         statusCode: 500,
+    //         body: JSON.stringify(error, null, 2),
+    //     }
+    // }
+
+    const transactionBuilder = new PaymentTransactionBuilder(
+        paymentTransactionRequest
+    )
+
+    const connection = createConnection()
+
+    let transaction: web3.Transaction
+
     try {
-        payRequest = PayRequest.parse({
-            receiver: paymentTransactionRequest.receiver,
-            sender: account,
-            sendingToken: paymentTransactionRequest.sendingToken,
-            receivingToken: paymentTransactionRequest.receivingToken,
-            feePayer: paymentTransactionRequest.feePayer,
-            receivingAmount: paymentTransactionRequest.receivingAmount,
-            amountType: paymentTransactionRequest.amountType,
-            transactionType: paymentTransactionRequest.transactionType,
-            createAta: paymentTransactionRequest.createAta,
-        })
+        transaction = await transactionBuilder.buildPaymentTransaction(
+            connection
+        )
     } catch (error) {
         return {
             statusCode: 500,
             body: JSON.stringify(error, null, 2),
         }
     }
-
-    // const request = createSamplePayRequest()
-
-    const transaction = await createPayTransaction(payRequest)
 
     const base = transaction
         .serialize({ requireAllSignatures: false, verifySignatures: false })

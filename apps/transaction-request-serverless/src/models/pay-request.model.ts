@@ -28,6 +28,8 @@ export const PayRequest = z.object({
     amountType: AmountTypeEnum,
     transactionType: TransactionTypeEnum.default(TransactionType.Blockhash),
     createAta: z.boolean().default(false),
+    singleUseNewAcc: z.string().transform(pubkeyOrThrow).optional(),
+    singleUsePayer: z.string().transform(pubkeyOrThrow).optional(),
 })
 
 export type PayRequest = z.infer<typeof PayRequest>
