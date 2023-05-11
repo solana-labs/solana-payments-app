@@ -16,6 +16,7 @@ import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
 import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 import { MerchantService } from '../services/database/merchant-service.database.service.js'
+import { compose } from '@reduxjs/toolkit'
 
 export const paymentTransaction = async (
     event: APIGatewayProxyEvent
@@ -68,11 +69,15 @@ export const paymentTransaction = async (
         return requestErrorResponse(new Error('Merchant not found.'))
     }
 
+    const singleUseKeypair = web3.Keypair.generate()
+
     try {
         paymentTransaction = await fetchPaymentTransaction(
             paymentRecord,
             merchant,
             account,
+            gasKeypair.publicKey.toBase58(),
+            singleUseKeypair.publicKey.toBase58(),
             gasKeypair.publicKey.toBase58()
         )
     } catch (error) {
@@ -80,13 +85,17 @@ export const paymentTransaction = async (
         return requestErrorResponse(error)
     }
 
+    console.log('sup tj')
+
     try {
         transaction = encodeTransaction(paymentTransaction.transaction)
     } catch (error) {
         return requestErrorResponse(error)
     }
 
-    transaction.sign(gasKeypair)
+    transaction.partialSign(gasKeypair)
+    transaction.partialSign(singleUseKeypair)
+
     const transactionSignature = transaction.signature
 
     if (transactionSignature == null) {

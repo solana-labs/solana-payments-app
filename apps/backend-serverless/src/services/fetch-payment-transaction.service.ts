@@ -11,7 +11,9 @@ export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
     merchant: Merchant,
     account: string,
-    gas: string
+    gas: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
     if (merchant.paymentAddress == null) {
         throw new Error('Merchant payment address not found.')
@@ -26,7 +28,9 @@ export const fetchPaymentTransaction = async (
         '0.1',
         'size',
         'blockhash',
-        'true'
+        'true',
+        singleUseNewAcc,
+        singleUsePayer
     )
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',

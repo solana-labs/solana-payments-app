@@ -73,6 +73,7 @@ export const pay = async (
             connection
         )
     } catch (error) {
+        console.log(error)
         return {
             statusCode: 500,
             body: JSON.stringify(error, null, 2),

@@ -43,16 +43,8 @@ export const paymentTransactionRequestScheme = object().shape({
         .oneOf(Object.values(TransactionType), 'Invalid transaction type')
         .required(),
     createAta: boolean().required(),
-    singleUseNewAcc: string()
-        .transform((value, originalValue) => {
-            return new web3.PublicKey(originalValue)
-        })
-        .optional(),
-    singleUsePayer: string()
-        .transform((value, originalValue) => {
-            return new web3.PublicKey(originalValue)
-        })
-        .optional(),
+    singleUseNewAcc: publicKeySchema.required(),
+    singleUsePayer: publicKeySchema.required(),
 })
 
 export type PaymentTransactionRequest = InferType<
@@ -147,7 +139,7 @@ export class PaymentTransactionBuilder {
                     )
         }
 
-        if (this.sendingToken != this.receivingToken) {
+        if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
             swapIxs = await createSwapIx({
                 provider: 'jupiter',
                 quantity: receivingQuantity,
@@ -167,9 +159,10 @@ export class PaymentTransactionBuilder {
         )
 
         if (this.singleUseNewAcc && this.singleUsePayer) {
-            createIxs = createAccountIx(
+            createIxs = await createAccountIx(
                 this.singleUseNewAcc,
-                this.singleUsePayer
+                this.singleUsePayer,
+                connection
             )
         }
 

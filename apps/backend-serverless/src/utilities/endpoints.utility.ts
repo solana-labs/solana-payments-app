@@ -14,7 +14,9 @@ export const buildPaymentTransactionRequestEndpoint = (
     receivingAmount: string,
     amountType: string,
     transactionType: string,
-    createAta: string
+    createAta: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string
 ) => {
     const TRANSACTION_REQUEST_SERVER_URL =
         process.env.TRANSACTION_REQUEST_SERVER_URL
@@ -25,7 +27,7 @@ export const buildPaymentTransactionRequestEndpoint = (
         )
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}`
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}`
 }
 
 export const buildRefundTransactionRequestEndpoint = (

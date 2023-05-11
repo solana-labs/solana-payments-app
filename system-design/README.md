@@ -265,3 +265,13 @@ sequenceDiagram
 |    createdAt    | String  | timestamp the transaction was built and signed |
 | paymentRecordId | String? |      links the transaction to the payment      |
 | refundRecordId  | String? |      links the transaction to the refund       |
+
+## Novel Concepts We Use
+
+### Single Use Accounts
+
+A Single Use Account is an account with 0 data that we add on to transactions. They serve as a solution to a few problems we face when building on chain payment that integrate with web2 commerce platforms.
+
+### Small Data Faux Refrence Keys
+
+We add refrence keys onto transactions for look ups later. Small data < 32 bytes can be made into a public key that only serves as a way to look up the transaction later.
