@@ -9,15 +9,9 @@ import { PaymentRecordService } from '../services/database/payment-record-servic
 import { MerchantService } from '../services/database/merchant-service.database.service.js';
 
 export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let paymentInitiation: ShopifyPaymentInitiation;
-    let paymentRecord: PaymentRecord | null;
-    let merchant: Merchant | null;
-
     const prisma = new PrismaClient();
-
     const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
-
     const paymentUiUrl = process.env.PAYMENT_UI_URL;
 
     if (paymentUiUrl == null) {
@@ -34,19 +28,20 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         return requestErrorResponse(new Error('Missing shop.'));
     }
 
-    merchant = await merchantService.getMerchant({ shop: shop });
+    const merchant = await merchantService.getMerchant({ shop: shop });
 
     if (merchant == null) {
         throw new Error('Merchant not found.');
     }
 
+    let paymentInitiation;
     try {
         paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
     } catch (error) {
         return requestErrorResponse(error);
     }
 
-    paymentRecord = await paymentRecordService.getPaymentRecord({
+    let paymentRecord = await paymentRecordService.getPaymentRecord({
         shopId: paymentInitiation.id,
     });
 
@@ -62,7 +57,7 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         statusCode: 200,
         body: JSON.stringify(
             {
-                redirect_url: paymentUiUrl + '?paymentId=' + paymentRecord.id,
+                redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
             },
             null,
             2
