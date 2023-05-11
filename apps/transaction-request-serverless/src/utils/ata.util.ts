@@ -1,6 +1,6 @@
-import { web3 } from '@project-serum/anchor'
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
-import { SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID } from '../configs/pubkeys.config.js'
+import { web3 } from '@project-serum/anchor';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID } from '../configs/pubkeys.config.js';
 
 export async function findAssociatedTokenAddress(
     walletAddress: web3.PublicKey,
@@ -8,14 +8,10 @@ export async function findAssociatedTokenAddress(
 ): Promise<web3.PublicKey> {
     return (
         await web3.PublicKey.findProgramAddress(
-            [
-                walletAddress.toBuffer(),
-                TOKEN_PROGRAM_ID.toBuffer(),
-                tokenMintAddress.toBuffer(),
-            ],
+            [walletAddress.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), tokenMintAddress.toBuffer()],
             SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
         )
-    )[0]
+    )[0];
 }
 
 export const createAssociatedTokenAccountInstruction = (
@@ -40,10 +36,10 @@ export const createAssociatedTokenAccountInstruction = (
             isSigner: false,
             isWritable: false,
         },
-    ]
+    ];
     return new web3.TransactionInstruction({
         keys,
         programId: SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
         data: Buffer.from([]),
-    })
-}
+    });
+};

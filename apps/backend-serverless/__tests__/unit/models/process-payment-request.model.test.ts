@@ -1,4 +1,4 @@
-import { parseAndValidateShopifyPaymentInitiation } from '../../../src/models/process-payment-request.model.js'
+import { parseAndValidateShopifyPaymentInitiation } from '../../../src/models/process-payment-request.model.js';
 
 // export const shopifyPaymentInitiationScheme = object().shape({
 //     id: string().required(),
@@ -27,8 +27,7 @@ describe('unit testing shopify payment initiation model', () => {
             payment_method: {
                 type: 'offsite',
                 data: {
-                    cancel_url:
-                        'https://my-test-shop.com/1/checkouts/4c94d6f5b93f726a82dadfe45cdde432',
+                    cancel_url: 'https://my-test-shop.com/1/checkouts/4c94d6f5b93f726a82dadfe45cdde432',
                 },
             },
             proposed_at: '2020-07-13T00:00:00Z',
@@ -62,14 +61,12 @@ describe('unit testing shopify payment initiation model', () => {
                 },
             },
             kind: 'sale',
-        }
+        };
 
         expect(() => {
-            parseAndValidateShopifyPaymentInitiation(
-                validShopifyPaymentInitiation
-            )
-        }).not.toThrow()
-    })
+            parseAndValidateShopifyPaymentInitiation(validShopifyPaymentInitiation);
+        }).not.toThrow();
+    });
 
     it('missing gid in response', () => {
         const validShopifyPaymentInitiation = {
@@ -82,8 +79,7 @@ describe('unit testing shopify payment initiation model', () => {
             payment_method: {
                 type: 'offsite',
                 data: {
-                    cancel_url:
-                        'https://my-test-shop.com/1/checkouts/4c94d6f5b93f726a82dadfe45cdde432',
+                    cancel_url: 'https://my-test-shop.com/1/checkouts/4c94d6f5b93f726a82dadfe45cdde432',
                 },
             },
             proposed_at: '2020-07-13T00:00:00Z',
@@ -117,12 +113,10 @@ describe('unit testing shopify payment initiation model', () => {
                 },
             },
             kind: 'sale',
-        }
+        };
 
         expect(() => {
-            parseAndValidateShopifyPaymentInitiation(
-                validShopifyPaymentInitiation
-            )
-        }).toThrow()
-    })
-})
+            parseAndValidateShopifyPaymentInitiation(validShopifyPaymentInitiation);
+        }).toThrow();
+    });
+});

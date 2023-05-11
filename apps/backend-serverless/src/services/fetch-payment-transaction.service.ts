@@ -1,11 +1,11 @@
-import axios from 'axios'
-import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js'
+import axios from 'axios';
+import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../models/transaction-request-response.model.js'
-import { Merchant, PaymentRecord } from '@prisma/client'
-import { USDC_MINT } from '../configs/tokens.config.js'
+} from '../models/transaction-request-response.model.js';
+import { Merchant, PaymentRecord } from '@prisma/client';
+import { USDC_MINT } from '../configs/tokens.config.js';
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
@@ -16,7 +16,7 @@ export const fetchPaymentTransaction = async (
     singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
     if (merchant.paymentAddress == null) {
-        throw new Error('Merchant payment address not found.')
+        throw new Error('Merchant payment address not found.');
     }
 
     const endpoint = buildPaymentTransactionRequestEndpoint(
@@ -31,36 +31,28 @@ export const fetchPaymentTransaction = async (
         'true',
         singleUseNewAcc,
         singleUsePayer
-    )
+    );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-    }
+    };
 
-    const response = await axios.post(
-        endpoint,
-        { account: account },
-        { headers: headers }
-    )
+    const response = await axios.post(endpoint, { account: account }, { headers: headers });
 
     if (response.status != 200) {
-        throw new Error('Error fetching payment transaction.')
+        throw new Error('Error fetching payment transaction.');
     }
 
-    let paymentTransactionResponse: TransactionRequestResponse
+    let paymentTransactionResponse: TransactionRequestResponse;
 
     try {
-        paymentTransactionResponse = parseAndValidateTransactionRequestResponse(
-            response.data
-        )
+        paymentTransactionResponse = parseAndValidateTransactionRequestResponse(response.data);
     } catch (error) {
         if (error instanceof Error) {
-            throw error
+            throw error;
         } else {
-            throw new Error(
-                'Could not parse transaction response. Unknown Reason.'
-            )
+            throw new Error('Could not parse transaction response. Unknown Reason.');
         }
     }
 
-    return paymentTransactionResponse
-}
+    return paymentTransactionResponse;
+};

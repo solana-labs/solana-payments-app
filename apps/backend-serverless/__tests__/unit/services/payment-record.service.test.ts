@@ -1,12 +1,12 @@
-import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service.js'
-import { prismaMock } from '../../../prisma-singleton.js'
+import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service.js';
+import { prismaMock } from '../../../prisma-singleton.js';
 
 describe('Payment Record Testing Suite', () => {
-    let paymentRecordService: PaymentRecordService
+    let paymentRecordService: PaymentRecordService;
 
     beforeEach(() => {
-        paymentRecordService = new PaymentRecordService(prismaMock)
-    })
+        paymentRecordService = new PaymentRecordService(prismaMock);
+    });
 
     it('find a payment record', async () => {
         const mockPaymentRecord = {
@@ -23,16 +23,16 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
-        }
+        };
 
-        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord)
+        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
 
         const paymentRecord = await paymentRecordService.getPaymentRecord({
             id: 1,
-        })
+        });
 
-        expect(paymentRecord).toEqual(mockPaymentRecord)
-    })
+        expect(paymentRecord).toEqual(mockPaymentRecord);
+    });
 
     it('update a payment record', async () => {
         const mockPaymentRecordBeforeUpdate = {
@@ -49,7 +49,7 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
-        }
+        };
 
         const mockPaymentRecordAfterUpdate = {
             id: 1,
@@ -65,33 +65,24 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
-        }
+        };
 
-        prismaMock.paymentRecord.findFirst.mockResolvedValue(
-            mockPaymentRecordBeforeUpdate
-        )
+        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
 
-        const paymentRecordBeforeUpdate =
-            await paymentRecordService.getPaymentRecord({
-                id: 1,
-            })
+        const paymentRecordBeforeUpdate = await paymentRecordService.getPaymentRecord({
+            id: 1,
+        });
 
         if (paymentRecordBeforeUpdate === null) {
-            return
+            return;
         }
 
-        prismaMock.paymentRecord.update.mockResolvedValue(
-            mockPaymentRecordAfterUpdate
-        )
+        prismaMock.paymentRecord.update.mockResolvedValue(mockPaymentRecordAfterUpdate);
 
-        const paymentRecordAfterUpdate =
-            await paymentRecordService.updatePaymentRecord(
-                paymentRecordBeforeUpdate,
-                {
-                    status: 'paid',
-                }
-            )
+        const paymentRecordAfterUpdate = await paymentRecordService.updatePaymentRecord(paymentRecordBeforeUpdate, {
+            status: 'paid',
+        });
 
-        expect(paymentRecordAfterUpdate).toEqual(mockPaymentRecordAfterUpdate)
-    })
-})
+        expect(paymentRecordAfterUpdate).toEqual(mockPaymentRecordAfterUpdate);
+    });
+});

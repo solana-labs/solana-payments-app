@@ -1,4 +1,4 @@
-import { parseAndValidateHeliusEnchancedTransaction } from '../../../src/models/helius-enhanced-transaction.model.js'
+import { parseAndValidateHeliusEnchancedTransaction } from '../../../src/models/helius-enhanced-transaction.model.js';
 
 describe('unit testing helius enhanced transaction model', () => {
     it('valid ehancted transaction model', () => {
@@ -25,10 +25,8 @@ describe('unit testing helius enhanced transaction model', () => {
                                     decimals: 6,
                                     tokenAmount: '100000',
                                 },
-                                tokenAccount:
-                                    '7jHY5Ln7zRYSrQ4pNX3jb6FeWQnbnqX9XSpU5Y1tex4w',
-                                userAccount:
-                                    'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
+                                tokenAccount: '7jHY5Ln7zRYSrQ4pNX3jb6FeWQnbnqX9XSpU5Y1tex4w',
+                                userAccount: 'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
                             },
                         ],
                     },
@@ -42,10 +40,8 @@ describe('unit testing helius enhanced transaction model', () => {
                                     decimals: 6,
                                     tokenAmount: '-100000',
                                 },
-                                tokenAccount:
-                                    'F4aXhCqf54YkcNiyQNyaS3WsjsopUHh3oJKRxAsnsG6R',
-                                userAccount:
-                                    '5rPoLqhSC2VnMULYfzYX4712GEFNFv8nof6K6nP7GX8E',
+                                tokenAccount: 'F4aXhCqf54YkcNiyQNyaS3WsjsopUHh3oJKRxAsnsG6R',
+                                userAccount: '5rPoLqhSC2VnMULYfzYX4712GEFNFv8nof6K6nP7GX8E',
                             },
                         ],
                     },
@@ -75,27 +71,21 @@ describe('unit testing helius enhanced transaction model', () => {
                         ],
                         data: 'i9TTqffgKmDLh',
                         innerInstructions: [],
-                        programId:
-                            'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                        programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                     },
                 ],
                 nativeTransfers: [],
-                signature:
-                    '2TWHQrdf7jk4h6TTx1aso56iZVY6LRS6wUt1Q4djPJhpaJ3uih7b7539rjHm3WLjwKDZg31ivgRGzbQ4AQMnJW8h',
+                signature: '2TWHQrdf7jk4h6TTx1aso56iZVY6LRS6wUt1Q4djPJhpaJ3uih7b7539rjHm3WLjwKDZg31ivgRGzbQ4AQMnJW8h',
                 slot: 193181977,
                 source: 'SOLANA_PROGRAM_LIBRARY',
                 timestamp: 1683734845,
                 tokenTransfers: [
                     {
-                        fromTokenAccount:
-                            'F4aXhCqf54YkcNiyQNyaS3WsjsopUHh3oJKRxAsnsG6R',
-                        fromUserAccount:
-                            '5rPoLqhSC2VnMULYfzYX4712GEFNFv8nof6K6nP7GX8E',
+                        fromTokenAccount: 'F4aXhCqf54YkcNiyQNyaS3WsjsopUHh3oJKRxAsnsG6R',
+                        fromUserAccount: '5rPoLqhSC2VnMULYfzYX4712GEFNFv8nof6K6nP7GX8E',
                         mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-                        toTokenAccount:
-                            '7jHY5Ln7zRYSrQ4pNX3jb6FeWQnbnqX9XSpU5Y1tex4w',
-                        toUserAccount:
-                            'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
+                        toTokenAccount: '7jHY5Ln7zRYSrQ4pNX3jb6FeWQnbnqX9XSpU5Y1tex4w',
+                        toUserAccount: 'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
                         tokenAmount: 0.1,
                         tokenStandard: 'Fungible',
                     },
@@ -103,10 +93,10 @@ describe('unit testing helius enhanced transaction model', () => {
                 transactionError: null,
                 type: 'TRANSFER',
             },
-        ]
+        ];
 
         expect(() => {
-            parseAndValidateHeliusEnchancedTransaction(validEnhancedTransaction)
-        }).not.toThrow()
-    })
-})
+            parseAndValidateHeliusEnchancedTransaction(validEnhancedTransaction);
+        }).not.toThrow();
+    });
+});

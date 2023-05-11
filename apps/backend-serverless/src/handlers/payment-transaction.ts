@@ -1,83 +1,77 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client'
-import { requestErrorResponse } from '../utilities/request-response.utility.js'
-import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
-import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client';
+import { requestErrorResponse } from '../utilities/request-response.utility.js';
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js';
+import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js';
 import {
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
-} from '../models/payment-transaction-request.model.js'
-import { encodeBufferToBase58 } from '../utilities/encode-transaction.utility.js'
-import { decode } from '../utilities/string.utility.js'
-import queryString from 'query-string'
-import { encodeTransaction } from '../utilities/encode-transaction.utility.js'
-import { web3 } from '@project-serum/anchor'
-import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
-import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
-import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
-import { MerchantService } from '../services/database/merchant-service.database.service.js'
-import { compose } from '@reduxjs/toolkit'
-import { generateSingleUseKeypairFromPaymentRecord } from '../utilities/generate-single-use-keypair.utility.js'
-import { uploadSingleUseKeypair } from '../services/upload-single-use-keypair.service.js'
+} from '../models/payment-transaction-request.model.js';
+import { encodeBufferToBase58 } from '../utilities/encode-transaction.utility.js';
+import { decode } from '../utilities/string.utility.js';
+import queryString from 'query-string';
+import { encodeTransaction } from '../utilities/encode-transaction.utility.js';
+import { web3 } from '@project-serum/anchor';
+import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js';
+import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js';
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js';
+import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { compose } from '@reduxjs/toolkit';
+import { generateSingleUseKeypairFromPaymentRecord } from '../utilities/generate-single-use-keypair.utility.js';
+import { uploadSingleUseKeypair } from '../services/upload-single-use-keypair.service.js';
 
-export const paymentTransaction = async (
-    event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-    let paymentRecord: PaymentRecord | null
-    let paymentTransaction: TransactionRequestResponse
-    let paymentRequest: PaymentTransactionRequest
-    let transaction: web3.Transaction
+export const paymentTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    let paymentRecord: PaymentRecord | null;
+    let paymentTransaction: TransactionRequestResponse;
+    let paymentRequest: PaymentTransactionRequest;
+    let transaction: web3.Transaction;
 
-    const prisma = new PrismaClient()
-    const transactionRecordService = new TransactionRecordService(prisma)
-    const paymentRecordService = new PaymentRecordService(prisma)
-    const merchantService = new MerchantService(prisma)
+    const prisma = new PrismaClient();
+    const transactionRecordService = new TransactionRecordService(prisma);
+    const paymentRecordService = new PaymentRecordService(prisma);
+    const merchantService = new MerchantService(prisma);
 
-    const decodedBody = event.body ? decode(event.body) : ''
-    const body = queryString.parse(decodedBody)
-    const account = body['account'] as string | null
+    const decodedBody = event.body ? decode(event.body) : '';
+    const body = queryString.parse(decodedBody);
+    const account = body['account'] as string | null;
 
     if (account == null) {
-        return requestErrorResponse(new Error('No account provided.'))
+        return requestErrorResponse(new Error('No account provided.'));
     }
 
     try {
-        paymentRequest = parseAndValidatePaymentTransactionRequest(
-            event.queryStringParameters
-        )
+        paymentRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
-    const gasKeypair = await fetchGasKeypair()
+    const gasKeypair = await fetchGasKeypair();
 
     try {
         paymentRecord = await paymentRecordService.getPaymentRecord({
             id: paymentRequest.paymentId,
-        })
+        });
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
     if (paymentRecord == null) {
-        return requestErrorResponse(new Error('Payment record not found.'))
+        return requestErrorResponse(new Error('Payment record not found.'));
     }
 
     const merchant = await merchantService.getMerchant({
         id: paymentRecord.merchantId,
-    })
+    });
 
     if (merchant == null) {
-        return requestErrorResponse(new Error('Merchant not found.'))
+        return requestErrorResponse(new Error('Merchant not found.'));
     }
 
-    const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(
-        paymentRecord
-    )
+    const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
 
     // we should probably try / catch this but if it fails we keep going, just log
     // the rent redemption later isn't worth failing on customer ux
-    await uploadSingleUseKeypair(singleUseKeypair, paymentRecord)
+    await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
 
     try {
         paymentTransaction = await fetchPaymentTransaction(
@@ -87,30 +81,30 @@ export const paymentTransaction = async (
             gasKeypair.publicKey.toBase58(),
             singleUseKeypair.publicKey.toBase58(),
             gasKeypair.publicKey.toBase58()
-        )
+        );
     } catch (error) {
-        console.log(error)
-        return requestErrorResponse(error)
+        console.log(error);
+        return requestErrorResponse(error);
     }
 
     try {
-        transaction = encodeTransaction(paymentTransaction.transaction)
+        transaction = encodeTransaction(paymentTransaction.transaction);
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
-    transaction.partialSign(gasKeypair)
-    transaction.partialSign(singleUseKeypair)
+    transaction.partialSign(gasKeypair);
+    transaction.partialSign(singleUseKeypair);
 
-    const transactionSignature = transaction.signature
+    const transactionSignature = transaction.signature;
 
     if (transactionSignature == null) {
-        return requestErrorResponse(new Error('No transaction signature.'))
+        return requestErrorResponse(new Error('No transaction signature.'));
     }
 
-    const signatureBuffer = transactionSignature
+    const signatureBuffer = transactionSignature;
 
-    const signatureString = encodeBufferToBase58(signatureBuffer)
+    const signatureString = encodeBufferToBase58(signatureBuffer);
 
     try {
         await transactionRecordService.createTransactionRecord(
@@ -119,16 +113,16 @@ export const paymentTransaction = async (
             paymentRecord.id,
             null,
             'fake-dat'
-        )
+        );
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
     const transactionBuffer = transaction.serialize({
         verifySignatures: false,
         requireAllSignatures: false,
-    })
-    const transactionString = transactionBuffer.toString('base64')
+    });
+    const transactionString = transactionBuffer.toString('base64');
 
     return {
         statusCode: 200,
@@ -140,12 +134,10 @@ export const paymentTransaction = async (
             null,
             2
         ),
-    }
-}
+    };
+};
 
-export const paymentMetadata = async (
-    event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
+export const paymentMetadata = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     return {
         statusCode: 200,
         body: JSON.stringify(
@@ -156,5 +148,5 @@ export const paymentMetadata = async (
             null,
             2
         ),
-    }
-}
+    };
+};

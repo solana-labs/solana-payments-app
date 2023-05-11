@@ -1,12 +1,12 @@
-import { RefundRecordService } from '../../../src/services/database/refund-record-service.database.service.js'
-import { prismaMock } from '../../../prisma-singleton.js'
+import { RefundRecordService } from '../../../src/services/database/refund-record-service.database.service.js';
+import { prismaMock } from '../../../prisma-singleton.js';
 
 describe('Refund Record Testing Suite', () => {
-    let refundRecordService: RefundRecordService
+    let refundRecordService: RefundRecordService;
 
     beforeEach(() => {
-        refundRecordService = new RefundRecordService(prismaMock)
-    })
+        refundRecordService = new RefundRecordService(prismaMock);
+    });
 
     it('find a refund record', async () => {
         const mockRefundRecord = {
@@ -20,14 +20,14 @@ describe('Refund Record Testing Suite', () => {
             test: true,
             merchantId: 1,
             transactionSignature: null,
-        }
+        };
 
-        prismaMock.refundRecord.findFirst.mockResolvedValue(mockRefundRecord)
+        prismaMock.refundRecord.findFirst.mockResolvedValue(mockRefundRecord);
 
         const refundRecord = await refundRecordService.getRefundRecord({
             id: 1,
-        })
+        });
 
-        expect(refundRecord).toEqual(mockRefundRecord)
-    })
-})
+        expect(refundRecord).toEqual(mockRefundRecord);
+    });
+});

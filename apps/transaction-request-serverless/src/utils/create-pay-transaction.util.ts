@@ -1,12 +1,12 @@
-import { web3 } from '@project-serum/anchor'
-import { USDC_PUBKEY, WSOL_PUBKEY } from '../configs/pubkeys.config.js'
-import { TokenInformation } from '../configs/token-list.config.js'
-import { PayRequest } from '../models/pay-request.model.js'
-import { createTransferIx } from '../services/builders/transfer-ix.builder.js'
-import { createSwapIx } from '../services/swaps/create-swap-ix.service.js'
-import { createConnection } from '../utils/connection.util.js'
-import { createAccountIx } from '../services/builders/create-account-ix.builder.js'
-import { PaymentTransactionRequest } from '../models/payment-transaction-request.model.js'
+import { web3 } from '@project-serum/anchor';
+import { USDC_PUBKEY, WSOL_PUBKEY } from '../configs/pubkeys.config.js';
+import { TokenInformation } from '../configs/token-list.config.js';
+import { PayRequest } from '../models/pay-request.model.js';
+import { createTransferIx } from '../services/builders/transfer-ix.builder.js';
+import { createSwapIx } from '../services/swaps/create-swap-ix.service.js';
+import { createConnection } from '../utils/connection.util.js';
+import { createAccountIx } from '../services/builders/create-account-ix.builder.js';
+import { PaymentTransactionRequest } from '../models/payment-transaction-request.model.js';
 
 // const createPayTransaction = async (
 //     payRequest: PaymentTransactionRequest
@@ -93,9 +93,9 @@ const createSamplePayRequest = (): PayRequest => {
         amountType: 'size',
         transactionType: 'blockhash',
         createAta: true,
-    })
+    });
 
-    return payRequest
-}
+    return payRequest;
+};
 
-export { PayRequest, createSamplePayRequest }
+export { PayRequest, createSamplePayRequest };

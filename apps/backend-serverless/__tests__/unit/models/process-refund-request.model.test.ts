@@ -1,4 +1,4 @@
-import { parseAndValidateShopifyRefundInitiation } from '../../../src/models/process-refund.request.model.js'
+import { parseAndValidateShopifyRefundInitiation } from '../../../src/models/process-refund.request.model.js';
 
 describe('unit testing shopify refund initiation model', () => {
     it('valid shopify refund initiation', () => {
@@ -11,14 +11,12 @@ describe('unit testing shopify refund initiation model', () => {
             test: false,
             merchant_locale: 'en',
             proposed_at: '2021-07-13T00:00:00Z',
-        }
+        };
 
         expect(() => {
-            parseAndValidateShopifyRefundInitiation(
-                validShopifyRefundInitiation
-            )
-        }).not.toThrow()
-    })
+            parseAndValidateShopifyRefundInitiation(validShopifyRefundInitiation);
+        }).not.toThrow();
+    });
 
     it('missing gid in response', () => {
         const invalidShopifyRefundInitiation = {
@@ -29,12 +27,10 @@ describe('unit testing shopify refund initiation model', () => {
             test: false,
             merchant_locale: 'en',
             proposed_at: '2021-07-13T00:00:00Z',
-        }
+        };
 
         expect(() => {
-            parseAndValidateShopifyRefundInitiation(
-                invalidShopifyRefundInitiation
-            )
-        }).toThrow()
-    })
-})
+            parseAndValidateShopifyRefundInitiation(invalidShopifyRefundInitiation);
+        }).toThrow();
+    });
+});

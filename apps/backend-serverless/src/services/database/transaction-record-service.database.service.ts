@@ -1,8 +1,4 @@
-import {
-    PrismaClient,
-    TransactionRecord,
-    TransactionType,
-} from '@prisma/client'
+import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 
 // --- TransactionRecordService CRUD Operations ---
 // 1. getTransactionRecord
@@ -10,20 +6,18 @@ import {
 //
 // We currently don't need to support updating Transaction Records
 export class TransactionRecordService {
-    private prisma: PrismaClient
+    private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
-        this.prisma = prismaClient
+        this.prisma = prismaClient;
     }
 
-    async getTransactionRecord(
-        signature: string
-    ): Promise<TransactionRecord | null> {
+    async getTransactionRecord(signature: string): Promise<TransactionRecord | null> {
         return await this.prisma.transactionRecord.findFirst({
             where: {
                 signature: signature,
             },
-        })
+        });
     }
 
     async createTransactionRecord(
@@ -34,33 +28,19 @@ export class TransactionRecordService {
         createdAt: string
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {
-            throw new Error(
-                'paymentRecordId and refundRecordId cannot both be null'
-            )
+            throw new Error('paymentRecordId and refundRecordId cannot both be null');
         }
 
         if (paymentRecordId != null && refundRecordId != null) {
-            throw new Error(
-                'paymentRecordId and refundRecordId cannot both be populated'
-            )
+            throw new Error('paymentRecordId and refundRecordId cannot both be populated');
         }
 
-        if (
-            transactionType == TransactionType.payment &&
-            paymentRecordId == null
-        ) {
-            throw new Error(
-                'paymentRecordId must be populated for payment transaction'
-            )
+        if (transactionType == TransactionType.payment && paymentRecordId == null) {
+            throw new Error('paymentRecordId must be populated for payment transaction');
         }
 
-        if (
-            transactionType == TransactionType.refund &&
-            refundRecordId == null
-        ) {
-            throw new Error(
-                'refundRecordId must be populated for refund transaction'
-            )
+        if (transactionType == TransactionType.refund && refundRecordId == null) {
+            throw new Error('refundRecordId must be populated for refund transaction');
         }
 
         switch (transactionType) {
@@ -72,7 +52,7 @@ export class TransactionRecordService {
                         paymentRecordId: paymentRecordId,
                         createdAt: createdAt,
                     },
-                })
+                });
             case TransactionType.refund:
                 return await this.prisma.transactionRecord.create({
                     data: {
@@ -81,7 +61,7 @@ export class TransactionRecordService {
                         refundRecordId: refundRecordId,
                         createdAt: createdAt,
                     },
-                })
+                });
         }
     }
 }

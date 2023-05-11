@@ -1,11 +1,11 @@
-import { buildPriceEndpoint, getPrices } from "../src";
+import { buildPriceEndpoint, getPrices } from '../src';
 
-describe("basic", () => {
-  it("should work", async () => {
-    const infos = await getPrices(["SOL", "USDC"]);
-    console.log(infos);
-    expect(true).toBeTruthy();
-  });
+describe('basic', () => {
+    it('should work', async () => {
+        const infos = await getPrices(['SOL', 'USDC']);
+        console.log(infos);
+        expect(true).toBeTruthy();
+    });
 });
 
 // describe('testing url building', () => {

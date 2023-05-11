@@ -1,64 +1,57 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client'
-import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js'
-import queryString from 'query-string'
-import { decode } from '../utilities/string.utility.js'
-import { requestErrorResponse } from '../utilities/request-response.utility.js'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
+import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js';
+import queryString from 'query-string';
+import { decode } from '../utilities/string.utility.js';
+import { requestErrorResponse } from '../utilities/request-response.utility.js';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
-} from '../models/refund-transaction-request.model.js'
-import { web3 } from '@project-serum/anchor'
-import { TransactionRequestResponse } from '../models/transaction-request-response.model.js'
-import {
-    encodeBufferToBase58,
-    encodeTransaction,
-} from '../utilities/encode-transaction.utility.js'
-import { fetchRefundTransaction } from '../services/fetch-refund-transaction.service.js'
-import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js'
-import { RefundRecordService } from '../services/database/refund-record-service.database.service.js'
-import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
+} from '../models/refund-transaction-request.model.js';
+import { web3 } from '@project-serum/anchor';
+import { TransactionRequestResponse } from '../models/transaction-request-response.model.js';
+import { encodeBufferToBase58, encodeTransaction } from '../utilities/encode-transaction.utility.js';
+import { fetchRefundTransaction } from '../services/fetch-refund-transaction.service.js';
+import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js';
+import { RefundRecordService } from '../services/database/refund-record-service.database.service.js';
+import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js';
 
-export const refundTransaction = async (
-    event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-    const prisma = new PrismaClient()
-    const transactionRecordService = new TransactionRecordService(prisma)
-    const refundRecordService = new RefundRecordService(prisma)
+export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const prisma = new PrismaClient();
+    const transactionRecordService = new TransactionRecordService(prisma);
+    const refundRecordService = new RefundRecordService(prisma);
 
-    let refundRecord: RefundRecord | null
-    let refundRequest: RefundTransactionRequest
-    let refundTransaction: TransactionRequestResponse
-    let transaction: web3.Transaction
+    let refundRecord: RefundRecord | null;
+    let refundRequest: RefundTransactionRequest;
+    let refundTransaction: TransactionRequestResponse;
+    let transaction: web3.Transaction;
 
-    const decodedBody = event.body ? decode(event.body) : ''
-    const body = queryString.parse(decodedBody)
-    const account = body['account'] as string | null
+    const decodedBody = event.body ? decode(event.body) : '';
+    const body = queryString.parse(decodedBody);
+    const account = body['account'] as string | null;
 
     if (account == null) {
-        return requestErrorResponse(new Error('No account provided.'))
+        return requestErrorResponse(new Error('No account provided.'));
     }
 
     try {
-        refundRequest = parseAndValidateRefundTransactionRequest(
-            event.queryStringParameters
-        )
+        refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
-    const gasKeypair = await fetchGasKeypair()
+    const gasKeypair = await fetchGasKeypair();
 
     try {
         refundRecord = await refundRecordService.getRefundRecord({
             id: refundRequest.refundId,
-        })
+        });
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
     if (refundRecord == null) {
-        return requestErrorResponse(new Error('No refund record found.'))
+        return requestErrorResponse(new Error('No refund record found.'));
     }
 
     // this sould def be a service to fetch a refund transaction, but i would
@@ -70,31 +63,27 @@ export const refundTransaction = async (
     // 4. we create a transaction record in the db, these could def be different services
     // 5. we serialize the transaction and return it to the client
     try {
-        refundTransaction = await fetchRefundTransaction(
-            refundRecord,
-            account,
-            gasKeypair.publicKey.toBase58()
-        )
+        refundTransaction = await fetchRefundTransaction(refundRecord, account, gasKeypair.publicKey.toBase58());
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
     try {
-        transaction = encodeTransaction(refundTransaction.transaction)
+        transaction = encodeTransaction(refundTransaction.transaction);
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
-    transaction.sign(gasKeypair)
-    const transactionSignature = transaction.signature
+    transaction.sign(gasKeypair);
+    const transactionSignature = transaction.signature;
 
     if (transactionSignature == null) {
-        return requestErrorResponse(new Error('No transaction signature.'))
+        return requestErrorResponse(new Error('No transaction signature.'));
     }
 
-    const signatureBuffer = transactionSignature
+    const signatureBuffer = transactionSignature;
 
-    const signatureString = encodeBufferToBase58(signatureBuffer)
+    const signatureString = encodeBufferToBase58(signatureBuffer);
 
     try {
         await transactionRecordService.createTransactionRecord(
@@ -103,16 +92,16 @@ export const refundTransaction = async (
             null,
             refundRecord.id,
             'fake-date'
-        )
+        );
     } catch (error) {
-        return requestErrorResponse(error)
+        return requestErrorResponse(error);
     }
 
     const transactionBuffer = transaction.serialize({
         verifySignatures: false,
         requireAllSignatures: false,
-    })
-    const transactionString = transactionBuffer.toString('base64')
+    });
+    const transactionString = transactionBuffer.toString('base64');
 
     return {
         statusCode: 200,
@@ -124,5 +113,5 @@ export const refundTransaction = async (
             null,
             2
         ),
-    }
-}
+    };
+};

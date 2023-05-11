@@ -1,8 +1,6 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-export const hello = async (
-    event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
+export const hello = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     return {
         statusCode: 500,
         body: JSON.stringify(
@@ -13,5 +11,5 @@ export const hello = async (
             null,
             2
         ),
-    }
-}
+    };
+};
