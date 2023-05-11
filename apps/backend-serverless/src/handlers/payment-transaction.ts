@@ -17,6 +17,8 @@ import { TransactionRecordService } from '../services/database/transaction-recor
 import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js'
 import { MerchantService } from '../services/database/merchant-service.database.service.js'
 import { compose } from '@reduxjs/toolkit'
+import { generateSingleUseKeypairFromPaymentRecord } from '../utilities/generate-single-use-keypair.utility.js'
+import { uploadSingleUseKeypair } from '../services/upload-single-use-keypair.service.js'
 
 export const paymentTransaction = async (
     event: APIGatewayProxyEvent
@@ -69,7 +71,13 @@ export const paymentTransaction = async (
         return requestErrorResponse(new Error('Merchant not found.'))
     }
 
-    const singleUseKeypair = web3.Keypair.generate()
+    const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(
+        paymentRecord
+    )
+
+    // we should probably try / catch this but if it fails we keep going, just log
+    // the rent redemption later isn't worth failing on customer ux
+    await uploadSingleUseKeypair(singleUseKeypair, paymentRecord)
 
     try {
         paymentTransaction = await fetchPaymentTransaction(
@@ -84,8 +92,6 @@ export const paymentTransaction = async (
         console.log(error)
         return requestErrorResponse(error)
     }
-
-    console.log('sup tj')
 
     try {
         transaction = encodeTransaction(paymentTransaction.transaction)
