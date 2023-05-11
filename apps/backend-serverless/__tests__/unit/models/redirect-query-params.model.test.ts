@@ -1,4 +1,4 @@
-import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model'
+import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model.js'
 
 describe('unit testing redirect query parameters model', () => {
     it('valid query parameters', () => {

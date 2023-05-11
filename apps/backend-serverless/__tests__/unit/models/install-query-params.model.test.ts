@@ -1,4 +1,4 @@
-import { parseAndValidateAppInstallQueryParms } from '../../../src/models/install-query-params.model'
+import { parseAndValidateAppInstallQueryParms } from '../../../src/models/install-query-params.model.js'
 
 describe('Install Query Params Model', () => {
     it('valid query params', () => {

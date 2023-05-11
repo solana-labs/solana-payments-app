@@ -69,7 +69,7 @@ export const processDiscoveredPaymentTransaction = async (
     // either way, i'm thinking we want to handle it here
     // TODO: Summerize why we're try/catching here but throwing elsewhere
     try {
-        let resolvePaymentResponse = await paymentSessionResolve(
+        const resolvePaymentResponse = await paymentSessionResolve(
             paymentRecord.shopGid,
             merchant.shop,
             merchant.accessToken

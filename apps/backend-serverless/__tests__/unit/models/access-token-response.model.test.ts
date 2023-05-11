@@ -1,4 +1,4 @@
-import { parseAndValidateAccessTokenResponse } from '../../../src/models/access-token-response.model'
+import { parseAndValidateAccessTokenResponse } from '../../../src/models/access-token-response.model.js'
 
 describe('Merchant Testing Suite', () => {
     it('valid access token response', () => {

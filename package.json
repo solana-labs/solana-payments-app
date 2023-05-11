@@ -13,15 +13,25 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@solana/eslint-config-solana": "^1.0.1",
+    "@solana/prettier-config-solana": "^0.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
     "eslint-config-custom": "*",
-    "prettier": "latest",
+    "eslint-plugin-jest": "^27.2.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-sort-keys-fix": "^1.1.2",
+    "prettier": "^2.8.7",
     "turbo": "latest"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.3"
   },
-  "packageManager": "yarn@1.22.17"
+  "packageManager": "yarn@1.22.17",
+  "prettier": "@solana/prettier-config-solana"
 }

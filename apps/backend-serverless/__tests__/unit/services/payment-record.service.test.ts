@@ -1,5 +1,5 @@
-import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service'
-import { prismaMock } from '../../../prisma-singleton'
+import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service.js'
+import { prismaMock } from '../../../prisma-singleton.js'
 
 describe('Payment Record Testing Suite', () => {
     let paymentRecordService: PaymentRecordService

@@ -1,5 +1,5 @@
-import { MerchantService } from '../../../src/services/database/merchant-service.database.service'
-import { prismaMock } from '../../../prisma-singleton'
+import { MerchantService } from '../../../src/services/database/merchant-service.database.service.js'
+import { prismaMock } from '../../../prisma-singleton.js'
 
 describe('Merchant Testing Suite', () => {
     let merchantService: MerchantService
