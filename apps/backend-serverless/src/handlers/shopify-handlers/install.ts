@@ -7,6 +7,7 @@ import {
     createShopifyOAuthGrantRedirectUrl,
 } from '../../utilities/shopify-install-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
 
 export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let parsedAppInstallQuery: AppInstallQueryParam;
@@ -21,13 +22,14 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 
     const shop = parsedAppInstallQuery.shop;
-    const newNonce = 'a';
+    const newNonce = await generatePubkeyString();
 
     try {
         const merchant = await merchantService.getMerchant({ shop: shop });
 
         if (merchant == null) {
-            await merchantService.createMerchant(shop, newNonce);
+            const newMerchantId = await generatePubkeyString();
+            await merchantService.createMerchant(newMerchantId, shop, newNonce);
         } else {
             await merchantService.updateMerchant(merchant, {
                 lastNonce: newNonce,
@@ -37,8 +39,7 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         return requestErrorResponse(error);
     }
 
-    // TODO: Start using the new nonce
-    const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, shop);
+    const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
     return {
         statusCode: 302,

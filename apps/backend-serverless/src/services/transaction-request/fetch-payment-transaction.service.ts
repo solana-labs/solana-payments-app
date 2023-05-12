@@ -25,7 +25,7 @@ export const fetchPaymentTransaction = async (
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,
-        paymentRecord.usdcAmount.toString(),
+        paymentRecord.usdcAmount.toPrecision(4).toString(),
         'size',
         'blockhash',
         'true',

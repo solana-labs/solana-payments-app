@@ -1,7 +1,7 @@
 import { object, string, InferType, boolean, number } from 'yup';
 
 export const paymentStatusRequestScheme = object().shape({
-    id: number().required(),
+    id: string().required(),
 });
 
 export type PaymentStatusRequest = InferType<typeof paymentStatusRequestScheme>;
