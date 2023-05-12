@@ -23,8 +23,8 @@ export class TransactionRecordService {
     async createTransactionRecord(
         signature: string,
         transactionType: TransactionType,
-        paymentRecordId: number | null,
-        refundRecordId: number | null,
+        paymentRecordId: string | null,
+        refundRecordId: string | null,
         createdAt: string
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {

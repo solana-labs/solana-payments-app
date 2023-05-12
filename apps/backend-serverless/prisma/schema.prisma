@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Merchant {
-  id             Int             @id @default(autoincrement())
+  id             String          @id // Internal ID
   shop           String          @unique
   accessToken    String?
   scopes         String?
@@ -23,7 +23,7 @@ model Merchant {
 }
 
 model PaymentRecord {
-  id                   Int                 @id @default(autoincrement())
+  id                   String              @id // Internal ID
   status               String
   shopId               String
   shopGid              String?
@@ -35,9 +35,25 @@ model PaymentRecord {
   cancelURL            String
   transactions         TransactionRecord[]
   merchant             Merchant            @relation(fields: [merchantId], references: [id])
-  merchantId           Int
+  merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
+}
+
+model RefundRecord {
+  id                   String   @id // Internal ID
+  status               String
+  amount               Float
+  currency             String
+  shopId               String // Given Id from Shopify
+  shopGid              String // Given Gid from Shopify
+  shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  test                 Boolean
+  merchant             Merchant @relation(fields: [merchantId], references: [id])
+  merchantId           String
+  transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
+
+  TransactionRecord TransactionRecord[]
 }
 
 enum TransactionType {
@@ -51,23 +67,7 @@ model TransactionRecord {
   type            TransactionType
   createdAt       String
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
-  paymentRecordId Int?
+  paymentRecordId String?
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
-  refundRecordId  Int?
-}
-
-model RefundRecord {
-  id                   Int      @id @default(autoincrement()) // Internal ID
-  status               String
-  amount               Float
-  currency             String
-  shopId               String // Given Id from Shopify
-  shopGid              String // Given Gid from Shopify
-  shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
-  test                 Boolean
-  merchant             Merchant @relation(fields: [merchantId], references: [id])
-  merchantId           Int
-  transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
-
-  TransactionRecord TransactionRecord[]
+  refundRecordId  String?
 }

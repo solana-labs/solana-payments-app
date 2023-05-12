@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
+import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -56,7 +57,13 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     paymentInitiation.amount,
                     paymentInitiation.currency
                 );
-                paymentRecord = await paymentRecordService.createPaymentRecord(paymentInitiation, merchant, usdcSize);
+                const newPaymentRecordId = await generatePubkeyString();
+                paymentRecord = await paymentRecordService.createPaymentRecord(
+                    newPaymentRecordId,
+                    paymentInitiation,
+                    merchant,
+                    usdcSize
+                );
             } catch (error) {
                 return requestErrorResponse(error);
             }

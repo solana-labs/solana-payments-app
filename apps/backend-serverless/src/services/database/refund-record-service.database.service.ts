@@ -21,7 +21,7 @@ export type ShopIdQuery = {
 };
 
 export type RefundIdQuery = {
-    id: number;
+    id: string;
 };
 
 export type RefundRecordQuery = ShopIdQuery | RefundIdQuery;
@@ -43,10 +43,15 @@ export class RefundRecordService {
         });
     }
 
-    async createRefundRecord(refundInitiation: ShopifyRefundInitiation, merchant: Merchant): Promise<RefundRecord> {
+    async createRefundRecord(
+        id: string,
+        refundInitiation: ShopifyRefundInitiation,
+        merchant: Merchant
+    ): Promise<RefundRecord> {
         try {
             return await this.prisma.refundRecord.create({
                 data: {
+                    id: id,
                     status: 'pending',
                     amount: refundInitiation.amount,
                     currency: refundInitiation.currency,
