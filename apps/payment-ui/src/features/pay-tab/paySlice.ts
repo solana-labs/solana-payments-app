@@ -1,24 +1,24 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { RootState } from '../../store'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { RootState } from '../../store';
 
-export type PaymentMethod = 'qr-code' | 'connect-wallet'
+export type PaymentMethod = 'qr-code' | 'connect-wallet';
 
 interface PayState {
-    paymentMethod: PaymentMethod
-    paymentId: string | null
-    payerAccount: string | null
-    paymentDetails: PaymentDetails | null
-    payingToken: PayingToken
+    paymentMethod: PaymentMethod;
+    paymentId: string | null;
+    payerAccount: string | null;
+    paymentDetails: PaymentDetails | null;
+    payingToken: PayingToken;
 }
 
 interface PaymentDetails {
-    merchantDisplayName: string
-    totalAmountUSDCDisplay: string
-    totalAmountFiatDisplay: string
-    cancelUrl: string | null
-    completed: boolean
-    redirectUrl: string | null
+    merchantDisplayName: string;
+    totalAmountUSDCDisplay: string;
+    totalAmountFiatDisplay: string;
+    cancelUrl: string | null;
+    completed: boolean;
+    redirectUrl: string | null;
 }
 
 export enum PayingToken {
@@ -34,7 +34,7 @@ const initialPaymentDetails: PaymentDetails = {
     cancelUrl: null,
     completed: false,
     redirectUrl: null,
-}
+};
 
 const initalState: PayState = {
     paymentMethod: 'connect-wallet',
@@ -42,17 +42,17 @@ const initalState: PayState = {
     payerAccount: null,
     paymentDetails: initialPaymentDetails,
     payingToken: PayingToken.USDC,
-}
+};
 
 export const timerTick = createAsyncThunk<PaymentDetails, void>(
     'pay/timerTick',
     async (_, { getState }): Promise<PaymentDetails> => {
-        const state = getState() as RootState
-        const paymentId = state.pay.paymentId
+        const state = getState() as RootState;
+        const paymentId = state.pay.paymentId;
         if (paymentId != null) {
             const response = await axios.get(
                 `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
-            )
+            );
             return {
                 merchantDisplayName: response.data.merchantDisplayName,
                 totalAmountUSDCDisplay: response.data.totalAmountUSDCDisplay,
@@ -60,7 +60,7 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
                 cancelUrl: response.data.cancelUrl,
                 completed: response.data.completed,
                 redirectUrl: response.data.redirectUrl,
-            }
+            };
         } else {
             return {
                 merchantDisplayName: 'Failed...',
@@ -69,26 +69,26 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
                 cancelUrl: null,
                 completed: false,
                 redirectUrl: null,
-            }
+            };
         }
     }
-)
+);
 
 const paySlice = createSlice({
     name: 'pay',
     initialState: initalState,
     reducers: {
         setPaymentMethod: (state, action: PayloadAction<PaymentMethod>) => {
-            state.paymentMethod = action.payload
+            state.paymentMethod = action.payload;
         },
         setPayingToken: (state, action: PayloadAction<PayingToken>) => {
-            state.payingToken = action.payload
+            state.payingToken = action.payload;
         },
         setPaymentId: (state, action: PayloadAction<string>) => {
-            state.paymentId = action.payload
+            state.paymentId = action.payload;
         },
         setPayerAccount: (state, action: PayloadAction<string>) => {
-            state.payerAccount = action.payload
+            state.payerAccount = action.payload;
         },
     },
     extraReducers(builder) {
@@ -99,31 +99,24 @@ const paySlice = createSlice({
             .addCase(timerTick.rejected, (state: PayState) => {
                 // Handle timerTick.rejected if needed
             })
-            .addCase(
-                timerTick.fulfilled,
-                (state: PayState, action: PayloadAction<PaymentDetails>) => {
-                    state.paymentDetails = action.payload
-                }
-            )
+            .addCase(timerTick.fulfilled, (state: PayState, action: PayloadAction<PaymentDetails>) => {
+                state.paymentDetails = action.payload;
+            });
     },
-})
+});
 
-export const { setPaymentMethod, setPayingToken, setPaymentId } =
-    paySlice.actions
+export const { setPaymentMethod, setPayingToken, setPaymentId } = paySlice.actions;
 
-export default paySlice.reducer
+export default paySlice.reducer;
 
-export const getPaymentMethod = (state: any): PaymentMethod =>
-    state.pay.paymentMethod
+export const getPaymentMethod = (state: any): PaymentMethod => state.pay.paymentMethod;
 
-export const getPayingToken = (state: any): PayingToken => state.pay.payingToken
+export const getPayingToken = (state: any): PayingToken => state.pay.payingToken;
 
-export const getPaymentId = (state: any): PayingToken => state.pay.paymentId
+export const getPaymentId = (state: any): PayingToken => state.pay.paymentId;
 
-export const getRedirectUrl = (state: any): string | null =>
-    state.pay.redirectUrl
+export const getRedirectUrl = (state: any): string | null => state.pay.redirectUrl;
 
-export const getPayerAccount = (state: any): string => state.pay.payerAccount
+export const getPayerAccount = (state: any): string => state.pay.payerAccount;
 
-export const getPaymentDetails = (state: any): PaymentDetails =>
-    state.pay.paymentDetails ?? initialPaymentDetails
+export const getPaymentDetails = (state: any): PaymentDetails => state.pay.paymentDetails ?? initialPaymentDetails;

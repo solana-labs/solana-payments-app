@@ -1,68 +1,67 @@
-import { PrismaClient, Merchant } from '@prisma/client'
+import { PrismaClient, Merchant } from '@prisma/client';
 
 export type ShopQuery = {
-    shop: string
-}
+    shop: string;
+};
 
 export type IdQuery = {
-    id: number
-}
+    id: string;
+};
 
-export type MerchantQuery = ShopQuery | IdQuery
+export type MerchantQuery = ShopQuery | IdQuery;
 
 export type LastNonceUpdate = {
-    lastNonce: string
-}
+    lastNonce: string;
+};
 
 export type RedirectUpdate = {
-    accessToken: string
-    scopes: string
-}
+    accessToken: string;
+    scopes: string;
+};
 
 export type PaymentAddressUpdate = {
-    paymentAddress: string
-}
+    paymentAddress: string;
+};
 
-export type MerchantUpdate =
-    | LastNonceUpdate
-    | RedirectUpdate
-    | PaymentAddressUpdate
+export type MerchantUpdate = LastNonceUpdate | RedirectUpdate | PaymentAddressUpdate;
 
 export class MerchantService {
-    private prisma: PrismaClient
+    private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
-        this.prisma = prismaClient
+        this.prisma = prismaClient;
     }
 
     async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
         return await this.prisma.merchant.findUnique({
             where: query,
-        })
+        });
     }
 
-    async createMerchant(shop: string, lastNonce: string): Promise<Merchant> {
-        return await this.prisma.merchant.create({
-            data: {
-                shop: shop,
-                lastNonce: lastNonce,
-            },
-        })
+    async createMerchant(id: string, shop: string, lastNonce: string): Promise<Merchant> {
+        try {
+            return await this.prisma.merchant.create({
+                data: {
+                    id: id,
+                    shop: shop,
+                    lastNonce: lastNonce,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create merchant');
+        }
     }
 
-    async updateMerchant(
-        merchant: Merchant,
-        update: MerchantUpdate
-    ): Promise<Merchant> {
+    async updateMerchant(merchant: Merchant, update: MerchantUpdate): Promise<Merchant> {
         try {
             return await this.prisma.merchant.update({
                 where: {
                     id: merchant.id,
                 },
                 data: update,
-            })
+            });
         } catch {
-            throw new Error('Failed to update merchant')
+            throw new Error('Failed to update merchant');
         }
     }
 }

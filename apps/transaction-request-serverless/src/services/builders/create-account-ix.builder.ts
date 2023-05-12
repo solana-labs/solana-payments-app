@@ -1,10 +1,7 @@
-import { web3 } from '@project-serum/anchor'
-import {
-    findAssociatedTokenAddress,
-    createAssociatedTokenAccountInstruction,
-} from '../../utils/ata.util.js'
-import { createTransferCheckedInstruction } from '@solana/spl-token'
-import { TokenInformation } from '../../configs/token-list.config.js'
+import { web3 } from '@project-serum/anchor';
+import { findAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '../../utils/ata.util.js';
+import { createTransferCheckedInstruction } from '@solana/spl-token';
+import { TokenInformation } from '../../configs/token-list.config.js';
 
 // This will be a function to create the instructions to create a system program account. This is a utility
 // instruction that can be used when you're using API based transaction fetching and you only want a transaction to be
@@ -15,7 +12,7 @@ export const createAccountIx = async (
     fromPubkey: web3.PublicKey,
     connection: web3.Connection
 ): Promise<web3.TransactionInstruction[]> => {
-    const rent = await connection.getMinimumBalanceForRentExemption(0)
+    const rent = await connection.getMinimumBalanceForRentExemption(0);
 
     const ix = web3.SystemProgram.createAccount({
         fromPubkey,
@@ -23,7 +20,7 @@ export const createAccountIx = async (
         lamports: rent,
         space: 0,
         programId: web3.SystemProgram.programId,
-    })
+    });
 
-    return [ix]
-}
+    return [ix];
+};

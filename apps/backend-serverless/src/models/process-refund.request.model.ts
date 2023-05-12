@@ -1,5 +1,5 @@
-import { object, string, number, InferType, boolean } from 'yup'
-import { parseAndValidate } from '../utilities/yup.utility.js'
+import { object, string, number, InferType, boolean } from 'yup';
+import { parseAndValidate } from '../utilities/yup.utility.js';
 
 export const shopifyRefundInitiationScheme = object().shape({
     id: string().required(),
@@ -10,18 +10,14 @@ export const shopifyRefundInitiationScheme = object().shape({
     test: boolean().required(),
     merchant_locale: string().required(),
     proposed_at: string().required(),
-})
+});
 
-export type ShopifyRefundInitiation = InferType<
-    typeof shopifyRefundInitiationScheme
->
+export type ShopifyRefundInitiation = InferType<typeof shopifyRefundInitiationScheme>;
 
-export const parseAndValidateShopifyRefundInitiation = (
-    shopifyRefundInitiationBody: any
-): ShopifyRefundInitiation => {
+export const parseAndValidateShopifyRefundInitiation = (shopifyRefundInitiationBody: any): ShopifyRefundInitiation => {
     return parseAndValidate<ShopifyRefundInitiation>(
         shopifyRefundInitiationBody,
         shopifyRefundInitiationScheme,
         'Could not parse the shopify refund initiation body. Unknown Reason.'
-    )
-}
+    );
+};

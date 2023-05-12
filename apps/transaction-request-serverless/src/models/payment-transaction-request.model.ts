@@ -1,34 +1,25 @@
-import { object, string, InferType, boolean, number } from 'yup'
-import { parseAndValidate } from '../utils/yup.util.js'
-import { web3 } from '@project-serum/anchor'
-import {
-    AmountType,
-    AmountTypeEnum,
-    TransactionType,
-    TransactionTypeEnum,
-} from './pay-request.model.js'
-import { TokenInformation } from '../configs/token-list.config.js'
-import { createSwapIx } from '../services/swaps/create-swap-ix.service.js'
-import { createTransferIx } from '../services/builders/transfer-ix.builder.js'
-import { USDC_PUBKEY } from '../configs/pubkeys.config.js'
-import { createAccountIx } from '../services/builders/create-account-ix.builder.js'
+import { object, string, InferType, boolean, number } from 'yup';
+import { parseAndValidate } from '../utils/yup.util.js';
+import { web3 } from '@project-serum/anchor';
+import { AmountType, AmountTypeEnum, TransactionType, TransactionTypeEnum } from './pay-request.model.js';
+import { TokenInformation } from '../configs/token-list.config.js';
+import { createSwapIx } from '../services/swaps/create-swap-ix.service.js';
+import { createTransferIx } from '../services/builders/transfer-ix.builder.js';
+import { USDC_PUBKEY } from '../configs/pubkeys.config.js';
+import { createAccountIx } from '../services/builders/create-account-ix.builder.js';
 
-const publicKeySchema = string().test(
-    'is-public-key',
-    'Invalid public key',
-    (value) => {
-        if (value === undefined) {
-            return false
-        }
-
-        try {
-            new web3.PublicKey(value)
-            return true
-        } catch (err) {
-            return false
-        }
+const publicKeySchema = string().test('is-public-key', 'Invalid public key', value => {
+    if (value === undefined) {
+        return false;
     }
-)
+
+    try {
+        new web3.PublicKey(value);
+        return true;
+    } catch (err) {
+        return false;
+    }
+});
 
 export const paymentTransactionRequestScheme = object().shape({
     receiver: publicKeySchema.required(),
@@ -36,20 +27,14 @@ export const paymentTransactionRequestScheme = object().shape({
     receivingToken: publicKeySchema.required(),
     feePayer: publicKeySchema.required(),
     receivingAmount: number().required(),
-    amountType: string()
-        .oneOf(Object.values(AmountType), 'Invalid amount type')
-        .required(),
-    transactionType: string()
-        .oneOf(Object.values(TransactionType), 'Invalid transaction type')
-        .required(),
+    amountType: string().oneOf(Object.values(AmountType), 'Invalid amount type').required(),
+    transactionType: string().oneOf(Object.values(TransactionType), 'Invalid transaction type').required(),
     createAta: boolean().required(),
     singleUseNewAcc: publicKeySchema.required(),
     singleUsePayer: publicKeySchema.required(),
-})
+});
 
-export type PaymentTransactionRequest = InferType<
-    typeof paymentTransactionRequestScheme
->
+export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
     paymentTransactionRequestParams: any
@@ -58,55 +43,48 @@ export const parseAndValidatePaymentTransactionRequest = (
         paymentTransactionRequestParams,
         paymentTransactionRequestScheme,
         'Invalid payment transaction request'
-    )
-}
+    );
+};
 
 export class PaymentTransactionBuilder {
-    private sender: web3.PublicKey
-    private receiver: web3.PublicKey
-    private sendingToken: web3.PublicKey
-    private receivingToken: web3.PublicKey
-    private feePayer: web3.PublicKey
-    private receivingAmount: number
-    private amountType: AmountTypeEnum
-    private transactionType: TransactionTypeEnum
-    private createAta: boolean
-    private singleUseNewAcc: web3.PublicKey | null
-    private singleUsePayer: web3.PublicKey | null
+    private sender: web3.PublicKey;
+    private receiver: web3.PublicKey;
+    private sendingToken: web3.PublicKey;
+    private receivingToken: web3.PublicKey;
+    private feePayer: web3.PublicKey;
+    private receivingAmount: number;
+    private amountType: AmountTypeEnum;
+    private transactionType: TransactionTypeEnum;
+    private createAta: boolean;
+    private singleUseNewAcc: web3.PublicKey | null;
+    private singleUsePayer: web3.PublicKey | null;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
-        this.sender = new web3.PublicKey(paymentTransactionRequest.sender)
-        this.receiver = new web3.PublicKey(paymentTransactionRequest.receiver)
-        this.sendingToken = new web3.PublicKey(
-            paymentTransactionRequest.sendingToken
-        )
-        this.receivingToken = new web3.PublicKey(
-            paymentTransactionRequest.receivingToken
-        )
-        this.feePayer = new web3.PublicKey(paymentTransactionRequest.feePayer)
-        this.receivingAmount = paymentTransactionRequest.receivingAmount
-        this.amountType = paymentTransactionRequest.amountType as AmountTypeEnum
-        this.transactionType =
-            paymentTransactionRequest.transactionType as TransactionTypeEnum
-        this.createAta = paymentTransactionRequest.createAta
+        this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
+        this.receiver = new web3.PublicKey(paymentTransactionRequest.receiver);
+        this.sendingToken = new web3.PublicKey(paymentTransactionRequest.sendingToken);
+        this.receivingToken = new web3.PublicKey(paymentTransactionRequest.receivingToken);
+        this.feePayer = new web3.PublicKey(paymentTransactionRequest.feePayer);
+        this.receivingAmount = paymentTransactionRequest.receivingAmount;
+        this.amountType = paymentTransactionRequest.amountType as AmountTypeEnum;
+        this.transactionType = paymentTransactionRequest.transactionType as TransactionTypeEnum;
+        this.createAta = paymentTransactionRequest.createAta;
         this.singleUseNewAcc = paymentTransactionRequest.singleUseNewAcc
             ? new web3.PublicKey(paymentTransactionRequest.singleUseNewAcc)
-            : null
+            : null;
         this.singleUsePayer = paymentTransactionRequest.singleUsePayer
             ? new web3.PublicKey(paymentTransactionRequest.singleUsePayer)
-            : null
+            : null;
     }
 
-    public async buildPaymentTransaction(
-        connection: web3.Connection
-    ): Promise<web3.Transaction> {
-        let transaction: web3.Transaction
-        let receivingQuantity: number
-        var swapIxs: web3.TransactionInstruction[] = []
-        var transferIxs: web3.TransactionInstruction[] = []
-        var createIxs: web3.TransactionInstruction[] = []
+    public async buildPaymentTransaction(connection: web3.Connection): Promise<web3.Transaction> {
+        let transaction: web3.Transaction;
+        let receivingQuantity: number;
+        var swapIxs: web3.TransactionInstruction[] = [];
+        var transferIxs: web3.TransactionInstruction[] = [];
+        var createIxs: web3.TransactionInstruction[] = [];
 
-        const blockhash = await connection.getLatestBlockhash()
+        const blockhash = await connection.getLatestBlockhash();
 
         switch (this.transactionType) {
             case 'blockhash':
@@ -114,29 +92,25 @@ export class PaymentTransactionBuilder {
                     feePayer: this.feePayer,
                     blockhash: blockhash.blockhash,
                     lastValidBlockHeight: blockhash.lastValidBlockHeight,
-                })
+                });
             case 'nonce':
                 transaction = new web3.Transaction({
                     feePayer: this.feePayer,
                     blockhash: blockhash.blockhash,
                     lastValidBlockHeight: blockhash.lastValidBlockHeight,
-                })
+                });
         }
 
-        const receivingTokenInformation =
-            await TokenInformation.queryTokenInformationFromPubkey(
-                this.receivingToken,
-                connection
-            )
+        const receivingTokenInformation = await TokenInformation.queryTokenInformationFromPubkey(
+            this.receivingToken,
+            connection
+        );
 
         switch (this.amountType) {
             case 'quantity':
-                receivingQuantity = this.receivingAmount
+                receivingQuantity = this.receivingAmount;
             case 'size':
-                receivingQuantity =
-                    receivingTokenInformation.convertSizeToQuantity(
-                        this.receivingAmount
-                    )
+                receivingQuantity = receivingTokenInformation.convertSizeToQuantity(this.receivingAmount);
         }
 
         if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
@@ -146,7 +120,7 @@ export class PaymentTransactionBuilder {
                 fromMint: this.sendingToken,
                 toMint: this.receivingToken,
                 swapingWallet: this.sender,
-            })
+            });
         }
 
         transferIxs = await createTransferIx(
@@ -156,18 +130,14 @@ export class PaymentTransactionBuilder {
             receivingQuantity,
             this.createAta,
             connection
-        )
+        );
 
         if (this.singleUseNewAcc && this.singleUsePayer) {
-            createIxs = await createAccountIx(
-                this.singleUseNewAcc,
-                this.singleUsePayer,
-                connection
-            )
+            createIxs = await createAccountIx(this.singleUseNewAcc, this.singleUsePayer, connection);
         }
 
-        transaction = transaction.add(...swapIxs, ...transferIxs, ...createIxs)
+        transaction = transaction.add(...swapIxs, ...transferIxs, ...createIxs);
 
-        return transaction
+        return transaction;
     }
 }

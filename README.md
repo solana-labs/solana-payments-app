@@ -12,4 +12,4 @@ Right now the overall documentation is federated to respective directories. Over
 
 ## How to Contribute
 
-We need to flesh out more compartmentalized issues for developers to eaisily step in and contribute code. For now, please create issue about further documentation you would like to see.
+We need to flesh out more compartmentalized issues for developers to eaisily step in and contribute code. For now, please create issue about further documentation you would like to see. Please make sure you set up our prettier and es-list packages and these don't conflict with your local set up. We use the [es-lint](https://github.com/solana-labs/eslint-config-solana) and [prettier](https://github.com/solana-labs/prettier-config-solana) packages from Solana Labs. Both should be installed with the rest of the dependencies.

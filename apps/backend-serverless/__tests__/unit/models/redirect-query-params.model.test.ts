@@ -1,4 +1,4 @@
-import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model'
+import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model.js';
 
 describe('unit testing redirect query parameters model', () => {
     it('valid query parameters', () => {
@@ -9,12 +9,12 @@ describe('unit testing redirect query parameters model', () => {
             host: 'https://some-shop.myshopify.com',
             state: 'some-state',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppRedirectQueryParams(validRedirectQueryParams)
-        }).not.toThrow()
-    })
+            parseAndValidateAppRedirectQueryParams(validRedirectQueryParams);
+        }).not.toThrow();
+    });
 
     it('invalid shop parameter', () => {
         const invalidRedirectQueryParams = {
@@ -24,12 +24,12 @@ describe('unit testing redirect query parameters model', () => {
             host: 'https://some-shop.myshopify.com',
             state: 'some-state',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppRedirectQueryParams(invalidRedirectQueryParams)
-        }).toThrow()
-    })
+            parseAndValidateAppRedirectQueryParams(invalidRedirectQueryParams);
+        }).toThrow();
+    });
 
     it('missing code parameter', () => {
         const invalidRedirectQueryParams = {
@@ -38,10 +38,10 @@ describe('unit testing redirect query parameters model', () => {
             host: 'https://some-shop.myshopify.com',
             state: 'some-state',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppRedirectQueryParams(invalidRedirectQueryParams)
-        }).toThrow()
-    })
-})
+            parseAndValidateAppRedirectQueryParams(invalidRedirectQueryParams);
+        }).toThrow();
+    });
+});

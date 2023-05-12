@@ -1,12 +1,8 @@
-import {
-    PrismaClient,
-    TransactionRecord,
-    TransactionType,
-} from '@prisma/client'
-import { HeliusEnhancedTransaction } from '../models/helius-enhanced-transaction.model.js'
-import { RefundRecordService } from './database/refund-record-service.database.service.js'
-import { MerchantService } from './database/merchant-service.database.service.js'
-import { refundSessionResolve } from './refund-session-resolve.service.js'
+import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
+import { RefundRecordService } from '../database/refund-record-service.database.service.js';
+import { MerchantService } from '../database/merchant-service.database.service.js';
+import { refundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
@@ -17,48 +13,48 @@ export const processDiscoveredRefundTransaction = async (
     // we should probably do some validation here to make sure the transaction
     // actually matches the refund record that the transaction is associated with
     // for now i will ignore that, mocked the function for now
-    validateDiscoveredPaymentTransaction(transactionRecord, transaction)
+    validateDiscoveredPaymentTransaction(transactionRecord, transaction);
 
-    const refundRecordService = new RefundRecordService(prisma)
-    const merchantService = new MerchantService(prisma)
+    const refundRecordService = new RefundRecordService(prisma);
+    const merchantService = new MerchantService(prisma);
 
     // Verify the transaction is a refund
     if (transactionRecord.type != TransactionType.refund) {
-        throw new Error('Transaction record is not a refund')
+        throw new Error('Transaction record is not a refund');
     }
 
     // catching this error here and throwing will just give it back to /helius but then at least
     // that consolidates weird errors for logging into one place
     if (transactionRecord.refundRecordId == null) {
-        throw new Error('Payment record not found on transaction record.')
+        throw new Error('Payment record not found on transaction record.');
     }
 
     const refundRecord = await refundRecordService.getRefundRecord({
         id: transactionRecord.refundRecordId,
-    })
+    });
 
     if (refundRecord == null) {
-        throw new Error('Refund record not found.')
+        throw new Error('Refund record not found.');
     }
 
     if (refundRecord.shopGid == null) {
-        throw new Error('Shop gid not found on refund record.')
+        throw new Error('Shop gid not found on refund record.');
     }
 
     if (refundRecord.merchantId == null) {
-        throw new Error('Merchant ID not found on refund record.')
+        throw new Error('Merchant ID not found on refund record.');
     }
 
     const merchant = await merchantService.getMerchant({
         id: refundRecord.merchantId,
-    })
+    });
 
     if (merchant == null) {
-        throw new Error('Merchant not found with merchant id.')
+        throw new Error('Merchant not found with merchant id.');
     }
 
     if (merchant.accessToken == null) {
-        throw new Error('Access token not found on merchant.')
+        throw new Error('Access token not found on merchant.');
     }
 
     try {
@@ -66,7 +62,7 @@ export const processDiscoveredRefundTransaction = async (
             refundRecord.shopGid,
             merchant.shop,
             merchant.accessToken
-        )
+        );
 
         // If this were to throw, then we could just try again or add it to the retry queue, adding to the retry queue
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
@@ -75,16 +71,16 @@ export const processDiscoveredRefundTransaction = async (
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: 'paid',
             transactionSignature: transaction.signature,
-        })
+        });
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
     }
-}
+};
 
 const validateDiscoveredPaymentTransaction = (
     transactionRecord: TransactionRecord,
     transaction: HeliusEnhancedTransaction
 ) => {
-    transaction
-    transactionRecord
-}
+    transaction;
+    transactionRecord;
+};
