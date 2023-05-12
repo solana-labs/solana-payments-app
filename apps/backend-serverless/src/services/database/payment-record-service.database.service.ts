@@ -50,7 +50,11 @@ export class PaymentRecordService {
         });
     }
 
-    async createPaymentRecord(paymentInitiation: ShopifyPaymentInitiation, merchant: Merchant): Promise<PaymentRecord> {
+    async createPaymentRecord(
+        paymentInitiation: ShopifyPaymentInitiation,
+        merchant: Merchant,
+        usdcAmount: number
+    ): Promise<PaymentRecord> {
         try {
             return await this.prisma.paymentRecord.create({
                 data: {
@@ -64,6 +68,7 @@ export class PaymentRecordService {
                     merchantId: merchant.id,
                     cancelURL: paymentInitiation.payment_method.data.cancel_url,
                     transactionSignature: null,
+                    usdcAmount: usdcAmount,
                 },
             });
         } catch {

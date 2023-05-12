@@ -12,7 +12,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest"
+    "test": "jest",
+    "test:integration": "jest integration"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

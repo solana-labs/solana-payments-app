@@ -4,6 +4,7 @@ import { requestErrorResponse } from '../../utilities/request-response.utility.j
 import { PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 
 export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();
@@ -28,7 +29,7 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const merchant = await merchantService.getMerchant({ shop: shop });
 
     if (merchant == null) {
-        throw new Error('Merchant not found.');
+        throw new Error('Merchant not found');
     }
 
     let paymentInitiation;
@@ -44,7 +45,11 @@ export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     if (paymentRecord == null) {
         try {
-            paymentRecord = await paymentRecordService.createPaymentRecord(paymentInitiation, merchant);
+            const usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                paymentInitiation.amount,
+                paymentInitiation.currency
+            );
+            paymentRecord = await paymentRecordService.createPaymentRecord(paymentInitiation, merchant, usdcSize);
         } catch (error) {
             return requestErrorResponse(error);
         }

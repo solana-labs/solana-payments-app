@@ -31,6 +31,7 @@ model PaymentRecord {
   test                 Boolean
   amount               Float
   currency             String
+  usdcAmount           Float
   cancelURL            String
   transactions         TransactionRecord[]
   merchant             Merchant            @relation(fields: [merchantId], references: [id])
