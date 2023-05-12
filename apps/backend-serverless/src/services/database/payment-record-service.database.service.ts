@@ -87,11 +87,7 @@ export class PaymentRecordService {
                 data: update,
             });
         } catch {
-<<<<<<< HEAD
-            throw new Error('Failed to update merchant');
-=======
             throw new Error('Failed to update payment record.');
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         }
     }
 }

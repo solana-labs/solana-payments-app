@@ -29,11 +29,7 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
 
         const paymentRecord = await paymentRecordService.getPaymentRecord({
-<<<<<<< HEAD
-            id: 1,
-=======
             id: 'abcd',
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         });
 
         expect(paymentRecord).toEqual(mockPaymentRecord);
@@ -75,11 +71,7 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
 
         const paymentRecordBeforeUpdate = await paymentRecordService.getPaymentRecord({
-<<<<<<< HEAD
-            id: 1,
-=======
             id: 'abcd',
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         });
 
         if (paymentRecordBeforeUpdate === null) {

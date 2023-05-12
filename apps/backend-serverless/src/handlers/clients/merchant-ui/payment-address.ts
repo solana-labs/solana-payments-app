@@ -1,17 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-<<<<<<< HEAD:apps/backend-serverless/src/handlers/payment-address.ts
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
-import { PrismaClient } from '@prisma/client';
-import { decode } from '../utilities/string.utility.js';
-import queryString from 'query-string';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
-=======
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
 import { decode } from '../../../utilities/string.utility.js';
 import queryString from 'query-string';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17:apps/backend-serverless/src/handlers/clients/merchant-ui/payment-address.ts
 
 export const paymentAddress = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();

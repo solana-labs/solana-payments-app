@@ -39,11 +39,7 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
-<<<<<<< HEAD
-        const merchant = await merchantService.getMerchant({ id: 1 });
-=======
         const merchant = await merchantService.getMerchant({ id: 'abcd' });
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
 
         expect(merchant).toEqual(mockMerchant);
     });
@@ -60,15 +56,11 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.create.mockResolvedValue(mockMerchant);
 
-<<<<<<< HEAD
-        const merchant = await merchantService.createMerchant('mock-merchant-create.myshopify.com', 'abcd-1234');
-=======
         const merchant = await merchantService.createMerchant(
             'abcd',
             'mock-merchant-create.myshopify.com',
             'abcd-1234'
         );
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
 
         expect(merchant).toEqual(mockMerchant);
     });
