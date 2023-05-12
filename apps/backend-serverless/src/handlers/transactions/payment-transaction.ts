@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
-import { fetchPaymentTransaction } from '../../services/fetch-payment-transaction.service.js';
+import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
 import {
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,

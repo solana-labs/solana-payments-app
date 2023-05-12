@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js';
+import { buildPaymentTransactionRequestEndpoint } from '../../utilities/endpoints.utility.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../models/transaction-request-response.model.js';
+} from '../../models/transaction-request-response.model.js';
 import { Merchant, PaymentRecord } from '@prisma/client';
-import { USDC_MINT } from '../configs/tokens.config.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,

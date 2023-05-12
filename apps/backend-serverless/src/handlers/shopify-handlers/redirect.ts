@@ -4,7 +4,7 @@ import { AppRedirectQueryParam } from '../../models/redirect-query-params.model.
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { verifyAndParseShopifyRedirectRequest } from '../../utilities/shopify-redirect-request.utility.js';
-import { paymentAppConfigure } from '../../services/payment-app-configure.service.js';
+import { paymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/access-token-response.model.js';
 
