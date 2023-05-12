@@ -11,7 +11,7 @@ import {
 import { web3 } from '@project-serum/anchor';
 import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
 import { encodeBufferToBase58, encodeTransaction } from '../../utilities/encode-transaction.utility.js';
-import { fetchRefundTransaction } from '../../services/fetch-refund-transaction.service.js';
+import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';

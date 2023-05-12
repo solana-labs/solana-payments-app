@@ -32,7 +32,7 @@ export type ShopIdQuery = {
 
 // TODO: Better name for this type
 export type IdQuery = {
-    id: number;
+    id: string;
 };
 
 export type PaymentRecordQuery = ShopIdQuery | IdQuery;
@@ -51,6 +51,7 @@ export class PaymentRecordService {
     }
 
     async createPaymentRecord(
+        id: string,
         paymentInitiation: ShopifyPaymentInitiation,
         merchant: Merchant,
         usdcAmount: number
@@ -58,6 +59,7 @@ export class PaymentRecordService {
         try {
             return await this.prisma.paymentRecord.create({
                 data: {
+                    id: id,
                     status: 'pending',
                     shopId: paymentInitiation.id,
                     shopGid: paymentInitiation.gid,

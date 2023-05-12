@@ -1,8 +1,8 @@
 import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
-import { HeliusEnhancedTransaction } from '../models/helius-enhanced-transaction.model.js';
-import { RefundRecordService } from './database/refund-record-service.database.service.js';
-import { MerchantService } from './database/merchant-service.database.service.js';
-import { refundSessionResolve } from './refund-session-resolve.service.js';
+import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
+import { RefundRecordService } from '../database/refund-record-service.database.service.js';
+import { MerchantService } from '../database/merchant-service.database.service.js';
+import { refundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (

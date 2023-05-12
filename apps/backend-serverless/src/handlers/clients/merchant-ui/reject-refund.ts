@@ -7,7 +7,7 @@ import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,
 } from '../../../models/reject-refund-request.model.js';
-import { refundSessionReject } from '../../../services/refund-session-reject.service.js';
+import { refundSessionReject } from '../../../services/shopify/refund-session-reject.service.js';
 import { RejectRefundResponse } from '../../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';

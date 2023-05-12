@@ -10,7 +10,7 @@ describe('Merchant Testing Suite', () => {
 
     it('find a merchant with shop', async () => {
         const mockMerchant = {
-            id: 1,
+            id: 'abcd',
             shop: 'mock-merchant.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
@@ -29,7 +29,7 @@ describe('Merchant Testing Suite', () => {
 
     it('find a merchant with id', async () => {
         const mockMerchant = {
-            id: 1,
+            id: 'abcd',
             shop: 'mock-merchant.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
@@ -39,14 +39,14 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
-        const merchant = await merchantService.getMerchant({ id: 1 });
+        const merchant = await merchantService.getMerchant({ id: 'abcd' });
 
         expect(merchant).toEqual(mockMerchant);
     });
 
     it('create a merchant', async () => {
         const mockMerchant = {
-            id: 2,
+            id: 'abcd',
             shop: 'mock-merchant-create.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
@@ -56,14 +56,18 @@ describe('Merchant Testing Suite', () => {
 
         prismaMock.merchant.create.mockResolvedValue(mockMerchant);
 
-        const merchant = await merchantService.createMerchant('mock-merchant-create.myshopify.com', 'abcd-1234');
+        const merchant = await merchantService.createMerchant(
+            'abcd',
+            'mock-merchant-create.myshopify.com',
+            'abcd-1234'
+        );
 
         expect(merchant).toEqual(mockMerchant);
     });
 
     it('find no merchants', async () => {
         const mockMerchant = {
-            id: 2,
+            id: 'abcd',
             shop: 'mock-merchant-create.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
@@ -80,7 +84,7 @@ describe('Merchant Testing Suite', () => {
 
     it('update a merchant', async () => {
         const mockMerchantBeforeUpdate = {
-            id: 1,
+            id: 'abcd',
             shop: 'mock-merchant.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
@@ -89,7 +93,7 @@ describe('Merchant Testing Suite', () => {
         };
 
         const mockMerchantAfterUpdate = {
-            id: 1,
+            id: 'abcd',
             shop: 'mock-merchant.myshopify.com',
             lastNonce: 'efgh-5678',
             accessToken: null,
@@ -106,7 +110,7 @@ describe('Merchant Testing Suite', () => {
 
     it('update a merchant failing', async () => {
         const mockMerchantThatDoesNotExist = {
-            id: 2,
+            id: 'abcd',
             shop: 'mock-merchant-dne.myshopify.com',
             lastNonce: 'wxyz-4321',
             accessToken: null,

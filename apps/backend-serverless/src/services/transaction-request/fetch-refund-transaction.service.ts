@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { buildRefundTransactionRequestEndpoint } from '../utilities/endpoints.utility.js';
+import { buildRefundTransactionRequestEndpoint } from '../../utilities/endpoints.utility.js';
 import { RefundRecord } from '@prisma/client';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../models/transaction-request-response.model.js';
+} from '../../models/transaction-request-response.model.js';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,

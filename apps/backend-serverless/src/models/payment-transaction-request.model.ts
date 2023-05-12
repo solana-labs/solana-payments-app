@@ -1,7 +1,7 @@
-import { object, InferType, number } from 'yup';
+import { object, InferType, string } from 'yup';
 
 export const paymentTransactionRequestScheme = object().shape({
-    paymentId: number().required(),
+    paymentId: string().required(),
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;

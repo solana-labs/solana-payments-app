@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { shopifyGraphQLEndpoint } from '../configs/endpoints.config.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
