@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { buildPaymentTransactionRequestEndpoint } from '../utilities/endpoints.utility.js';
+import { buildPaymentTransactionRequestEndpoint } from '../../utilities/endpoints.utility.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../models/transaction-request-response.model.js';
+} from '../../models/transaction-request-response.model.js';
 import { Merchant, PaymentRecord } from '@prisma/client';
-import { USDC_MINT } from '../configs/tokens.config.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
@@ -25,7 +25,7 @@ export const fetchPaymentTransaction = async (
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,
-        '0.1',
+        paymentRecord.usdcAmount.toPrecision(4).toString(),
         'size',
         'blockhash',
         'true',

@@ -32,7 +32,7 @@ export type ShopIdQuery = {
 
 // TODO: Better name for this type
 export type IdQuery = {
-    id: number;
+    id: string;
 };
 
 export type PaymentRecordQuery = ShopIdQuery | IdQuery;
@@ -44,29 +44,38 @@ export class PaymentRecordService {
         this.prisma = prismaClient;
     }
 
-    // function overloads to query the database by shop or id
-    // async getPaymentRecord(id: string): Promise<PaymentRecord | null>
     async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {
         return await this.prisma.paymentRecord.findFirst({
             where: query,
         });
     }
 
-    async createPaymentRecord(paymentInitiation: ShopifyPaymentInitiation, merchant: Merchant): Promise<PaymentRecord> {
-        return await this.prisma.paymentRecord.create({
-            data: {
-                status: 'pending',
-                shopId: paymentInitiation.id,
-                shopGid: paymentInitiation.gid,
-                shopGroup: paymentInitiation.group,
-                test: paymentInitiation.test,
-                amount: paymentInitiation.amount,
-                currency: paymentInitiation.currency,
-                merchantId: merchant.id,
-                cancelURL: paymentInitiation.payment_method.data.cancel_url,
-                transactionSignature: null,
-            },
-        });
+    async createPaymentRecord(
+        id: string,
+        paymentInitiation: ShopifyPaymentInitiation,
+        merchant: Merchant,
+        usdcAmount: number
+    ): Promise<PaymentRecord> {
+        try {
+            return await this.prisma.paymentRecord.create({
+                data: {
+                    id: id,
+                    status: 'pending',
+                    shopId: paymentInitiation.id,
+                    shopGid: paymentInitiation.gid,
+                    shopGroup: paymentInitiation.group,
+                    test: paymentInitiation.test,
+                    amount: paymentInitiation.amount,
+                    currency: paymentInitiation.currency,
+                    merchantId: merchant.id,
+                    cancelURL: paymentInitiation.payment_method.data.cancel_url,
+                    transactionSignature: null,
+                    usdcAmount: usdcAmount,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create payment record.');
+        }
     }
 
     async updatePaymentRecord(paymentRecord: PaymentRecord, update: PaymentRecordUpdate): Promise<PaymentRecord> {
@@ -78,7 +87,11 @@ export class PaymentRecordService {
                 data: update,
             });
         } catch {
+<<<<<<< HEAD
             throw new Error('Failed to update merchant');
+=======
+            throw new Error('Failed to update payment record.');
+>>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         }
     }
 }

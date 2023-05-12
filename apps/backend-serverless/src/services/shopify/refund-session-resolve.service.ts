@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { shopifyGraphQLEndpoint } from '../configs/endpoints.config.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     ResolveRefundResponse,
     parseAndValidateResolveRefundResponse,
-} from '../models/shopify-graphql-responses/resolve-refund-response.model.js';
+} from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 
 const refundSessionResolveMutation = `mutation RefundSessionResolve($id: ID!) {
     refundSessionResolve(id: $id) {

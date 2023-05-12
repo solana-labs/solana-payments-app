@@ -11,15 +11,16 @@ describe('Payment Record Testing Suite', () => {
     it('find a payment record', async () => {
         const mockPaymentRecord = {
             status: 'pending',
-            id: 1,
+            id: 'abcd',
             shopId: '1234',
             shopGid: 'abcd',
             shopGroup: 'efgh',
             test: true,
             amount: 19.94,
+            usdcAmount: 19.94,
             currency: 'USD',
             customerAddress: null,
-            merchantId: 1,
+            merchantId: 'qwer',
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
@@ -28,7 +29,11 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
 
         const paymentRecord = await paymentRecordService.getPaymentRecord({
+<<<<<<< HEAD
             id: 1,
+=======
+            id: 'abcd',
+>>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         });
 
         expect(paymentRecord).toEqual(mockPaymentRecord);
@@ -36,32 +41,32 @@ describe('Payment Record Testing Suite', () => {
 
     it('update a payment record', async () => {
         const mockPaymentRecordBeforeUpdate = {
-            id: 1,
+            id: 'abcd',
             status: 'pending',
             shopId: 'abcd',
             shopGid: 'gid://shopify/Shop/1234',
             shopGroup: 'fdsaf',
             test: true,
             amount: 19.42,
+            usdcAmount: 19.42,
             currency: 'USD',
-            customerAddress: null,
-            merchantId: 5,
+            merchantId: 'qwer',
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
         };
 
         const mockPaymentRecordAfterUpdate = {
-            id: 1,
+            id: 'abcd',
             status: 'paid',
             shopId: 'abcd',
             shopGid: 'gid://shopify/Shop/1234',
             shopGroup: 'fdsaf',
             test: true,
             amount: 19.42,
+            usdcAmount: 19.42,
             currency: 'USD',
-            customerAddress: null,
-            merchantId: 5,
+            merchantId: 'qwer',
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
@@ -70,7 +75,11 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
 
         const paymentRecordBeforeUpdate = await paymentRecordService.getPaymentRecord({
+<<<<<<< HEAD
             id: 1,
+=======
+            id: 'abcd',
+>>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         });
 
         if (paymentRecordBeforeUpdate === null) {

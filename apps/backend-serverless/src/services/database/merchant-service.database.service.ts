@@ -5,7 +5,7 @@ export type ShopQuery = {
 };
 
 export type IdQuery = {
-    id: number;
+    id: string;
 };
 
 export type MerchantQuery = ShopQuery | IdQuery;
@@ -38,13 +38,18 @@ export class MerchantService {
         });
     }
 
-    async createMerchant(shop: string, lastNonce: string): Promise<Merchant> {
-        return await this.prisma.merchant.create({
-            data: {
-                shop: shop,
-                lastNonce: lastNonce,
-            },
-        });
+    async createMerchant(id: string, shop: string, lastNonce: string): Promise<Merchant> {
+        try {
+            return await this.prisma.merchant.create({
+                data: {
+                    id: id,
+                    shop: shop,
+                    lastNonce: lastNonce,
+                },
+            });
+        } catch {
+            throw new Error('Failed to create merchant');
+        }
     }
 
     async updateMerchant(merchant: Merchant, update: MerchantUpdate): Promise<Merchant> {
