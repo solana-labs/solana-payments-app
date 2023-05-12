@@ -15,6 +15,7 @@ import { fetchRefundTransaction } from '../../services/fetch-refund-transaction.
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { TrmService } from '../../services/trm-service.service.js';
 
 export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();
@@ -25,6 +26,14 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     let refundRequest: RefundTransactionRequest;
     let refundTransaction: TransactionRequestResponse;
     let transaction: web3.Transaction;
+
+    const TRM_API_KEY = process.env.TRM_API_KEY;
+
+    if (TRM_API_KEY == null) {
+        return requestErrorResponse(new Error('Missing internal config.'));
+    }
+
+    const trmService = new TrmService(TRM_API_KEY);
 
     const decodedBody = event.body ? decode(event.body) : '';
     const body = queryString.parse(decodedBody);
@@ -70,6 +79,12 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
 
     try {
         transaction = encodeTransaction(refundTransaction.transaction);
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
+
+    try {
+        await trmService.screenAddress(account!);
     } catch (error) {
         return requestErrorResponse(error);
     }

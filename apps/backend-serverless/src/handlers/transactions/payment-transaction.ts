@@ -19,6 +19,8 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { compose } from '@reduxjs/toolkit';
 import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
+import { screenWallet } from '../screen-wallet.js';
+import { TrmService } from '../../services/trm-service.service.js';
 
 export const paymentTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let paymentRecord: PaymentRecord | null;
@@ -30,6 +32,14 @@ export const paymentTransaction = async (event: APIGatewayProxyEvent): Promise<A
     const transactionRecordService = new TransactionRecordService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
+
+    const TRM_API_KEY = process.env.TRM_API_KEY;
+
+    if (TRM_API_KEY == null) {
+        return requestErrorResponse(new Error('Missing internal config.'));
+    }
+
+    const trmService = new TrmService(TRM_API_KEY);
 
     const decodedBody = event.body ? decode(event.body) : '';
     const body = queryString.parse(decodedBody);
@@ -84,6 +94,12 @@ export const paymentTransaction = async (event: APIGatewayProxyEvent): Promise<A
         );
     } catch (error) {
         console.log(error);
+        return requestErrorResponse(error);
+    }
+
+    try {
+        await trmService.screenAddress(account!);
+    } catch (error) {
         return requestErrorResponse(error);
     }
 
