@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-
-export const hello = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    return {
-        statusCode: 500,
-        body: JSON.stringify(
-            {
-                message: 'Hello, world!',
-            },
-            null,
-            2
-        ),
-    };
-};
-=======
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { requestErrorResponse } from '../utilities/request-response.utility.js';
@@ -49,4 +33,3 @@ export const hello = Sentry.AWSLambda.wrapHandler(
         rethrowAfterCapture: true,
     }
 );
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17

@@ -2,7 +2,7 @@ import { object, string, InferType, boolean, number } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
 
 export const rejectRefundRequestBodySchema = object().shape({
-    refundId: number().required(),
+    refundId: string().required(),
     merchantReason: string().required(),
 });
 
