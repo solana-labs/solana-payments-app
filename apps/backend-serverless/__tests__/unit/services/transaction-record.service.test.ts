@@ -56,11 +56,7 @@ describe('Transaction Record Testing Suite', () => {
             type: TransactionType.refund,
             createdAt: 'fake-date',
             paymentRecordId: null,
-<<<<<<< HEAD
-            refundRecordId: 2,
-=======
             refundRecordId: 'abcd',
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
         };
 
         prismaMock.transactionRecord.create.mockResolvedValue(mockTransactionRecord);
@@ -69,11 +65,7 @@ describe('Transaction Record Testing Suite', () => {
             '1234',
             TransactionType.refund,
             null,
-<<<<<<< HEAD
-            2,
-=======
             'abcd',
->>>>>>> 18848750eebbbf5f51640007b85eb26a18821e17
             'fake-date'
         );
 
