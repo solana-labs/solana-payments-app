@@ -1,2 +1,2 @@
-export { Primary } from "./Primary";
-export { Secondary } from "./Secondary";
+export { Primary } from './Primary';
+export { Secondary } from './Secondary';

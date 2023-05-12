@@ -12,6 +12,7 @@ provider:
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
+    TRM_API_KEY: ${env:TRM_API_KEY}
   httpApi:
     cors: true
 package:
@@ -26,71 +27,77 @@ functions:
           path: /
           method: get
   install:
-    handler: src/handlers/install.install
+    handler: src/handlers/shopify-handlers/install.install
     events:
       - httpApi:
           path: /install
           method: get
   redirect:
-    handler: src/handlers/redirect.redirect
+    handler: src/handlers/shopify-handlers/redirect.redirect
     events:
       - httpApi:
           path: /redirect
           method: get
   payment:
-    handler: src/handlers/payment.payment
+    handler: src/handlers/shopify-handlers/payment.payment
     events:
       - httpApi:
           path: /payment
           method: post
   refund:
-    handler: src/handlers/refund.refund
+    handler: src/handlers/shopify-handlers/refund.refund
     events:
       - httpApi:
           path: /refund
           method: post
-  screenWallet:
-    handler: src/handlers/screenWallet.screenWallet
+  screen-wallet:
+    handler: src/handlers/screen-wallet.screenWallet
     events:
       - httpApi:
-          path: /screenWallet
+          path: /screen-wallet
           method: get
   helius:
-    handler: src/handlers/helius.helius
+    handler: src/handlers/webhooks/helius.helius
     events:
       - httpApi:
           path: /helius
           method: post
   payment-transaction:
-    handler: src/handlers/payment-transaction.paymentTransaction
+    handler: src/handlers/transactions/payment-transaction.paymentTransaction
     events:
       - httpApi:
           path: /payment-transaction
           method: post
   refund-transaction:
-    handler: src/handlers/refund-transaction.refundTransaction
+    handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
       - httpApi:
           path: /refund-transaction
           method: post
   reject-refund:
-    handler: src/handlers/reject-refund.rejectRefund
+    handler: src/handlers/clients/merchant-ui/reject-refund.rejectRefund
     events:
       - httpApi:
           path: /reject-refund
           method: post
   payment-metadata:
-    handler: src/handlers/payment-transaction.paymentMetadata
+    handler: src/handlers/transactions/payment-transaction.paymentMetadata
     events:
       - httpApi:
           path: /payment-transaction
           method: get
   payment-status:
-    handler: src/handlers/payment-status.paymentStatus
+    handler: src/handlers/clients/payment-ui/payment-status.paymentStatus
     events:
       - httpApi:
           path: /payment-status
           method: get
+  payment-address:
+    handler: src/handlers/clients/merchant-ui/payment-address.paymentAddress
+    events:
+      - httpApi:
+          path: /payment-address
+          method: post
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies

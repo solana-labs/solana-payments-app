@@ -1,8 +1,4 @@
-import {
-    PrismaClient,
-    TransactionRecord,
-    TransactionType,
-} from '@prisma/client'
+import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 
 // --- TransactionRecordService CRUD Operations ---
 // 1. getTransactionRecord
@@ -10,78 +6,67 @@ import {
 //
 // We currently don't need to support updating Transaction Records
 export class TransactionRecordService {
-    private prisma: PrismaClient
+    private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
-        this.prisma = prismaClient
+        this.prisma = prismaClient;
     }
 
-    async getTransactionRecord(
-        signature: string
-    ): Promise<TransactionRecord | null> {
+    async getTransactionRecord(signature: string): Promise<TransactionRecord | null> {
         return await this.prisma.transactionRecord.findFirst({
             where: {
                 signature: signature,
             },
-        })
+        });
     }
 
     async createTransactionRecord(
         signature: string,
         transactionType: TransactionType,
-        paymentRecordId: number | null,
-        refundRecordId: number | null,
+        paymentRecordId: string | null,
+        refundRecordId: string | null,
         createdAt: string
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {
-            throw new Error(
-                'paymentRecordId and refundRecordId cannot both be null'
-            )
+            throw new Error('paymentRecordId and refundRecordId cannot both be null');
         }
 
         if (paymentRecordId != null && refundRecordId != null) {
-            throw new Error(
-                'paymentRecordId and refundRecordId cannot both be populated'
-            )
+            throw new Error('paymentRecordId and refundRecordId cannot both be populated');
         }
 
-        if (
-            transactionType == TransactionType.payment &&
-            paymentRecordId == null
-        ) {
-            throw new Error(
-                'paymentRecordId must be populated for payment transaction'
-            )
+        if (transactionType == TransactionType.payment && paymentRecordId == null) {
+            throw new Error('paymentRecordId must be populated for payment transaction');
         }
 
-        if (
-            transactionType == TransactionType.refund &&
-            refundRecordId == null
-        ) {
-            throw new Error(
-                'refundRecordId must be populated for refund transaction'
-            )
+        if (transactionType == TransactionType.refund && refundRecordId == null) {
+            throw new Error('refundRecordId must be populated for refund transaction');
         }
 
+        // Create the base transaction record data
+        const transactionRecordData = {
+            signature: signature,
+            type: transactionType,
+            createdAt: createdAt,
+        };
+
+        // Depending on the transaction type, add the correct record ID
         switch (transactionType) {
             case TransactionType.payment:
-                return await this.prisma.transactionRecord.create({
-                    data: {
-                        signature: signature,
-                        type: transactionType,
-                        paymentRecordId: paymentRecordId,
-                        createdAt: createdAt,
-                    },
-                })
+                transactionRecordData['paymentRecordId'] = paymentRecordId;
+                break;
             case TransactionType.refund:
-                return await this.prisma.transactionRecord.create({
-                    data: {
-                        signature: signature,
-                        type: transactionType,
-                        refundRecordId: refundRecordId,
-                        createdAt: createdAt,
-                    },
-                })
+                transactionRecordData['refundRecordId'] = refundRecordId;
+                break;
+        }
+
+        // Create the transaction record
+        try {
+            return await this.prisma.transactionRecord.create({
+                data: transactionRecordData,
+            });
+        } catch {
+            throw new Error('Failed to create transaction record.');
         }
     }
 }

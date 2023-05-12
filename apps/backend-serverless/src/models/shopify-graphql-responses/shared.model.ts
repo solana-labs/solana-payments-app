@@ -1,57 +1,57 @@
-import { object, string, InferType, array } from "yup";
+import { object, string, InferType, array } from 'yup';
 
 export const shopifyResponseExtensionsThrottleStatusSchema = object().shape({
-  maximumAvailable: string().optional(),
-  currentlyAvailable: string().optional(),
-  restoreRate: string().optional(),
+    maximumAvailable: string().optional(),
+    currentlyAvailable: string().optional(),
+    restoreRate: string().optional(),
 });
 
 export const shopifyResponseExtensionsCostSchema = object().shape({
-  requestedQueryCost: string().optional(),
-  actualQueryCost: string().optional(),
-  throttleStatus: shopifyResponseExtensionsThrottleStatusSchema.optional(),
+    requestedQueryCost: string().optional(),
+    actualQueryCost: string().optional(),
+    throttleStatus: shopifyResponseExtensionsThrottleStatusSchema.optional(),
 });
 
 export const shopifyResponseExtensionsSchema = object().shape({
-  cost: shopifyResponseExtensionsCostSchema.optional(),
+    cost: shopifyResponseExtensionsCostSchema.optional(),
 });
 
 export const sharedRefundResponseStateSchema = object().shape({
-  code: string().optional(),
-  reason: string().optional(),
-  merchantMessage: string().optional(),
+    code: string().optional(),
+    reason: string().optional(),
+    merchantMessage: string().optional(),
 });
 
 export const sharedRefundResponseRefundSessionSchema = object().shape({
-  id: string().required(),
-  state: sharedRefundResponseStateSchema.optional(),
+    id: string().required(),
+    state: sharedRefundResponseStateSchema.optional(),
 });
 
 export const sharedRefundResponseRootSchema = object().shape({
-  refundSession: sharedRefundResponseRefundSessionSchema.required(),
-  userErrors: array().of(string()).required(),
+    refundSession: sharedRefundResponseRefundSessionSchema.required(),
+    userErrors: array().of(string()).required(),
 });
 
 export const sharedPaymentResponseStateSchema = object().shape({
-  code: string().required(),
+    code: string().required(),
 });
 
 export const sharedPaymentResponseContextSchema = object().shape({
-  redirectUrl: string().required(),
+    redirectUrl: string().required(),
 });
 
 export const resolvePaymentResponseNextActionSchema = object().shape({
-  action: string().required(),
-  context: sharedPaymentResponseContextSchema.optional(),
+    action: string().required(),
+    context: sharedPaymentResponseContextSchema.optional(),
 });
 
 export const sharedPaymentResponsePaymentSessionSchema = object().shape({
-  id: string().required(),
-  state: sharedPaymentResponseStateSchema.optional(),
-  nextAction: resolvePaymentResponseNextActionSchema.optional(),
+    id: string().required(),
+    state: sharedPaymentResponseStateSchema.optional(),
+    nextAction: resolvePaymentResponseNextActionSchema.optional(),
 });
 
 export const sharedPaymentResponseRootSchema = object().shape({
-  paymentSession: sharedPaymentResponsePaymentSessionSchema.required(),
-  userErrors: array().of(string()).required(),
+    paymentSession: sharedPaymentResponsePaymentSessionSchema.required(),
+    userErrors: array().of(string()).required(),
 });

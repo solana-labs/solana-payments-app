@@ -1,24 +1,15 @@
 # Solana Payments App
 
-In need of documentation. Coming soon!
+## Learn More
 
-## How to start
+Right now the overall documentation is federated to respective directories. Overall overview documentation coming soon.
 
-1. Get ngrok running
+[Payment App Backend](apps/backend-serverless/README.md) - Server that handles communication and orcastration of payments, merchant experience, and customer experince.
+[Transaction Request Server](apps/transaction-request-serverless/README.md) - Server for building transaction for payments.
+[Merchant UI](apps/merchant-ui/README.md) - The merchant frontend that where merchants manage their payments.
+[Payment UI](apps/payment-ui/README.md) - The payment frontend where customers can complete payments.
+[System Design](system-design/README.md) - Where we communicate overall system design decisions for the current state.
 
-ngrok http 9000
+## How to Contribute
 
-2. Get the database running
-
-docker-compose up db
-
-3. Migrate the database
-
-cd apps/backend
-npx prisma migrate dev
-
-4. Start the backend, merchant-ui, and payment-ui
-
-turbo run dev
-
-_NOTE_ These steps are temporary, they will be replaced by docker-compose once I get that all set up
+We need to flesh out more compartmentalized issues for developers to eaisily step in and contribute code. For now, please create issue about further documentation you would like to see. Please make sure you set up our prettier and es-list packages and these don't conflict with your local set up. We use the [es-lint](https://github.com/solana-labs/eslint-config-solana) and [prettier](https://github.com/solana-labs/prettier-config-solana) packages from Solana Labs. Both should be installed with the rest of the dependencies.

@@ -1,22 +1,22 @@
-import { stringifiedNumberSchema } from '../utils/strings.util.js'
-import { z } from 'zod'
-import { pubkeyOrThrow } from '../utils/pubkey.util.js'
+import { stringifiedNumberSchema } from '../utils/strings.util.js';
+import { z } from 'zod';
+import { pubkeyOrThrow } from '../utils/pubkey.util.js';
 
 export const AmountType = {
     Size: 'size',
     Quantity: 'quantity',
-} as const
+} as const;
 
-const AmountTypeEnum = z.nativeEnum(AmountType)
-export type AmountTypeEnum = z.infer<typeof AmountTypeEnum>
+const AmountTypeEnum = z.nativeEnum(AmountType);
+export type AmountTypeEnum = z.infer<typeof AmountTypeEnum>;
 
 export const TransactionType = {
     Blockhash: 'blockhash',
     Nonce: 'nonce',
-} as const
+} as const;
 
-const TransactionTypeEnum = z.nativeEnum(TransactionType)
-export type TransactionTypeEnum = z.infer<typeof TransactionTypeEnum>
+const TransactionTypeEnum = z.nativeEnum(TransactionType);
+export type TransactionTypeEnum = z.infer<typeof TransactionTypeEnum>;
 
 export const PayRequest = z.object({
     receiver: z.string().transform(pubkeyOrThrow),
@@ -28,13 +28,12 @@ export const PayRequest = z.object({
     amountType: AmountTypeEnum,
     transactionType: TransactionTypeEnum.default(TransactionType.Blockhash),
     createAta: z.boolean().default(false),
-})
+    singleUseNewAcc: z.string().transform(pubkeyOrThrow).optional(),
+    singleUsePayer: z.string().transform(pubkeyOrThrow).optional(),
+});
 
-export type PayRequest = z.infer<typeof PayRequest>
+export type PayRequest = z.infer<typeof PayRequest>;
 
-function optionallyAddInt<T extends z.ZodNumber>(
-    schema: T,
-    amountType: AmountTypeEnum
-) {
-    return amountType == 'size' ? schema.int() : schema
+function optionallyAddInt<T extends z.ZodNumber>(schema: T, amountType: AmountTypeEnum) {
+    return amountType == 'size' ? schema.int() : schema;
 }

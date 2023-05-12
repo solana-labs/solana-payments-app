@@ -1,4 +1,4 @@
-import { parseAndValidateAppInstallQueryParms } from '../../../src/models/install-query-params.model'
+import { parseAndValidateAppInstallQueryParms } from '../../../src/models/install-query-params.model.js';
 
 describe('Install Query Params Model', () => {
     it('valid query params', () => {
@@ -7,12 +7,12 @@ describe('Install Query Params Model', () => {
             shop: 'https://some-shop.myshopify.com',
             host: 'some-host',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppInstallQueryParms(validInstallQueryParams)
-        }).not.toThrow()
-    })
+            parseAndValidateAppInstallQueryParms(validInstallQueryParams);
+        }).not.toThrow();
+    });
 
     it('invalid shop parameter', () => {
         const validInstallQueryParams = {
@@ -20,22 +20,22 @@ describe('Install Query Params Model', () => {
             shop: 'some-shop',
             host: 'some-host',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppInstallQueryParms(validInstallQueryParams)
-        }).toThrow()
-    })
+            parseAndValidateAppInstallQueryParms(validInstallQueryParams);
+        }).toThrow();
+    });
 
     it('missing parameter', () => {
         const validInstallQueryParams = {
             hmac: 'some-hmac',
             host: 'some-host',
             timestamp: 'some-timestamp',
-        }
+        };
 
         expect(() => {
-            parseAndValidateAppInstallQueryParms(validInstallQueryParams)
-        }).toThrow()
-    })
-})
+            parseAndValidateAppInstallQueryParms(validInstallQueryParams);
+        }).toThrow();
+    });
+});

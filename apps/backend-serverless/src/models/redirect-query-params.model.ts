@@ -1,5 +1,5 @@
-import { object, string, InferType } from 'yup'
-import { parseAndValidate } from '../utilities/yup.utility.js'
+import { object, string, InferType } from 'yup';
+import { parseAndValidate } from '../utilities/yup.utility.js';
 
 // TODO: I'm not sure if the host and shop will both exist here on this request
 export const appRedirectQueryParmSchema = object().shape({
@@ -13,16 +13,14 @@ export const appRedirectQueryParmSchema = object().shape({
         .required(),
     state: string().required(),
     timestamp: string().required(),
-})
+});
 
-export type AppRedirectQueryParam = InferType<typeof appRedirectQueryParmSchema>
+export type AppRedirectQueryParam = InferType<typeof appRedirectQueryParmSchema>;
 
-export const parseAndValidateAppRedirectQueryParams = (
-    appRedirectQuery: unknown
-): AppRedirectQueryParam => {
+export const parseAndValidateAppRedirectQueryParams = (appRedirectQuery: unknown): AppRedirectQueryParam => {
     return parseAndValidate(
         appRedirectQuery,
         appRedirectQueryParmSchema,
         'Could not parse the app install query. Unknown Reason.'
-    )
-}
+    );
+};
