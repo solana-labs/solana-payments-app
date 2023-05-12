@@ -1,9 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
-import { decode } from '../utilities/string.utility.js';
+import { decode } from '../../../utilities/string.utility.js';
 import queryString from 'query-string';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 
 export const paymentAddress = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();

@@ -1,12 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import {
-    ShopifyPaymentInitiation,
-    parseAndValidateShopifyPaymentInitiation,
-} from '../models/process-payment-request.model.js';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
-import { PrismaClient, PaymentRecord, Merchant } from '@prisma/client';
-import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { parseAndValidateShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
+import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { PrismaClient } from '@prisma/client';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 
 export const payment = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();

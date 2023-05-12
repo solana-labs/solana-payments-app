@@ -1,24 +1,24 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
-import { TransactionRequestResponse } from '../models/transaction-request-response.model.js';
-import { fetchPaymentTransaction } from '../services/fetch-payment-transaction.service.js';
+import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
+import { fetchPaymentTransaction } from '../../services/fetch-payment-transaction.service.js';
 import {
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
-} from '../models/payment-transaction-request.model.js';
-import { encodeBufferToBase58 } from '../utilities/encode-transaction.utility.js';
-import { decode } from '../utilities/string.utility.js';
+} from '../../models/payment-transaction-request.model.js';
+import { encodeBufferToBase58 } from '../../utilities/encode-transaction.utility.js';
+import { decode } from '../../utilities/string.utility.js';
 import queryString from 'query-string';
-import { encodeTransaction } from '../utilities/encode-transaction.utility.js';
+import { encodeTransaction } from '../../utilities/encode-transaction.utility.js';
 import { web3 } from '@project-serum/anchor';
-import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js';
-import { TransactionRecordService } from '../services/database/transaction-record-service.database.service.js';
-import { PaymentRecordService } from '../services/database/payment-record-service.database.service.js';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { compose } from '@reduxjs/toolkit';
-import { generateSingleUseKeypairFromPaymentRecord } from '../utilities/generate-single-use-keypair.utility.js';
-import { uploadSingleUseKeypair } from '../services/upload-single-use-keypair.service.js';
+import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 
 export const paymentTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let paymentRecord: PaymentRecord | null;

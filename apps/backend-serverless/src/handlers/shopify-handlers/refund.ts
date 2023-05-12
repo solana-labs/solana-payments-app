@@ -2,11 +2,11 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
-} from '../models/process-refund.request.model.js';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
+} from '../../models/process-refund.request.model.js';
+import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { PrismaClient, RefundRecord, Merchant } from '@prisma/client';
-import { RefundRecordService } from '../services/database/refund-record-service.database.service.js';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 
 export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();

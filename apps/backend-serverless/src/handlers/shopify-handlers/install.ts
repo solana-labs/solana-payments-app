@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { AppInstallQueryParam } from '../models/install-query-params.model.js';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
+import { AppInstallQueryParam } from '../../models/install-query-params.model.js';
+import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import {
     verifyAndParseShopifyInstallRequest,
     createShopifyOAuthGrantRedirectUrl,
-} from '../utilities/shopify-install-request.utility.js';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+} from '../../utilities/shopify-install-request.utility.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 
 export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let parsedAppInstallQuery: AppInstallQueryParam;
@@ -16,16 +16,15 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     try {
         parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
-    } catch (error: unknown) {
+    } catch (error) {
         return requestErrorResponse(error);
     }
 
     const shop = parsedAppInstallQuery.shop;
+    const newNonce = 'a';
 
     try {
         const merchant = await merchantService.getMerchant({ shop: shop });
-
-        const newNonce = 'a';
 
         if (merchant == null) {
             await merchantService.createMerchant(shop, newNonce);
@@ -34,7 +33,7 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
                 lastNonce: newNonce,
             });
         }
-    } catch (error: unknown) {
+    } catch (error) {
         return requestErrorResponse(error);
     }
 
@@ -47,12 +46,8 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             Location: redirectUrl,
             'Content-Type': 'text/html',
         },
-        body: JSON.stringify(
-            {
-                message: 'Redirecting..',
-            },
-            null,
-            2
-        ),
+        body: JSON.stringify({
+            message: 'Redirecting..',
+        }),
     };
 };
