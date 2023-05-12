@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { shopifyGraphQLEndpoint } from '../configs/endpoints.config.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 
 const paymentSessionRejectMutation = `mutation paymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
     paymentSessionReject(id: $id, reason: $reason) {
