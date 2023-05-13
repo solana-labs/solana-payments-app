@@ -50,6 +50,14 @@ export class PaymentRecordService {
         });
     }
 
+    async getPaymentRecordsForMerchant(
+       query: PaymentRecordQuery
+    ): Promise<PaymentRecord[] | null> {
+       return await this.prisma.paymentRecord.findMany({
+         where: query,
+       });
+    }
+
     async createPaymentRecord(
         id: string,
         paymentInitiation: ShopifyPaymentInitiation,

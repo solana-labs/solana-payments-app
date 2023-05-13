@@ -21,7 +21,10 @@ describe('Transaction Record Testing Suite', () => {
 
         prismaMock.transactionRecord.findFirst.mockResolvedValue(mockTransactionRecord);
 
-        const transactionRecord = await transactionRecordService.getTransactionRecord('1234');
+        const transactionRecord =
+            await transactionRecordService.getTransactionRecord({
+                signature: '1234',
+            });
 
         expect(transactionRecord).toEqual(mockTransactionRecord);
     });

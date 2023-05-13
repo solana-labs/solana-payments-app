@@ -43,6 +43,14 @@ export class RefundRecordService {
         });
     }
 
+    async getRefundRecordsForMerchant(
+       query: RefundRecordQuery
+    ): Promise<RefundRecord[] | null> {
+       return await this.prisma.refundRecord.findMany({
+         where: query,
+       });
+    }
+
     async createRefundRecord(
         id: string,
         refundInitiation: ShopifyRefundInitiation,
