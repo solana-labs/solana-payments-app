@@ -3,6 +3,16 @@ import { MerchantAuthToken, parseAndValidateMerchantAuthToken } from '../models/
 
 export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const useAuthMock = process.env.USE_AUTH_MOCK;
+
+    if (useAuthMock !== null && useAuthMock !== undefined) {
+        const payload = {
+            id: useAuthMock,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+        };
+        return parseAndValidateMerchantAuthToken(payload);
+    }
 
     if (jwtSecretKey == null) {
         throw new Error('JWT secret key is not set');

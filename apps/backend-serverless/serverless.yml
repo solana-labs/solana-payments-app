@@ -14,6 +14,7 @@ provider:
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
     TRM_API_KEY: ${env:TRM_API_KEY}
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
   httpApi:
     cors: true
 package:
