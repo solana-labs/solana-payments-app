@@ -1,27 +1,46 @@
-import { APIGatewayProxyEvent, APIGatewayProxyEventV2 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
+import { MerchantAuthToken, parseAndValidateMerchantAuthToken } from '../models/merchant-auth-token.model.js';
 
-export interface AuthenticatedAPIGatewayProxyEvent extends APIGatewayProxyEvent {
-    shopId: string;
-}
+export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const useAuthMock = process.env.USE_AUTH_MOCK;
 
-export const withAuth = (event: APIGatewayProxyEventV2): string => {
-    console.log('event', event);
-    if (!event.cookies || event.cookies.length === 0) {
-        return 'Failed to find cookie';
+    if (useAuthMock !== null && useAuthMock !== undefined) {
+        const payload = {
+            id: useAuthMock,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+        };
+        return parseAndValidateMerchantAuthToken(payload);
     }
 
-    const bearerCookie = event.cookies.find(cookie => cookie.startsWith('Bearer='));
+    if (jwtSecretKey == null) {
+        throw new Error('JWT secret key is not set');
+    }
 
-    if (!bearerCookie) {
-        return 'Failed to find cookie';
+    if (cookies == null || cookies.length === 0) {
+        throw new Error('Failed to find a cookie');
+    }
+
+    const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
+
+    if (bearerCookie == null) {
+        throw new Error('Failed to find a cookie');
     }
 
     const bearerToken = bearerCookie.split('Bearer=')[1];
 
+    const decodedToken = jwt.verify(bearerToken, jwtSecretKey);
+
+    let merchantAuthToken: MerchantAuthToken;
+
     try {
-        return jwt.verify(bearerToken, process.env.JWT_SECRET_KEY);
-    } catch (error: unknown) {
-        return 'Failed to verify token';
+        merchantAuthToken = parseAndValidateMerchantAuthToken(decodedToken);
+    } catch {
+        throw new Error('Failed to parse and validate merchant auth token');
     }
+
+    // TODO: Validate the contents of merchantAuthToken response
+
+    return merchantAuthToken;
 };
