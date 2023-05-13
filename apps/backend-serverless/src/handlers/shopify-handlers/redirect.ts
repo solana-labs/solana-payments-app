@@ -66,13 +66,11 @@ export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayP
 
     const payload = {
         id: merchant.id,
-        iat: Math.floor(Date.now() / 1000), // Issued at
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // Expires in 1 hour
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     };
 
-    const token = jwt.sign(payload, jwtSecretKey, {
-        expiresIn: '1d',
-    });
+    const token = jwt.sign(payload, jwtSecretKey, {});
 
     return {
         statusCode: 301,
