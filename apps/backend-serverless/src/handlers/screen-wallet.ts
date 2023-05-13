@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { requestErrorResponse } from '../utilities/request-response.utility.js';
 import { TrmService } from '../services/trm-service.service.js';
 

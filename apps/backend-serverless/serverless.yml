@@ -99,11 +99,11 @@ functions:
       - httpApi:
           path: /refundData
           method: get
-  transactionData:
-    handler: src/handlers/readData/transactionData.transactionData
+  paymentData:
+    handler: src/handlers/readData/paymentData.paymentData
     events:
       - httpApi:
-          path: /transactionData
+          path: /paymentData
           method: get
   login:
     handler: src/handlers/login.login

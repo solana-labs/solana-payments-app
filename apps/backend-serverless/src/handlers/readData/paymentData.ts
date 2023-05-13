@@ -1,22 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResult } from 'aws-lambda';
 import { withAuth } from '../../utilities/token-authenticate.utility.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 
 const prisma = new PrismaClient();
 
-export async function merchantData(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> {
+export const paymentData = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> => {
     const shopId = withAuth(event);
-
-    const merchantService = new MerchantService(prisma);
+    const paymentRecordService = new PaymentRecordService(prisma);
 
     try {
-        const merchant = await merchantService.getMerchant({ shop: shopId });
-
-        if (merchant == null) {
-            throw new Error('Merchant not found.');
-        }
+        const paymentRecords = await paymentRecordService.getPaymentRecordsForMerchant({
+            shopId: shopId,
+        });
 
         return {
             statusCode: 200,
@@ -25,8 +22,8 @@ export async function merchantData(event: APIGatewayProxyEventV2): Promise<APIGa
             },
             body: JSON.stringify(
                 {
-                    message: `Merchant info for shopId: ${shopId}, shop: ${merchant.shop}`,
-                    merchant: merchant,
+                    message: `Merchant info for shopId: ${shopId}`,
+                    paymentRecords: paymentRecords,
                 },
                 null,
                 2
@@ -35,4 +32,4 @@ export async function merchantData(event: APIGatewayProxyEventV2): Promise<APIGa
     } catch (error: unknown) {
         return requestErrorResponse(error);
     }
-}
+};

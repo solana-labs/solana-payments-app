@@ -31,7 +31,9 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
 
     for (const transaction of heliusEnhancedTransactions) {
         try {
-            const transactionRecord = await transactionRecordService.getTransactionRecord(transaction.signature);
+            const transactionRecord = await transactionRecordService.getTransactionRecord({
+                signature: transaction.signature,
+            });
 
             if (transactionRecord == null) {
                 throw new Error('Transaction not found.');
