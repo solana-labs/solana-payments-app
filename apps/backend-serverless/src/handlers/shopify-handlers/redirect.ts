@@ -11,8 +11,6 @@ import { AccessTokenResponse } from '../../models/access-token-response.model.js
 import { AUTH_TOKEN_COOKIE_NAME, createCookieHeader } from '../../utilities/create-cookie-header.utility.js';
 
 export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const id = 'merchantid';
-
     const prisma = new PrismaClient();
     const merchantService = new MerchantService(prisma);
 
@@ -41,7 +39,7 @@ export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayP
         return requestErrorResponse(error);
     }
 
-    const merchant = await merchantService.getMerchant({ shop: shop });
+    let merchant = await merchantService.getMerchant({ shop: shop });
 
     if (merchant == null) {
         return requestErrorResponse(new Error('Merchant not found'));
@@ -53,19 +51,26 @@ export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayP
     };
 
     try {
-        await merchantService.updateMerchant(merchant, updateData);
+        merchant = await merchantService.updateMerchant(merchant, updateData);
     } catch (error) {
         return requestErrorResponse(error);
     }
 
     // TODO: Verify output and throw if it's bad
-    const configure = await paymentAppConfigure('greatMerchant123', true, shop, accessTokenResponse.access_token);
+    // TODO: Set value to true after KYB
+    const configure = await paymentAppConfigure(merchant.id, true, shop, accessTokenResponse.access_token);
 
     if (redirectUrl == null) {
         return requestErrorResponse(new Error('Merchant redirect location is not set'));
     }
 
-    const token = jwt.sign({ id }, jwtSecretKey, {
+    const payload = {
+        id: merchant.id,
+        iat: Math.floor(Date.now() / 1000), // Issued at
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // Expires in 1 hour
+    };
+
+    const token = jwt.sign(payload, jwtSecretKey, {
         expiresIn: '1d',
     });
 
