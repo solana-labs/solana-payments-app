@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { AppRedirectQueryParam } from '../../models/redirect-query-params.model.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
@@ -8,9 +7,9 @@ import { verifyAndParseShopifyRedirectRequest } from '../../utilities/shopify-re
 import { paymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/access-token-response.model.js';
-import { AUTH_TOKEN_COOKIE_NAME, createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
 
-export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
     const merchantService = new MerchantService(prisma);
 
