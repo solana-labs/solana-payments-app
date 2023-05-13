@@ -8,7 +8,7 @@ import { verifyAndParseShopifyRedirectRequest } from '../../utilities/shopify-re
 import { paymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/access-token-response.model.js';
-import { AUTH_TOKEN_COOKIE_NAME, createCookieHeader } from '../../utilities/create-cookie-header.utility.js';
+import { AUTH_TOKEN_COOKIE_NAME, createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
 
 export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();
@@ -64,20 +64,19 @@ export const redirect = async (event: APIGatewayProxyEvent): Promise<APIGatewayP
         return requestErrorResponse(new Error('Merchant redirect location is not set'));
     }
 
-    const payload = {
-        id: merchant.id,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-    };
-
-    const token = jwt.sign(payload, jwtSecretKey, {});
+    let merchantAuthCookieHeader: string;
+    try {
+        merchantAuthCookieHeader = createMechantAuthCookieHeader(merchant.id);
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
 
     return {
         statusCode: 301,
         headers: {
             Location: redirectUrl,
             'Content-Type': 'text/html',
-            'Set-Cookie': createCookieHeader(AUTH_TOKEN_COOKIE_NAME, token),
+            'Set-Cookie': merchantAuthCookieHeader,
         },
         body: JSON.stringify({}),
     };

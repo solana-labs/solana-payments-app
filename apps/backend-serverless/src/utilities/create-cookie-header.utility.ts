@@ -10,16 +10,20 @@ interface CookieOptions {
     path: string;
 }
 
-export const createCookieHeader = (name: string, payload: any): string => {
+export const createMechantAuthCookieHeader = (id: string): string => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
     if (jwtSecretKey == null) {
         throw new Error('JWT secret key is not set');
     }
 
-    const token = jwt.sign(payload, jwtSecretKey, {
-        expiresIn: '1d',
-    });
+    const payload = {
+        id: id,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+    };
+
+    const token = jwt.sign(payload, jwtSecretKey, {});
 
     const cookieOptions: CookieOptions = {
         maxAge: 24 * 60 * 60, // 1 day in seconds
@@ -29,7 +33,7 @@ export const createCookieHeader = (name: string, payload: any): string => {
         path: '/',
     };
 
-    return `${name}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${cookieOptions.httpOnly ? 'true' : ''}${
-        cookieOptions.secure ? ' Secure' : ''
-    }; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
+    return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${
+        cookieOptions.httpOnly ? 'true' : ''
+    }${cookieOptions.secure ? ' Secure' : ''}; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
 };

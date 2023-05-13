@@ -106,7 +106,7 @@ functions:
           path: /paymentData
           method: get
   login:
-    handler: src/handlers/login.login
+    handler: src/handlers/testing/login.login
     events:
       - httpApi:
           path: /login
