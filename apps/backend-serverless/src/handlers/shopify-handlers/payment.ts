@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { parseAndValidateShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
@@ -14,7 +14,7 @@ Sentry.AWSLambda.init({
 });
 
 export const payment = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
         const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);
