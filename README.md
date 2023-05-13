@@ -4,11 +4,11 @@
 
 Right now the overall documentation is federated to respective directories. Overall overview documentation coming soon.
 
-[Payment App Backend](apps/backend-serverless/README.md) - Server that handles communication and orcastration of payments, merchant experience, and customer experince.
-[Transaction Request Server](apps/transaction-request-serverless/README.md) - Server for building transaction for payments.
-[Merchant UI](apps/merchant-ui/README.md) - The merchant frontend that where merchants manage their payments.
-[Payment UI](apps/payment-ui/README.md) - The payment frontend where customers can complete payments.
-[System Design](system-design/README.md) - Where we communicate overall system design decisions for the current state.
+[Payment App Backend](apps/backend-serverless/README.md) - Server that handles communication and orcastration of payments, merchant experience, and customer experince.<br>
+[Transaction Request Server](apps/transaction-request-serverless/README.md) - Server for building transaction for payments.<br>
+[Merchant UI](apps/merchant-ui/README.md) - The merchant frontend that where merchants manage their payments.<br>
+[Payment UI](apps/payment-ui/README.md) - The payment frontend where customers can complete payments.<br>
+[System Design](system-design/README.md) - Where we communicate overall system design decisions for the current state.<br>
 
 ## How to Contribute
 
