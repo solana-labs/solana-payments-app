@@ -18,7 +18,7 @@ export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayPr
             'Set-Cookie': merchantAuthCookieHeader,
         },
         body: JSON.stringify({
-            message: 'Successfully logged in',
+            message: 'Successfully logged in.',
         }),
     };
 };
