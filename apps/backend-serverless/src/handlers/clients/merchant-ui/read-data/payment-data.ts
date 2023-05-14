@@ -11,6 +11,7 @@ import {
 } from '../../../../models/payment-data-request.model.js';
 import { Pagination, DEFAULT_PAGINATION_SIZE } from '../../../../utilities/database-services.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
+import { createPaymentDataResponseFromPaymentRecord } from '../../../../utilities/payment-record.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -61,17 +62,24 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('Could not find payment records'));
         }
 
-        // TODO: Create a response object that i can return here
+        const total = await paymentRecordService.getTotalPaymentRecordsForMerchant({ merchantId: merchant.id });
+
+        const paymentRecordResponseData = paymentRecords.map(paymentRecord => {
+            createPaymentDataResponseFromPaymentRecord(paymentRecord);
+        });
+
+        const responesBodyData = {
+            paymentData: {
+                page: pagination.page,
+                perPage: pagination.pageSize,
+                total: total,
+                data: paymentRecordResponseData,
+            },
+        };
 
         return {
             statusCode: 200,
-            body: JSON.stringify(
-                {
-                    message: 'Hello, world!',
-                },
-                null,
-                2
-            ),
+            body: JSON.stringify(responesBodyData),
         };
     },
     {

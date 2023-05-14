@@ -59,6 +59,12 @@ export class RefundRecordService {
         });
     }
 
+    async getTotalRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number> {
+        return await this.prisma.refundRecord.count({
+            where: query,
+        });
+    }
+
     async createRefundRecord(
         id: string,
         refundInitiation: ShopifyRefundInitiation,

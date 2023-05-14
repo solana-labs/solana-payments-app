@@ -30,17 +30,26 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('Merchant not found'));
         }
 
-        // do something with the merchant, idk what data we're returning though
+        const responesBodyData = {
+            merchantData: {
+                name: 'Boba Guys',
+                paymentAddress: 'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
+                onboarding: {
+                    completed: true,
+                    acceptedTerms: true,
+                    addedWallet: true,
+                    dismissedCompleted: true,
+                    kybState: 'finished',
+                },
+            },
+            general: {
+                refundBadges: 4,
+            },
+        };
 
         return {
             statusCode: 200,
-            body: JSON.stringify(
-                {
-                    message: 'Hello, world!',
-                },
-                null,
-                2
-            ),
+            body: JSON.stringify(responesBodyData),
         };
     },
     {
