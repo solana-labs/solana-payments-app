@@ -1,5 +1,6 @@
 import { PrismaClient, Merchant, RefundRecord } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
+import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
     status: string;
@@ -24,7 +25,11 @@ export type RefundIdQuery = {
     id: string;
 };
 
-export type RefundRecordQuery = ShopIdQuery | RefundIdQuery;
+export type MerchantIdQuery = {
+    merchantId: string;
+};
+
+export type RefundRecordQuery = ShopIdQuery | RefundIdQuery | MerchantIdQuery;
 
 // --- RefundRecordService CRUD Operations ---
 // 1. getRefundRecord
@@ -43,12 +48,15 @@ export class RefundRecordService {
         });
     }
 
-    async getRefundRecordsForMerchant(
-       query: RefundRecordQuery
+    async getRefundRecordsForMerchantWithPagination(
+        query: RefundRecordQuery,
+        pagination: Pagination
     ): Promise<RefundRecord[] | null> {
-       return await this.prisma.refundRecord.findMany({
-         where: query,
-       });
+        return await this.prisma.refundRecord.findMany({
+            where: query,
+            take: pagination.pageSize,
+            skip: calculatePaginationSkip(pagination),
+        });
     }
 
     async createRefundRecord(
