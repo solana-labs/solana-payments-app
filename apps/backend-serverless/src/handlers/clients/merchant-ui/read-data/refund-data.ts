@@ -11,6 +11,7 @@ import {
 } from '../../../../models/refund-data-request.model.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { DEFAULT_PAGINATION_SIZE, Pagination } from '../../../../utilities/database-services.utility.js';
+import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/refund-record.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -61,17 +62,24 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('Could not find payment records'));
         }
 
-        // TODO: Create a response object that i can return here
+        const total = await refundRecordService.getTotalRefundRecordsForMerchant({ merchantId: merchant.id });
+
+        const refundRecordResponseData = refundRecords.map(refundRecord => {
+            createRefundDataResponseFromRefundRecord(refundRecord);
+        });
+
+        const responesBodyData = {
+            refundData: {
+                page: pagination.page,
+                perPage: pagination.pageSize,
+                total: total,
+                data: refundRecordResponseData,
+            },
+        };
 
         return {
             statusCode: 200,
-            body: JSON.stringify(
-                {
-                    message: 'Hello, world!',
-                },
-                null,
-                2
-            ),
+            body: JSON.stringify(responesBodyData),
         };
     },
     {
