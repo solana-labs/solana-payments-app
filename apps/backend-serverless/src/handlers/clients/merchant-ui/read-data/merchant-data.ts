@@ -5,6 +5,9 @@ import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { PrismaClient } from '@prisma/client';
+import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
+import { create } from 'domain';
+import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -30,21 +33,17 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('Merchant not found'));
         }
 
+        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+        const onboardingResponse = createOnboardingResponse(merchant);
+
+        // TODO: Create a type for this
         const responesBodyData = {
             merchantData: {
-                name: 'Boba Guys',
-                paymentAddress: 'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx',
-                onboarding: {
-                    completed: true,
-                    acceptedTerms: true,
-                    addedWallet: true,
-                    dismissedCompleted: true,
-                    kybState: 'finished',
-                },
+                name: merchant.name,
+                paymentAddress: merchant.paymentAddress,
+                onboarding: onboardingResponse,
             },
-            general: {
-                refundBadges: 4,
-            },
+            general: generalResponse,
         };
 
         return {

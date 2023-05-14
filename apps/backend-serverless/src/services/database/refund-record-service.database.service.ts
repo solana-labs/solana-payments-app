@@ -29,7 +29,12 @@ export type MerchantIdQuery = {
     merchantId: string;
 };
 
-export type RefundRecordQuery = ShopIdQuery | RefundIdQuery | MerchantIdQuery;
+export type MerchantAndStatusQuery = {
+    merchantId: string;
+    status: string;
+};
+
+export type RefundRecordQuery = ShopIdQuery | RefundIdQuery | MerchantIdQuery | MerchantAndStatusQuery;
 
 // --- RefundRecordService CRUD Operations ---
 // 1. getRefundRecord
@@ -59,7 +64,7 @@ export class RefundRecordService {
         });
     }
 
-    async getTotalRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number> {
+    async getTotalRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number | null> {
         return await this.prisma.refundRecord.count({
             where: query,
         });

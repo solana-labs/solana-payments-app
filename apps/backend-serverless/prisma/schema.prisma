@@ -8,19 +8,23 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Merchant {
   id             String          @id // Internal ID
   shop           String          @unique
+  name           String?
   accessToken    String?
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
   RefundRecord   RefundRecord[]
   paymentAddress String?
+
+  acceptedTermsAndConditions Boolean @default(false)
+  dismissCompleted           Boolean @default(false)
 }
 
 model PaymentRecord {
