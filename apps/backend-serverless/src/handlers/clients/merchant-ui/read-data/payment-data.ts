@@ -12,6 +12,7 @@ import {
 import { Pagination, DEFAULT_PAGINATION_SIZE } from '../../../../utilities/database-services.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { createPaymentDataResponseFromPaymentRecord } from '../../../../utilities/payment-record.utility.js';
+import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -68,6 +69,9 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             createPaymentDataResponseFromPaymentRecord(paymentRecord);
         });
 
+        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+
+        // TODO: Create a type for this
         const responesBodyData = {
             paymentData: {
                 page: pagination.page,
@@ -75,6 +79,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
                 total: total,
                 data: paymentRecordResponseData,
             },
+            general: generalResponse,
         };
 
         return {
