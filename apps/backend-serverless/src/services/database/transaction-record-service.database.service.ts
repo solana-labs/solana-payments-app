@@ -28,6 +28,16 @@ export class TransactionRecordService {
         });
     }
 
+    async getTransactionRecordsForPendingPayments(): Promise<TransactionRecord[]> {
+        return await this.prisma.transactionRecord.findMany({
+            where: {
+                paymentRecord: {
+                    status: 'pending',
+                },
+            },
+        });
+    }
+
     async createTransactionRecord(
         signature: string,
         transactionType: TransactionType,
