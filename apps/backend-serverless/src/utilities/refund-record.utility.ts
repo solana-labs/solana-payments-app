@@ -1,6 +1,6 @@
 import { RefundRecord } from '@prisma/client';
 
-interface RefundDataResponse {
+export interface RefundDataResponse {
     shopifyOrder: string;
     date: string;
     status: string;

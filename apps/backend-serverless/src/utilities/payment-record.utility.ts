@@ -1,6 +1,6 @@
 import { PaymentRecord } from '@prisma/client';
 
-interface PaymentDataResponse {
+export interface PaymentDataResponse {
     shopifyOrder: string;
     date: string;
     status: string;

@@ -6,7 +6,6 @@ import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { PrismaClient } from '@prisma/client';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
-import { create } from 'domain';
 import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
 
 Sentry.AWSLambda.init({
