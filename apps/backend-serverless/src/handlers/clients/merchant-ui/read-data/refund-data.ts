@@ -13,6 +13,7 @@ import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { DEFAULT_PAGINATION_SIZE, Pagination } from '../../../../utilities/database-services.utility.js';
 import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/refund-record.utility.js';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
+import { createRefundResponse } from '../../../../utilities/create-refund-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -48,37 +49,14 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
 
         const pagination: Pagination = {
             page: refundDataRequestParameters.page,
-            pageSize: DEFAULT_PAGINATION_SIZE,
+            pageSize: refundDataRequestParameters.pageSize,
         };
 
-        const refundRecords = await refundRecordService.getRefundRecordsForMerchantWithPagination(
-            { merchantId: merchant.id },
-            pagination
-        );
-
-        if (refundRecords == null || refundRecords.length == 0) {
-            // should we handle this different ???
-            // idk but for now im gonna throw if there is null
-            // TODO: Figure out how to handle this
-            return requestErrorResponse(new Error('Could not find payment records'));
-        }
-
-        const total = await refundRecordService.getTotalRefundRecordsForMerchant({ merchantId: merchant.id });
-
-        const refundRecordResponseData = refundRecords.map(refundRecord => {
-            createRefundDataResponseFromRefundRecord(refundRecord);
-        });
-
+        const refundResponse = await createRefundResponse(merchantAuthToken, 'pending', pagination, prisma);
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
-        // TODO: Create a type for this
         const responesBodyData = {
-            refundData: {
-                page: pagination.page,
-                perPage: pagination.pageSize,
-                total: total,
-                data: refundRecordResponseData,
-            },
+            refundData: refundResponse,
             general: generalResponse,
         };
 
