@@ -3,22 +3,19 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { fetchEnhancedTransaction } from '../../services/helius.service.js';
 import { PrismaClient, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
+import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
     tracesSampleRate: 1.0,
 });
 
-// So this will need to work for both payments and refunds but right now i'm going to stick with just payments
 // We should probably try to exit this code as soon as possible and get back to using code paths that are exiting and being used
 // We also want to clarify this isn't for  retrying messages to shopify. This is equivilant to the helius webhook. We will be doing shopify
 // things in another chron job
-
-// the flow should be easy, find the transaction id's one might check, check them, and process the ones that need to be processed.
-export const chron = Sentry.AWSLambda.wrapHandler(
+export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
         const transactionRecordService = new TransactionRecordService(prisma);
@@ -28,15 +25,16 @@ export const chron = Sentry.AWSLambda.wrapHandler(
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
         for (const transactionRecord of allTransactionRecords) {
-            let transaction;
+            let transaction: HeliusEnhancedTransaction | null;
 
             try {
                 transaction = await fetchEnhancedTransaction(transactionRecord.signature);
             } catch (error) {
-                // TODO: Figure out how to do this for an array, maybe merge this with the helius hook array logic
-                // i actually don't have to return here, i can just continue and it should go to the next loop i think
-                // i should def log with sentry though
                 // TODO: Log this with sentry
+                continue;
+            }
+
+            if (transaction == null) {
                 continue;
             }
 
@@ -50,7 +48,6 @@ export const chron = Sentry.AWSLambda.wrapHandler(
                         break;
                 }
             } catch (error) {
-                // Log this with sentry and continue
                 // TODO: Log this with sentry
                 continue;
             }
