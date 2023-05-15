@@ -1,8 +1,12 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { fetchEnhancedTransaction } from '../../services/helius.service.js';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
+import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
+
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
     tracesSampleRate: 1.0,
@@ -19,35 +23,45 @@ export const chron = Sentry.AWSLambda.wrapHandler(
         const prisma = new PrismaClient();
         const transactionRecordService = new TransactionRecordService(prisma);
 
-        const transactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
+        const paymentTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
+        const refundTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingRefunds();
+        const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
-        for (const transactionRecord of transactionRecords) {
+        for (const transactionRecord of allTransactionRecords) {
+            let transaction;
+
             try {
-                const heliusEnhancedTransaction = await fetchEnhancedTransaction(transactionRecord.signature);
-                if (heliusEnhancedTransaction != null) {
-                    // then process probably
-                }
+                transaction = await fetchEnhancedTransaction(transactionRecord.signature);
             } catch (error) {
                 // TODO: Figure out how to do this for an array, maybe merge this with the helius hook array logic
-                return requestErrorResponse(error);
+                // i actually don't have to return here, i can just continue and it should go to the next loop i think
+                // i should def log with sentry though
+                // TODO: Log this with sentry
+                continue;
+            }
+
+            try {
+                switch (transactionRecord.type) {
+                    case TransactionType.payment:
+                        await processDiscoveredPaymentTransaction(transactionRecord, transaction, prisma);
+                        break;
+                    case TransactionType.refund:
+                        await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
+                        break;
+                }
+            } catch (error) {
+                // Log this with sentry and continue
+                // TODO: Log this with sentry
+                continue;
             }
         }
 
         return {
             statusCode: 200,
-            body: JSON.stringify(
-                {
-                    message: 'Hello, world!',
-                },
-                null,
-                2
-            ),
+            body: JSON.stringify({}),
         };
     },
     {
         rethrowAfterCapture: true,
     }
 );
-function requestErrorResponse(error: any): APIGatewayProxyResultV2 | PromiseLike<APIGatewayProxyResultV2> {
-    throw new Error('Function not implemented.');
-}
