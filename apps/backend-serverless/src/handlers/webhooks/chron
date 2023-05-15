@@ -1,0 +1,53 @@
+import * as Sentry from '@sentry/serverless';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { fetchEnhancedTransaction } from '../../services/helius.service.js';
+import { PrismaClient } from '@prisma/client';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+Sentry.AWSLambda.init({
+    dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
+    tracesSampleRate: 1.0,
+});
+
+// So this will need to work for both payments and refunds but right now i'm going to stick with just payments
+// We should probably try to exit this code as soon as possible and get back to using code paths that are exiting and being used
+// We also want to clarify this isn't for  retrying messages to shopify. This is equivilant to the helius webhook. We will be doing shopify
+// things in another chron job
+
+// the flow should be easy, find the transaction id's one might check, check them, and process the ones that need to be processed.
+export const chron = Sentry.AWSLambda.wrapHandler(
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        const prisma = new PrismaClient();
+        const transactionRecordService = new TransactionRecordService(prisma);
+
+        const transactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
+
+        for (const transactionRecord of transactionRecords) {
+            try {
+                const heliusEnhancedTransaction = await fetchEnhancedTransaction(transactionRecord.signature);
+                if (heliusEnhancedTransaction != null) {
+                    // then process probably
+                }
+            } catch (error) {
+                // TODO: Figure out how to do this for an array, maybe merge this with the helius hook array logic
+                return requestErrorResponse(error);
+            }
+        }
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(
+                {
+                    message: 'Hello, world!',
+                },
+                null,
+                2
+            ),
+        };
+    },
+    {
+        rethrowAfterCapture: true,
+    }
+);
+function requestErrorResponse(error: any): APIGatewayProxyResultV2 | PromiseLike<APIGatewayProxyResultV2> {
+    throw new Error('Function not implemented.');
+}
