@@ -34,8 +34,6 @@
 **/.serverless
 
 #packages-dist
-packages/transaction-builder/dist/*
-packages/token-price/dist/*
 
 # General ignore rules for monorepos
 **/.cache

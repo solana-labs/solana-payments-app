@@ -4,16 +4,7 @@
     "**/.env.*local"
   ],
   "pipeline": {
-    "build:token-price": {
-      "cache": true,
-      "outputs": [
-        "./packages/token-price/dist/**"
-      ]
-    },
     "build:payment-ui": {
-      "dependsOn": [
-        "build:token-price"
-      ],
       "outputs": [
         "./apps/payment-ui/.next/**"
       ]
