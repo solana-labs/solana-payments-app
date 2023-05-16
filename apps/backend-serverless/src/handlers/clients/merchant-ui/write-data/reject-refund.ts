@@ -1,21 +1,31 @@
 import { Merchant, PrismaClient, RefundRecord } from '@prisma/client';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import queryString from 'query-string';
-import { decode } from '../../../utilities/string.utility.js';
-import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
+import { decode } from '../../../../utilities/string.utility.js';
+import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
 import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,
-} from '../../../models/reject-refund-request.model.js';
-import { refundSessionReject } from '../../../services/shopify/refund-session-reject.service.js';
-import { RejectRefundResponse } from '../../../models/shopify-graphql-responses/reject-refund-response.model.js';
-import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
-import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
+} from '../../../../models/reject-refund-request.model.js';
+import { refundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
+import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
+import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
+import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
+import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
 
-export const rejectRefund = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
     const refundRecordService = new RefundRecordService(prisma);
     const merchantService = new MerchantService(prisma);
+
+    let merchantAuthToken: MerchantAuthToken;
+
+    try {
+        merchantAuthToken = withAuth(event.cookies);
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
 
     const decodedBody = event.body ? decode(event.body) : '';
     const body = queryString.parse(decodedBody);
