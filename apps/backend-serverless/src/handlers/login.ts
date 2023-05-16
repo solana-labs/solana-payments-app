@@ -11,11 +11,13 @@ export const login = async (event: APIGatewayProxyEvent): Promise<APIGatewayProx
         expiresIn: '1d',
     });
 
+    console.log('nodeenv', process.env.NODE_ENV);
+
     const cookieOptions = {
         maxAge: 24 * 60 * 60, // 1 day in second
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
         path: '/',
     };
 
@@ -23,13 +25,16 @@ export const login = async (event: APIGatewayProxyEvent): Promise<APIGatewayProx
         cookieOptions.secure ? ' Secure' : ''
     }; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
 
+    const redirectUrl = 'http://localhost:3000/merchant'; // or the domain of your deployed frontend
+
     return {
-        statusCode: 200,
+        statusCode: 301,
         headers: {
             'Content-Type': 'text/plain',
-            // Location: redirectUrl,
-            // 'Content-Type': 'text/html',
+            Location: redirectUrl,
             'Set-cookie': cookieHeader,
+            'Access-Control-Allow-Origin': 'http://localhost:3000', // or the domain of your deployed frontend
+            'Access-Control-Allow-Credentials': 'true',
         },
         // cookies: [cookieHeader],
         body: 'JWT token 1 set as a cookie',

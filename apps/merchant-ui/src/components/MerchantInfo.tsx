@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
@@ -10,6 +10,7 @@ import { Input } from './Input';
 import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import { TokenSelect } from './TokenSelect';
+import { API_ENDPOINTS } from '@/lib/endpoints';
 
 interface FormData {
     name: string;
@@ -23,6 +24,30 @@ interface Props {
 }
 
 export function MerchantInfo(props: Props) {
+    const [merchantInfo, setMerchantInfo] = useState(null);
+
+    useEffect(() => {
+        // declare the data fetching function
+        const fetchData = async () => {
+            const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
+            console.log(merchantInfo);
+            // const merchantInfo = await merchantInfoResponse.json();
+            // setMerchantInfo(merchantInfo);
+            // // console.log(
+            // //   'got back merchantInfoResponse',
+            // //   await merchantInfoResponse.json()
+            // // );
+            // setFormState({
+            //     name: merchantInfo.name,
+            //     logoSrc: '',
+            //     walletAddress: merchantInfo.walletAddress,
+            //     token: Token.USDC,
+            // });
+        };
+
+        fetchData().catch(console.error);
+    }, []);
+
     const [formState, setFormState] = useState<FormData>({
         name: '[shopify id]',
         logoSrc: '',
