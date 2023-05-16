@@ -8,8 +8,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Merchant {
@@ -19,7 +19,7 @@ model Merchant {
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
-  RefundRecord   RefundRecord[]
+  refundRecords  RefundRecord[]
   paymentAddress String?
 }
 
