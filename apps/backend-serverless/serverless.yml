@@ -112,8 +112,8 @@ functions:
       - httpApi:
           path: /login
           method: get
-  payment-address:
-    handler: src/handlers/clients/merchant-ui/payment-address.paymentAddress
+  update-payment-address:
+    handler: src/handlers/clients/merchant-ui/write-data/update-payment-address.updatePaymentAddress
     events:
       - httpApi:
           path: /payment-address

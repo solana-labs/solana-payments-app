@@ -20,6 +20,9 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
     const merchantService = new MerchantService(prisma);
 
     let merchantAuthToken: MerchantAuthToken;
+    let rejectRefundRequest: RejectRefundRequest;
+    let refundRecord: RefundRecord | null;
+    let merchant: Merchant | null;
 
     try {
         merchantAuthToken = withAuth(event.cookies);
@@ -27,17 +30,22 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
         return requestErrorResponse(error);
     }
 
-    const decodedBody = event.body ? decode(event.body) : '';
-    const body = queryString.parse(decodedBody);
-
-    let rejectRefundRequest: RejectRefundRequest;
-    let refundRecord: RefundRecord | null;
-    let merchant: Merchant | null;
-
     try {
-        rejectRefundRequest = parseAndValidateRejectRefundRequest(body);
+        rejectRefundRequest = parseAndValidateRejectRefundRequest(event.body);
     } catch (error) {
         return requestErrorResponse(error);
+    }
+
+    try {
+        merchant = await merchantService.getMerchant({
+            id: merchantAuthToken.id,
+        });
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
+
+    if (merchant == null) {
+        return requestErrorResponse(new Error('No merchant found.'));
     }
 
     try {
@@ -52,16 +60,12 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
         return requestErrorResponse(new Error('No refund record found.'));
     }
 
-    try {
-        merchant = await merchantService.getMerchant({
-            id: refundRecord.merchantId,
-        });
-    } catch (error) {
-        return requestErrorResponse(error);
+    if (merchant.id !== refundRecord.merchantId) {
+        return requestErrorResponse(new Error('Refund record does not belong to merchant.'));
     }
 
-    if (merchant == null) {
-        return requestErrorResponse(new Error('No merchant found.'));
+    if (refundRecord.status !== 'pending') {
+        return requestErrorResponse(new Error('Refund record is not pending.'));
     }
 
     const shop = merchant.shop;
@@ -70,8 +74,6 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
     if (accessToken == null) {
         return requestErrorResponse(new Error('Could not mutate on behalf of the Shopify merchant.'));
     }
-
-    // TODO: check refund status
 
     let rejectRefundResponse: RejectRefundResponse;
     try {
