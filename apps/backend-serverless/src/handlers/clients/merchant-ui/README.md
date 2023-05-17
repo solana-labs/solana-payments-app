@@ -2,7 +2,7 @@
 
 ## Read Data
 
-### /merchant
+### /merchant-data
 
 ```
 {
@@ -83,5 +83,14 @@ body:
 
 refundId: string
 merchantReason: string
+
+200 code
+
+### /update-merchant
+
+body:
+
+name: string ( optional )
+paymentAddress: string ( optional )
 
 200 code
