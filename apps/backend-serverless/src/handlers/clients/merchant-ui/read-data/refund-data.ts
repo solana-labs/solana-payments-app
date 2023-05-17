@@ -54,14 +54,14 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         const refundResponse = await createRefundResponse(merchantAuthToken, 'pending', pagination, prisma);
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
-        const responesBodyData = {
+        const responseBodyData = {
             refundData: refundResponse,
             general: generalResponse,
         };
 
         return {
             statusCode: 200,
-            body: JSON.stringify(responesBodyData),
+            body: JSON.stringify(responseBodyData),
         };
     },
     {

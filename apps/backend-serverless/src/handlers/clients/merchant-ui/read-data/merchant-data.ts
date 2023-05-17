@@ -36,7 +36,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         const onboardingResponse = createOnboardingResponse(merchant);
 
         // TODO: Create a type for this
-        const responesBodyData = {
+        const responseBodyData = {
             merchantData: {
                 name: merchant.name,
                 paymentAddress: merchant.paymentAddress,
@@ -47,7 +47,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
 
         return {
             statusCode: 200,
-            body: JSON.stringify(responesBodyData),
+            body: JSON.stringify(responseBodyData),
         };
     },
     {

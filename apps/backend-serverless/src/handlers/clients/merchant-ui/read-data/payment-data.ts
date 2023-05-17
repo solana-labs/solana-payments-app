@@ -54,14 +54,14 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
         const paymentResponse = await createPaymentResponse(merchantAuthToken, pagination, prisma);
 
-        const responesBodyData = {
+        const responseBodyData = {
             paymentData: paymentResponse,
             general: generalResponse,
         };
 
         return {
             statusCode: 200,
-            body: JSON.stringify(responesBodyData),
+            body: JSON.stringify(responseBodyData),
         };
     },
     {
