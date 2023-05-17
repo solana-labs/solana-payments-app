@@ -1,20 +1,20 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
-import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
+import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
 import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import {
-    PaymentAddressRequest,
+    MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
 } from '../../../../models/payment-address-request.model.js';
 
-export const updatePaymentAddress = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
     const merchantService = new MerchantService(prisma);
 
     let merchantAuthToken: MerchantAuthToken;
-    let paymentAddressRequest: PaymentAddressRequest;
+    let merchantUpdateRequest: MerchantUpdateRequest;
 
     try {
         merchantAuthToken = withAuth(event.cookies);
@@ -23,14 +23,12 @@ export const updatePaymentAddress = async (event: APIGatewayProxyEventV2): Promi
     }
 
     try {
-        paymentAddressRequest = parseAndValidatePaymentAddressRequestBody(event.body);
+        merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(event.body);
     } catch (error) {
         return requestErrorResponse(error);
     }
 
-    const newPaymentAddress = paymentAddressRequest.paymentAddress;
-
-    if (newPaymentAddress == null) {
+    if (merchantUpdateRequest.name == null && merchantUpdateRequest.paymentAddress == null) {
         return requestErrorResponse(new Error('No shop or payment address provided.'));
     }
 
@@ -40,10 +38,18 @@ export const updatePaymentAddress = async (event: APIGatewayProxyEventV2): Promi
         return requestErrorResponse(new Error('No merchant found.'));
     }
 
+    var merchantUpdateQuery = {};
+
+    if (merchantUpdateRequest.name != null) {
+        merchantUpdateQuery['name'] = merchantUpdateRequest.name;
+    }
+
+    if (merchantUpdateRequest.paymentAddress != null) {
+        merchantUpdateQuery['paymentAddress'] = merchantUpdateRequest.paymentAddress;
+    }
+
     try {
-        await merchantService.updateMerchant(merchant, {
-            paymentAddress: newPaymentAddress,
-        });
+        await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
     } catch {
         return requestErrorResponse(new Error('Failed to update merchant.'));
     }
@@ -51,12 +57,8 @@ export const updatePaymentAddress = async (event: APIGatewayProxyEventV2): Promi
     // TODO: Define what the response should be.
     return {
         statusCode: 200,
-        body: JSON.stringify(
-            {
-                message: 'Updated!',
-            },
-            null,
-            2
-        ),
+        body: JSON.stringify({
+            message: 'Updated!',
+        }),
     };
 };

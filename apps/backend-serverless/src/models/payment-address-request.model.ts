@@ -1,18 +1,19 @@
 import { object, InferType, number, string } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
 
-export const paymentAddressRequestBodySchema = object().shape({
-    paymentAddress: string().required(),
+export const merchantUpdateRequestBodySchema = object().shape({
+    paymentAddress: string().optional(),
+    name: string().optional(),
 });
 
-export type PaymentAddressRequest = InferType<typeof paymentAddressRequestBodySchema>;
+export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;
 
 export const parseAndValidatePaymentAddressRequestBody = (
-    paymentAddressRequestBody: unknown
-): PaymentAddressRequest => {
+    merchantUpdateRequestBody: unknown
+): MerchantUpdateRequest => {
     return parseAndValidate(
-        paymentAddressRequestBody,
-        paymentAddressRequestBodySchema,
-        'Could not parse the payment address request body. Unknown Reason.'
+        merchantUpdateRequestBody,
+        merchantUpdateRequestBodySchema,
+        'Could not parse the merchant update request body. Unknown Reason.'
     );
 };
