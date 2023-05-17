@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { MerchantAuthToken, parseAndValidateMerchantAuthToken } from '../models/merchant-auth-token.model.js';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
+export const withAuth = (event: APIGatewayProxyEventV2): MerchantAuthToken => {
+    const cookies = event.cookies;
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
     const useAuthMock = process.env.USE_AUTH_MOCK;
 
@@ -19,13 +21,13 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     }
 
     if (cookies == null || cookies.length === 0) {
-        throw new Error('Failed to find a cookie');
+        throw new Error('Failed to find any cookies');
     }
 
     const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
 
     if (bearerCookie == null) {
-        throw new Error('Failed to find a cookie');
+        throw new Error('Failed to find bearer token');
     }
 
     const bearerToken = bearerCookie.split('Bearer=')[1];
