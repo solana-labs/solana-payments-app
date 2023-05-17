@@ -6,7 +6,8 @@ import { requestErrorResponse } from '../../utilities/request-response.utility.j
 
 const prisma = new PrismaClient();
 export const refundData = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> => {
-    const shopId = withAuth(event);
+    const merchantAuthToken = withAuth(event);
+    const shopId = merchantAuthToken.id;
 
     const refundRecordService = new RefundRecordService(prisma);
 

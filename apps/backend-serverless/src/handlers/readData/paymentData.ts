@@ -7,7 +7,9 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 const prisma = new PrismaClient();
 
 export const paymentData = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> => {
-    const shopId = withAuth(event);
+    const merchantAuthToken = withAuth(event);
+    const shopId = merchantAuthToken.id;
+
     const paymentRecordService = new PaymentRecordService(prisma);
 
     try {
