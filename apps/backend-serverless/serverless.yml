@@ -92,7 +92,7 @@ functions:
     handler: src/handlers/clients/merchant-ui/read-data/merchant-data.merchantData
     events:
       - httpApi:
-          path: /merchant
+          path: /merchant-data
           method: get
   refund-data:
     handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
@@ -116,7 +116,7 @@ functions:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
       - httpApi:
-          path: /merchant
+          path: /update-merchant
           method: put
 plugins:
   - serverless-plugin-typescript
