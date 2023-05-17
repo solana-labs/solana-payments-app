@@ -23,7 +23,21 @@ export type PaymentAddressUpdate = {
     paymentAddress: string;
 };
 
-export type MerchantUpdate = LastNonceUpdate | RedirectUpdate | PaymentAddressUpdate;
+export type MerchantNameUpdate = {
+    name: string;
+};
+
+export type MerchantNamePaymentAddressUpdate = {
+    paymentAddress: string;
+    name: string;
+};
+
+export type MerchantUpdate =
+    | LastNonceUpdate
+    | RedirectUpdate
+    | PaymentAddressUpdate
+    | MerchantNameUpdate
+    | MerchantNamePaymentAddressUpdate;
 
 export class MerchantService {
     private prisma: PrismaClient;

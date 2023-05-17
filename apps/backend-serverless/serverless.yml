@@ -71,7 +71,7 @@ functions:
           path: /refund-transaction
           method: post
   reject-refund:
-    handler: src/handlers/clients/merchant-ui/reject-refund.rejectRefund
+    handler: src/handlers/clients/merchant-ui/write-data/reject-refund.rejectRefund
     events:
       - httpApi:
           path: /reject-refund
@@ -88,23 +88,23 @@ functions:
       - httpApi:
           path: /payment-status
           method: get
-  merchantData:
-    handler: src/handlers/readData/merchantData.merchantData
+  merchant-data:
+    handler: src/handlers/clients/merchant-ui/read-data/merchant-data.merchantData
     events:
       - httpApi:
-          path: /merchantData
+          path: /merchant-data
           method: get
-  refundData:
-    handler: src/handlers/readData/refundData.refundData
+  refund-data:
+    handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
     events:
       - httpApi:
-          path: /refundData
+          path: /refund-data
           method: get
-  paymentData:
-    handler: src/handlers/readData/paymentData.paymentData
+  payment-data:
+    handler: src/handlers/clients/merchant-ui/read-data/payment-data.paymentData
     events:
       - httpApi:
-          path: /paymentData
+          path: /payment-data
           method: get
   login:
     handler: src/handlers/testing/login.login
@@ -112,12 +112,12 @@ functions:
       - httpApi:
           path: /login
           method: get
-  payment-address:
-    handler: src/handlers/clients/merchant-ui/payment-address.paymentAddress
+  update-payment-address:
+    handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
       - httpApi:
-          path: /payment-address
-          method: post
+          path: /update-merchant
+          method: put
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies

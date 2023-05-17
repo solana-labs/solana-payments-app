@@ -1,5 +1,6 @@
 import { PrismaClient, PaymentRecord, Merchant } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
+import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
     status: string;
@@ -35,7 +36,11 @@ export type IdQuery = {
     id: string;
 };
 
-export type PaymentRecordQuery = ShopIdQuery | IdQuery;
+export type MerchantIdQuery = {
+    merchantId: string;
+};
+
+export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
 
 export class PaymentRecordService {
     private prisma: PrismaClient;
@@ -50,12 +55,21 @@ export class PaymentRecordService {
         });
     }
 
-    async getPaymentRecordsForMerchant(
-       query: PaymentRecordQuery
+    async getPaymentRecordsForMerchantWithPagination(
+        query: PaymentRecordQuery,
+        pagination: Pagination
     ): Promise<PaymentRecord[] | null> {
-       return await this.prisma.paymentRecord.findMany({
-         where: query,
-       });
+        return await this.prisma.paymentRecord.findMany({
+            where: query,
+            take: pagination.pageSize,
+            skip: calculatePaginationSkip(pagination),
+        });
+    }
+
+    async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {
+        return await this.prisma.paymentRecord.count({
+            where: query,
+        });
     }
 
     async createPaymentRecord(
