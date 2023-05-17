@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
@@ -10,11 +10,14 @@ import { Input } from './Input';
 import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import { TokenSelect } from './TokenSelect';
+import { API_ENDPOINTS } from '@/lib/endpoints';
+import { set } from 'date-fns';
+import { PublicKey } from '@solana/web3.js';
 
 interface FormData {
     name: string;
     logoSrc?: string;
-    walletAddress?: string;
+    walletAddress?: null | PublicKey;
     token: Token;
 }
 
@@ -26,10 +29,35 @@ export function MerchantInfo(props: Props) {
     const [formState, setFormState] = useState<FormData>({
         name: '[shopify id]',
         logoSrc: '',
-        walletAddress: '',
+        walletAddress: null,
         token: Token.USDC,
     });
     const [isVerified, setIsVerified] = useState(false);
+
+    // const [merchantInfo, setMerchantInfo] = useState(null);
+
+    useEffect(() => {
+        const fetchMerchantInfo = async () => {
+            const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
+            const merchantJson = await merchantInfoResponse.json();
+            //sleep 2 seconds
+            // await new Promise(r => setTimeout(r, 2000));
+            // console.log('merchantInfo', merchantJson.name, merchantInfoResponse.json());
+            console.log('merchantInfo', merchantJson);
+
+            // setMerchantInfo(merchantJson);
+            setFormState({
+                name: merchantJson.merchantData.name || '[shopify id]',
+                logoSrc: 'a',
+                walletAddress: merchantJson.merchantData.paymentAddress
+                    ? new PublicKey(merchantJson.merchantData.paymentAddress)
+                    : null,
+                token: Token.USDC,
+            });
+            console.log('merchantJson.merchantData.paymentAddress', merchantJson.merchantData.paymentAddress);
+        };
+        fetchMerchantInfo().catch(console.error);
+    }, []);
 
     return (
         <DefaultLayoutContent className={props.className}>
@@ -68,6 +96,7 @@ export function MerchantInfo(props: Props) {
                                 walletAddress: wallet?.toBase58() || '',
                             }))
                         }
+                        defaultValue={formState.walletAddress}
                     />
                 </div>
                 <div className="my-6 border-b border-gray-200 col-span-2" />
