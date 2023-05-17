@@ -12,9 +12,9 @@ export const API_ENDPOINTS = {
     rejectRefund: `${API_BASE_URL}/reject-refund`,
     getPaymentTransaction: `${API_BASE_URL}/payment-transaction`,
     paymentStatus: `${API_BASE_URL}/payment-status`,
-    merchantData: `${API_BASE_URL}/merchantData`,
-    refundData: `${API_BASE_URL}/refundData`,
-    paymentData: `${API_BASE_URL}/paymentData`,
+    merchantData: `${API_BASE_URL}/merchant-data`,
+    refundData: `${API_BASE_URL}/refund-data`,
+    paymentData: `${API_BASE_URL}/payment-data`,
     login: `${API_BASE_URL}/login`,
     paymentAddress: `${API_BASE_URL}/payment-address`,
 };
