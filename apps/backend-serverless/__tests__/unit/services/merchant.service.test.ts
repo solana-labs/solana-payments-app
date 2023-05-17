@@ -16,6 +16,9 @@ describe('Merchant Testing Suite', () => {
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
@@ -35,6 +38,9 @@ describe('Merchant Testing Suite', () => {
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
@@ -47,11 +53,14 @@ describe('Merchant Testing Suite', () => {
     it('create a merchant', async () => {
         const mockMerchant = {
             id: 'abcd',
-            shop: 'mock-merchant-create.myshopify.com',
+            shop: 'mock-merchant.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         prismaMock.merchant.create.mockResolvedValue(mockMerchant);
@@ -68,11 +77,14 @@ describe('Merchant Testing Suite', () => {
     it('find no merchants', async () => {
         const mockMerchant = {
             id: 'abcd',
-            shop: 'mock-merchant-create.myshopify.com',
+            shop: 'mock-merchant.myshopify.com',
             lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         const merchant = await merchantService.getMerchant({
@@ -90,6 +102,9 @@ describe('Merchant Testing Suite', () => {
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         const mockMerchantAfterUpdate = {
@@ -99,6 +114,9 @@ describe('Merchant Testing Suite', () => {
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         prismaMock.merchant.update.mockResolvedValue(mockMerchantAfterUpdate);
@@ -111,11 +129,14 @@ describe('Merchant Testing Suite', () => {
     it('update a merchant failing', async () => {
         const mockMerchantThatDoesNotExist = {
             id: 'abcd',
-            shop: 'mock-merchant-dne.myshopify.com',
-            lastNonce: 'wxyz-4321',
+            shop: 'mock-merchant.myshopify.com',
+            lastNonce: 'abcd-1234',
             accessToken: null,
             scopes: null,
             paymentAddress: null,
+            name: 'Mock Merchant',
+            acceptedTermsAndConditions: false,
+            dismissCompleted: false,
         };
 
         prismaMock.merchant.update.mockRejectedValue(new Error('Failed to update merchant'));
