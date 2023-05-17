@@ -2,7 +2,7 @@
 
 ## Read Data
 
-### /merchant-data
+### /merchant
 
 ```
 {
@@ -83,3 +83,5 @@ body:
 
 refundId: string
 merchantReason: string
+
+200 code

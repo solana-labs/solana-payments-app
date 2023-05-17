@@ -92,7 +92,7 @@ functions:
     handler: src/handlers/clients/merchant-ui/read-data/merchant-data.merchantData
     events:
       - httpApi:
-          path: /merchant-data
+          path: /merchant
           method: get
   refund-data:
     handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
@@ -113,11 +113,11 @@ functions:
           path: /login
           method: get
   update-payment-address:
-    handler: src/handlers/clients/merchant-ui/write-data/update-payment-address.updatePaymentAddress
+    handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
       - httpApi:
-          path: /payment-address
-          method: post
+          path: /merchant
+          method: put
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
