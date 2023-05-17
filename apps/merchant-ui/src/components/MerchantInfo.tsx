@@ -30,7 +30,7 @@ export function MerchantInfo(props: Props) {
         // declare the data fetching function
         const fetchData = async () => {
             const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
-            console.log(merchantInfo);
+            console.log('merchantInfo', merchantInfo);
             // const merchantInfo = await merchantInfoResponse.json();
             // setMerchantInfo(merchantInfo);
             // // console.log(

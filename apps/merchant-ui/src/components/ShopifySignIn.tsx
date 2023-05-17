@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { twMerge } from 'tailwind-merge';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 interface Props {
     className?: string;
@@ -11,29 +12,28 @@ export function ShopifySignIn(props: Props) {
     async function handleClick() {
         try {
             // const response = await fetch(API_ENDPOINTS.login);
-            const response = fetch(API_ENDPOINTS.login, {
+            const response = await fetch(API_ENDPOINTS.login, {
                 method: 'GET',
-                credentials: 'include', // include cookies in this request
             });
 
             console.log(API_ENDPOINTS.login);
 
             console.log('1');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            // if (!response.ok) {
+            //     throw new Error(`HTTP error! status: ${response.status}`);
+            // }
             console.log('2', response);
 
-            const data = response.headers;
+            // const data = response.headers;
 
-            console.log('3', data);
-            // console.log('4', response.cookies);
-            // If the server sends a cookie in the response body.
-            if (data.cookie) {
-                cookies.set('myCookie', data.cookie);
-            }
+            // console.log('3', data);
+            // // console.log('4', response.cookies);
+            // // If the server sends a cookie in the response body.
+            // if (data.cookie) {
+            //     cookies.set('myCookie', data.cookie);
+            // }
 
-            console.log('Login successful.');
+            // console.log('Login successful.');
         } catch (error) {
             console.error('Error logging in:', error);
         }
@@ -69,6 +69,7 @@ export function ShopifySignIn(props: Props) {
             >
                 Temporary Login
             </button>
+            <Link href="/merchant">merchant</Link>
         </>
     );
 }

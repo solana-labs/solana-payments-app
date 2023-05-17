@@ -1,18 +1,25 @@
 import jwt from 'jsonwebtoken';
 import { MerchantAuthToken, parseAndValidateMerchantAuthToken } from '../models/merchant-auth-token.model.js';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
+export const withAuth = (event: APIGatewayProxyEventV2): MerchantAuthToken => {
+    const cookies = event.cookies;
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
     const useAuthMock = process.env.USE_AUTH_MOCK;
 
-    if (useAuthMock !== null && useAuthMock !== undefined) {
-        const payload = {
-            id: useAuthMock,
-            iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-        };
-        return parseAndValidateMerchantAuthToken(payload);
-    }
+    // console.log('cookies', cookies);
+    // console.log('all cookies', event.headers.cookies);
+    // console.log('all header', event.headers);
+    // console.log('just event', event);
+
+    // if (useAuthMock !== null && useAuthMock !== undefined) {
+    //     const payload = {
+    //         id: useAuthMock,
+    //         iat: Math.floor(Date.now() / 1000),
+    //         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+    //     };
+    //     return parseAndValidateMerchantAuthToken(payload);
+    // }
 
     if (jwtSecretKey == null) {
         throw new Error('JWT secret key is not set');
@@ -25,7 +32,7 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
 
     if (bearerCookie == null) {
-        throw new Error('Failed to find a cookie');
+        throw new Error('Failed to find bearer cookie');
     }
 
     const bearerToken = bearerCookie.split('Bearer=')[1];

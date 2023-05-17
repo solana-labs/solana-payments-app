@@ -3,7 +3,7 @@ import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-hea
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 
 export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const testingMerchantId = 'testing-merchant-id';
+    const testingMerchantId = 'merchantId';
 
     let merchantAuthCookieHeader: string;
     try {
@@ -15,7 +15,10 @@ export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayPr
     return {
         statusCode: 200,
         headers: {
+            'Content-Type': 'text/plain',
             'Set-Cookie': merchantAuthCookieHeader,
+            'Access-Control-Allow-Origin': 'http://localhost:3000', // or the domain of your deployed frontend
+            'Access-Control-Allow-Credentials': 'true',
         },
         body: JSON.stringify({
             message: 'Successfully logged in.',

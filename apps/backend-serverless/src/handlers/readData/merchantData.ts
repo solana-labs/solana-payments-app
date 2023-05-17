@@ -8,7 +8,8 @@ const prisma = new PrismaClient();
 
 export async function merchantData(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> {
     console.log('in merchant data');
-    const shopId = withAuth(event);
+    const merchantAuthToken = withAuth(event);
+    const shopId = merchantAuthToken.id;
     console.log('got auth shopif', shopId);
 
     const merchantService = new MerchantService(prisma);
@@ -25,6 +26,8 @@ export async function merchantData(event: APIGatewayProxyEventV2): Promise<APIGa
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': 'http://localhost:3000', // or the domain of your deployed frontend
+                'Access-Control-Allow-Credentials': 'false',
             },
             body: JSON.stringify(
                 {

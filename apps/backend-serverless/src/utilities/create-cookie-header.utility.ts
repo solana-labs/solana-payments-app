@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export const AUTH_TOKEN_COOKIE_NAME = 'authToken';
+export const AUTH_TOKEN_COOKIE_NAME = 'Bearer';
 
 interface CookieOptions {
     maxAge: number;
@@ -25,15 +25,16 @@ export const createMechantAuthCookieHeader = (id: string): string => {
 
     const token = jwt.sign(payload, jwtSecretKey, {});
 
+    // secure: process.env.NODE_ENV === 'production',
     const cookieOptions: CookieOptions = {
         maxAge: 24 * 60 * 60, // 1 day in seconds
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: false,
+        sameSite: 'lax',
         path: '/',
     };
 
-    return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${
-        cookieOptions.httpOnly ? 'true' : ''
-    }${cookieOptions.secure ? ' Secure' : ''}; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
+    return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; ${
+        cookieOptions.httpOnly ? 'HttpOnly;' : ''
+    } SameSite=${cookieOptions.sameSite}; ${cookieOptions.secure ? ' Secure;' : ''} Path=${cookieOptions.path};`;
 };
