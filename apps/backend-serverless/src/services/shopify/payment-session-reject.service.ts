@@ -1,12 +1,30 @@
 import axios from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
+import {
+    RejectPaymentResponse,
+    parseAndValidateResolvePaymentResponse,
+} from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 
 const paymentSessionRejectMutation = `mutation PaymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
     paymentSessionReject(id: $id, reason: $reason) {
         paymentSession {
             id
-            reason
-        }
+            state {
+              ... on PaymentSessionStateRejected {
+                code
+                reason
+                merchantMessage
+              }
+            }
+            nextAction {
+              action
+              context {
+                ... on PaymentSessionActionsRedirect {
+                  redirectUrl
+                }
+              }
+            }
+          }      
         userErrors {
             field
             message
@@ -31,7 +49,7 @@ export const paymentSessionReject = async (id: string, reason: string, shop: str
         },
     };
 
-    let paymentSessionRejectResponse: PaymentSessionRejectResponse;
+    let paymentSessionRejectResponse: RejectPaymentResponse;
 
     try {
         const response = await axios({
@@ -41,7 +59,7 @@ export const paymentSessionReject = async (id: string, reason: string, shop: str
             data: JSON.stringify(graphqlQuery),
         });
 
-        paymentSessionRejectResponse = parseAndValidatePaymentSessionRejectResponse(response.data);
+        paymentSessionRejectResponse = parseAndValidateResolvePaymentResponse(response.data);
     } catch (error) {
         if (error instanceof Error) {
             throw error;

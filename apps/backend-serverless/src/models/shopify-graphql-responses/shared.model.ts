@@ -34,6 +34,8 @@ export const sharedRefundResponseRootSchema = object().shape({
 
 export const sharedPaymentResponseStateSchema = object().shape({
     code: string().required(),
+    reson: string().optional(),
+    merchantMessage: string().optional(),
 });
 
 export const sharedPaymentResponseContextSchema = object().shape({

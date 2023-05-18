@@ -27,13 +27,9 @@ export class TrmService {
 
         try {
             const response = await axios.post(TRM_SCREEN_URL, body, { headers });
-
-            console.log(JSON.stringify(response.data));
-
             const parsedResponse: TrmWalletScreenResponse = parseAndValidateTrmWalletScreenResponse(response.data);
             this.validateRiskLevelBelowMax(parsedResponse);
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }
