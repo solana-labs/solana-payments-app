@@ -12,9 +12,8 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
-// We should probably try to exit this code as soon as possible and get back to using code paths that are exiting and being used
-// We also want to clarify this isn't for  retrying messages to shopify. This is equivilant to the helius webhook. We will be doing shopify
-// things in another chron job
+// I want to clarify this isn't for retrying messages to shopify. This is equivilant to the helius webhook. We will be doing shopify
+// things in another chron job.
 export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
@@ -30,7 +29,9 @@ export const cron = Sentry.AWSLambda.wrapHandler(
             try {
                 transaction = await fetchEnhancedTransaction(transactionRecord.signature);
             } catch (error) {
-                // TODO: Log this with sentry
+                // this will fail if our fetch transaction fails, it shouldnt throw if the tx isn't on chain though
+                // if the tx isn't on chain, it should return null and we will continue in the next logic block
+                Sentry.captureException(error);
                 continue;
             }
 
@@ -48,7 +49,9 @@ export const cron = Sentry.AWSLambda.wrapHandler(
                         break;
                 }
             } catch (error) {
-                // TODO: Log this with sentry
+                // If we're catching here, it means we failed to get to the end of a processDiscoveredTransaction function
+                // This should only happen in odd situations that require investigation
+                Sentry.captureException(error);
                 continue;
             }
         }
