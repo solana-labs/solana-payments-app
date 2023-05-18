@@ -42,6 +42,8 @@ model PaymentRecord {
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
+  requestedAt          DateTime            @default(now())
+  completedAt          DateTime?
 }
 
 model RefundRecord {
@@ -58,6 +60,9 @@ model RefundRecord {
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
   TransactionRecord TransactionRecord[]
+
+  requestedAt DateTime  @default(now())
+  completedAt DateTime?
 }
 
 enum TransactionType {
@@ -69,9 +74,9 @@ model TransactionRecord {
   id              Int             @id @default(autoincrement())
   signature       String
   type            TransactionType
-  createdAt       String
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId String?
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
+  createdAt       DateTime        @default(now())
 }

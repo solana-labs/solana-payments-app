@@ -7,10 +7,6 @@ export type PaidUpdate = {
     redirectUrl: string;
 };
 
-export type StatusUpdate = {
-    status: string;
-};
-
 export type TransactionSignatureUpdate = {
     transactionSignature: string;
 };
@@ -19,13 +15,10 @@ export type StatusRedirectTransactionUpdate = {
     status: string;
     redirectUrl: string;
     transactionSignature: string;
+    completedAt: Date;
 };
 
-export type PaymentRecordUpdate =
-    | PaidUpdate
-    | StatusUpdate
-    | TransactionSignatureUpdate
-    | StatusRedirectTransactionUpdate;
+export type PaymentRecordUpdate = PaidUpdate | TransactionSignatureUpdate | StatusRedirectTransactionUpdate;
 
 export type ShopIdQuery = {
     shopId: string;
@@ -93,6 +86,8 @@ export class PaymentRecordService {
                     cancelURL: paymentInitiation.payment_method.data.cancel_url,
                     transactionSignature: null,
                     usdcAmount: usdcAmount,
+                    requestedAt: new Date(),
+                    completedAt: null,
                 },
             });
         } catch {

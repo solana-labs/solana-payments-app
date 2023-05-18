@@ -105,8 +105,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
             signatureString,
             TransactionType.payment,
             null,
-            refundRecord.id,
-            'fake-date'
+            refundRecord.id
         );
     } catch (error) {
         return requestErrorResponse(error);

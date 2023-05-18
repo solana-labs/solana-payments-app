@@ -6,13 +6,14 @@ export type PaidUpdate = {
     status: string;
 };
 
-export type StatusUpdate = {
-    status: string;
-};
+// export type StatusUpdate = {
+//     status: string;
+// };
 
 export type StatusTransactionUpdate = {
     status: string;
     transactionSignature: string;
+    completedAt: Date;
 };
 
 export type RefundRecordUpdate = PaidUpdate | StatusTransactionUpdate;
@@ -88,6 +89,8 @@ export class RefundRecordService {
                     test: refundInitiation.test,
                     merchantId: merchant.id,
                     transactionSignature: null,
+                    requestedAt: new Date(),
+                    completedAt: null,
                 },
             });
         } catch {

@@ -132,8 +132,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 signatureString,
                 TransactionType.payment,
                 paymentRecord.id,
-                null,
-                'fake-dat'
+                null
             );
         } catch (error) {
             return requestErrorResponse(error);

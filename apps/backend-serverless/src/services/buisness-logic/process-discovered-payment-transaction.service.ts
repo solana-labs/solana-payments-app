@@ -79,9 +79,10 @@ export const processDiscoveredPaymentTransaction = async (
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
         // work
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
-            status: 'paid',
+            status: 'completed',
             redirectUrl: redirectUrl,
             transactionSignature: transaction.signature,
+            completedAt: new Date(),
         });
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
