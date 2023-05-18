@@ -20,6 +20,12 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
+export enum RefundStatus {
+    AwaitingAction = 'AwaitingAction',
+    RefundApproved = 'RefundApproved',
+    RefundDenied = 'RefundDenied',
+}
+
 export const refundData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
@@ -34,30 +40,42 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
+        console.log('getting merchant');
+
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
             return requestErrorResponse(new Error('Could not find merchant.'));
         }
 
+        console.log('got merchant', merchant);
         try {
             refundDataRequestParameters = parseAndValidateRefundDataRequestParameters(event.queryStringParameters);
         } catch (error) {
             return requestErrorResponse(error);
         }
 
+        console.log('got refund data request parameters', refundDataRequestParameters);
+
         const pagination: Pagination = {
             page: refundDataRequestParameters.page,
             pageSize: refundDataRequestParameters.pageSize,
         };
 
-        const refundResponse = await createRefundResponse(merchantAuthToken, 'pending', pagination, prisma);
+        const refundResponse = await createRefundResponse(
+            merchantAuthToken,
+            RefundStatus.AwaitingAction,
+            pagination,
+            prisma
+        );
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
         const responseBodyData = {
             refundData: refundResponse,
             general: generalResponse,
         };
+
+        console.log('got response body data', responseBodyData);
 
         return {
             statusCode: 200,

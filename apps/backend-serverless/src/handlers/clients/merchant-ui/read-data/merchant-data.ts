@@ -29,7 +29,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Merchant not found'));
+            return requestErrorResponse(new Error('Merchant ' + merchantAuthToken.id + ' not found'));
         }
 
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
