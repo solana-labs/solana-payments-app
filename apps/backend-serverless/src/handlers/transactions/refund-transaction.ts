@@ -103,7 +103,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     try {
         await transactionRecordService.createTransactionRecord(
             signatureString,
-            TransactionType.payment,
+            TransactionType.refund,
             null,
             refundRecord.id
         );
