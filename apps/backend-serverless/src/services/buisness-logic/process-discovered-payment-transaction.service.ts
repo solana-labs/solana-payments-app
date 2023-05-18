@@ -3,10 +3,8 @@ import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transact
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { paymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
-import { getCustomerFromHeliusEnhancedTransaction } from '../../utilities/get-customer.utility.js';
 import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
 
-// I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
     transaction: HeliusEnhancedTransaction,
