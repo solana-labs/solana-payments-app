@@ -71,6 +71,7 @@ export const processDiscoveredRefundTransaction = async (
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: 'paid',
             transactionSignature: transaction.signature,
+            completedAt: new Date(),
         });
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
