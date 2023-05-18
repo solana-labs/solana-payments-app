@@ -8,6 +8,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
+import { useOpenRefunds } from '@/hooks/useRefunds';
 
 interface Props {
     className?: string;
@@ -15,11 +16,15 @@ interface Props {
 
 export function OpenRefunds(props: Props) {
     const openRefunds = useMockOpenRefunds();
+    const openRealRefunds = useOpenRefunds();
+    console.log('openRealRefunds', openRealRefunds);
+
+    const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
             {RE.match(
-                openRefunds,
+                openRealRefunds,
                 () => (
                     <div />
                 ),
@@ -28,25 +33,23 @@ export function OpenRefunds(props: Props) {
                 ),
                 refunds => (
                     <>
-                        {['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'].map(
-                            (label, i) => (
-                                <div
-                                    className={twMerge(
-                                        'border-b',
-                                        'border-gray-200',
-                                        'font-semibold',
-                                        'py-3',
-                                        'text-slate-600',
-                                        'text-sm',
-                                        i < 4 && 'pr-14'
-                                    )}
-                                    key={label}
-                                >
-                                    {label}
-                                </div>
-                            )
-                        )}
-                        {refunds.map(refund => (
+                        {refundColumns.map((label, i) => (
+                            <div
+                                className={twMerge(
+                                    'border-b',
+                                    'border-gray-200',
+                                    'font-semibold',
+                                    'py-3',
+                                    'text-slate-600',
+                                    'text-sm',
+                                    i < 4 && 'pr-14'
+                                )}
+                                key={label}
+                            >
+                                {label}
+                            </div>
+                        ))}
+                        {refunds.map((refund, i) => (
                             <>
                                 <div
                                     className={twMerge(
@@ -58,6 +61,7 @@ export function OpenRefunds(props: Props) {
                                         'items-center',
                                         'text-black'
                                     )}
+                                    key={refund.orderId}
                                 >
                                     {refund.orderId}
                                 </div>
