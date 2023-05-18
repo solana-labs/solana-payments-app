@@ -1,4 +1,4 @@
-import { PrismaClient, Merchant, RefundRecord } from '@prisma/client';
+import { PrismaClient, Merchant, RefundRecord, PaymentRecord } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
@@ -57,11 +57,14 @@ export class RefundRecordService {
     async getRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
         pagination: Pagination
-    ): Promise<RefundRecord[] | null> {
+    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
         return await this.prisma.refundRecord.findMany({
             where: query,
+            include: {
+                paymentRecord: true,
+            },
             take: pagination.pageSize,
-            skip: calculatePaginationSkip(pagination),
+            skip: 0,
         });
     }
 
