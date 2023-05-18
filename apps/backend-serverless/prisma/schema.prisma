@@ -44,7 +44,7 @@ model PaymentRecord {
   redirectUrl          String?
   requestedAt          DateTime            @default(now())
   completedAt          DateTime?
-  RefundRecord         RefundRecord[]
+  refundRecord         RefundRecord[]
 }
 
 model RefundRecord {
