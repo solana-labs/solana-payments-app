@@ -20,7 +20,9 @@ export const fetchRefundTransaction = async (
         '0.1', // will leave at 0.1 for now but this should be the size of the refund
         'size',
         'blockhash',
-        'true'
+        'true',
+        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
     );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
