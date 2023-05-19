@@ -2,9 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
-  previewFeatures = ["referentialIntegrity"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -30,7 +29,7 @@ model Merchant {
 model PaymentRecord {
   id                   String              @id // Internal ID
   status               String
-  shopId               String
+  shopId               String              @unique
   shopGid              String?
   shopGroup            String
   test                 Boolean
@@ -43,22 +42,29 @@ model PaymentRecord {
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
+  requestedAt          DateTime            @default(now())
+  completedAt          DateTime?
+  RefundRecord         RefundRecord[]
 }
 
 model RefundRecord {
-  id                   String   @id // Internal ID
+  id                   String        @id // Internal ID
   status               String
   amount               Float
   currency             String
   shopId               String // Given Id from Shopify
   shopGid              String // Given Gid from Shopify
   shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  paymentRecord        PaymentRecord @relation(fields: [shopPaymentId], references: [shopId])
   test                 Boolean
-  merchant             Merchant @relation(fields: [merchantId], references: [id])
+  merchant             Merchant      @relation(fields: [merchantId], references: [id])
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
   TransactionRecord TransactionRecord[]
+
+  requestedAt DateTime  @default(now())
+  completedAt DateTime?
 }
 
 enum TransactionType {
@@ -70,9 +76,9 @@ model TransactionRecord {
   id              Int             @id @default(autoincrement())
   signature       String
   type            TransactionType
-  createdAt       String
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId String?
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
+  createdAt       DateTime        @default(now())
 }

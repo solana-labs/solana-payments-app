@@ -21,6 +21,8 @@ describe('Refund Record Testing Suite', () => {
             test: true,
             merchantId: 'qwer',
             transactionSignature: null,
+            requestedAt: new Date(),
+            completedAt: null,
         };
 
         prismaMock.refundRecord.findFirst.mockResolvedValue(mockRefundRecord);

@@ -14,17 +14,16 @@ describe('Transaction Record Testing Suite', () => {
             id: 1,
             signature: '1234',
             type: TransactionType.payment,
-            createdAt: 'fake-date',
+            createdAt: new Date(),
             paymentRecordId: 'abcd',
             refundRecordId: null,
         };
 
         prismaMock.transactionRecord.findFirst.mockResolvedValue(mockTransactionRecord);
 
-        const transactionRecord =
-            await transactionRecordService.getTransactionRecord({
-                signature: '1234',
-            });
+        const transactionRecord = await transactionRecordService.getTransactionRecord({
+            signature: '1234',
+        });
 
         expect(transactionRecord).toEqual(mockTransactionRecord);
     });
@@ -34,7 +33,7 @@ describe('Transaction Record Testing Suite', () => {
             id: 1,
             signature: '1234',
             type: TransactionType.payment,
-            createdAt: 'fake-date',
+            createdAt: new Date(),
             paymentRecordId: 'abcd',
             refundRecordId: null,
         };
@@ -45,8 +44,7 @@ describe('Transaction Record Testing Suite', () => {
             '1234',
             TransactionType.payment,
             'abcd',
-            null,
-            'fake-date'
+            null
         );
 
         expect(transactionRecord).toEqual(mockTransactionRecord);
@@ -57,7 +55,7 @@ describe('Transaction Record Testing Suite', () => {
             id: 1,
             signature: 'abcd',
             type: TransactionType.refund,
-            createdAt: 'fake-date',
+            createdAt: new Date(),
             paymentRecordId: null,
             refundRecordId: 'abcd',
         };
@@ -68,8 +66,7 @@ describe('Transaction Record Testing Suite', () => {
             '1234',
             TransactionType.refund,
             null,
-            'abcd',
-            'fake-date'
+            'abcd'
         );
 
         expect(transactionRecord).toEqual(mockTransactionRecord);

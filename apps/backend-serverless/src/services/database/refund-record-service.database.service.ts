@@ -1,4 +1,4 @@
-import { PrismaClient, Merchant, RefundRecord } from '@prisma/client';
+import { PrismaClient, Merchant, RefundRecord, PaymentRecord } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
@@ -6,13 +6,14 @@ export type PaidUpdate = {
     status: string;
 };
 
-export type StatusUpdate = {
-    status: string;
-};
+// export type StatusUpdate = {
+//     status: string;
+// };
 
 export type StatusTransactionUpdate = {
     status: string;
     transactionSignature: string;
+    completedAt: Date;
 };
 
 export type RefundRecordUpdate = PaidUpdate | StatusTransactionUpdate;
@@ -25,6 +26,11 @@ export type RefundIdQuery = {
     id: string;
 };
 
+export type RefundIdMerchantIdQuery = {
+    id: string;
+    merchantId: string;
+};
+
 export type MerchantIdQuery = {
     merchantId: string;
 };
@@ -34,7 +40,12 @@ export type MerchantAndStatusQuery = {
     status: string;
 };
 
-export type RefundRecordQuery = ShopIdQuery | RefundIdQuery | MerchantIdQuery | MerchantAndStatusQuery;
+export type RefundRecordQuery =
+    | ShopIdQuery
+    | RefundIdQuery
+    | MerchantIdQuery
+    | MerchantAndStatusQuery
+    | RefundIdMerchantIdQuery;
 
 // --- RefundRecordService CRUD Operations ---
 // 1. getRefundRecord
@@ -53,14 +64,28 @@ export class RefundRecordService {
         });
     }
 
+    async getRefundRecordWithPayment(
+        query: RefundRecordQuery
+    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null }) | null> {
+        return await this.prisma.refundRecord.findFirst({
+            where: query,
+            include: {
+                paymentRecord: true,
+            },
+        });
+    }
+
     async getRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
         pagination: Pagination
-    ): Promise<RefundRecord[] | null> {
+    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
         return await this.prisma.refundRecord.findMany({
             where: query,
+            include: {
+                paymentRecord: true,
+            },
             take: pagination.pageSize,
-            skip: calculatePaginationSkip(pagination),
+            skip: 0,
         });
     }
 
@@ -88,6 +113,8 @@ export class RefundRecordService {
                     test: refundInitiation.test,
                     merchantId: merchant.id,
                     transactionSignature: null,
+                    requestedAt: new Date(),
+                    completedAt: null,
                 },
             });
         } catch {
