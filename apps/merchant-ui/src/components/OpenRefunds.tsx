@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
-import type { FC, MouseEvent } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 
 import { useMockOpenRefunds } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
@@ -22,24 +22,17 @@ interface Props {
 }
 
 export function OpenRefunds(props: Props) {
-    const openRefunds = useMockOpenRefunds();
     const openRealRefunds = useOpenRefunds();
     const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
-    console.log('openRealRefunds', openRealRefunds);
+    const [pending, setPending] = useState(false);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     const { visible, setVisible } = useWalletModal();
 
-    const handleClick = useCallback(
-        (event: MouseEvent<HTMLButtonElement>) => {
-            setVisible(!visible);
-        },
-        [setVisible, visible]
-    );
-
     async function getRefundTransaction() {
+        setPending(true);
         console.log('in get refund tx');
         console.log('wallet modal', visible, wallets, connected);
         const headers = {
@@ -64,10 +57,12 @@ export function OpenRefunds(props: Props) {
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
             console.log('returned transaction: ', transaction);
+            await sendTransaction(transaction, connection);
         } catch (error) {
             console.log('error: ', error);
             // setResults(RE.failed(error));
         }
+        setPending(false);
     }
 
     return (
@@ -277,12 +272,12 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary onClick={handleClick}>
+                                                        <Button.Primary
+                                                            onClick={getRefundTransaction}
+                                                            pending={pending}
+                                                        >
                                                             Approve with Wallet
                                                         </Button.Primary>
-                                                        <Button.Secondary onClick={getRefundTransaction}>
-                                                            Approve with Wallet
-                                                        </Button.Secondary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
