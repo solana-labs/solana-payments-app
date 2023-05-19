@@ -26,6 +26,11 @@ export type RefundIdQuery = {
     id: string;
 };
 
+export type RefundIdMerchantIdQuery = {
+    id: string;
+    merchantId: string;
+};
+
 export type MerchantIdQuery = {
     merchantId: string;
 };
@@ -35,7 +40,12 @@ export type MerchantAndStatusQuery = {
     status: string;
 };
 
-export type RefundRecordQuery = ShopIdQuery | RefundIdQuery | MerchantIdQuery | MerchantAndStatusQuery;
+export type RefundRecordQuery =
+    | ShopIdQuery
+    | RefundIdQuery
+    | MerchantIdQuery
+    | MerchantAndStatusQuery
+    | RefundIdMerchantIdQuery;
 
 // --- RefundRecordService CRUD Operations ---
 // 1. getRefundRecord
@@ -51,6 +61,17 @@ export class RefundRecordService {
     async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord | null> {
         return await this.prisma.refundRecord.findFirst({
             where: query,
+        });
+    }
+
+    async getRefundRecordWithPayment(
+        query: RefundRecordQuery
+    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null }) | null> {
+        return await this.prisma.refundRecord.findFirst({
+            where: query,
+            include: {
+                paymentRecord: true,
+            },
         });
     }
 

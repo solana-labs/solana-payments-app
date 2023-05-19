@@ -18,7 +18,7 @@ provider:
   httpApi:
     cors: true
 package:
-  excludeDevDependencies: false
+  excludeDevDependencies: true
   patterns:
     - 'node_modules/.prisma/**'
 functions:
@@ -46,12 +46,12 @@ functions:
       - httpApi:
           path: /refund
           method: post
-  screen-wallet:
-    handler: src/handlers/screen-wallet.screenWallet
-    events:
-      - httpApi:
-          path: /screen-wallet
-          method: get
+  # screen-wallet:
+  #   handler: src/handlers/screen-wallet.screenWallet
+  #   events:
+  #     - httpApi:
+  #         path: /screen-wallet
+  #         method: get
   helius:
     handler: src/handlers/webhooks/helius.helius
     events:
@@ -100,18 +100,24 @@ functions:
       - httpApi:
           path: /refund-data
           method: get
+  refund-status:
+    handler: src/handlers/clients/merchant-ui/read-data/refund-status.refundStatus
+    events:
+      - httpApi:
+          path: /refund-status
+          method: get
   payment-data:
     handler: src/handlers/clients/merchant-ui/read-data/payment-data.paymentData
     events:
       - httpApi:
           path: /payment-data
           method: get
-  login:
-    handler: src/handlers/testing/login.login
-    events:
-      - httpApi:
-          path: /login
-          method: get
+  # login:
+  #   handler: src/handlers/testing/login.login
+  #   events:
+  #     - httpApi:
+  #         path: /login
+  #         method: get
   update-payment-address:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
@@ -122,3 +128,5 @@ plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
+  - serverless-prune-plugin
+
