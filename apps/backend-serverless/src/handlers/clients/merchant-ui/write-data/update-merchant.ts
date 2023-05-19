@@ -8,6 +8,8 @@ import {
     MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
 } from '../../../../models/payment-address-request.model.js';
+import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
+import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
 
 export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -67,11 +69,21 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         return requestErrorResponse(new Error('Failed to update merchant.'));
     }
 
-    // TODO: Define what the response should be.
+    const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+    const onboardingResponse = createOnboardingResponse(merchant);
+
+    // TODO: Create a type for this
+    const responseBodyData = {
+        merchantData: {
+            name: merchant.name,
+            paymentAddress: merchant.paymentAddress,
+            onboarding: onboardingResponse,
+        },
+        general: generalResponse,
+    };
+
     return {
         statusCode: 200,
-        body: JSON.stringify({
-            message: 'Updated!',
-        }),
+        body: JSON.stringify(responseBodyData),
     };
 };
