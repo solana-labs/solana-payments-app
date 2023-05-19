@@ -1,9 +1,9 @@
-import { PrismaClient, PaymentRecord, Merchant } from '@prisma/client';
+import { PrismaClient, PaymentRecord, Merchant, PaymentRecordStatus } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
     redirectUrl: string;
 };
 
@@ -12,7 +12,7 @@ export type TransactionSignatureUpdate = {
 };
 
 export type StatusRedirectTransactionUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
     redirectUrl: string;
     transactionSignature: string;
     completedAt: Date;

@@ -1,4 +1,4 @@
-import { Merchant, PrismaClient, RefundRecord } from '@prisma/client';
+import { Merchant, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import queryString from 'query-string';
 import { decode } from '../../../../utilities/string.utility.js';
@@ -64,7 +64,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
         return requestErrorResponse(new Error('Refund record does not belong to merchant.'));
     }
 
-    if (refundRecord.status !== 'pending') {
+    if (refundRecord.status !== RefundRecordStatus.pending) {
         return requestErrorResponse(new Error('Refund record is not pending.'));
     }
 
@@ -92,7 +92,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
 
     try {
         await refundRecordService.updateRefundRecord(refundRecord, {
-            status: 'rejected',
+            status: RefundRecordStatus.rejected,
         });
     } catch (error) {
         return requestErrorResponse(error);

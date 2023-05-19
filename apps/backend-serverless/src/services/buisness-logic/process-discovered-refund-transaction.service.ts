@@ -1,4 +1,4 @@
-import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import { PrismaClient, RefundRecordStatus, TransactionRecord, TransactionType } from '@prisma/client';
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
@@ -69,7 +69,7 @@ export const processDiscoveredRefundTransaction = async (
         // work. I also either need to validate the response here or just not return anything. The equivilent payment one
         // has to return so I should probably return for parity and have a validation function
         await refundRecordService.updateRefundRecord(refundRecord, {
-            status: 'paid',
+            status: RefundRecordStatus.completed,
             transactionSignature: transaction.signature,
             completedAt: new Date(),
         });
