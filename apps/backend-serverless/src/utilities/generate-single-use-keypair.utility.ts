@@ -1,4 +1,4 @@
-import { PaymentRecord } from '@prisma/client';
+import { PaymentRecord, RefundRecord } from '@prisma/client';
 import { web3 } from '@project-serum/anchor';
 
 export const generateSingleUseKeypairFromPaymentRecord = async (paymentRecord: PaymentRecord) => {
