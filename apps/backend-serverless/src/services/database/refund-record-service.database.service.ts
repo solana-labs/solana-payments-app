@@ -1,4 +1,11 @@
-import { PrismaClient, Merchant, RefundRecord, PaymentRecord, PaymentRecordStatus } from '@prisma/client';
+import {
+    PrismaClient,
+    Merchant,
+    RefundRecord,
+    PaymentRecord,
+    PaymentRecordStatus,
+    RefundRecordStatus,
+} from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
@@ -100,7 +107,7 @@ export class RefundRecordService {
             return await this.prisma.refundRecord.create({
                 data: {
                     id: id,
-                    status: 'pending',
+                    status: RefundRecordStatus.pending,
                     amount: refundInitiation.amount,
                     currency: refundInitiation.currency,
                     shopId: refundInitiation.id,
