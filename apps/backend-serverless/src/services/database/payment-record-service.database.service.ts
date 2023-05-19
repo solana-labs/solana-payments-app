@@ -75,7 +75,7 @@ export class PaymentRecordService {
             return await this.prisma.paymentRecord.create({
                 data: {
                     id: id,
-                    status: 'pending',
+                    status: PaymentRecordStatus.pending,
                     shopId: paymentInitiation.id,
                     shopGid: paymentInitiation.gid,
                     shopGroup: paymentInitiation.group,

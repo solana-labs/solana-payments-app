@@ -15,7 +15,7 @@ export const createRefundDataResponseFromRefundRecord = (
     return {
         shopifyOrder: refundRecord.shopId,
         date: 'some-date-here',
-        status: 'pending',
+        status: refundRecord.status,
         refundAmount: `${refundRecord.amount} ${refundRecord.currency}`,
         paymentAmount: refundRecord.paymentRecord
             ? `${refundRecord.paymentRecord.amount} ${refundRecord.paymentRecord.currency}`
