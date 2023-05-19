@@ -9,6 +9,14 @@ export const generateSingleUseKeypairFromPaymentRecord = async (paymentRecord: P
     return keypair;
 };
 
+export const generateSingleUseKeypairFromRefundRecord = async (refundRecord: RefundRecord) => {
+    const shopifyStrings = ['shopify', refundRecord.shopId];
+    const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
+    const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
+    const keypair = web3.Keypair.fromSeed(seed);
+    return keypair;
+};
+
 const hashIntoPublicKey = async (inputs: string[]) => {
     return await web3.PublicKey.findProgramAddressSync(
         inputs.map(input => Buffer.from(input)),

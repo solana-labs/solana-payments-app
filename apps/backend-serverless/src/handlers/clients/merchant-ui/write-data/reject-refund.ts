@@ -31,7 +31,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
     }
 
     try {
-        rejectRefundRequest = parseAndValidateRejectRefundRequest(event.body);
+        rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
     } catch (error) {
         return requestErrorResponse(error);
     }

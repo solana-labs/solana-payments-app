@@ -9,7 +9,9 @@ import {
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,
     account: string,
-    gas: string
+    gas: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
     const endpoint = buildRefundTransactionRequestEndpoint(
         'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx', // this needs to be the customer
@@ -20,7 +22,9 @@ export const fetchRefundTransaction = async (
         '0.1', // will leave at 0.1 for now but this should be the size of the refund
         'size',
         'blockhash',
-        'true'
+        'true',
+        singleUseNewAcc,
+        singleUsePayer
     );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
