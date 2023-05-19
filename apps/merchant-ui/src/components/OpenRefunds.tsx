@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
+import type { FC, MouseEvent } from 'react';
 
 import { useMockOpenRefunds } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
@@ -9,6 +10,12 @@ import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
 import { useOpenRefunds } from '@/hooks/useRefunds';
+import axios from 'axios';
+import { API_ENDPOINTS } from '@/lib/endpoints';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
+import { WalletModal, useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useCallback } from 'react';
 
 interface Props {
     className?: string;
@@ -17,9 +24,51 @@ interface Props {
 export function OpenRefunds(props: Props) {
     const openRefunds = useMockOpenRefunds();
     const openRealRefunds = useOpenRefunds();
+    const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
+    const { connection } = useConnection();
     console.log('openRealRefunds', openRealRefunds);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
+
+    const { visible, setVisible } = useWalletModal();
+
+    const handleClick = useCallback(
+        (event: MouseEvent<HTMLButtonElement>) => {
+            setVisible(!visible);
+        },
+        [setVisible, visible]
+    );
+
+    async function getRefundTransaction() {
+        console.log('in get refund tx');
+        console.log('wallet modal', visible, wallets, connected);
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        };
+
+        if (!connected) {
+            console.log('not connected');
+            await select(wallets[0].adapter.name);
+            await connect();
+        }
+        // handleClick()
+        try {
+            // console.log('publicKey: ', publicKey.toString());
+            const response = await axios.post(
+                API_ENDPOINTS.refundTransaction + '?refundId=' + '10',
+                {
+                    account: publicKey ? publicKey.toBase58() : '',
+                },
+                { headers: headers }
+            );
+            const buffer = Buffer.from(response.data.transaction, 'base64');
+            const transaction = Transaction.from(buffer);
+            console.log('returned transaction: ', transaction);
+        } catch (error) {
+            console.log('error: ', error);
+            // setResults(RE.failed(error));
+        }
+    }
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
@@ -228,7 +277,12 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary>Approve with Wallet</Button.Primary>
+                                                        <Button.Primary onClick={handleClick}>
+                                                            Approve with Wallet
+                                                        </Button.Primary>
+                                                        <Button.Secondary onClick={getRefundTransaction}>
+                                                            Approve with Wallet
+                                                        </Button.Secondary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
