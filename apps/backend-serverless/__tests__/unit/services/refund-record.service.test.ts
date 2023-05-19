@@ -1,5 +1,6 @@
 import { RefundRecordService } from '../../../src/services/database/refund-record-service.database.service.js';
 import { prismaMock } from '../../../prisma-singleton.js';
+import { RefundRecordStatus } from '@prisma/client';
 
 describe('Refund Record Testing Suite', () => {
     let refundRecordService: RefundRecordService;
@@ -10,7 +11,7 @@ describe('Refund Record Testing Suite', () => {
 
     it('find a refund record', async () => {
         const mockRefundRecord = {
-            status: 'pending',
+            status: RefundRecordStatus.pending,
             id: 'abcd',
             amount: 19.94,
             amountInUsdc: 19.94,

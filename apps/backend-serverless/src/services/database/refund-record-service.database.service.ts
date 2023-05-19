@@ -1,17 +1,13 @@
-import { PrismaClient, Merchant, RefundRecord, PaymentRecord } from '@prisma/client';
+import { PrismaClient, Merchant, RefundRecord, PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
 };
 
-// export type StatusUpdate = {
-//     status: string;
-// };
-
 export type StatusTransactionUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
     transactionSignature: string;
     completedAt: Date;
 };
@@ -37,7 +33,7 @@ export type MerchantIdQuery = {
 
 export type MerchantAndStatusQuery = {
     merchantId: string;
-    status: string;
+    status: PaymentRecordStatus;
 };
 
 export type RefundRecordQuery =
