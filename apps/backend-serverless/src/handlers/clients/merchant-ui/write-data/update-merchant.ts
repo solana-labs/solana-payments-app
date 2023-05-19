@@ -28,8 +28,13 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         return requestErrorResponse(error);
     }
 
-    if (merchantUpdateRequest.name == null && merchantUpdateRequest.paymentAddress == null) {
-        return requestErrorResponse(new Error('No shop or payment address provided.'));
+    if (
+        merchantUpdateRequest.name == null &&
+        merchantUpdateRequest.paymentAddress == null &&
+        merchantUpdateRequest.acceptedTermsAndConditions == null &&
+        merchantUpdateRequest.dismissCompleted == null
+    ) {
+        return requestErrorResponse(new Error('No info to update is provided.'));
     }
 
     const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
@@ -46,6 +51,14 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
 
     if (merchantUpdateRequest.paymentAddress != null) {
         merchantUpdateQuery['paymentAddress'] = merchantUpdateRequest.paymentAddress;
+    }
+
+    if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
+        merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
+    }
+
+    if (merchantUpdateRequest.dismissCompleted != null) {
+        merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
     }
 
     try {

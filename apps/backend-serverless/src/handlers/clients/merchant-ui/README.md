@@ -92,5 +92,7 @@ body:
 
 name: string ( optional )
 paymentAddress: string ( optional )
+acceptedTermsAndConditions: bool ( optional )
+dismissCompleted: bool ( optional )
 
 200 code
