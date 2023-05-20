@@ -20,10 +20,26 @@ describe('unit testing payment app configure', () => {
         });
         const mockPaymentAppConfigure = makePaymentAppConfigure(axios);
 
-        let paymentAppConfigureResponse: PaymentAppConfigureResponse;
-
         await expect(
             mockPaymentAppConfigure('mock-external-id', true, 'mock-shop', 'mock-token')
         ).resolves.not.toThrow();
+    });
+
+    it('invalid response, missing external handle', async () => {
+        let mock = new MockAdapter(axios);
+        mock.onPost().reply(200, {
+            data: {
+                paymentsAppConfigure: {
+                    paymentsAppConfiguration: {
+                        ready: true,
+                    },
+                    userErrors: [],
+                },
+            },
+            extensions: {},
+        });
+        const mockPaymentAppConfigure = makePaymentAppConfigure(axios);
+
+        await expect(mockPaymentAppConfigure('mock-external-id', true, 'mock-shop', 'mock-token')).rejects.toThrow();
     });
 });

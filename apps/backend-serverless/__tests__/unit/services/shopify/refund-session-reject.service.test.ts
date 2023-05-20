@@ -22,10 +22,30 @@ describe('unit testing refund session reject', () => {
         });
         const mockRefundSessionReject = makeRefundSessionReject(axios);
 
-        let refundSessionRejectResponse: RejectRefundResponse;
-
         await expect(
             mockRefundSessionReject('mock-id', 'REJECTED', 'mock-message', 'mock-shop', 'mock-token')
         ).resolves.not.toThrow();
+    });
+
+    it('invalid response, missing id', async () => {
+        let mock = new MockAdapter(axios);
+        mock.onPost().reply(200, {
+            data: {
+                refundSessionReject: {
+                    refundSession: {
+                        state: {
+                            code: 'REJECTED',
+                        },
+                    },
+                    userErrors: [],
+                },
+            },
+            extensions: {},
+        });
+        const mockRefundSessionReject = makeRefundSessionReject(axios);
+
+        await expect(
+            mockRefundSessionReject('mock-id', 'REJECTED', 'mock-message', 'mock-shop', 'mock-token')
+        ).rejects.toThrow();
     });
 });

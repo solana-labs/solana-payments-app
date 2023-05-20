@@ -23,10 +23,29 @@ describe('unit testing payment session resolve', () => {
         });
         const mockPaymentSessionResolve = makePaymentSessionResolve(axios);
 
-        let paymentSessionResolveResponse: ResolvePaymentResponse;
-
         await expect(
             mockPaymentSessionResolve('mock-id', 'mock-shop.shopify.com', 'mock-token')
         ).resolves.not.toThrow();
+    });
+
+    it('invalid response, missing id', async () => {
+        let mock = new MockAdapter(axios);
+        mock.onPost().reply(200, {
+            data: {
+                paymentSessionResolve: {
+                    paymentSession: {
+                        state: {
+                            code: 'SUCCESS',
+                        },
+                        nextAction: { action: 'redirect', context: { redirectUrl: 'https://example.com' } },
+                    },
+                    userErrors: [],
+                },
+            },
+            extensions: {},
+        });
+        const mockPaymentSessionResolve = makePaymentSessionResolve(axios);
+
+        await expect(mockPaymentSessionResolve('mock-id', 'mock-shop.shopify.com', 'mock-token')).rejects.toThrow();
     });
 });

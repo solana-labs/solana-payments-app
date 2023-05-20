@@ -29,10 +29,35 @@ describe('unit testing payment session reject', () => {
         });
         const mockPaymentSessionReject = makePaymentSessionReject(axios);
 
-        let paymentSessionRejectResponse: RejectPaymentResponse;
-
         await expect(
             mockPaymentSessionReject('mock-id', 'mock-reason', 'mock-shop', 'mock-token')
         ).resolves.not.toThrow();
+    });
+
+    it('invalid response, missing id', async () => {
+        let mock = new MockAdapter(axios);
+        mock.onPost().reply(200, {
+            data: {
+                paymentSessionReject: {
+                    paymentSession: {
+                        state: {
+                            code: 'REJECTED',
+                            merchantMessage: 'mock-reason',
+                        },
+                        nextAction: {
+                            action: 'REDIRECT',
+                            context: {
+                                redirectUrl: 'https://mock-shopify-url.com',
+                            },
+                        },
+                    },
+                    userErrors: [],
+                },
+            },
+            extensions: {},
+        });
+        const mockPaymentSessionReject = makePaymentSessionReject(axios);
+
+        await expect(mockPaymentSessionReject('mock-id', 'mock-reason', 'mock-shop', 'mock-token')).rejects.toThrow();
     });
 });
