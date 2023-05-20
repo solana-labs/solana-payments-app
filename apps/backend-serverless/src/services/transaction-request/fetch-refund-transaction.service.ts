@@ -13,6 +13,17 @@ export const fetchRefundTransaction = async (
     singleUseNewAcc: string,
     singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
+    var paymentAmount = paymentRecord.usdcAmount.toPrecision(4).toString();
+
+    // Allow for testing values
+    if (
+        paymentRecord.test == true &&
+        process.env.TEST_USDC_SIZE != null &&
+        isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
+    ) {
+        paymentAmount = process.env.TEST_USDC_SIZE;
+    }
+
     const endpoint = buildRefundTransactionRequestEndpoint(
         'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx', // this needs to be the customer
         account, // this needs to be passed in from the request but the payment will be the merchant
