@@ -60,11 +60,7 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
         };
     }
 
-    console.log('HELLO TEEJ 5');
-
     const base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
-
-    console.log('HELLO TEEJ 6');
 
     return {
         statusCode: 200,
