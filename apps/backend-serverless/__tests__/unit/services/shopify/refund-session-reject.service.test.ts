@@ -24,14 +24,8 @@ describe('unit testing refund session reject', () => {
 
         let refundSessionRejectResponse: RejectRefundResponse;
 
-        expect(async () => {
-            refundSessionRejectResponse = await mockRefundSessionReject(
-                'mock-id',
-                'REJECTED',
-                'mock-message',
-                'mock-shop',
-                'mock-token'
-            );
-        }).not.toThrow();
+        await expect(
+            mockRefundSessionReject('mock-id', 'REJECTED', 'mock-message', 'mock-shop', 'mock-token')
+        ).resolves.not.toThrow();
     });
 });

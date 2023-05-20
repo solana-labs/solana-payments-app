@@ -22,13 +22,8 @@ describe('unit testing payment app configure', () => {
 
         let paymentAppConfigureResponse: PaymentAppConfigureResponse;
 
-        expect(async () => {
-            paymentAppConfigureResponse = await mockPaymentAppConfigure(
-                'mock-external-id',
-                true,
-                'mock-shop',
-                'mock-token'
-            );
-        }).not.toThrow();
+        await expect(
+            mockPaymentAppConfigure('mock-external-id', true, 'mock-shop', 'mock-token')
+        ).resolves.not.toThrow();
     });
 });

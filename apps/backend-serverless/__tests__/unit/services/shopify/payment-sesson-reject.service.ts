@@ -31,13 +31,8 @@ describe('unit testing payment session reject', () => {
 
         let paymentSessionRejectResponse: RejectPaymentResponse;
 
-        expect(async () => {
-            paymentSessionRejectResponse = await mockPaymentSessionReject(
-                'mock-id',
-                'mock-reason',
-                'mock-shop',
-                'mock-token'
-            );
-        }).not.toThrow();
+        await expect(
+            mockPaymentSessionReject('mock-id', 'mock-reason', 'mock-shop', 'mock-token')
+        ).resolves.not.toThrow();
     });
 });

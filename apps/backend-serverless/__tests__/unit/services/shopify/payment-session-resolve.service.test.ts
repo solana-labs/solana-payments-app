@@ -25,12 +25,8 @@ describe('unit testing payment session resolve', () => {
 
         let paymentSessionResolveResponse: ResolvePaymentResponse;
 
-        expect(async () => {
-            paymentSessionResolveResponse = await mockPaymentSessionResolve(
-                'mock-id',
-                'mock-shop.shopify.com',
-                'mock-token'
-            );
-        }).not.toThrow();
+        await expect(
+            mockPaymentSessionResolve('mock-id', 'mock-shop.shopify.com', 'mock-token')
+        ).resolves.not.toThrow();
     });
 });

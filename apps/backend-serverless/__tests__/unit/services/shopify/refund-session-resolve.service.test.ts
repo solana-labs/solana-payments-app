@@ -22,10 +22,26 @@ describe('unit testing refund session resolve', () => {
         });
         const mockRefundSessionResolve = makeRefundSessionResolve(axios);
 
-        let refundSessionResolveResponse: ResolvePaymentResponse;
+        await expect(mockRefundSessionResolve('mock-id', 'mock-shop', 'mock-token')).resolves.not.toThrow();
+    });
 
-        expect(async () => {
-            refundSessionResolveResponse = await mockRefundSessionResolve('mock-id', 'mock-shop', 'mock-token');
-        }).not.toThrow();
+    it('invalid response, missing id', async () => {
+        let mock = new MockAdapter(axios);
+        mock.onPost().reply(200, {
+            data: {
+                refundSessionResolve: {
+                    refundSession: {
+                        state: {
+                            code: 'SUCCESS',
+                        },
+                    },
+                    userErrors: [],
+                },
+            },
+            extensions: {},
+        });
+        const mockRefundSessionResolve = makeRefundSessionResolve(axios);
+
+        await expect(mockRefundSessionResolve('mock-id', 'mock-shop', 'mock-token')).rejects.toThrow();
     });
 });
