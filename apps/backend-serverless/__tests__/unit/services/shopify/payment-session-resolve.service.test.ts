@@ -3,8 +3,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { makePaymentSessionResolve } from '../../../../src/services/shopify/payment-session-resolve.service';
 import { ResolvePaymentResponse } from '../../../../src/models/shopify-graphql-responses/resolve-payment-response.model';
 
-describe('payment session resolve', () => {
-    it('a', async () => {
+describe('unit testing payment session resolve', () => {
+    it('valid response', async () => {
         let mock = new MockAdapter(axios);
         mock.onPost().reply(200, {
             data: {

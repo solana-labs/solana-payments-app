@@ -3,8 +3,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { makePaymentSessionReject } from '../../../../src/services/shopify/payment-session-reject.service';
 import { RejectPaymentResponse } from '../../../../src/models/shopify-graphql-responses/reject-payment-response.model';
 
-describe('payment session reject', () => {
-    it('a', async () => {
+describe('unit testing payment session reject', () => {
+    it('valid response', async () => {
         let mock = new MockAdapter(axios);
         mock.onPost().reply(200, {
             data: {

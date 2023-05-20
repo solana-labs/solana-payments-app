@@ -3,8 +3,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { makePaymentAppConfigure } from '../../../../src/services/shopify/payment-app-configure.service';
 import { PaymentAppConfigureResponse } from '../../../../src/models/shopify-graphql-responses/payment-app-configure-response.model';
 
-describe('payment app configure', () => {
-    it('a', async () => {
+describe('unit testing payment app configure', () => {
+    it('successful response', async () => {
         let mock = new MockAdapter(axios);
         mock.onPost().reply(200, {
             data: {
