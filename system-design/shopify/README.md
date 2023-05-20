@@ -1,6 +1,6 @@
 # Shopify Technical Requirements
 
-Shopify has a list of technical requirements that payment apps are required to support [here].(https://shopify.dev/docs/apps/payments#technical-requirements) This is how we implent and suppport each of those.
+Shopify has a list of technical requirements that payment apps are required to support [here](https://shopify.dev/docs/apps/payments#technical-requirements). This is how we implent and suppport each of those.
 
 ## [Idempotency](https://shopify.dev/docs/apps/payments/implementation#idempotency)
 
@@ -8,16 +8,9 @@ As a payments app we need to support idempotency in both directions. Meaning if 
 
 ### Shopify -> US
 
-When Shopify sends us requests for either [payments](https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite#initiate-the-flow) or [refunds](https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow) we will receive a post request. You can find the respective handlers they will call here:
+Shopify sends us requests to initiate [payments](https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite#initiate-the-flow) and [refunds](https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow) through our respective [/payment](../../apps/backend-serverless/src/handlers/shopify-handlers/payment.ts) and [/refund](../../apps/backend-serverless/src/handlers/shopify-handlers/refund.ts) endpoints.
 
--   [payments](../../apps/backend-serverless/src/handlers/shopify-handlers/payment.ts)
--   [refunds](../../apps/backend-serverless/src/handlers/shopify-handlers/refund.ts)
-
-Both of these requests inlcude an 'id' in the request body that serves as the idempotency key. To handle this technical requirement we do a few things within the:
-
--   handlers
--   database
--   transaction building logic
+Both of these requests inlcude an 'id' in the request body that serves as the idempotency key. To handle this technical requirement we do a few things within the handlers, database, and transaction building logic.
 
 **Handlers** - We will only create a single PaymentRecord and RefundRecord for each 'id' value we receive. When we receive a request, we will first check if we have an existing PaymentRecord or RefundRecord for that 'id'. If we do, we will then opporate as if we had just created it. Responding with success and returning what ever values we are required to for that record.
 
@@ -36,12 +29,4 @@ If we end up in a situation where we discover the same transaction twice and the
 
 Another thing Shopify guards against is making conflict requests for a given payment and refund. For example, a payment can not be rejected and resolved. If this were to happen, Shopify would notify us within the userErrors field of the response. We will then log this message and treat it according. In our current system design, this should not be possible. The only reason that we will send a rejectPaymentSession request to Shopify is if a customer's wallet address is determined to be "risky" by our Wallet Monitoring partner, TRM. We make this check when a transaction is being fetched from the [pay-transaction handler](../../apps/backend-serverless/src/handlers/transactions/payment-transaction.ts). In this case, we will never return a transaction. If this does happen, we log the reason within Sentry and address the bug.
 
-For refunds, it is more likely for this situation to occur. This is because Merchants have the ability to pay a refund or reject a refund within the merchant portal. Let's break this situation down
-
--   merchant tries to pay an already rejected transaction
-
-if a merchant is trying to pay an already rejected transaction, this means they are calling the /refund-transaction handler. in this handler, we should be able to query the database for the status of the refund record. if that status has been marked as rejected, we should fail here and neglect to return a transaction to the merchant.
-
--   merchant tries to reject an already paid transaction
-
-if a merchant tries to reject a transaction, they are calling the /reject-refund handler. here, we can query the database for the record and check the status. if the status is marked as paid or completed, we should fail the request and respond according. shopify should never be sent a reject message. if they did, they would tell us it didnt work. this then means that the only times we could end up in a bad situation here is if there is some race condition and a merchat tries to quickly pay and quickly reject a refund. maybe from seperate computers or fast in the ui. we should figure out something here and document the solution. TODO. Also note this is very unlikly and would require a merchant trying to break something or an odd situation. We can likely log previous things like lastAttempt time and require that merchants can only attmept to pay or reject a refund within some given window.
+For refunds, it is more likely for this situation to occur. This is because Merchants have the ability to pay a refund or reject a refund within the merchant portal. The fix here is likely to add some sort of time delay on conflict actions like making a merchant wait 5 minutes to reject a refund they have tried to pay and making a merchant wait 5 minutes to pay a refund they have tried to reject. We can also seperate a merchant send us a message that they want to pay a merchant and then have a forced time delay for actually serving the request. TBD.
