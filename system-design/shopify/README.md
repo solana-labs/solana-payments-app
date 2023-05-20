@@ -6,7 +6,7 @@ Shopify has a list of technical requirements that payment apps are to support [h
 
 As a payments app we need to support idempotency in both directions. Meaning even if Shopify sends us duplicate requests, this cannot result in customers paying twice or merchants refunding twice.
 
-### Shopify to US
+### Shopify to Us
 
 Shopify sends us requests to initiate [payments](https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite#initiate-the-flow) and [refunds](https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow) through our respective [/payment](../../apps/backend-serverless/src/handlers/shopify-handlers/payment.ts) and [/refund](../../apps/backend-serverless/src/handlers/shopify-handlers/refund.ts) endpoints.
 
