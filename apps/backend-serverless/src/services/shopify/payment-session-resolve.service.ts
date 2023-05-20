@@ -31,33 +31,43 @@ const paymentSessionResolveMutation = `mutation PaymentSessionResolve($id: ID!) 
 }
 `;
 
-export const paymentSessionResolve = async (
-    id: string,
-    shop: string,
-    token: string
-): Promise<ResolvePaymentResponse> => {
-    const headers = {
-        'content-type': 'application/json',
-        'X-Shopify-Access-Token': token,
+export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
+    return async (id: string, shop: string, token: string): Promise<ResolvePaymentResponse> => {
+        const headers = {
+            'content-type': 'application/json',
+            'X-Shopify-Access-Token': token,
+        };
+
+        const graphqlQuery = {
+            query: paymentSessionResolveMutation,
+            variables: {
+                id,
+            },
+        };
+
+        let resolvePaymentResponse: ResolvePaymentResponse;
+
+        try {
+            const response = await axiosInstance({
+                url: shopifyGraphQLEndpoint(shop),
+                method: 'POST',
+                headers: headers,
+                data: JSON.stringify(graphqlQuery),
+            });
+
+            if (response.status != 200) {
+                throw new Error('Error resolving payment session.');
+            }
+
+            resolvePaymentResponse = parseAndValidateResolvePaymentResponse(response.data);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new Error('Error resolving payment session.');
+            }
+        }
+
+        return resolvePaymentResponse;
     };
-    const graphqlQuery = {
-        query: paymentSessionResolveMutation,
-        variables: {
-            id,
-        },
-    };
-    const response = await axios({
-        url: shopifyGraphQLEndpoint(shop),
-        method: 'POST',
-        headers: headers,
-        data: JSON.stringify(graphqlQuery),
-    });
-
-    if (response.status != 200) {
-        throw new Error('Error resolving payment session.');
-    }
-
-    const resolvePaymentResponse = parseAndValidateResolvePaymentResponse(response.data);
-
-    return resolvePaymentResponse;
 };

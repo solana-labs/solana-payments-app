@@ -2,8 +2,9 @@ import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
-import { paymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import { getCustomerFromHeliusEnhancedTransaction } from '../../utilities/get-customer.utility.js';
+import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
+import axios from 'axios';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredPaymentTransaction = async (
@@ -65,6 +66,8 @@ export const processDiscoveredPaymentTransaction = async (
     // either way, i'm thinking we want to handle it here
     // TODO: Summerize why we're try/catching here but throwing elsewhere
     try {
+        const paymentSessionResolve = makePaymentSessionResolve(axios);
+
         const resolvePaymentResponse = await paymentSessionResolve(
             paymentRecord.shopGid,
             merchant.shop,
