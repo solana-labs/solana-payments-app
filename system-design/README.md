@@ -293,8 +293,8 @@ sequenceDiagram
 
 ### Single Use Accounts
 
-A Single Use Account is an account with 0 data that we add on to transactions. They serve as a solution to a few problems we face when building on chain payment that integrate with web2 commerce platforms.
+A Single Use Account is an account with 0 data that we add on to transactions. They serve as a solution to a few problems we face when building on chain payment that integrate with web2 commerce platforms. You can view the instruction that handles this [here](../apps/transaction-request-serverless/src/services/builders/create-account-ix.builder.ts).
 
-### Small Data Faux Refrence Keys
+### Indexing Refrence Keys
 
-We add refrence keys onto transactions for look ups later. Small data < 32 bytes can be made into a public key that only serves as a way to look up the transaction later.
+We add refrence keys onto transactions for look ups later. Small data < 32 bytes can be made into a public key that only serves as a way to look up the transaction later. We can create keys for things like merchants, payments, and refunds. This will serve as a way to determinstically find transactions if we run into database issues. You can view the instruction that handles this [here](../apps/transaction-request-serverless/src/services/builders/create-account-ix.builder.ts).
