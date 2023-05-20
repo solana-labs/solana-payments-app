@@ -11,7 +11,9 @@ import { web3 } from '@project-serum/anchor';
 
 export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let paymentTransactionRequest: PaymentTransactionRequest;
+    console.log(event.body);
     const decodedBody = event.body ? decode(event.body) : '';
+    console.log(decodedBody);
     const body = queryString.parse(decodedBody);
     const account = body['account'] as string | null;
 
@@ -22,8 +24,19 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
         };
     }
 
+    if (event.queryStringParameters == null) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'no query' }, null, 2),
+        };
+    }
+
+    const queryParameters = event.queryStringParameters;
+
+    queryParameters['sender'] = account;
+
     try {
-        paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
+        paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
     } catch (error) {
         return {
             statusCode: 500,
@@ -47,7 +60,11 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
         };
     }
 
+    console.log('HELLO TEEJ 5');
+
     const base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+
+    console.log('HELLO TEEJ 6');
 
     return {
         statusCode: 200,

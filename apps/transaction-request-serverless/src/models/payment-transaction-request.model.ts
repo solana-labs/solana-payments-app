@@ -46,7 +46,7 @@ export const paymentTransactionRequestScheme = object().shape({
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentTransactionRequestParams: any
+    paymentTransactionRequestParams: unknown
 ): PaymentTransactionRequest => {
     return parseAndValidate(
         paymentTransactionRequestParams,
