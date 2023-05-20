@@ -98,8 +98,8 @@ sequenceDiagram
     BACKEND->DATABASE: SELECT Merchant
     BACKEND->BACKEND: Validate transaction wrt PaymentRecord
     BACKEND->DATABASE: UPDATE PaymentRecord
-    BACKEND->>Shop: mut paymentSessionResolve
-    Shop-->>BACKEND: 200 { redirect_url: string }
+    BACKEND->>SHOP: mut paymentSessionResolve
+    SHOP-->>BACKEND: 200 { redirect_url: string }
     BACKEND->>DATABASE: UPDATE PaymentRecord
     Alice->>BACKEND: /paymentStatus
     BACKEND-->>Alice: 200 { status: string, redirect_url: string }
@@ -164,7 +164,7 @@ sequenceDiagram
     BACKEND->>TRM: /riskApi
     TRM-->>BACKEND: 200 { riskLevel: int }
     Backend->>Backend: sign transaction
-    BACKEND->>DATABASE: CREATE TransactionRecord
+    BACKEND->>Database: CREATE TransactionRecord
     BACKEND->S3: upload single use keypair
     Backend-->>Portal: 200 { tx: string, message: string }
 ```
@@ -226,7 +226,7 @@ sequenceDiagram
     Backend->Database: UPDATE Merchant
     Backend->Shop: mut paymentAppConfigure
     Shop-->Backend: 200 Ok
-    Shop->Portal: 301 { headers: { redirect_url: string, cookie: cookie } }
+    Backend->Portal: 301 { headers: { redirect_url: string, cookie: cookie } }
 ```
 
 ## Database Schema
