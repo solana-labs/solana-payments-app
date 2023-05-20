@@ -10,7 +10,7 @@ describe('unit testing refund session resolve', () => {
             data: {
                 refundSessionResolve: {
                     refundSession: {
-                        id: 'gid://shopify/PaymentSession/1234',
+                        id: 'mock-id',
                         state: {
                             code: 'SUCCESS',
                         },

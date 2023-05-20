@@ -10,9 +10,9 @@ describe('unit testing refund session reject', () => {
             data: {
                 refundSessionReject: {
                     refundSession: {
-                        id: 'gid://shopify/PaymentSession/1234',
+                        id: 'mock-id',
                         state: {
-                            code: 'SUCCESS',
+                            code: 'REJECTED',
                         },
                     },
                     userErrors: [],

@@ -10,7 +10,7 @@ describe('unit testing payment app configure', () => {
             data: {
                 paymentsAppConfigure: {
                     paymentsAppConfiguration: {
-                        externalHandle: 'mock-internal-id',
+                        externalHandle: 'mock-external-id',
                         ready: true,
                     },
                     userErrors: [],

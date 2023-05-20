@@ -13,8 +13,7 @@ describe('unit testing payment session reject', () => {
                         id: 'mock-id',
                         state: {
                             code: 'REJECTED',
-                            reason: 'PROCESSING_ERROR',
-                            merchantMessage: 'the payment didnt work',
+                            merchantMessage: 'mock-reason',
                         },
                         nextAction: {
                             action: 'REDIRECT',
