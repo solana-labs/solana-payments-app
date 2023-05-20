@@ -24,7 +24,8 @@ export const fetchRefundTransaction = async (
         'blockhash',
         'true',
         singleUseNewAcc,
-        singleUsePayer
+        singleUsePayer,
+        'test-one,test-two'
     );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
