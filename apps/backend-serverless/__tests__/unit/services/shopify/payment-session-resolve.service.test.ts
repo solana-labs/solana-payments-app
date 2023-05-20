@@ -1,8 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { makePaymentSessionResolve } from '../../../src/services/shopify/payment-session-resolve.service';
-import exp from 'constants';
-import { ResolvePaymentResponse } from '../../../src/models/shopify-graphql-responses/resolve-payment-response.model';
+import { makePaymentSessionResolve } from '../../../../src/services/shopify/payment-session-resolve.service';
+import { ResolvePaymentResponse } from '../../../../src/models/shopify-graphql-responses/resolve-payment-response.model';
 
 describe('payment session resolve', () => {
     it('a', async () => {

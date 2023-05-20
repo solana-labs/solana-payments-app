@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     RejectPaymentResponse,
@@ -33,40 +33,42 @@ const paymentSessionRejectMutation = `mutation PaymentSessionReject($id: ID!, $r
 }
 `;
 
-export const paymentSessionReject = async (id: string, reason: string, shop: string, token: string) => {
-    const headers = {
-        'content-type': 'application/graphql',
-        'X-Shopify-Access-Token': token,
-    };
+export const makePaymentSessionReject =
+    (axiosInstance: AxiosInstance) =>
+    async (id: string, reason: string, shop: string, token: string): Promise<RejectPaymentResponse> => {
+        const headers = {
+            'content-type': 'application/graphql',
+            'X-Shopify-Access-Token': token,
+        };
 
-    const graphqlQuery = {
-        query: paymentSessionRejectMutation,
-        variables: {
-            id,
-            reason: {
-                code: reason,
+        const graphqlQuery = {
+            query: paymentSessionRejectMutation,
+            variables: {
+                id,
+                reason: {
+                    code: reason,
+                },
             },
-        },
-    };
+        };
 
-    let paymentSessionRejectResponse: RejectPaymentResponse;
+        let paymentSessionRejectResponse: RejectPaymentResponse;
 
-    try {
-        const response = await axios({
-            url: shopifyGraphQLEndpoint(shop),
-            method: 'POST',
-            headers: headers,
-            data: JSON.stringify(graphqlQuery),
-        });
+        try {
+            const response = await axiosInstance({
+                url: shopifyGraphQLEndpoint(shop),
+                method: 'POST',
+                headers: headers,
+                data: JSON.stringify(graphqlQuery),
+            });
 
-        paymentSessionRejectResponse = parseAndValidateResolvePaymentResponse(response.data);
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error('Error rejecting payment session.');
+            paymentSessionRejectResponse = parseAndValidateResolvePaymentResponse(response.data);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new Error('Error rejecting payment session.');
+            }
         }
-    }
 
-    return paymentSessionRejectResponse;
-};
+        return paymentSessionRejectResponse;
+    };

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     ResolveRefundResponse,
@@ -23,39 +23,41 @@ const refundSessionResolveMutation = `mutation RefundSessionResolve($id: ID!) {
 }
 `;
 
-export const refundSessionResolve = async (id: string, shop: string, token: string) => {
-    const headers = {
-        'content-type': 'application/json',
-        'X-Shopify-Access-Token': token,
-    };
-    const graphqlQuery = {
-        query: refundSessionResolveMutation,
-        variables: {
-            id,
-        },
-    };
-    const response = await axios({
-        url: shopifyGraphQLEndpoint(shop),
-        method: 'POST',
-        headers: headers,
-        data: JSON.stringify(graphqlQuery),
-    });
+export const makeRefundSessionResolve =
+    (axiosInstance: AxiosInstance) =>
+    async (id: string, shop: string, token: string): Promise<ResolveRefundResponse> => {
+        const headers = {
+            'content-type': 'application/json',
+            'X-Shopify-Access-Token': token,
+        };
+        const graphqlQuery = {
+            query: refundSessionResolveMutation,
+            variables: {
+                id,
+            },
+        };
+        const response = await axiosInstance({
+            url: shopifyGraphQLEndpoint(shop),
+            method: 'POST',
+            headers: headers,
+            data: JSON.stringify(graphqlQuery),
+        });
 
-    if (response.status != 200) {
-        throw new Error('Error resolving refund session.');
-    }
-
-    let parsedResolveRefundResponse: ResolveRefundResponse;
-
-    try {
-        parsedResolveRefundResponse = parseAndValidateResolveRefundResponse(response.data);
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error('Could not parse resolve refund response. Unknown Reason.');
+        if (response.status != 200) {
+            throw new Error('Error resolving refund session.');
         }
-    }
 
-    return parsedResolveRefundResponse;
-};
+        let parsedResolveRefundResponse: ResolveRefundResponse;
+
+        try {
+            parsedResolveRefundResponse = parseAndValidateResolveRefundResponse(response.data);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new Error('Could not parse resolve refund response. Unknown Reason.');
+            }
+        }
+
+        return parsedResolveRefundResponse;
+    };
