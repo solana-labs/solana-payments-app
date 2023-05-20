@@ -45,8 +45,7 @@ export const paymentTransactionRequestScheme = object().shape({
                 // and validate that constraint here
                 // Check if every part of the split string is non-empty and does not contain spaces
                 return value.split(',').every(substring => {
-                    const trimmed = substring.trim();
-                    return trimmed.length > 0 && !trimmed.includes(' ');
+                    return substring.length > 0 && !substring.includes(' ');
                 });
             }
         ),
