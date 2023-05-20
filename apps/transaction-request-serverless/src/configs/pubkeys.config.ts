@@ -8,3 +8,7 @@ export const SAMO_PUBKEY = new anchor.web3.PublicKey('7xKXtg2CW87d97TXJSDpbD5jBk
 export const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: anchor.web3.PublicKey = new anchor.web3.PublicKey(
     'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
 );
+
+export const MEMO_PROGRAM_ID: anchor.web3.PublicKey = new anchor.web3.PublicKey(
+    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+);
