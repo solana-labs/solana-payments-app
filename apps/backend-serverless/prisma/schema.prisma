@@ -11,6 +11,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TransactionType {
+  payment
+  refund
+}
+
+enum PaymentRecordStatus {
+  pending
+  paid
+  completed
+  rejected
+}
+
+enum RefundRecordStatus {
+  pending
+  paid
+  completed
+  rejected
+}
+
 model Merchant {
   id             String          @id // Internal ID
   shop           String          @unique
@@ -28,7 +47,7 @@ model Merchant {
 
 model PaymentRecord {
   id                   String              @id // Internal ID
-  status               String
+  status               PaymentRecordStatus
   shopId               String              @unique
   shopGid              String?
   shopGroup            String
@@ -44,21 +63,21 @@ model PaymentRecord {
   redirectUrl          String?
   requestedAt          DateTime            @default(now())
   completedAt          DateTime?
-  RefundRecord         RefundRecord[]
+  refundRecord         RefundRecord[]
 }
 
 model RefundRecord {
-  id                   String        @id // Internal ID
-  status               String
+  id                   String             @id // Internal ID
+  status               RefundRecordStatus
   amount               Float
   currency             String
   usdcAmount           Float
   shopId               String // Given Id from Shopify
   shopGid              String // Given Gid from Shopify
   shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
-  paymentRecord        PaymentRecord @relation(fields: [shopPaymentId], references: [shopId])
+  paymentRecord        PaymentRecord      @relation(fields: [shopPaymentId], references: [shopId])
   test                 Boolean
-  merchant             Merchant      @relation(fields: [merchantId], references: [id])
+  merchant             Merchant           @relation(fields: [merchantId], references: [id])
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
@@ -66,11 +85,6 @@ model RefundRecord {
 
   requestedAt DateTime  @default(now())
   completedAt DateTime?
-}
-
-enum TransactionType {
-  payment
-  refund
 }
 
 model TransactionRecord {

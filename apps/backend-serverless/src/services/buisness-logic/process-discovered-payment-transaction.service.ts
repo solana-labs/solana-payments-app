@@ -1,4 +1,4 @@
-import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import { PaymentRecordStatus, PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
@@ -81,7 +81,7 @@ export const processDiscoveredPaymentTransaction = async (
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
         // work
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
-            status: 'completed',
+            status: PaymentRecordStatus.completed,
             redirectUrl: redirectUrl,
             transactionSignature: transaction.signature,
             completedAt: new Date(),

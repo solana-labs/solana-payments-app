@@ -11,7 +11,7 @@ export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: Paymen
     return {
         shopifyOrder: paymentRecord.shopId,
         date: 'some-date-here',
-        status: 'pending',
+        status: paymentRecord.status,
         amount: 'convert-amount-to-string-here',
     };
 };

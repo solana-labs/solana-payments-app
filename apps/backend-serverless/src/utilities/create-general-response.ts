@@ -1,6 +1,6 @@
 import { MerchantAuthToken } from '../models/merchant-auth-token.model.js';
 import { RefundRecordService } from '../services/database/refund-record-service.database.service.js';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 
 export interface GeneralResponse {
     refundBadges: number | null;
@@ -13,7 +13,7 @@ export const createGeneralResponse = async (
     const refundRecordService = new RefundRecordService(prisma);
     const total = await refundRecordService.getTotalRefundRecordsForMerchant({
         merchantId: merchantAuthToken.id,
-        status: 'pending',
+        status: RefundRecordStatus.pending,
     });
     return {
         refundBadges: total,

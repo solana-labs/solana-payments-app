@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-// import { COIN_GECKO_API_URL } from '../configs/endpoints.config.js';
 
 const COIN_GECKO_USDC_ID = 'usd-coin';
 
