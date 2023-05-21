@@ -19,7 +19,7 @@ model Merchant {
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
-  RefundRecord   RefundRecord[]
+  refundRecords  RefundRecord[]
   paymentAddress String?
 
   acceptedTermsAndConditions Boolean @default(false)

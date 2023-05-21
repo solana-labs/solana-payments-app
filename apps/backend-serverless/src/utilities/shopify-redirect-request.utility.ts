@@ -1,4 +1,8 @@
-import { AppRedirectQueryParam, appRedirectQueryParmSchema } from '../models/redirect-query-params.model.js';
+import {
+    AppRedirectQueryParam,
+    appRedirectQueryParmSchema,
+    parseAndValidateAppRedirectQueryParams,
+} from '../models/redirect-query-params.model.js';
 import queryString from 'query-string';
 import crypto from 'crypto-js';
 
@@ -6,7 +10,7 @@ export const verifyAndParseShopifyRedirectRequest = (appRedirectQuery: unknown):
     // Verify that the object passed in can be parsed into an AppRedirectQueryParam object
     let parsedAppRedirectQuery: AppRedirectQueryParam;
     try {
-        parsedAppRedirectQuery = appRedirectQueryParmSchema.cast(appRedirectQuery) as AppRedirectQueryParam;
+        parsedAppRedirectQuery = parseAndValidateAppRedirectQueryParams(appRedirectQuery);
     } catch (error) {
         throw new Error('Did not find the required info to verifyy.');
     }
