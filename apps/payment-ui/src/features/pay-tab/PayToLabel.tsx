@@ -4,6 +4,7 @@ import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, set
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
+import { FeeDisplay, FeeDisplayLoading } from '@/components/fee-display/FeeDisplay';
 
 export const PayToLabel = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -50,9 +51,8 @@ export const PayToLabel = () => {
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Transaction Fee</div>
-                <div className="text-black bg-gray-200 w-16 flex justify-center rounded-md h-8 items-center font-bold">
-                    Free
-                </div>
+                <FeeDisplayLoading />
+                <FeeDisplay />
             </div>
         </div>
     );
