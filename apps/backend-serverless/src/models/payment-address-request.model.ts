@@ -1,9 +1,11 @@
-import { object, InferType, number, string } from 'yup';
+import { object, InferType, number, string, boolean } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
 
 export const merchantUpdateRequestBodySchema = object().shape({
     paymentAddress: string().optional(),
     name: string().optional(),
+    acceptedTermsAndConditions: boolean().optional(),
+    dismissCompleted: boolean().optional(),
 });
 
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;

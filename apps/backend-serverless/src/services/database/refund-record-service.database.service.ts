@@ -101,7 +101,8 @@ export class RefundRecordService {
     async createRefundRecord(
         id: string,
         refundInitiation: ShopifyRefundInitiation,
-        merchant: Merchant
+        merchant: Merchant,
+        usdcAmount: number
     ): Promise<RefundRecord> {
         try {
             return await this.prisma.refundRecord.create({
@@ -110,6 +111,7 @@ export class RefundRecordService {
                     status: RefundRecordStatus.pending,
                     amount: refundInitiation.amount,
                     currency: refundInitiation.currency,
+                    usdcAmount: usdcAmount,
                     shopId: refundInitiation.id,
                     shopGid: refundInitiation.gid,
                     shopPaymentId: refundInitiation.payment_id,

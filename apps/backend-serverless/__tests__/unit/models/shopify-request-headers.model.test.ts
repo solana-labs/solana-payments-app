@@ -1,9 +1,3 @@
-// export const shopifyRequestHeadersScheme = object().shape({
-//   "shopify-shop-domain": string().required(),
-//   "shopify-request-id": string().required(),
-//   "shopify-api-version": string().required(),
-// });
-
 import { parseAndValidateShopifyRequestHeaders } from '../../../src/models/shopify-request-headers.model.js';
 
 describe('unit testing shopify request headers model', () => {

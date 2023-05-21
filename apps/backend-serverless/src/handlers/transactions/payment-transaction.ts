@@ -4,9 +4,9 @@ import { requestErrorResponse } from '../../utilities/request-response.utility.j
 import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
 import {
-    PaymentTransactionRequest,
+    PaymentTransactionRequestParameters,
     parseAndValidatePaymentTransactionRequest,
-} from '../../models/payment-transaction-request.model.js';
+} from '../../models/payment-transaction-request-parameters.model.js';
 import { encodeBufferToBase58 } from '../../utilities/encode-transaction.utility.js';
 import { decode } from '../../utilities/string.utility.js';
 import queryString from 'query-string';
@@ -30,7 +30,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let paymentRecord: PaymentRecord | null;
         let paymentTransaction: TransactionRequestResponse;
-        let paymentRequest: PaymentTransactionRequest;
+        let paymentRequest: PaymentTransactionRequestParameters;
         let transaction: web3.Transaction;
 
         const prisma = new PrismaClient();

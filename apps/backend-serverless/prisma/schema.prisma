@@ -38,7 +38,7 @@ model Merchant {
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
-  RefundRecord   RefundRecord[]
+  refundRecords  RefundRecord[]
   paymentAddress String?
 
   acceptedTermsAndConditions Boolean @default(false)
@@ -71,6 +71,7 @@ model RefundRecord {
   status               RefundRecordStatus
   amount               Float
   currency             String
+  usdcAmount           Float
   shopId               String // Given Id from Shopify
   shopGid              String // Given Gid from Shopify
   shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify

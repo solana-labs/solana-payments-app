@@ -1,19 +1,5 @@
 import { parseAndValidateShopifyPaymentInitiation } from '../../../src/models/process-payment-request.model.js';
 
-// export const shopifyPaymentInitiationScheme = object().shape({
-//     id: string().required(),
-//     gid: string().required(),
-//     group: string().required(),
-//     amount: number().required(), // must be numeric
-//     currency: string().required(), // three string IOS 4217 code
-//     test: boolean().required(),
-//     merchant_locale: string().required(),
-//     payment_method: paymentMethodSchema.required(),
-//     proposed_at: string().required(),
-//     kind: string().required(),
-//     customer: shopifyPaymentInitiationCustomerScheme.optional(),
-//   });
-
 describe('unit testing shopify payment initiation model', () => {
     it('valid shopify payment initiation', () => {
         const validShopifyPaymentInitiation = {

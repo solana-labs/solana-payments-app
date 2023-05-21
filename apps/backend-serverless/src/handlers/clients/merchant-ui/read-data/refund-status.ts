@@ -63,7 +63,7 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
         const responseBodyData = {
-            refundStatus: refundStatus,
+            refundStatus: refundStatusResponse,
             general: generalResponse,
         };
 

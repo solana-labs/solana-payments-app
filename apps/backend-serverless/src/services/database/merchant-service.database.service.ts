@@ -1,4 +1,5 @@
 import { PrismaClient, Merchant } from '@prisma/client';
+import { filterUndefinedFields } from '../../utilities/filter-underfined-fields.utility.js';
 
 export type ShopQuery = {
     shop: string;
@@ -32,12 +33,15 @@ export type MerchantNamePaymentAddressUpdate = {
     name: string;
 };
 
-export type MerchantUpdate =
-    | LastNonceUpdate
-    | RedirectUpdate
-    | PaymentAddressUpdate
-    | MerchantNameUpdate
-    | MerchantNamePaymentAddressUpdate;
+export type MerchantUpdate = {
+    paymentyAddress: string;
+    name: string;
+    acceptedTermsAndConditions: boolean;
+    dismissCompleted: boolean;
+    accessToken: string;
+    scopes: string;
+    lastNonce: string;
+};
 
 export class MerchantService {
     private prisma: PrismaClient;
@@ -66,13 +70,15 @@ export class MerchantService {
         }
     }
 
-    async updateMerchant(merchant: Merchant, update: MerchantUpdate): Promise<Merchant> {
+    async updateMerchant(merchant: Merchant, update: Partial<MerchantUpdate>): Promise<Merchant> {
+        const filteredUpdate = filterUndefinedFields(update);
+
         try {
             return await this.prisma.merchant.update({
                 where: {
                     id: merchant.id,
                 },
-                data: update,
+                data: filteredUpdate,
             });
         } catch {
             throw new Error('Failed to update merchant');

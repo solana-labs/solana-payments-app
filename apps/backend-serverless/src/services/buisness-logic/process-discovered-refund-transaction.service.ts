@@ -13,7 +13,7 @@ export const processDiscoveredRefundTransaction = async (
     // we should probably do some validation here to make sure the transaction
     // actually matches the refund record that the transaction is associated with
     // for now i will ignore that, mocked the function for now
-    validateDiscoveredPaymentTransaction(transactionRecord, transaction);
+    validateDiscoveredRefundTransaction(transactionRecord, transaction);
 
     const refundRecordService = new RefundRecordService(prisma);
     const merchantService = new MerchantService(prisma);
@@ -64,6 +64,8 @@ export const processDiscoveredRefundTransaction = async (
             merchant.accessToken
         );
 
+        // TODO: Validate the response here
+
         // If this were to throw, then we could just try again or add it to the retry queue, adding to the retry queue
         // works also because we would just make the same calls to shopify and because of idemoency, it would just
         // work. I also either need to validate the response here or just not return anything. The equivilent payment one
@@ -78,7 +80,7 @@ export const processDiscoveredRefundTransaction = async (
     }
 };
 
-const validateDiscoveredPaymentTransaction = (
+const validateDiscoveredRefundTransaction = (
     transactionRecord: TransactionRecord,
     transaction: HeliusEnhancedTransaction
 ) => {

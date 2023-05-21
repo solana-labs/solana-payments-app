@@ -8,6 +8,8 @@ import {
     MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
 } from '../../../../models/payment-address-request.model.js';
+import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
+import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
 
 export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -28,8 +30,13 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         return requestErrorResponse(error);
     }
 
-    if (merchantUpdateRequest.name == null && merchantUpdateRequest.paymentAddress == null) {
-        return requestErrorResponse(new Error('No shop or payment address provided.'));
+    if (
+        merchantUpdateRequest.name == null &&
+        merchantUpdateRequest.paymentAddress == null &&
+        merchantUpdateRequest.acceptedTermsAndConditions == null &&
+        merchantUpdateRequest.dismissCompleted == null
+    ) {
+        return requestErrorResponse(new Error('No info to update is provided.'));
     }
 
     const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
@@ -48,17 +55,35 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         merchantUpdateQuery['paymentAddress'] = merchantUpdateRequest.paymentAddress;
     }
 
+    if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
+        merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
+    }
+
+    if (merchantUpdateRequest.dismissCompleted != null) {
+        merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
+    }
+
     try {
         await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
     } catch {
         return requestErrorResponse(new Error('Failed to update merchant.'));
     }
 
-    // TODO: Define what the response should be.
+    const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+    const onboardingResponse = createOnboardingResponse(merchant);
+
+    // TODO: Create a type for this
+    const responseBodyData = {
+        merchantData: {
+            name: merchant.name,
+            paymentAddress: merchant.paymentAddress,
+            onboarding: onboardingResponse,
+        },
+        general: generalResponse,
+    };
+
     return {
         statusCode: 200,
-        body: JSON.stringify({
-            message: 'Updated!',
-        }),
+        body: JSON.stringify(responseBodyData),
     };
 };
