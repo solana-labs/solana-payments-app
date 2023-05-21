@@ -1,8 +1,16 @@
-import { PaymentRecord } from '@prisma/client';
+import { PaymentRecord, RefundRecord } from '@prisma/client';
 import { web3 } from '@project-serum/anchor';
 
 export const generateSingleUseKeypairFromPaymentRecord = async (paymentRecord: PaymentRecord) => {
     const shopifyStrings = ['shopify', paymentRecord.shopId];
+    const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
+    const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
+    const keypair = web3.Keypair.fromSeed(seed);
+    return keypair;
+};
+
+export const generateSingleUseKeypairFromRefundRecord = async (refundRecord: RefundRecord) => {
+    const shopifyStrings = ['shopify', refundRecord.shopId];
     const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
     const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
     const keypair = web3.Keypair.fromSeed(seed);

@@ -9,18 +9,34 @@ import {
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,
     account: string,
-    gas: string
+    gas: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
+    var refundAmount = refundRecord.usdcAmount.toPrecision(4).toString();
+
+    // Allow for testing values
+    if (
+        refundRecord.test == true &&
+        process.env.TEST_USDC_SIZE != null &&
+        isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
+    ) {
+        refundAmount = process.env.TEST_USDC_SIZE;
+    }
+
     const endpoint = buildRefundTransactionRequestEndpoint(
         'ExvbioyTPuFivNJjPcYiCbHijTWPAHzfRXHnAmA4cyRx', // this needs to be the customer
         account, // this needs to be passed in from the request but the payment will be the merchant
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         gas,
-        '0.1', // will leave at 0.1 for now but this should be the size of the refund
+        refundAmount,
         'size',
         'blockhash',
-        'true'
+        'true',
+        singleUseNewAcc,
+        singleUsePayer,
+        'test-one,test-two'
     );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',

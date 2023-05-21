@@ -28,12 +28,31 @@ export class TransactionRecordService {
         });
     }
 
+    async getTransactionRecordsForPendingPayments(): Promise<TransactionRecord[]> {
+        return await this.prisma.transactionRecord.findMany({
+            where: {
+                paymentRecord: {
+                    status: 'pending',
+                },
+            },
+        });
+    }
+
+    async getTransactionRecordsForPendingRefunds(): Promise<TransactionRecord[]> {
+        return await this.prisma.transactionRecord.findMany({
+            where: {
+                refundRecord: {
+                    status: 'pending',
+                },
+            },
+        });
+    }
+
     async createTransactionRecord(
         signature: string,
         transactionType: TransactionType,
         paymentRecordId: string | null,
-        refundRecordId: string | null,
-        createdAt: string
+        refundRecordId: string | null
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {
             throw new Error('paymentRecordId and refundRecordId cannot both be null');
@@ -55,7 +74,7 @@ export class TransactionRecordService {
         const transactionRecordData = {
             signature: signature,
             type: transactionType,
-            createdAt: createdAt,
+            createdAt: new Date(),
         };
 
         // Depending on the transaction type, add the correct record ID

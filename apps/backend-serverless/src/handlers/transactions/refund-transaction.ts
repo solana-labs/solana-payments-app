@@ -16,16 +16,19 @@ import { TransactionRecordService } from '../../services/database/transaction-re
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
+import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 
 export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const prisma = new PrismaClient();
-    const transactionRecordService = new TransactionRecordService(prisma);
-    const refundRecordService = new RefundRecordService(prisma);
-
     let refundRecord: RefundRecord | null;
     let refundRequest: RefundTransactionRequest;
     let refundTransaction: TransactionRequestResponse;
     let transaction: web3.Transaction;
+
+    const prisma = new PrismaClient();
+    const transactionRecordService = new TransactionRecordService(prisma);
+    const refundRecordService = new RefundRecordService(prisma);
+    const merchantService = new MerchantService(prisma);
 
     const TRM_API_KEY = process.env.TRM_API_KEY;
 
@@ -63,22 +66,24 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
         return requestErrorResponse(new Error('No refund record found.'));
     }
 
-    // this sould def be a service to fetch a refund transaction, but i would
-    // imagine under the hood we can reuse most of the logic
-    // from this moment on, what's happening?
-    // 1. we get the transaction from the TRS
-    // 2. we encode it into a transaction object
-    // 3. we sign it with the gas keypair and veryify the signature
-    // 4. we create a transaction record in the db, these could def be different services
-    // 5. we serialize the transaction and return it to the client
-    try {
-        refundTransaction = await fetchRefundTransaction(refundRecord, account, gasKeypair.publicKey.toBase58());
-    } catch (error) {
-        return requestErrorResponse(error);
+    const merchant = await merchantService.getMerchant({
+        id: refundRecord.merchantId,
+    });
+
+    if (merchant == null) {
+        return requestErrorResponse(new Error('Merchant not found.'));
     }
 
+    const singleUseKeypair = await generateSingleUseKeypairFromRefundRecord(refundRecord);
+
     try {
-        transaction = encodeTransaction(refundTransaction.transaction);
+        refundTransaction = await fetchRefundTransaction(
+            refundRecord,
+            account,
+            gasKeypair.publicKey.toBase58(),
+            singleUseKeypair.publicKey.toBase58(),
+            gasKeypair.publicKey.toBase58()
+        );
     } catch (error) {
         return requestErrorResponse(error);
     }
@@ -89,7 +94,15 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
         return requestErrorResponse(error);
     }
 
-    transaction.sign(gasKeypair);
+    try {
+        transaction = encodeTransaction(refundTransaction.transaction);
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
+
+    transaction.partialSign(gasKeypair);
+    transaction.partialSign(singleUseKeypair);
+
     const transactionSignature = transaction.signature;
 
     if (transactionSignature == null) {
@@ -103,10 +116,9 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     try {
         await transactionRecordService.createTransactionRecord(
             signatureString,
-            TransactionType.payment,
+            TransactionType.refund,
             null,
-            refundRecord.id,
-            'fake-date'
+            refundRecord.id
         );
     } catch (error) {
         return requestErrorResponse(error);

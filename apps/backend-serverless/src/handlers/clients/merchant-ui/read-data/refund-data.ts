@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
@@ -51,7 +51,12 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
             pageSize: refundDataRequestParameters.pageSize,
         };
 
-        const refundResponse = await createRefundResponse(merchantAuthToken, 'pending', pagination, prisma);
+        const refundResponse = await createRefundResponse(
+            merchantAuthToken,
+            RefundRecordStatus.pending,
+            pagination,
+            prisma
+        );
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
         const responseBodyData = {

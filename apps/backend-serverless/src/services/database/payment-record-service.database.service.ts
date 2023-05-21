@@ -1,14 +1,10 @@
-import { PrismaClient, PaymentRecord, Merchant } from '@prisma/client';
+import { PrismaClient, PaymentRecord, Merchant, PaymentRecordStatus } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
     redirectUrl: string;
-};
-
-export type StatusUpdate = {
-    status: string;
 };
 
 export type TransactionSignatureUpdate = {
@@ -16,16 +12,13 @@ export type TransactionSignatureUpdate = {
 };
 
 export type StatusRedirectTransactionUpdate = {
-    status: string;
+    status: PaymentRecordStatus;
     redirectUrl: string;
     transactionSignature: string;
+    completedAt: Date;
 };
 
-export type PaymentRecordUpdate =
-    | PaidUpdate
-    | StatusUpdate
-    | TransactionSignatureUpdate
-    | StatusRedirectTransactionUpdate;
+export type PaymentRecordUpdate = PaidUpdate | TransactionSignatureUpdate | StatusRedirectTransactionUpdate;
 
 export type ShopIdQuery = {
     shopId: string;
@@ -82,7 +75,7 @@ export class PaymentRecordService {
             return await this.prisma.paymentRecord.create({
                 data: {
                     id: id,
-                    status: 'pending',
+                    status: PaymentRecordStatus.pending,
                     shopId: paymentInitiation.id,
                     shopGid: paymentInitiation.gid,
                     shopGroup: paymentInitiation.group,
@@ -93,6 +86,8 @@ export class PaymentRecordService {
                     cancelURL: paymentInitiation.payment_method.data.cancel_url,
                     transactionSignature: null,
                     usdcAmount: usdcAmount,
+                    requestedAt: new Date(),
+                    completedAt: null,
                 },
             });
         } catch {

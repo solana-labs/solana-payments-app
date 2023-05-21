@@ -2,14 +2,32 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
-  previewFeatures = ["referentialIntegrity"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  payment
+  refund
+}
+
+enum PaymentRecordStatus {
+  pending
+  paid
+  completed
+  rejected
+}
+
+enum RefundRecordStatus {
+  pending
+  paid
+  completed
+  rejected
 }
 
 model Merchant {
@@ -20,7 +38,7 @@ model Merchant {
   scopes         String?
   lastNonce      String
   paymentRecords PaymentRecord[]
-  RefundRecord   RefundRecord[]
+  refundRecords  RefundRecord[]
   paymentAddress String?
 
   acceptedTermsAndConditions Boolean @default(false)
@@ -29,8 +47,8 @@ model Merchant {
 
 model PaymentRecord {
   id                   String              @id // Internal ID
-  status               String
-  shopId               String
+  status               PaymentRecordStatus
+  shopId               String              @unique
   shopGid              String?
   shopGroup            String
   test                 Boolean
@@ -43,36 +61,39 @@ model PaymentRecord {
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
+  requestedAt          DateTime            @default(now())
+  completedAt          DateTime?
+  refundRecord         RefundRecord[]
 }
 
 model RefundRecord {
-  id                   String   @id // Internal ID
-  status               String
+  id                   String             @id // Internal ID
+  status               RefundRecordStatus
   amount               Float
   currency             String
+  usdcAmount           Float
   shopId               String // Given Id from Shopify
   shopGid              String // Given Gid from Shopify
   shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
+  paymentRecord        PaymentRecord      @relation(fields: [shopPaymentId], references: [shopId])
   test                 Boolean
-  merchant             Merchant @relation(fields: [merchantId], references: [id])
+  merchant             Merchant           @relation(fields: [merchantId], references: [id])
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
   TransactionRecord TransactionRecord[]
-}
 
-enum TransactionType {
-  payment
-  refund
+  requestedAt DateTime  @default(now())
+  completedAt DateTime?
 }
 
 model TransactionRecord {
   id              Int             @id @default(autoincrement())
   signature       String
   type            TransactionType
-  createdAt       String
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId String?
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
+  createdAt       DateTime        @default(now())
 }

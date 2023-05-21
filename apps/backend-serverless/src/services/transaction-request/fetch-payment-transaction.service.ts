@@ -19,18 +19,30 @@ export const fetchPaymentTransaction = async (
         throw new Error('Merchant payment address not found.');
     }
 
+    var paymentAmount = paymentRecord.usdcAmount.toPrecision(4).toString();
+
+    // Allow for testing values
+    if (
+        paymentRecord.test == true &&
+        process.env.TEST_USDC_SIZE != null &&
+        isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
+    ) {
+        paymentAmount = process.env.TEST_USDC_SIZE;
+    }
+
     const endpoint = buildPaymentTransactionRequestEndpoint(
         merchant.paymentAddress,
         account,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,
-        paymentRecord.usdcAmount.toPrecision(4).toString(),
+        paymentAmount,
         'size',
         'blockhash',
         'true',
         singleUseNewAcc,
-        singleUsePayer
+        singleUsePayer,
+        'test-one,test-two'
     );
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',

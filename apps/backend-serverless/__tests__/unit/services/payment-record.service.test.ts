@@ -1,5 +1,6 @@
 import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service.js';
 import { prismaMock } from '../../../prisma-singleton.js';
+import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 
 describe('Payment Record Testing Suite', () => {
     let paymentRecordService: PaymentRecordService;
@@ -10,7 +11,7 @@ describe('Payment Record Testing Suite', () => {
 
     it('find a payment record', async () => {
         const mockPaymentRecord = {
-            status: 'pending',
+            status: PaymentRecordStatus.pending,
             id: 'abcd',
             shopId: '1234',
             shopGid: 'abcd',
@@ -24,6 +25,8 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
+            requestedAt: new Date(),
+            completedAt: null,
         };
 
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
@@ -38,7 +41,7 @@ describe('Payment Record Testing Suite', () => {
     it('update a payment record', async () => {
         const mockPaymentRecordBeforeUpdate = {
             id: 'abcd',
-            status: 'pending',
+            status: PaymentRecordStatus.pending,
             shopId: 'abcd',
             shopGid: 'gid://shopify/Shop/1234',
             shopGroup: 'fdsaf',
@@ -50,11 +53,13 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
+            requestedAt: new Date(),
+            completedAt: null,
         };
 
         const mockPaymentRecordAfterUpdate = {
             id: 'abcd',
-            status: 'paid',
+            status: PaymentRecordStatus.completed,
             shopId: 'abcd',
             shopGid: 'gid://shopify/Shop/1234',
             shopGroup: 'fdsaf',
@@ -66,6 +71,8 @@ describe('Payment Record Testing Suite', () => {
             cancelURL: 'https://example.com',
             redirectUrl: null,
             transactionSignature: null,
+            requestedAt: new Date(),
+            completedAt: null,
         };
 
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
@@ -81,7 +88,10 @@ describe('Payment Record Testing Suite', () => {
         prismaMock.paymentRecord.update.mockResolvedValue(mockPaymentRecordAfterUpdate);
 
         const paymentRecordAfterUpdate = await paymentRecordService.updatePaymentRecord(paymentRecordBeforeUpdate, {
-            status: 'paid',
+            status: PaymentRecordStatus.completed,
+            redirectUrl: 'https://example.com',
+            transactionSignature: 'abcd',
+            completedAt: new Date(),
         });
 
         expect(paymentRecordAfterUpdate).toEqual(mockPaymentRecordAfterUpdate);

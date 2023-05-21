@@ -4,7 +4,6 @@ import {
     PaymentAppConfigureResponse,
     parseAndValidatePaymentAppConfigureResponse,
 } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
-import { parse } from 'path';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {

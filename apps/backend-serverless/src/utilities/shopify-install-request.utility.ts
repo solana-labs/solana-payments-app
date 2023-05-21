@@ -1,10 +1,21 @@
-import { AppInstallQueryParam, appInstallQueryParmSchema } from '../models/install-query-params.model.js';
+import { AppInstallQueryParam, parseAndValidateAppInstallQueryParms } from '../models/install-query-params.model.js';
 import queryString from 'query-string';
 import crypto from 'crypto-js';
 
 export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): AppInstallQueryParam => {
     // Verify that the object passed in can be parsed into an AppInstallQueryParam object
-    const parsedAppInstallQuery: AppInstallQueryParam = parseAppInstallQueryParms(appInstallQuery);
+
+    let parsedAppInstallQuery: AppInstallQueryParam;
+
+    try {
+        parsedAppInstallQuery = parseAndValidateAppInstallQueryParms(appInstallQuery);
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error('Could not parse the app install query. Unknown Reason.');
+        }
+    }
 
     // Save the hmac, remove it from the object, get the query string after removing
     const hmac = parsedAppInstallQuery.hmac;
@@ -30,16 +41,6 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
         throw new Error(queryStringAfterRemoving);
     }
 
-    return parsedAppInstallQuery;
-};
-
-export const parseAppInstallQueryParms = (appInstallQuery: any): AppInstallQueryParam => {
-    let parsedAppInstallQuery: AppInstallQueryParam;
-    try {
-        parsedAppInstallQuery = appInstallQueryParmSchema.cast(appInstallQuery) as AppInstallQueryParam;
-    } catch (error) {
-        throw new Error('Did not find the required info to verify.');
-    }
     return parsedAppInstallQuery;
 };
 

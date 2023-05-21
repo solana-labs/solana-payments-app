@@ -16,7 +16,8 @@ export const buildPaymentTransactionRequestEndpoint = (
     transactionType: string,
     createAta: string,
     singleUseNewAcc: string,
-    singleUsePayer: string
+    singleUsePayer: string,
+    indexInputs: string
 ) => {
     const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
 
@@ -24,7 +25,7 @@ export const buildPaymentTransactionRequestEndpoint = (
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}`;
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };
 
 export const buildRefundTransactionRequestEndpoint = (
@@ -36,7 +37,10 @@ export const buildRefundTransactionRequestEndpoint = (
     receivingAmount: string,
     amountType: string,
     transactionType: string,
-    createAta: string
+    createAta: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string,
+    indexInputs: string
 ) => {
     const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
 
@@ -44,7 +48,7 @@ export const buildRefundTransactionRequestEndpoint = (
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}`;
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };
 
 export const buildCoinGeckoUsdcPriceEndpoint = (coinId: string) => {
