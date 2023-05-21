@@ -19,7 +19,7 @@ export const fetchRefundTransaction = async (
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         gas,
-        '0.1', // will leave at 0.1 for now but this should be the size of the refund
+        refundRecord.usdcAmount.toPrecision(4).toString(),
         'size',
         'blockhash',
         'true',
