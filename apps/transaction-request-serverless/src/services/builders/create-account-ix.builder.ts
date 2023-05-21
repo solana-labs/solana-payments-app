@@ -1,7 +1,4 @@
 import { web3 } from '@project-serum/anchor';
-import { findAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '../../utils/ata.util.js';
-import { createTransferCheckedInstruction } from '@solana/spl-token';
-import { TokenInformation } from '../../configs/token-list.config.js';
 
 // This will be a function to create the instructions to create a system program account. This is a utility
 // instruction that can be used when you're using API based transaction fetching and you only want a transaction to be
