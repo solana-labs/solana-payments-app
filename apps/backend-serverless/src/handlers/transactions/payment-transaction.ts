@@ -102,8 +102,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
-            await trmService.screenAddress(account!);
+            await trmService.screenAddress(account);
         } catch (error) {
+            // TODO: Check trm error code to see if it failed or was rejected, if it's failed we can try again
+            // if it's rejected, we need to reject the payment sessions
             return requestErrorResponse(error);
         }
 
