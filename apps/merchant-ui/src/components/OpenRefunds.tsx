@@ -25,30 +25,34 @@ export function OpenRefunds(props: Props) {
     const openRealRefunds = useOpenRefunds();
     const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
-    const [pending, setPending] = useState(false);
+    const [approvePending, setApprovePending] = useState(false);
+    const [denyPending, setDenyPending] = useState(false);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     const { visible, setVisible } = useWalletModal();
 
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    let refundId = 'kX3BebscSDe9j59kVdZDdN8ssW1Eokw6QsQTNgnTNNj';
+
+    // TODO make sure you're interacting with the right refund and not just id 10
     async function getRefundTransaction() {
-        setPending(true);
+        setApprovePending(true);
         console.log('in get refund tx');
         console.log('wallet modal', visible, wallets, connected);
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        };
 
         if (!connected) {
             console.log('not connected');
             await select(wallets[0].adapter.name);
             await connect();
         }
-        // handleClick()
+
         try {
             // console.log('publicKey: ', publicKey.toString());
             const response = await axios.post(
-                API_ENDPOINTS.refundTransaction + '?refundId=' + '10',
+                API_ENDPOINTS.refundTransaction + '?refundId=' + refundId,
                 {
                     account: publicKey ? publicKey.toBase58() : '',
                 },
@@ -62,7 +66,21 @@ export function OpenRefunds(props: Props) {
             console.log('error: ', error);
             // setResults(RE.failed(error));
         }
-        setPending(false);
+        setApprovePending(false);
+    }
+
+    async function rejectRefund() {
+        setDenyPending(true);
+        try {
+            const response = await axios.post(
+                API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
+                { headers: headers }
+            );
+            console.log('response: ', response);
+        } catch (error) {
+            console.log('error: ', error);
+        }
+        setDenyPending(false);
     }
 
     return (
@@ -202,7 +220,9 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary>Deny Refund</Button.Primary>
+                                                        <Button.Primary onClick={rejectRefund} pending={denyPending}>
+                                                            Deny Refund
+                                                        </Button.Primary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
@@ -274,7 +294,7 @@ export function OpenRefunds(props: Props) {
                                                     <div className="bg-slate-50 p-4 flex justify-end">
                                                         <Button.Primary
                                                             onClick={getRefundTransaction}
-                                                            pending={pending}
+                                                            pending={approvePending}
                                                         >
                                                             Approve with Wallet
                                                         </Button.Primary>
