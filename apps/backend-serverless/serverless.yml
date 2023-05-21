@@ -58,6 +58,12 @@ functions:
       - httpApi:
           path: /helius
           method: post
+  cron:
+    handler: src/handlers/webhooks/cron.cron
+    events:
+      - httpApi:
+          path: /cron
+          method: get
   payment-transaction:
     handler: src/handlers/transactions/payment-transaction.paymentTransaction
     events:
