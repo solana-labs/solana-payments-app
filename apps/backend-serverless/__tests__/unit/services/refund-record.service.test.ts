@@ -13,7 +13,7 @@ describe('Refund Record Testing Suite', () => {
             status: 'pending',
             id: 'abcd',
             amount: 19.94,
-            amountInUsdc: 19.94,
+            usdcAmount: 19.94,
             currency: 'USD',
             shopId: '1234',
             shopGid: 'abcd',

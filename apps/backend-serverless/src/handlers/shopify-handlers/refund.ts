@@ -8,6 +8,7 @@ import { PrismaClient, RefundRecord, Merchant } from '@prisma/client';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
+import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 
 export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();
@@ -43,8 +44,17 @@ export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
 
     if (refundRecord == null) {
         try {
+            const usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                refundInitiation.amount,
+                refundInitiation.currency
+            );
             const newRefundRecordId = await generatePubkeyString();
-            refundRecord = await refundRecordService.createRefundRecord(newRefundRecordId, refundInitiation, merchant);
+            refundRecord = await refundRecordService.createRefundRecord(
+                newRefundRecordId,
+                refundInitiation,
+                merchant,
+                usdcSize
+            );
         } catch (error) {
             return requestErrorResponse(error);
         }
