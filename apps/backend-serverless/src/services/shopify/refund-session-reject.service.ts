@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     RejectRefundResponse,
@@ -25,46 +25,48 @@ const refundSessionRejectMutation = `mutation RefundSessionReject($id: ID!, $rea
 }
 `;
 
-export const refundSessionReject = async (
-    id: string,
-    code: string,
-    merchantMessage: string,
-    shop: string,
-    token: string
-): Promise<RejectRefundResponse> => {
-    const headers = {
-        'content-type': 'application/json',
-        'X-Shopify-Access-Token': token,
-    };
-    const graphqlQuery = {
-        query: refundSessionRejectMutation,
-        variables: {
-            id,
-            reason: {
-                code,
-                merchantMessage,
+export const makeRefundSessionReject =
+    (axiosInstance: AxiosInstance) =>
+    async (
+        id: string,
+        code: string,
+        merchantMessage: string,
+        shop: string,
+        token: string
+    ): Promise<RejectRefundResponse> => {
+        const headers = {
+            'content-type': 'application/json',
+            'X-Shopify-Access-Token': token,
+        };
+        const graphqlQuery = {
+            query: refundSessionRejectMutation,
+            variables: {
+                id,
+                reason: {
+                    code,
+                    merchantMessage,
+                },
             },
-        },
+        };
+
+        const response = await axiosInstance({
+            url: shopifyGraphQLEndpoint(shop),
+            method: 'POST',
+            headers: headers,
+            data: JSON.stringify(graphqlQuery),
+        });
+
+        if (response.status != 200) {
+            throw new Error('Could not reject refund session with Shopify');
+        }
+
+        let rejectRefundResponse: RejectRefundResponse;
+
+        try {
+            rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
+        } catch (error) {
+            throw new Error();
+        }
+
+        return rejectRefundResponse;
     };
-
-    const response = await axios({
-        url: shopifyGraphQLEndpoint(shop),
-        method: 'POST',
-        headers: headers,
-        data: JSON.stringify(graphqlQuery),
-    });
-
-    if (response.status != 200) {
-        throw new Error('Could not reject refund session with Shopify');
-    }
-
-    let rejectRefundResponse: RejectRefundResponse;
-
-    try {
-        rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
-    } catch (error) {
-        throw new Error();
-    }
-
-    return rejectRefundResponse;
-};

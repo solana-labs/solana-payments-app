@@ -7,12 +7,13 @@ import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,
 } from '../../../../models/reject-refund-request.model.js';
-import { refundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
+import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
+import axios from 'axios';
 
 export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -77,6 +78,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
 
     let rejectRefundResponse: RejectRefundResponse;
     try {
+        const refundSessionReject = makeRefundSessionReject(axios);
         rejectRefundResponse = await refundSessionReject(
             refundRecord.shopGid,
             'PROCESSING_ERROR', // Hardcoding this for now, shopify docs are slightly unclear on what the possible values are

@@ -2,8 +2,9 @@ import { PaymentRecordStatus, PrismaClient, TransactionRecord, TransactionType }
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
-import { paymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
-import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
+import { getCustomerFromHeliusEnhancedTransaction } from '../../utilities/get-customer.utility.js';
+import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
+import axios from 'axios';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
@@ -63,7 +64,9 @@ export const processDiscoveredPaymentTransaction = async (
     // handle it here, or we can throw inside of paymentSessionResolve if it parses weird, and still handle it here,
     // either way, i'm thinking we want to handle it here
     try {
-        const resolvePaymentResponse: ResolvePaymentResponse = await paymentSessionResolve(
+        const paymentSessionResolve = makePaymentSessionResolve(axios);
+
+        const resolvePaymentResponse = await paymentSessionResolve(
             paymentRecord.shopGid,
             merchant.shop,
             merchant.accessToken

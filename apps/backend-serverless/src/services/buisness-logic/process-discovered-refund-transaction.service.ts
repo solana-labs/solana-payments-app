@@ -2,7 +2,8 @@ import { PrismaClient, RefundRecordStatus, TransactionRecord, TransactionType } 
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
-import { refundSessionResolve } from '../shopify/refund-session-resolve.service.js';
+import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
+import axios from 'axios';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
@@ -58,6 +59,7 @@ export const processDiscoveredRefundTransaction = async (
     }
 
     try {
+        const refundSessionResolve = makeRefundSessionResolve(axios);
         const resolveRefundResponse = await refundSessionResolve(
             refundRecord.shopGid,
             merchant.shop,
