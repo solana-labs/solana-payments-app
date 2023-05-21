@@ -13,15 +13,15 @@ export const fetchRefundTransaction = async (
     singleUseNewAcc: string,
     singleUsePayer: string
 ): Promise<TransactionRequestResponse> => {
-    var paymentAmount = paymentRecord.usdcAmount.toPrecision(4).toString();
+    var refundAmount = refundRecord.usdcAmount.toPrecision(4).toString();
 
     // Allow for testing values
     if (
-        paymentRecord.test == true &&
+        refundRecord.test == true &&
         process.env.TEST_USDC_SIZE != null &&
         isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
     ) {
-        paymentAmount = process.env.TEST_USDC_SIZE;
+        refundAmount = process.env.TEST_USDC_SIZE;
     }
 
     const endpoint = buildRefundTransactionRequestEndpoint(
@@ -30,7 +30,7 @@ export const fetchRefundTransaction = async (
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         gas,
-        refundRecord.usdcAmount.toPrecision(4).toString(),
+        refundAmount,
         'size',
         'blockhash',
         'true',
