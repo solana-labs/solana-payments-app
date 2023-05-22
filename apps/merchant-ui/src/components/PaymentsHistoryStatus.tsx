@@ -17,40 +17,40 @@ function getText(status: PaymentStatus): string {
 
 function getBorder(status: PaymentStatus): string {
     switch (status) {
-        case PaymentStatus.Rejected:
-            return 'border-red-800';
-        case PaymentStatus.Completed:
-            return 'border-emerald-800';
         case PaymentStatus.Pending:
             return 'border-orange-800';
-        case PaymentStatus.Pending:
-            return 'border-amber-700';
+        case PaymentStatus.Paid:
+            return 'border-emerald-800';
+        case PaymentStatus.Completed:
+            return 'border-emerald-800';
+        case PaymentStatus.Rejected:
+            return 'border-red-800';
     }
 }
 
 function getBgColor(status: PaymentStatus): string {
     switch (status) {
-        case PaymentStatus.Rejected:
-            return 'bg-red-100';
-        case PaymentStatus.Completed:
-            return 'bg-emerald-100';
         case PaymentStatus.Pending:
             return 'bg-transparent';
-        case PaymentStatus.Pending:
-            return 'bg-amber-50';
+        case PaymentStatus.Paid:
+            return 'bg-emerald-100';
+        case PaymentStatus.Completed:
+            return 'bg-emerald-100';
+        case PaymentStatus.Rejected:
+            return 'bg-red-100';
     }
 }
 
 function getTextColor(status: PaymentStatus): string {
     switch (status) {
-        case PaymentStatus.Rejected:
-            return 'text-red-800';
+        case PaymentStatus.Pending:
+            return 'text-orange-800';
+        case PaymentStatus.Paid:
+            return 'text-emerald-800';
         case PaymentStatus.Completed:
             return 'text-emerald-800';
-        case PaymentStatus.Pending:
-            return 'text-emerald-800';
-        case PaymentStatus.Pending:
-            return 'text-amber-700';
+        case PaymentStatus.Rejected:
+            return 'text-red-800';
     }
 }
 
