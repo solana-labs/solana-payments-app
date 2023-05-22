@@ -1,9 +1,5 @@
 import { fetchEnhancedTransaction } from '../../src/services/helius.service.js';
 import axios from 'axios';
-import { fetchGasKeypair } from '../../src/services/fetch-gas-keypair.service.js';
-import { web3 } from '@project-serum/anchor';
-import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
-import { uploadSingleUseKeypair } from '../../src/services/upload-single-use-keypair.service.js';
 
 describe('integration testing coin gecko api', () => {
     it('valid', async () => {
@@ -19,7 +15,6 @@ describe('integration testing coin gecko api', () => {
         } catch (error) {
             console.log(error);
         }
-
         expect(true).toBe(true);
     });
 });
