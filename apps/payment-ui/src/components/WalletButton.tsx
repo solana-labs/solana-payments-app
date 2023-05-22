@@ -11,7 +11,7 @@ const WalletButton = () => {
 
     const walletDisplayString = (pubkey: web3.PublicKey | null) => {
         if (pubkey == null) {
-            return 'Connect Wallet';
+            return 'Connect Wall';
         }
 
         return pubkey.toBase58().slice(0, 4) + '...' + pubkey.toBase58().slice(pubkey.toBase58().length - 4);
