@@ -1,13 +1,12 @@
 import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-
-import { useMockPayments } from '@/hooks/useMockPayments';
 import { formatPrice } from '@/lib/formatPrice';
 import * as RE from '@/lib/Result';
 import { PaginatedTable } from './PaginatedTable';
 import { PaymentsHistoryStatus } from './PaymentsHistoryStatus';
 import * as Tabs from './Tabs';
+import { usePayments } from '@/hooks/usePayments';
 
 interface Props {
     className?: string;
@@ -16,7 +15,7 @@ interface Props {
 export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
-    const payments = useMockPayments(page);
+    const payments = usePayments(page);
 
     useEffect(() => {
         if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {

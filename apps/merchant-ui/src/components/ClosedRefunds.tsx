@@ -1,11 +1,9 @@
 import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 
-import { useMockClosedRefunds, RefundStatus } from '@/hooks/useMockRefunds';
+import { RefundStatus } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
-import * as Button from './Button';
-import { use } from 'react';
 import { useCloseRefunds } from '@/hooks/useRefunds';
 
 interface Props {

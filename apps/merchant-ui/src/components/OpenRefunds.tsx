@@ -1,9 +1,8 @@
 import { twMerge } from 'tailwind-merge';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
-import { FC, MouseEvent, useState } from 'react';
+import { useState } from 'react';
 
-import { useMockOpenRefunds } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
@@ -14,8 +13,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
-import { WalletModal, useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { useCallback } from 'react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 interface Props {
     className?: string;

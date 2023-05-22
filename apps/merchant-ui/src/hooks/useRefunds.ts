@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import axios from 'axios';
-import { set } from 'date-fns';
 
 export enum RefundStatus {
     AwaitingAction = 'AwaitingAction',
@@ -53,7 +51,6 @@ function refundIsClosed(refund: Refund): refund is ClosedRefund {
 
 function transformRefund(responseData: any): OpenRefund[] {
     return responseData.refundData.data.map((item: any) => {
-        console.log('item: ', item);
         return {
             orderId: item.shopifyOrder,
             status: item.status as RefundStatus,
@@ -83,10 +80,9 @@ export function useOpenRefunds(): [RE.Result<OpenRefund[]>, number] {
                 console.log('response: ', response);
 
                 if (response.status !== 200) {
-                    setResults(RE.failed(new Error(response.data.message || 'Failed to fetch refunds')));
+                    setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments 200')));
                 } else {
                     const refunds = transformRefund(response.data); // assuming you have transformRefund function
-                    console.log('p[ending refunds', refunds);
                     setResults(RE.ok(refunds));
                     setRefundCount(response.data.refundData.total);
                 }

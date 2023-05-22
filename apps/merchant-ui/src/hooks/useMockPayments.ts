@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import * as RE from '@/lib/Result';
 
-export enum PaymentStatus {
+enum PaymentStatus {
     Chargeback,
     Completed,
     Pending,
