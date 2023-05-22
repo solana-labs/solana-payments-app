@@ -1,10 +1,10 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { PublicKey } from '@solana/web3.js';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 interface MerchantInfo {
-    id: string;
     shop: string;
     name: string;
     paymentAddress: string;
@@ -20,14 +20,15 @@ export function useMerchant(): RE.Result<MerchantInfo> {
             const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
             const merchantJson = await merchantInfoResponse.json();
 
+            console.log('merchantJson', merchantJson);
+
             setMerchantInfo(
                 RE.ok({
-                    id: merchantJson.merchantData.id,
                     shop: merchantJson.merchantData.shop,
                     name: merchantJson.merchantData.name,
                     paymentAddress: merchantJson.merchantData.paymentAddress,
-                    acceptedTermsAndConditions: merchantJson.merchantData.acceptedTermsAndConditions,
-                    dismissCompleted: merchantJson.merchantData.dismissCompleted,
+                    acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
+                    dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
                 })
             );
         };
@@ -35,4 +36,43 @@ export function useMerchant(): RE.Result<MerchantInfo> {
     }, []);
 
     return merchantInfo;
+}
+
+export async function updateMerchantAddress(walletAddress: PublicKey | null) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        console.log('wallet address', walletAddress?.toString());
+        const response = await axios.put(
+            API_ENDPOINTS.updateMerchant,
+            {
+                paymentAddress: walletAddress?.toString(),
+            },
+            { headers: headers }
+        );
+        console.log('update wallet response', response);
+    } catch (error) {
+        console.log('update wallet error', error);
+    }
+}
+
+export async function updateMerchantTos() {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.put(
+            API_ENDPOINTS.updateMerchant,
+            {
+                acceptedTermsAndConditions: true,
+            },
+            { headers: headers }
+        );
+        console.log('update wallet response', response);
+    } catch (error) {
+        console.log('update wallet error', error);
+    }
 }

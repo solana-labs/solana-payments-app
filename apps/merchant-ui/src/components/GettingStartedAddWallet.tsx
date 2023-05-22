@@ -6,6 +6,12 @@ import { BackButton } from './BackButton';
 import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import * as Button from './Button';
+import { useEffect, useState } from 'react';
+import { API_ENDPOINTS } from '@/lib/endpoints';
+import { PublicKey } from '@solana/web3.js';
+import axios from 'axios';
+import { updateMerchantAddress } from '@/hooks/useMerchant';
+import { set } from 'date-fns';
 
 interface Props {
     className?: string;
@@ -13,6 +19,10 @@ interface Props {
 
 export function GettingStartedAddWallet(props: Props) {
     const router = useRouter();
+
+    const [walletAddress, setWalletAddress] = useState<null | PublicKey>(null);
+
+    const [pending, setPending] = useState(false);
 
     return (
         <DefaultLayoutContent className={props.className}>
@@ -34,7 +44,12 @@ export function GettingStartedAddWallet(props: Props) {
                     <WalletAddressSuggestion className="mt-5" />
                 </div>
                 <div className="flex justify-end">
-                    <AddressInput className="w-full max-w-lg" />
+                    {/* <AddressInput className="w-full max-w-lg" /> */}
+                    <AddressInput
+                        className="w-full max-w-lg"
+                        onChange={wallet => setWalletAddress(wallet ? new PublicKey(wallet) : null)}
+                        defaultValue={walletAddress}
+                    />
                 </div>
             </div>
             <div
@@ -50,7 +65,16 @@ export function GettingStartedAddWallet(props: Props) {
                 )}
             >
                 <Button.Secondary onClick={() => router.back()}>Cancel</Button.Secondary>
-                <Button.Primary>Save</Button.Primary>
+                <Button.Primary
+                    onClick={() => {
+                        setPending(true);
+                        updateMerchantAddress(walletAddress);
+                        setPending(false);
+                    }}
+                    pending={pending}
+                >
+                    Save
+                </Button.Primary>
             </div>
         </DefaultLayoutContent>
     );

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
 import { KYBButton } from './KYBButton';
 import { Primary } from './Button';
+import { updateMerchantTos } from '@/hooks/useMerchant';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -61,7 +62,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => <Primary>Accept</Primary>
+                            ? () => <Primary onClick={() => updateMerchantTos()}>Accept</Primary>
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
                     }
                     onStart={() => props.onBeginSetupItem?.(step)}
