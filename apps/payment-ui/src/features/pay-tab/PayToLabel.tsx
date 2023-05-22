@@ -4,7 +4,7 @@ import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, set
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
-import { FeeDisplay, FeeDisplayLoading } from '@/components/fee-display/FeeDisplay';
+import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/FeeDisplay';
 import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDisplay';
 import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
@@ -54,7 +54,7 @@ export const PayToLabel = () => {
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Transaction Fee</div>
-                { paymentDetails == null ? <FeeDisplayLoading /> : <FeeDisplay /> }
+                { paymentDetails == null ? <FeePriceDisplayLoading /> : <FeePriceDisplay /> }
             </div>
         </div>
     );

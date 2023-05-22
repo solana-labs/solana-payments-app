@@ -1,4 +1,4 @@
-const FeeDisplayBase = ( props: { showFree: boolean } ) => {
+const FeePriceDisplayBase = ( props: { showFree: boolean } ) => {
     return (
         <div className="text-black bg-gray-200 w-16 flex justify-center rounded-md h-8 items-center font-bold">
             { props.showFree ? 'Free' : '' }
@@ -6,16 +6,16 @@ const FeeDisplayBase = ( props: { showFree: boolean } ) => {
     )
 }
 
-export const FeeDisplay = ( ) => {
+export const FeePriceDisplay = ( ) => {
     return (
-        <FeeDisplayBase showFree={true} />
+        <FeePriceDisplayBase showFree={true} />
     )
 }
 
-export const FeeDisplayLoading = ( ) => {
+export const FeePriceDisplayLoading = ( ) => {
     return (
         <div className="animate-pulse flex space-x-4">
-            <FeeDisplayBase showFree={false} />
+            <FeePriceDisplayBase showFree={false} />
         </div>
     )
 }
