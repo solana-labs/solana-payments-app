@@ -12,6 +12,6 @@ export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: Paymen
         shopifyOrder: paymentRecord.shopId,
         date: 'some-date-here',
         status: paymentRecord.status,
-        amount: 'convert-amount-to-string-here',
+        amount: paymentRecord.amount ? `${paymentRecord.amount} ${paymentRecord.currency}` : 'Not Availible',
     };
 };
