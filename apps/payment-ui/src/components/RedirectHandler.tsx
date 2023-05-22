@@ -6,7 +6,7 @@ export const RedirectHandler = () => {
     const paymentDetails = useSelector(getPaymentDetails);
 
     useEffect(() => {
-        if (paymentDetails.redirectUrl != null) {
+        if (paymentDetails?.redirectUrl != null) {
             window.location.href = paymentDetails.redirectUrl;
         }
     }, [paymentDetails]);

@@ -53,9 +53,6 @@ export const Wallet: FC = () => {
                             <WalletButton />
                         </div>
                         <div className="py-2">
-                            <PulseBox />
-                        </div>
-                        <div className="py-2">
                             <BuyButton />
                         </div>
                     </div>

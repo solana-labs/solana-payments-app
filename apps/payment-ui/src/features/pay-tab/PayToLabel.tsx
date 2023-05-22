@@ -12,7 +12,6 @@ import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/Pay
 
 export const PayToLabel = () => {
 
-    const loading = true
     const dispatch = useDispatch<AppDispatch>();
     const payingToken = useSelector(getPayingToken);
     const paymentMethod = useSelector(getPaymentMethod);
@@ -37,10 +36,10 @@ export const PayToLabel = () => {
     return (
         <div className="">
             <div className="flex flex-col justify-between h-44">
-                { loading ? <PayToLoading /> : <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> }
-                { loading ? <PayAmountLoading /> : <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} /> }
+                { paymentDetails == null ? <PayToLoading /> : <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> }
+                { paymentDetails == null ? <PayAmountLoading /> : <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} /> }
                 <div className="flex flex-row w-full justify-between items-center">
-                    { loading ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={paymentDetails.totalAmountUSDCDisplay} /> }
+                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={paymentDetails.totalAmountUSDCDisplay} /> }
                     <div className="w-2/3">
                         <PaymentTokenSelector />
                     </div>
@@ -51,11 +50,11 @@ export const PayToLabel = () => {
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Cart</div>
-                { loading ? <CartAmountLoading /> : <CartAmountDisplay displayAmount={paymentDetails.totalAmountFiatDisplay} /> }
+                { paymentDetails == null ? <CartAmountLoading /> : <CartAmountDisplay displayAmount={paymentDetails.totalAmountFiatDisplay} /> }
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Transaction Fee</div>
-                { loading ? <FeeDisplayLoading /> : <FeeDisplay /> }
+                { paymentDetails == null ? <FeeDisplayLoading /> : <FeeDisplay /> }
             </div>
         </div>
     );

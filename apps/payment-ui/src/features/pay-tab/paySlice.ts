@@ -40,13 +40,13 @@ const initalState: PayState = {
     paymentMethod: 'connect-wallet',
     paymentId: null,
     payerAccount: null,
-    paymentDetails: initialPaymentDetails,
+    paymentDetails: null,
     payingToken: PayingToken.USDC,
 };
 
-export const timerTick = createAsyncThunk<PaymentDetails, void>(
+export const timerTick = createAsyncThunk<PaymentDetails | null, void>(
     'pay/timerTick',
-    async (_, { getState }): Promise<PaymentDetails> => {
+    async (_, { getState }): Promise<PaymentDetails | null> => {
         const state = getState() as RootState;
         const paymentId = state.pay.paymentId;
         if (paymentId != null) {
@@ -62,14 +62,7 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
                 redirectUrl: response.data.redirectUrl,
             };
         } else {
-            return {
-                merchantDisplayName: 'Failed...',
-                totalAmountUSDCDisplay: 'Failed...',
-                totalAmountFiatDisplay: 'Failed...',
-                cancelUrl: null,
-                completed: false,
-                redirectUrl: null,
-            };
+            return null;
         }
     }
 );
@@ -99,7 +92,7 @@ const paySlice = createSlice({
             .addCase(timerTick.rejected, (state: PayState) => {
                 // Handle timerTick.rejected if needed
             })
-            .addCase(timerTick.fulfilled, (state: PayState, action: PayloadAction<PaymentDetails>) => {
+            .addCase(timerTick.fulfilled, (state: PayState, action: PayloadAction<PaymentDetails | null>) => {
                 state.paymentDetails = action.payload;
             });
     },
@@ -119,4 +112,4 @@ export const getRedirectUrl = (state: any): string | null => state.pay.redirectU
 
 export const getPayerAccount = (state: any): string => state.pay.payerAccount;
 
-export const getPaymentDetails = (state: any): PaymentDetails => state.pay.paymentDetails ?? initialPaymentDetails;
+export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.pay.paymentDetails;
