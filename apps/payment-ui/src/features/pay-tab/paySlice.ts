@@ -54,12 +54,12 @@ export const timerTick = createAsyncThunk<PaymentDetails | null, void>(
                 `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
             );
             return {
-                merchantDisplayName: response.data.merchantDisplayName,
-                totalAmountUSDCDisplay: response.data.totalAmountUSDCDisplay,
-                totalAmountFiatDisplay: response.data.totalAmountFiatDisplay,
-                cancelUrl: response.data.cancelUrl,
-                completed: response.data.completed,
-                redirectUrl: response.data.redirectUrl,
+                merchantDisplayName: response.data.paymentStatus.merchantDisplayName,
+                totalAmountUSDCDisplay: response.data.paymentStatus.totalAmountUSDCDisplay,
+                totalAmountFiatDisplay: response.data.paymentStatus.totalAmountFiatDisplay,
+                cancelUrl: response.data.paymentStatus.cancelUrl,
+                completed: response.data.paymentStatus.completed,
+                redirectUrl: response.data.paymentStatus.redirectUrl,
             };
         } else {
             return null;
