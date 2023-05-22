@@ -12,7 +12,7 @@ export default function GetStartedPage() {
             </Head>
             <div className="h-screen w-screen">
                 <DefaultLayout className="h-full w-full">
-                    <GettingStarted merchantName="[shopify-id]" />
+                    <GettingStarted />
                 </DefaultLayout>
             </div>
         </>

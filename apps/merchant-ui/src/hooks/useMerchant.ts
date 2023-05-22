@@ -7,7 +7,7 @@ interface MerchantInfo {
     id: string;
     shop: string;
     name: string;
-    paymentAddress: PublicKey;
+    paymentAddress: string;
     acceptedTermsAndConditions: boolean;
     dismissCompleted: boolean;
 }
@@ -25,7 +25,7 @@ export function useMerchant(): RE.Result<MerchantInfo> {
                     id: merchantJson.merchantData.id,
                     shop: merchantJson.merchantData.shop,
                     name: merchantJson.merchantData.name,
-                    paymentAddress: new PublicKey(merchantJson.merchantData.paymentAddress),
+                    paymentAddress: merchantJson.merchantData.paymentAddress,
                     acceptedTermsAndConditions: merchantJson.merchantData.acceptedTermsAndConditions,
                     dismissCompleted: merchantJson.merchantData.dismissCompleted,
                 })

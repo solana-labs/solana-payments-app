@@ -38,10 +38,13 @@ export function MerchantInfo(props: Props) {
 
     useEffect(() => {
         if (isOk(merchantInfo)) {
+            console.log('merchantInfo', merchantInfo);
             setFormState({
                 name: merchantInfo.data.name || '[shopify id]',
                 logoSrc: 'a',
-                walletAddress: merchantInfo.data.paymentAddress ? merchantInfo.data.paymentAddress : null,
+                walletAddress: merchantInfo.data.paymentAddress
+                    ? new PublicKey(merchantInfo.data.paymentAddress)
+                    : null,
                 token: Token.USDC,
             });
         }
@@ -81,7 +84,7 @@ export function MerchantInfo(props: Props) {
                         onChange={wallet =>
                             setFormState(cur => ({
                                 ...cur,
-                                walletAddress: wallet?.toBase58() || '',
+                                walletAddress: wallet ? new PublicKey(wallet) : null,
                             }))
                         }
                         defaultValue={formState.walletAddress}
