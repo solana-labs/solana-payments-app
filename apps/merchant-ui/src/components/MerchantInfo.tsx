@@ -13,6 +13,8 @@ import { TokenSelect } from './TokenSelect';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { set } from 'date-fns';
 import { PublicKey } from '@solana/web3.js';
+import { useMerchant } from '@/hooks/useMerchant';
+import { isOk } from '@/lib/Result';
 
 interface FormData {
     name: string;
@@ -34,30 +36,18 @@ export function MerchantInfo(props: Props) {
     });
     const [isVerified, setIsVerified] = useState(false);
 
-    // const [merchantInfo, setMerchantInfo] = useState(null);
+    const merchantInfo = useMerchant();
 
     useEffect(() => {
-        const fetchMerchantInfo = async () => {
-            const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
-            const merchantJson = await merchantInfoResponse.json();
-            //sleep 2 seconds
-            // await new Promise(r => setTimeout(r, 2000));
-            // console.log('merchantInfo', merchantJson.name, merchantInfoResponse.json());
-            console.log('merchantInfo', merchantJson);
-
-            // setMerchantInfo(merchantJson);
+        if (isOk(merchantInfo)) {
             setFormState({
-                name: merchantJson.merchantData.name || '[shopify id]',
+                name: merchantInfo.data.name || '[shopify id]',
                 logoSrc: 'a',
-                walletAddress: merchantJson.merchantData.paymentAddress
-                    ? new PublicKey(merchantJson.merchantData.paymentAddress)
-                    : null,
+                walletAddress: merchantInfo.data.paymentAddress ? merchantInfo.data.paymentAddress : null,
                 token: Token.USDC,
             });
-            console.log('merchantJson.merchantData.paymentAddress', merchantJson.merchantData.paymentAddress);
-        };
-        fetchMerchantInfo().catch(console.error);
-    }, []);
+        }
+    }, [merchantInfo]);
 
     return (
         <DefaultLayoutContent className={props.className}>
