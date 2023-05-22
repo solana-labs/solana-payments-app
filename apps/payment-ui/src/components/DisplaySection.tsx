@@ -6,7 +6,14 @@ const DisplaySection = () => {
         <div className="flex flex-row w-full sm:h-[5vh] h-[10vh]">
             <div className="w-full relative flex flex-row items-center justify-center">
                 <div className="absolute flex flex-row justify-start w-full sm:px-8 px-4">
+                <button
+                    className="btn btn-ghost z-10"
+                    onClick={() => {
+                        console.log('back it up')
+                    }}
+                >
                     <MdArrowBack color="white" size={30} />
+                </button>
                 </div>
                 <div className="absolute flex flex-row justify-center w-full">
                     <Image src="/solana-pay.svg" alt="Solana Pay Logo" width={80} height={200} />
