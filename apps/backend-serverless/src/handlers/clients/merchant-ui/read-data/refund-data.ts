@@ -53,7 +53,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
 
         const refundResponse = await createRefundResponse(
             merchantAuthToken,
-            RefundRecordStatus.pending,
+            refundDataRequestParameters.refundStatus,
             pagination,
             prisma
         );
