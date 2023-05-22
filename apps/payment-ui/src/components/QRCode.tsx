@@ -20,7 +20,7 @@ export const QRCode: FC = () => {
     const payingToken = useSelector(getPayingToken);
 
     const endpoint = buildPaymentTransactionRequestEndpoint(paymentId);
-    const url = `solana:${endpoint}`;
+    const url = `solana:${encodeURIComponent(endpoint)}`;
     const options = useMemo(() => createQROptions(url, size, 'transparent', 'black'), [url, size]);
 
     const qr = useMemo(() => new QRCodeStyling(), []);

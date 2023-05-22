@@ -46,8 +46,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const trmService = new TrmService(TRM_API_KEY);
 
-        const decodedBody = event.body ? decode(event.body) : '';
-        const body = queryString.parse(decodedBody);
+        if (event.body == null) {
+            return requestErrorResponse(new Error('No body provided.'));
+        }
+
+        const body = JSON.parse(event.body);
+
         const account = body['account'] as string | null;
 
         if (account == null) {
