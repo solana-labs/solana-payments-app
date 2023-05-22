@@ -1,5 +1,5 @@
 import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { getPaymentDetails, getPaymentMethod } from '@/features/pay-tab/paySlice';
+import { getPaymentDetails, getPaymentErrors, getPaymentMethod } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch } from '@/store';
 import React, { useEffect, useRef } from 'react';
@@ -18,12 +18,18 @@ import { ErrorGoBack } from './ErrorGoBack';
 
 const CheckoutSection = () => {
     const paymentDetails = useSelector(getPaymentDetails);
+    const paymentErrors = useSelector(getPaymentErrors);
 
     return (
         // <div className="w-full mx-auto rounded-t-xl bg-white flex flex-col justify-between sm:h-[95vh] h-[90vh] sm:px-16 pt-16 px-4"></div>
         <div className="w-full mx-auto rounded-t-xl bg-white  sm:h-[95vh] h-[90vh] sm:px-16 px-4">
-            <ErrorGoBack top='Your session timed out.' bottom='Please go back and checkout again.' />
-            {/* { paymentDetails.redirectUrl != null ? <ThankYouView /> : <PaymentView /> } */}
+            
+            {
+                paymentErrors != null ? <ErrorGoBack top={paymentErrors.errorTitle} bottom={paymentErrors.errorDetail} redirect={paymentErrors.errorRedirect} /> : ( paymentDetails.redirectUrl != null ? <ThankYouView /> : <PaymentView /> )
+            }
+            
+            {/* <ErrorGoBack top='Your session timed out.' bottom='Please go back and checkout again.' /> */}
+            
         </div>
     );
 };
