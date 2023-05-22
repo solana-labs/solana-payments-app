@@ -19,7 +19,8 @@ export const fetchPaymentTransaction = async (
         throw new Error('Merchant payment address not found.');
     }
 
-    var paymentAmount = paymentRecord.usdcAmount.toPrecision(4).toString();
+    // 6 because USDC is 6 decimal places
+    var paymentAmount = paymentRecord.usdcAmount.toPrecision(6);
 
     // Allow for testing values
     if (
