@@ -60,7 +60,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        const gasKeypair = await fetchGasKeypair();
+        let gasKeypair: web3.Keypair;
+
+        try {
+            gasKeypair = await fetchGasKeypair();
+        } catch (error) {
+            return requestErrorResponse(error);
+        }
 
         try {
             paymentRecord = await paymentRecordService.getPaymentRecord({

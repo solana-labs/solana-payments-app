@@ -52,7 +52,13 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
         return requestErrorResponse(error);
     }
 
-    const gasKeypair = await fetchGasKeypair();
+    let gasKeypair: web3.Keypair;
+
+    try {
+        gasKeypair = await fetchGasKeypair();
+    } catch (error) {
+        return requestErrorResponse(error);
+    }
 
     try {
         refundRecord = await refundRecordService.getRefundRecord({
