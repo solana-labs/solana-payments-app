@@ -71,6 +71,7 @@ export function useOpenRefunds(): RE.Result<OpenRefund[]> {
     const params: any = {
         page: 1,
         pageSize: 10,
+        refundStatus: 'pending',
     };
 
     useEffect(() => {
@@ -79,7 +80,6 @@ export function useOpenRefunds(): RE.Result<OpenRefund[]> {
             try {
                 const response = await axios.get(API_ENDPOINTS.refundData, { params });
 
-                console.log('response: ', response.data.refundData.data);
                 if (response.status !== 200) {
                     setResults(RE.failed(new Error(response.data.message || 'Failed to fetch refunds')));
                 } else {
@@ -88,8 +88,40 @@ export function useOpenRefunds(): RE.Result<OpenRefund[]> {
                 }
             } catch (error) {
                 console.log('error: ', error);
-                setResults(RE.failed(new Error('Failed to fetch refundssdfds')));
-                // setResults(RE.failed(error));
+                setResults(RE.failed(new Error('Failed to fetch open refunds')));
+            }
+        }
+
+        fetchRefunds();
+    }, []);
+
+    return results;
+}
+
+export function useCloseRefunds(): RE.Result<OpenRefund[]> {
+    const [results, setResults] = useState<RE.Result<OpenRefund[]>>(RE.pending());
+
+    const params: any = {
+        page: 1,
+        pageSize: 10,
+        refundStatus: 'rejected',
+    };
+
+    useEffect(() => {
+        async function fetchRefunds() {
+            setResults(RE.pending());
+            try {
+                const responseRejected = await axios.get(API_ENDPOINTS.refundData, { params });
+
+                if (responseRejected.status !== 200) {
+                    setResults(RE.failed(new Error(responseRejected.data.message || 'Failed to fetch refunds')));
+                } else {
+                    const refundsRejected = transformRefund(responseRejected.data); // assuming you have transformRefund function
+                    setResults(RE.ok(refundsRejected));
+                }
+            } catch (error) {
+                console.log('error: ', error);
+                setResults(RE.failed(new Error('Failed to fetch refunds in useCloseRefunds')));
             }
         }
 

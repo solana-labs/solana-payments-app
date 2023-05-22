@@ -5,13 +5,15 @@ import { useMockClosedRefunds, RefundStatus } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
+import { use } from 'react';
+import { useCloseRefunds } from '@/hooks/useRefunds';
 
 interface Props {
     className?: string;
 }
 
 export function ClosedRefunds(props: Props) {
-    const closedRefunds = useMockClosedRefunds();
+    const closedRefunds = useCloseRefunds();
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
