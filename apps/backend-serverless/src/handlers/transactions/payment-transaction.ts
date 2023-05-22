@@ -90,9 +90,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
 
-        // we should probably try / catch this but if it fails we keep going, just log
-        // the rent redemption later isn't worth failing on customer ux
-        await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
+        try {
+            await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
+        } catch (error) {
+            // TODO: Log this error in sentry
+        }
 
         try {
             paymentTransaction = await fetchPaymentTransaction(
