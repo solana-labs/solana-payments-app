@@ -24,7 +24,8 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
     const seedString = JSON.stringify(singleUseKeypair.secretKey);
 
     try {
-        const p = await s3
+        // TODO: Log the successful upload in sentry
+        await s3
             .upload({
                 Bucket: bucket,
                 Key: `${paymentRecord.id}.json`,
@@ -32,8 +33,11 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
                 ContentType: 'application/json',
             })
             .promise();
-        console.log(p);
     } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error('Couldnt upload keypair to s3. Unknown reason.');
+        }
     }
 };
