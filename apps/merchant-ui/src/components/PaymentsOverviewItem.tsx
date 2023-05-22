@@ -6,7 +6,7 @@ interface Props {
     value: number;
 }
 
-export function TransactionsOverviewItem(props: Props) {
+export function PaymentsOverviewItem(props: Props) {
     return (
         <div className={twMerge('drop-shadow-sm', 'border-gray-200', 'border', 'p-6', 'rounded-xl', props.className)}>
             <div className="text-sm font-medium text-slate-600">{props.title}</div>

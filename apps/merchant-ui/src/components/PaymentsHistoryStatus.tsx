@@ -1,81 +1,81 @@
 import { twMerge } from 'tailwind-merge';
 
-import { TransactionStatus } from '@/hooks/useMockTransactions';
+import { PaymentStatus } from '@/hooks/useMockPayments';
 
-function getText(status: TransactionStatus): string {
+function getText(status: PaymentStatus): string {
     switch (status) {
-        case TransactionStatus.Chargeback:
+        case PaymentStatus.Chargeback:
             return 'Chargeback';
-        case TransactionStatus.Completed:
+        case PaymentStatus.Completed:
             return 'Completed';
-        case TransactionStatus.Pending:
+        case PaymentStatus.Pending:
             return 'Pending';
-        case TransactionStatus.RefundDenied:
+        case PaymentStatus.RefundDenied:
             return 'Refund Denied';
-        case TransactionStatus.RefundRequested:
+        case PaymentStatus.RefundRequested:
             return 'Refund Requested';
-        case TransactionStatus.Refunded:
+        case PaymentStatus.Refunded:
             return 'Refunded';
     }
 }
 
-function getBorder(status: TransactionStatus): string {
+function getBorder(status: PaymentStatus): string {
     switch (status) {
-        case TransactionStatus.Chargeback:
+        case PaymentStatus.Chargeback:
             return 'border-red-800';
-        case TransactionStatus.Completed:
+        case PaymentStatus.Completed:
             return 'border-emerald-800';
-        case TransactionStatus.Pending:
+        case PaymentStatus.Pending:
             return 'border-emerald-800';
-        case TransactionStatus.RefundDenied:
+        case PaymentStatus.RefundDenied:
             return 'border-orange-800';
-        case TransactionStatus.RefundRequested:
+        case PaymentStatus.RefundRequested:
             return 'border-amber-700';
-        case TransactionStatus.Refunded:
+        case PaymentStatus.Refunded:
             return 'border-slate-800';
     }
 }
 
-function getBgColor(status: TransactionStatus): string {
+function getBgColor(status: PaymentStatus): string {
     switch (status) {
-        case TransactionStatus.Chargeback:
+        case PaymentStatus.Chargeback:
             return 'bg-red-100';
-        case TransactionStatus.Completed:
+        case PaymentStatus.Completed:
             return 'bg-emerald-100';
-        case TransactionStatus.Pending:
+        case PaymentStatus.Pending:
             return 'bg-transparent';
-        case TransactionStatus.RefundDenied:
+        case PaymentStatus.RefundDenied:
             return 'bg-orange-100';
-        case TransactionStatus.RefundRequested:
+        case PaymentStatus.RefundRequested:
             return 'bg-amber-50';
-        case TransactionStatus.Refunded:
+        case PaymentStatus.Refunded:
             return 'bg-slate-100';
     }
 }
 
-function getTextColor(status: TransactionStatus): string {
+function getTextColor(status: PaymentStatus): string {
     switch (status) {
-        case TransactionStatus.Chargeback:
+        case PaymentStatus.Chargeback:
             return 'text-red-800';
-        case TransactionStatus.Completed:
+        case PaymentStatus.Completed:
             return 'text-emerald-800';
-        case TransactionStatus.Pending:
+        case PaymentStatus.Pending:
             return 'text-emerald-800';
-        case TransactionStatus.RefundDenied:
+        case PaymentStatus.RefundDenied:
             return 'text-orange-800';
-        case TransactionStatus.RefundRequested:
+        case PaymentStatus.RefundRequested:
             return 'text-amber-700';
-        case TransactionStatus.Refunded:
+        case PaymentStatus.Refunded:
             return 'text-slate-800';
     }
 }
 
 interface Props {
     className?: string;
-    status: TransactionStatus;
+    status: PaymentStatus;
 }
 
-export function TransactionsHistoryStatus(props: Props) {
+export function PaymentsHistoryStatus(props: Props) {
     return (
         <div
             className={twMerge(

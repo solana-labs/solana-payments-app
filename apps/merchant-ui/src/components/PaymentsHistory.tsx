@@ -2,37 +2,37 @@ import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 
-import { useMockTransactions } from '@/hooks/useMockTransactions';
+import { useMockPayments } from '@/hooks/useMockPayments';
 import { formatPrice } from '@/lib/formatPrice';
 import * as RE from '@/lib/Result';
 import { PaginatedTable } from './PaginatedTable';
-import { TransactionsHistoryStatus } from './TransactionsHistoryStatus';
+import { PaymentsHistoryStatus } from './PaymentsHistoryStatus';
 import * as Tabs from './Tabs';
 
 interface Props {
     className?: string;
 }
 
-export function TransactionsHistory(props: Props) {
+export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
-    const transactions = useMockTransactions(page);
+    const payments = useMockPayments(page);
 
     useEffect(() => {
-        if (RE.isOk(transactions) && transactions.data.totalPages !== totalNumPages) {
-            setTotalNumPages(transactions.data.totalPages);
+        if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {
+            setTotalNumPages(payments.data.totalPages);
         }
-    }, [transactions]);
+    }, [payments]);
 
-    if (RE.isOk(transactions) && transactions.data.totalPages === 0) {
+    if (RE.isOk(payments) && payments.data.totalPages === 0) {
         return (
             <div className={props.className}>
                 <div>
-                    <div className="text-lg font-semibold md:px-7">Transaction History</div>
+                    <div className="text-lg font-semibold md:px-7">Payment History</div>
                     <div className="mt-8 text-center">
-                        <div className="text-sm font-medium text-neutral-600">No transactions yet</div>
+                        <div className="text-sm font-medium text-neutral-600">No payments yet</div>
                         <div className="px-12 mt-2.5 text-xs text-neutral-500 md:px-0">
-                            Your transactions will appear here once your store is ready.
+                            Your payments will appear here once your store is ready.
                         </div>
                     </div>
                 </div>
@@ -42,15 +42,15 @@ export function TransactionsHistory(props: Props) {
 
     return (
         <div className={props.className}>
-            <Tabs.Root defaultValue="all-transactions">
+            <Tabs.Root defaultValue="all-payments">
                 <Tabs.List>
-                    <Tabs.Trigger value="all-transactions">Open requests</Tabs.Trigger>
+                    <Tabs.Trigger value="all-payments">Open requests</Tabs.Trigger>
                 </Tabs.List>
-                <Tabs.Content value="all-transactions">
+                <Tabs.Content value="all-payments">
                     <PaginatedTable
                         className="mt-8"
                         columns={['orderId', 'ts', 'status', 'amount']}
-                        curPage={RE.map(transactions, ({ transactions }) => transactions)}
+                        curPage={RE.map(payments, ({ payments }) => payments)}
                         headers={{
                             amount: 'Amount',
                             orderId: 'Shopify Order #',
@@ -76,7 +76,7 @@ export function TransactionsHistory(props: Props) {
                                 </div>
                             ),
                             orderId: id => <div className="font-bold text-sm text-slate-600">#{id}</div>,
-                            status: status => <TransactionsHistoryStatus className="mr-10" status={status} />,
+                            status: status => <PaymentsHistoryStatus className="mr-10" status={status} />,
                             ts: time => (
                                 <div className="text-sm text-slate-600 pr-11">{format(time, 'eee h:mmaaa')}</div>
                             ),
