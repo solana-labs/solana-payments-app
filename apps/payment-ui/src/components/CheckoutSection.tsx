@@ -1,5 +1,5 @@
 import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { getPaymentMethod, setPaymentMethod } from '@/features/pay-tab/paySlice';
+import { getPaymentDetails, getPaymentMethod, setPaymentMethod } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
 import React, { useEffect, useRef } from 'react';
@@ -17,10 +17,12 @@ import { ThankYouView } from './ThankYou';
 import { PaymentView } from './PaymentView';
 
 const CheckoutSection = () => {
-    const paymentMethod = useSelector(getPaymentMethod);
-<<<<<<< HEAD
-    const isMobile = useSelector((state: RootState) => state.viewport.isMobile);
 
+    const dispatch = useDispatch<AppDispatch>();
+    const paymentMethod = useSelector(getPaymentMethod);
+    const isMobile = useSelector((state: RootState) => state.viewport.isMobile);
+    const paymentDetails = useSelector(getPaymentDetails);
+    
     useEffect(() => {
 
         if ( isMobile ) {
@@ -28,14 +30,12 @@ const CheckoutSection = () => {
         }
 
     }, [dispatch, isMobile])
-=======
-    const done = true
->>>>>>> 10480e7 (ok the screen is there, just need to make it kick off a timer and test with real payments)
+    
 
     return (
         // <div className="w-full mx-auto rounded-t-xl bg-white flex flex-col justify-between sm:h-[95vh] h-[90vh] sm:px-16 pt-16 px-4"></div>
         <div className="w-full mx-auto rounded-t-xl bg-white  sm:h-[95vh] h-[90vh] sm:px-16 px-4">
-            { done ? <ThankYouView /> : <PaymentView /> }
+            { paymentDetails?.redirectUrl != null ? <ThankYouView /> : <PaymentView /> }
         </div>
     );
 };
