@@ -4,7 +4,10 @@ import { useRouter } from 'next/router';
 import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
 import { KYBButton } from './KYBButton';
 import { Primary } from './Button';
-import { updateMerchantTos } from '@/hooks/useMerchant';
+import { updateMerchantTos, useMerchant } from '@/hooks/useMerchant';
+import { isOk } from '@/lib/Result';
+import { LoadingDots } from '@/components/LoadingDots';
+import { useEffect, useState } from 'react';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -31,14 +34,61 @@ function getItemTitle(item: RemainingSetupItem) {
 
 interface Props {
     className?: string;
-    remainingSetupItems: RemainingSetupItem[];
     onBeginSetupItem?(setupItem: RemainingSetupItem): void;
 }
 
 export function FinishAccountSetupPrompt(props: Props) {
     const router = useRouter();
 
-    if (!props.remainingSetupItems.length) {
+    const { merchantInfo, getMerchantInfo } = useMerchant();
+
+    const [pendingTos, setPendingTos] = useState(false);
+
+    const [remainingSetupItems, setRemainingSetupItems] = useState<RemainingSetupItem[]>([
+        RemainingSetupItem.AcceptTerms,
+        RemainingSetupItem.AddWallet,
+        RemainingSetupItem.VerifyBusiness,
+    ]);
+
+    useEffect(() => {
+        if (!isOk(merchantInfo)) {
+            return;
+        }
+        let items = STEPS.filter(item => !isStepCompleted(item));
+        setRemainingSetupItems(items);
+    }, [merchantInfo]);
+
+    function isStepCompleted(step: RemainingSetupItem) {
+        if (!isOk(merchantInfo)) {
+            return false;
+        }
+
+        switch (step) {
+            case RemainingSetupItem.AcceptTerms:
+                return merchantInfo.data.acceptedTermsAndConditions === true;
+            case RemainingSetupItem.AddWallet:
+                return merchantInfo.data.paymentAddress !== null;
+            case RemainingSetupItem.VerifyBusiness:
+                return false;
+        }
+    }
+
+    async function updateMerchantTosClick() {
+        setPendingTos(true);
+        await updateMerchantTos();
+        await getMerchantInfo();
+        setPendingTos(false);
+    }
+
+    if (!isOk(merchantInfo)) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <LoadingDots />
+            </div>
+        );
+    }
+
+    if (remainingSetupItems.length === 0) {
         return (
             <div className={twMerge('bg-slate-50', 'py-5', 'px-4', 'text-center', props.className)}>
                 <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
@@ -54,7 +104,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                 <FinishAccountSetupPromptListItem
                     additionalText={step === RemainingSetupItem.VerifyBusiness ? '• Takes ~5m' : undefined}
                     className={twMerge('py-5', i > 0 && 'border-t border-slate-200')}
-                    completed={!props.remainingSetupItems.includes(step)}
+                    completed={isStepCompleted(step)}
                     img=""
                     key={i}
                     title={getItemTitle(step)}
@@ -62,7 +112,11 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => <Primary onClick={() => updateMerchantTos()}>Accept</Primary>
+                            ? () => (
+                                  <Primary onClick={updateMerchantTosClick} pending={pendingTos}>
+                                      Accept
+                                  </Primary>
+                              )
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
                     }
                     onStart={() => props.onBeginSetupItem?.(step)}

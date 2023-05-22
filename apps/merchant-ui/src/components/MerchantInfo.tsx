@@ -34,7 +34,7 @@ export function MerchantInfo(props: Props) {
     });
     const [isVerified, setIsVerified] = useState(false);
 
-    const merchantInfo = useMerchant();
+    const { merchantInfo } = useMerchant();
 
     useEffect(() => {
         if (isOk(merchantInfo)) {

@@ -5,27 +5,28 @@ import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { FinishAccountSetupPrompt, RemainingSetupItem } from './FinishAccountSetupPrompt';
 import { useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
+import { LoadingDots } from '@/components/LoadingDots';
 
 interface Props {
     className?: string;
 }
 
 export function GettingStarted(props: Props) {
-    const merchantInfo = useMerchant();
+    const { merchantInfo } = useMerchant();
+
+    if (!isOk(merchantInfo)) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <LoadingDots />
+            </div>
+        );
+    }
+
     return (
         <DefaultLayoutContent className={props.className}>
-            <DefaultLayoutScreenTitle>
-                Welcome, {isOk(merchantInfo) ? merchantInfo.data.name : '[shopify id]'}!
-            </DefaultLayoutScreenTitle>
+            <DefaultLayoutScreenTitle>Welcome, {merchantInfo.data.name}!</DefaultLayoutScreenTitle>
             <div className="mt-4 text-black text-lg">Accepting payments on Solana is just three easy steps away.</div>
-            <FinishAccountSetupPrompt
-                className="mt-14 rounded-xl"
-                remainingSetupItems={[
-                    RemainingSetupItem.VerifyBusiness,
-                    RemainingSetupItem.AddWallet,
-                    RemainingSetupItem.AcceptTerms,
-                ]}
-            />
+            <FinishAccountSetupPrompt className="mt-14 rounded-xl" />
         </DefaultLayoutContent>
     );
 }
