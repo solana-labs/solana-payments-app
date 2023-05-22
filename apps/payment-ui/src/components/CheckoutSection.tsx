@@ -15,6 +15,7 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import Image from 'next/image';
 import { ThankYouView } from './ThankYou';
 import { PaymentView } from './PaymentView';
+import { ErrorGoBack } from './ErrorGoBack';
 
 const CheckoutSection = () => {
 
