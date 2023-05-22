@@ -6,7 +6,6 @@ import { WalletModalProvider, WalletDisconnectButton, WalletMultiButton } from '
 import { clusterApiUrl } from '@solana/web3.js';
 import WalletButton from './WalletButton';
 import BuyButton from './BuyButton';
-import PulseBox from './PulseBox';
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
