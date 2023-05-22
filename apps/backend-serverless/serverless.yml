@@ -124,7 +124,7 @@ functions:
   #     - httpApi:
   #         path: /login
   #         method: get
-  update-payment-address:
+  update-merchant:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
       - httpApi:
@@ -135,4 +135,3 @@ plugins:
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
-
