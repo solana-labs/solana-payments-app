@@ -1,5 +1,5 @@
 import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { getPaymentMethod } from '@/features/pay-tab/paySlice';
+import { getPaymentDetails, getPaymentMethod } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch } from '@/store';
 import React, { useEffect, useRef } from 'react';
@@ -16,13 +16,12 @@ import { ThankYouView } from './ThankYou';
 import { PaymentView } from './PaymentView';
 
 const CheckoutSection = () => {
-    const paymentMethod = useSelector(getPaymentMethod);
-    const done = true
+    const paymentDetails = useSelector(getPaymentDetails);
 
     return (
         // <div className="w-full mx-auto rounded-t-xl bg-white flex flex-col justify-between sm:h-[95vh] h-[90vh] sm:px-16 pt-16 px-4"></div>
         <div className="w-full mx-auto rounded-t-xl bg-white  sm:h-[95vh] h-[90vh] sm:px-16 px-4">
-            { done ? <ThankYouView /> : <PaymentView /> }
+            { paymentDetails.redirectUrl != null ? <ThankYouView /> : <PaymentView /> }
         </div>
     );
 };
