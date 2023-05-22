@@ -27,7 +27,7 @@ interface Props {
 
 export function MerchantInfo(props: Props) {
     const [formState, setFormState] = useState<FormData>({
-        name: '[shopify id]',
+        name: '',
         logoSrc: '',
         walletAddress: null,
         token: Token.USDC,
@@ -40,7 +40,7 @@ export function MerchantInfo(props: Props) {
         if (isOk(merchantInfo)) {
             console.log('merchantInfo', merchantInfo);
             setFormState({
-                name: merchantInfo.data.name || '[shopify id]',
+                name: merchantInfo.data.name,
                 logoSrc: 'a',
                 walletAddress: merchantInfo.data.paymentAddress
                     ? new PublicKey(merchantInfo.data.paymentAddress)

@@ -70,7 +70,7 @@ export function DefaultLayoutNavigation(props: Props) {
                 </div>
                 {props.accountIsActive ? (
                     <div className="mt-6">
-                        <DefaultLayoutNavigationLink href="/payment" icon={<ReceiptLong />} text="Payments" />
+                        <DefaultLayoutNavigationLink href="/payments" icon={<ReceiptLong />} text="Payments" />
                         <DefaultLayoutNavigationLink
                             href="/refunds"
                             icon={<Reply />}
