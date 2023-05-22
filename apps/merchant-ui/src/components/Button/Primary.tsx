@@ -5,10 +5,11 @@ import { LoadingDots } from '../LoadingDots';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     pending?: boolean;
+    disabled?: boolean;
 }
 
 export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(props, ref) {
-    const { pending, ...rest } = props;
+    const { pending, disabled, ...rest } = props;
 
     return (
         <button
@@ -35,10 +36,11 @@ export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(pro
                 pending && 'cursor-not-allowed'
             )}
             onClick={e => {
-                if (!pending && !rest.disabled) {
+                if (!pending && !disabled) {
                     rest.onClick?.(e);
                 }
             }}
+            disabled={disabled}
         >
             <div
                 className={twMerge(

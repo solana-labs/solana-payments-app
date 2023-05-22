@@ -11,7 +11,7 @@ import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import { TokenSelect } from './TokenSelect';
 import { PublicKey } from '@solana/web3.js';
-import { useMerchant } from '@/hooks/useMerchant';
+import { updateMerchantAddress, useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
 
 interface FormData {
@@ -33,6 +33,7 @@ export function MerchantInfo(props: Props) {
         token: Token.USDC,
     });
     const [isVerified, setIsVerified] = useState(false);
+    const [pending, setPending] = useState(false);
 
     const { merchantInfo } = useMerchant();
 
@@ -49,6 +50,23 @@ export function MerchantInfo(props: Props) {
             });
         }
     }, [merchantInfo]);
+
+    function shouldDisable() {
+        const { walletAddress } = formState;
+        let paymentAddress = isOk(merchantInfo) && merchantInfo.data.paymentAddress;
+
+        if (!walletAddress || walletAddress.toString() === paymentAddress) {
+            return true;
+        }
+
+        try {
+            new PublicKey(walletAddress);
+        } catch {
+            return true;
+        }
+
+        return false;
+    }
 
     return (
         <DefaultLayoutContent className={props.className}>
@@ -112,7 +130,17 @@ export function MerchantInfo(props: Props) {
             </div>
             <footer className="flex items-center justify-end space-x-3 pt-4">
                 <Button.Secondary>Cancel</Button.Secondary>
-                <Button.Primary>Save</Button.Primary>
+                <Button.Primary
+                    onClick={() => {
+                        setPending(true);
+                        updateMerchantAddress(formState.walletAddress?.toString());
+                        setPending(false);
+                    }}
+                    pending={pending}
+                    disabled={shouldDisable()}
+                >
+                    Save
+                </Button.Primary>
             </footer>
         </DefaultLayoutContent>
     );

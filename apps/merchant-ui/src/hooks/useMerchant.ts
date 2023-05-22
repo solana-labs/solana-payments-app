@@ -37,7 +37,11 @@ export function useMerchant(): { merchantInfo: RE.Result<MerchantInfo>; getMerch
     return { merchantInfo, getMerchantInfo };
 }
 
-export async function updateMerchantAddress(walletAddress: PublicKey | null) {
+export async function updateMerchantAddress(walletAddress: string | null | undefined) {
+    if (!walletAddress) {
+        return;
+    }
+
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -46,7 +50,7 @@ export async function updateMerchantAddress(walletAddress: PublicKey | null) {
         const response = await axios.put(
             API_ENDPOINTS.updateMerchant,
             {
-                paymentAddress: walletAddress?.toString(),
+                paymentAddress: walletAddress,
             },
             { headers: headers }
         );

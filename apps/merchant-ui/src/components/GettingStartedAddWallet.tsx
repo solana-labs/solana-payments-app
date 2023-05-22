@@ -68,7 +68,7 @@ export function GettingStartedAddWallet(props: Props) {
                 <Button.Primary
                     onClick={() => {
                         setPending(true);
-                        updateMerchantAddress(walletAddress);
+                        updateMerchantAddress(walletAddress?.toString());
                         setPending(false);
                     }}
                     pending={pending}
