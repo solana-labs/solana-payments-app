@@ -9,7 +9,14 @@ interface PayState {
     paymentId: string | null;
     payerAccount: string | null;
     paymentDetails: PaymentDetails | null;
+    paymentError: PayError | null;
     payingToken: PayingToken;
+}
+
+interface PayError {
+    errorTitle: string;
+    errorDetail: string;
+    errorRedirect: string;
 }
 
 interface PaymentDetails {
@@ -42,27 +49,37 @@ const initalState: PayState = {
     payerAccount: null,
     paymentDetails: null,
     payingToken: PayingToken.USDC,
+    paymentError: null,
 };
 
-export const timerTick = createAsyncThunk<PaymentDetails | null, void>(
+export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; error: PayError | null }, void>(
     'pay/timerTick',
-    async (_, { getState }): Promise<PaymentDetails | null> => {
+    async (_, { getState }): Promise<{ details: PaymentDetails | null; error: PayError | null }> => {
         const state = getState() as RootState;
         const paymentId = state.pay.paymentId;
         if (paymentId != null) {
             const response = await axios.get(
                 `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
             );
+            const paymentStatusResponse = response.data.paymentStatus;
+            const errorResponse = response.data.error;
+
             return {
-                merchantDisplayName: response.data.paymentStatus.merchantDisplayName,
-                totalAmountUSDCDisplay: response.data.paymentStatus.totalAmountUSDCDisplay,
-                totalAmountFiatDisplay: response.data.paymentStatus.totalAmountFiatDisplay,
-                cancelUrl: response.data.paymentStatus.cancelUrl,
-                completed: response.data.paymentStatus.completed,
-                redirectUrl: response.data.paymentStatus.redirectUrl,
+                details: {
+                    merchantDisplayName: paymentStatusResponse.merchantDisplayName,
+                    totalAmountUSDCDisplay: paymentStatusResponse.totalAmountUSDCDisplay,
+                    totalAmountFiatDisplay: paymentStatusResponse.totalAmountFiatDisplay,
+                    cancelUrl: paymentStatusResponse.cancelUrl,
+                    completed: paymentStatusResponse.completed,
+                    redirectUrl: paymentStatusResponse.redirectUrl,
+                },
+                error: errorResponse,
             };
         } else {
-            return null;
+            return {
+                details: null,
+                error: null,
+            };
         }
     }
 );
@@ -92,9 +109,16 @@ const paySlice = createSlice({
             .addCase(timerTick.rejected, (state: PayState) => {
                 // Handle timerTick.rejected if needed
             })
-            .addCase(timerTick.fulfilled, (state: PayState, action: PayloadAction<PaymentDetails | null>) => {
-                state.paymentDetails = action.payload;
-            });
+            .addCase(
+                timerTick.fulfilled,
+                (
+                    state: PayState,
+                    action: PayloadAction<{ details: PaymentDetails | null; error: PayError | null }>
+                ) => {
+                    state.paymentDetails = action.payload.details;
+                    state.paymentError = action.payload.error;
+                }
+            );
     },
 });
 
@@ -112,4 +136,7 @@ export const getRedirectUrl = (state: any): string | null => state.pay.redirectU
 
 export const getPayerAccount = (state: any): string => state.pay.payerAccount;
 
-export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.pay.paymentDetails;
+export const getPaymentDetails = (state: any): PaymentDetails | null =>
+    state.pay.paymentDetails ?? initialPaymentDetails;
+
+export const getPaymentErrors = (state: RootState): PayError | null => state.pay.paymentError;

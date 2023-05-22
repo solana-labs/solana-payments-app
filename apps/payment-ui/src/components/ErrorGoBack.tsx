@@ -3,11 +3,11 @@ import FinishHandler from './FinishHandler'
 import { VscArrowLeft } from 'react-icons/vsc'
 import { ImWarning } from 'react-icons/im'
 
-export const ErrorGoBack = ( props: { top: string, bottom: string } ) => {
+export const ErrorGoBack = ( props: { top: string, bottom: string, redirect: string } ) => {
     return (
         <div className="flex flex-col">
             <ErrorDisplay top={props.top} bottom={props.bottom} />
-            <GoBackButton />
+            <GoBackButton redirect={props.redirect} />
         </div>
     )
 }
@@ -27,9 +27,11 @@ const ErrorDisplay = ( props: { top: string, bottom: string } ) => {
     )
 }
 
-const GoBackButton = () => {
+const GoBackButton = ( props: { redirect: string } ) => {
     return (
-        <button className='btn btn-ghost outline outline-offset-0 text-black normal-case outline-2 mt-4'>
+        <button className='btn btn-ghost outline outline-offset-0 text-black normal-case outline-2 mt-4' onClick={() => {
+            window.location.href = props.redirect;
+        }}>
             <VscArrowLeft className='w-6 h-6 pr-1' />
             <div className='pl-1 text-md'>Go back</div>
         </button>
