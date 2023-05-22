@@ -1,16 +1,19 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { timerTick } from '@/features/pay-tab/paySlice';
+import { getPaymentDetails } from '@/features/pay-tab/paySlice';
 
 const FinishHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const paymentDetails = useSelector(getPaymentDetails);
 
     useEffect(() => {
         const interval = 3000; // 2 seconds
 
         const timer = setInterval(() => {
-            window.location.href = 'https://www.apple.com/';
+            if ( paymentDetails.redirectUrl != null ) {
+                window.location.href = paymentDetails.redirectUrl;
+            }
         }, interval);
 
         return () => {
