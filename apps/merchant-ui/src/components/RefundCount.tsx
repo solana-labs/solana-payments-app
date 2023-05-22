@@ -2,6 +2,7 @@ import { twMerge } from 'tailwind-merge';
 
 interface Props {
     className?: string;
+    refundCount: number;
 }
 
 export function RefundCount(props: Props) {
@@ -18,7 +19,7 @@ export function RefundCount(props: Props) {
                 props.className
             )}
         >
-            10
+            {props.refundCount}
         </div>
     );
 }

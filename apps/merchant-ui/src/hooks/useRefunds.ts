@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import axios from 'axios';
+import { set } from 'date-fns';
 
 export enum RefundStatus {
     AwaitingAction = 'AwaitingAction',
@@ -51,7 +52,6 @@ function refundIsClosed(refund: Refund): refund is ClosedRefund {
 }
 
 function transformRefund(responseData: any): OpenRefund[] {
-    console.log('in transform', responseData);
     return responseData.refundData.data.map((item: any) => {
         console.log('item: ', item);
         return {
@@ -65,8 +65,9 @@ function transformRefund(responseData: any): OpenRefund[] {
     });
 }
 
-export function useOpenRefunds(): RE.Result<OpenRefund[]> {
+export function useOpenRefunds(): [RE.Result<OpenRefund[]>, number] {
     const [results, setResults] = useState<RE.Result<OpenRefund[]>>(RE.pending());
+    const [refundCount, setRefundCount] = useState<number>(0);
 
     const params: any = {
         page: 1,
@@ -79,12 +80,15 @@ export function useOpenRefunds(): RE.Result<OpenRefund[]> {
             setResults(RE.pending());
             try {
                 const response = await axios.get(API_ENDPOINTS.refundData, { params });
+                console.log('response: ', response);
 
                 if (response.status !== 200) {
                     setResults(RE.failed(new Error(response.data.message || 'Failed to fetch refunds')));
                 } else {
                     const refunds = transformRefund(response.data); // assuming you have transformRefund function
+                    console.log('p[ending refunds', refunds);
                     setResults(RE.ok(refunds));
+                    setRefundCount(response.data.refundData.total);
                 }
             } catch (error) {
                 console.log('error: ', error);
@@ -95,7 +99,7 @@ export function useOpenRefunds(): RE.Result<OpenRefund[]> {
         fetchRefunds();
     }, []);
 
-    return results;
+    return [results, refundCount];
 }
 
 export function useCloseRefunds(): RE.Result<OpenRefund[]> {

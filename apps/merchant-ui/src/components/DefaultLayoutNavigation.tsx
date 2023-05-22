@@ -12,6 +12,7 @@ import { Store } from './icons/Store';
 import { ReceiptLong } from './icons/ReceiptLong';
 import { Flag } from './icons/Flag';
 import { Support } from './icons/Support';
+import { useOpenRefunds } from '@/hooks/useRefunds';
 
 interface Props {
     accountIsActive?: boolean;
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export function DefaultLayoutNavigation(props: Props) {
+    const [_, refundCount] = useOpenRefunds();
+    console.log('refundCount: ', refundCount);
     return (
         <NavigationMenu.Root
             className={twMerge(
@@ -68,7 +71,7 @@ export function DefaultLayoutNavigation(props: Props) {
                             href="/refunds"
                             icon={<Reply />}
                             text="Refunds"
-                            renderInRhs={<RefundCount />}
+                            renderInRhs={<RefundCount refundCount={refundCount} />}
                         />
                         <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant Info" />
                         <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />

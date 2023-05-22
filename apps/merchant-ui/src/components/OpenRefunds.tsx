@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function OpenRefunds(props: Props) {
-    const openRealRefunds = useOpenRefunds();
+    const [openRefunds] = useOpenRefunds();
     const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
@@ -86,7 +86,7 @@ export function OpenRefunds(props: Props) {
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
             {RE.match(
-                openRealRefunds,
+                openRefunds,
                 () => (
                     <div />
                 ),
