@@ -49,7 +49,7 @@ function refundIsClosed(refund: Refund): refund is ClosedRefund {
     return refund.status !== RefundStatus.AwaitingAction;
 }
 
-function transformRefund(responseData: any): OpenRefund[] {
+function transformRefund<T extends Refund>(responseData: any): T[] {
     return responseData.refundData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
@@ -82,7 +82,7 @@ export function useOpenRefunds(): [RE.Result<OpenRefund[]>, number] {
                 if (response.status !== 200) {
                     setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments 200')));
                 } else {
-                    const refunds = transformRefund(response.data); // assuming you have transformRefund function
+                    const refunds = transformRefund<OpenRefund>(response.data); // assuming you have transformRefund function
                     setResults(RE.ok(refunds));
                     setRefundCount(response.data.refundData.total);
                 }
@@ -98,8 +98,8 @@ export function useOpenRefunds(): [RE.Result<OpenRefund[]>, number] {
     return [results, refundCount];
 }
 
-export function useCloseRefunds(): RE.Result<OpenRefund[]> {
-    const [results, setResults] = useState<RE.Result<OpenRefund[]>>(RE.pending());
+export function useCloseRefunds(): RE.Result<ClosedRefund[]> {
+    const [results, setResults] = useState<RE.Result<ClosedRefund[]>>(RE.pending());
 
     const params: any = {
         page: 1,
@@ -116,7 +116,7 @@ export function useCloseRefunds(): RE.Result<OpenRefund[]> {
                 if (responseRejected.status !== 200) {
                     setResults(RE.failed(new Error(responseRejected.data.message || 'Failed to fetch refunds')));
                 } else {
-                    const refundsRejected = transformRefund(responseRejected.data); // assuming you have transformRefund function
+                    const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data); // assuming you have transformRefund function
                     setResults(RE.ok(refundsRejected));
                 }
             } catch (error) {
