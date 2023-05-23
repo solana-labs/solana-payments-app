@@ -51,7 +51,7 @@ export const timerTick = createAsyncThunk<PaymentDetails, void>(
         const paymentId = state.pay.paymentId;
         if (paymentId != null) {
             const response = await axios.get(
-                `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
+                `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}&langague=${navigator.language}`
             );
             return {
                 merchantDisplayName: response.data.merchantDisplayName,
