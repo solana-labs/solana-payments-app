@@ -3,6 +3,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
+    ParsedShopifyWebhookHeaders,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
@@ -14,7 +15,7 @@ Sentry.AWSLambda.init({
 
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        let webhookHeaders: ShopifyWebhookHeaders;
+        let webhookHeaders: ParsedShopifyWebhookHeaders;
 
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
