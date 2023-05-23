@@ -39,6 +39,11 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
+        // At this point we would have verified the webhook. We do not store any customer
+        // data so we can just return a 200. If for some reason, we need to delete PaymentRecords
+        // related to a customer, we would need to start saving more data but i wouldnt think
+        // this is the case.
+
         return {
             statusCode: 200,
             body: JSON.stringify({}),
