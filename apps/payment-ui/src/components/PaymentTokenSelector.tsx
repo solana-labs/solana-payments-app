@@ -14,19 +14,22 @@ const PaymentTokenSelector = () => {
     return (
         <div className="flex flex-row justify-end items-center w-full">
             <div className="pr-2 text-md text-gray-600">Pay with</div>
-            <select
-                value={payingToken}
-                onChange={handlePayingTokenChange}
-                data-theme="mytheme"
-                className="select select-bordered w-fit max-w-xs"
-            >
-                <option disabled selected>
-                    Currency
-                </option>
-                {Object.values(PayingToken).map(token => {
-                    return <option>{token}</option>;
-                })}
-            </select>
+            <div className="tooltip tooltip-left" data-tip="More tokens coming soon!">
+                <select
+                    disabled
+                    value={payingToken}
+                    onChange={handlePayingTokenChange}
+                    data-theme="mytheme"
+                    className="select select-bordered w-fit max-w-xs"
+                >
+                    <option disabled selected>
+                        Currency
+                    </option>
+                    {Object.values(PayingToken).map(token => {
+                        return <option>{token}</option>;
+                    })}
+                </select>
+            </div>
         </div>
     );
 };
