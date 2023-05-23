@@ -135,7 +135,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
         body: JSON.stringify(
             {
                 transaction: transactionString,
-                message: 'gn',
+                message: `Refunding customer ${refundRecord.usdcAmount.toFixed(2)} USDC`,
             },
             null,
             2
