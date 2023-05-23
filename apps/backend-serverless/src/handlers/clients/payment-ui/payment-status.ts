@@ -59,9 +59,14 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         completed: paymentRecord.redirectUrl ? true : false,
     };
 
+    const responseBodyData = {
+        paymentStatus: paymentStatusResponse,
+        error: null,
+    };
+
     return {
         statusCode: 200,
-        body: JSON.stringify(paymentStatusResponse, null, 2),
+        body: JSON.stringify(responseBodyData),
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': true,
