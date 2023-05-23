@@ -6,6 +6,7 @@ import {
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
+import { verifyShopifyWebhook } from '../../../utilities/verify-shopify-webhook-header.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -24,6 +25,18 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
 
         if (webhookHeaders.shopifyTopic != ShopifyWebhookTopic.customerData) {
             return requestErrorResponse(new Error('Invalid topic'));
+        }
+
+        if (event.body == null) {
+            return requestErrorResponse(new Error('Missing body'));
+        }
+
+        const customerRedactBodyString = JSON.stringify(event.body);
+
+        try {
+            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders.hmacSha256);
+        } catch (error) {
+            return requestErrorResponse(error);
         }
 
         return {
