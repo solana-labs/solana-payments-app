@@ -4,8 +4,14 @@ import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, set
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
+import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/FeeDisplay';
+import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDisplay';
+import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
+import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
+import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayAmountTokensDisplay';
 
 export const PayToLabel = () => {
+
     const dispatch = useDispatch<AppDispatch>();
     const payingToken = useSelector(getPayingToken);
     const paymentMethod = useSelector(getPaymentMethod);
@@ -30,10 +36,10 @@ export const PayToLabel = () => {
     return (
         <div className="">
             <div className="flex flex-col justify-between h-44">
-                <div className="text-2xl text-black">{'Pay to ' + paymentDetails.merchantDisplayName}</div>
-                <div className="text-5xl text-black">{paymentDetails.totalAmountFiatDisplay}</div>
+                { paymentDetails == null ? <PayToLoading /> : <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> }
+                { paymentDetails == null ? <PayAmountLoading /> : <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} /> }
                 <div className="flex flex-row w-full justify-between items-center">
-                    <div className="text-black text-lg w-1/3">{paymentDetails.totalAmountUSDCDisplay} </div>
+                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={paymentDetails.totalAmountUSDCDisplay} /> }
                     <div className="w-2/3">
                         <PaymentTokenSelector />
                     </div>
@@ -44,15 +50,11 @@ export const PayToLabel = () => {
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Cart</div>
-                <div className="text-gray-500 w-16 flex justify-center rounded-md h-8 items-center">
-                    {paymentDetails.totalAmountFiatDisplay}
-                </div>
+                { paymentDetails == null ? <CartAmountLoading /> : <CartAmountDisplay displayAmount={paymentDetails.totalAmountFiatDisplay} /> }
             </div>
             <div className="flex flex-row w-full justify-between">
                 <div className="label-text">Transaction Fee</div>
-                <div className="text-black bg-gray-200 w-16 flex justify-center rounded-md h-8 items-center font-bold">
-                    Free
-                </div>
+                { paymentDetails == null ? <FeePriceDisplayLoading /> : <FeePriceDisplay /> }
             </div>
         </div>
     );
