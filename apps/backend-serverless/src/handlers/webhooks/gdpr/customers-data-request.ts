@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     ShopifyWebhookHeaders,
+    ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
@@ -21,7 +22,9 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        if ()
+        if (webhookHeaders.shopifyTopic != ShopifyWebhookTopic.customerData) {
+            return requestErrorResponse(new Error('Invalid topic'));
+        }
 
         return {
             statusCode: 200,

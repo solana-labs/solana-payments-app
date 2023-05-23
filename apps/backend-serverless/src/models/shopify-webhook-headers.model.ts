@@ -1,5 +1,16 @@
 import { object, string, InferType } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
+import { camelCase } from 'lodash';
+
+function toCamelCase(obj: Record<string, string>): Record<string, string> {
+    return Object.keys(obj).reduce((result, key) => {
+        // Here we are removing 'X-Shopify-' from the key and converting the rest to camelCase
+        let newKey = camelCase(key.replace('X-Shopify-', ''));
+        // Replacing the first character with the same character but in lowercase
+        newKey = newKey.charAt(0).toLowerCase() + newKey.slice(1);
+        return { ...result, [newKey]: obj[key] };
+    }, {});
+}
 
 export enum ShopifyWebhookTopic {
     customerData = 'customers/data_request',
