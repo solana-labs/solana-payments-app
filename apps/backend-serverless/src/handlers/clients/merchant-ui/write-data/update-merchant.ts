@@ -39,13 +39,13 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         return requestErrorResponse(new Error('No info to update is provided.'));
     }
 
-    const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+    let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
     if (merchant == null) {
         return requestErrorResponse(new Error('No merchant found.'));
     }
 
-    var merchantUpdateQuery = {};
+    const merchantUpdateQuery = {};
 
     if (merchantUpdateRequest.name != null) {
         merchantUpdateQuery['name'] = merchantUpdateRequest.name;
@@ -64,7 +64,7 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
     }
 
     try {
-        await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
+        merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
     } catch {
         return requestErrorResponse(new Error('Failed to update merchant.'));
     }
