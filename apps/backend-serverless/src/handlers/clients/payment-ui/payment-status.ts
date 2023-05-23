@@ -52,8 +52,11 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
 
     const paymentStatusResponse = {
         merchantDisplayName: merchant.shop,
-        totalAmountFiatDisplay: `${paymentRecord.amount.toFixed(2)} ${paymentRecord.currency}`,
-        totalAmountUSDCDisplay: `${paymentRecord.usdcAmount.toFixed(2)} USDC`,
+        totalAmountFiatDisplay: paymentRecord.amount.toLocaleString(parsedPaymentStatusQuery.language, {
+            style: 'currency',
+            currency: paymentRecord.currency,
+        }),
+        totalAmountUSDCDisplay: `${paymentRecord.usdcAmount} USDC`,
         cancelUrl: paymentRecord.cancelURL,
         redirectUrl: paymentRecord.redirectUrl,
         completed: paymentRecord.redirectUrl ? true : false,

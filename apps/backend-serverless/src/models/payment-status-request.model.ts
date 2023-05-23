@@ -3,6 +3,7 @@ import { parseAndValidate } from '../utilities/yup.utility.js';
 
 export const paymentStatusRequestScheme = object().shape({
     paymentId: string().required(),
+    language: string().required(),
 });
 
 export type PaymentStatusRequest = InferType<typeof paymentStatusRequestScheme>;
