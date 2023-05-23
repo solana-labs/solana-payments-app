@@ -130,6 +130,24 @@ functions:
       - httpApi:
           path: /update-merchant
           method: put
+  customers-data-request:
+    handler: src/handlers/webhooks/gdpr/customers-data-request.customersDataRequest
+    events:
+      - httpApi:
+          path: /customers/data_request
+          method: post
+  customers-redact:
+    handler: src/handlers/webhooks/gdpr/customers-redact.customersRedact
+    events:
+      - httpApi:
+          path: /customers/redact
+          method: post
+  shop-redact:
+    handler: src/handlers/webhooks/gdpr/shop-redact.shopRedact
+    events:
+      - httpApi:
+          path: /shop/redact
+          method: post
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
