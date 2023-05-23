@@ -23,7 +23,6 @@ export const convertAmountAndCurrencyToUsdcSize = async (givenAmount: number, cu
             throw new Error('Failed to get the USDC price in the given currency');
         }
     } catch (error) {
-        console.error(error);
         throw error;
     }
 };
