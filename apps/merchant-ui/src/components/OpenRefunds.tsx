@@ -1,20 +1,86 @@
 import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
+import { useState } from 'react';
 
-import { useMockOpenRefunds } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
+import { useOpenRefunds } from '@/hooks/useRefunds';
+import axios from 'axios';
+import { API_ENDPOINTS } from '@/lib/endpoints';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 interface Props {
     className?: string;
 }
 
 export function OpenRefunds(props: Props) {
-    const openRefunds = useMockOpenRefunds();
+    const [openRefunds] = useOpenRefunds();
+    const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
+    const { connection } = useConnection();
+    const [approvePending, setApprovePending] = useState(false);
+    const [denyPending, setDenyPending] = useState(false);
+
+    const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
+
+    const { visible, setVisible } = useWalletModal();
+
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    // let refundId = 'kX3BebscSDe9j59kVdZDdN8ssW1Eokw6QsQTNgnTNNj';
+
+    // TODO make sure you're interacting with the right refund and not just id 10
+    async function getRefundTransaction(refundId: string) {
+        setApprovePending(true);
+
+        try {
+            if (!connected) {
+                await select(wallets[0].adapter.name);
+                await connect();
+            }
+        } catch (error) {
+            console.log('connect error[', error);
+        }
+
+        try {
+            // console.log('publicKey: ', publicKey.toString());
+            const response = await axios.post(
+                API_ENDPOINTS.refundTransaction + '?refundId=' + refundId,
+                {
+                    account: publicKey ? publicKey.toBase58() : '',
+                },
+                { headers: headers }
+            );
+            const buffer = Buffer.from(response.data.transaction, 'base64');
+            const transaction = Transaction.from(buffer);
+            console.log('returned transaction: ', transaction);
+            await sendTransaction(transaction, connection);
+        } catch (error) {
+            console.log('error: ', error);
+            // setResults(RE.failed(error));
+        }
+        setApprovePending(false);
+    }
+
+    async function rejectRefund(refundId: string) {
+        setDenyPending(true);
+        try {
+            const response = await axios.post(
+                API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
+                { headers: headers }
+            );
+            console.log('reject refund response: ', response);
+        } catch (error) {
+            console.log('reject error: ', error);
+        }
+        setDenyPending(false);
+    }
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
@@ -28,25 +94,23 @@ export function OpenRefunds(props: Props) {
                 ),
                 refunds => (
                     <>
-                        {['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'].map(
-                            (label, i) => (
-                                <div
-                                    className={twMerge(
-                                        'border-b',
-                                        'border-gray-200',
-                                        'font-semibold',
-                                        'py-3',
-                                        'text-slate-600',
-                                        'text-sm',
-                                        i < 4 && 'pr-14'
-                                    )}
-                                    key={label}
-                                >
-                                    {label}
-                                </div>
-                            )
-                        )}
-                        {refunds.map(refund => (
+                        {refundColumns.map((label, i) => (
+                            <div
+                                className={twMerge(
+                                    'border-b',
+                                    'border-gray-200',
+                                    'font-semibold',
+                                    'py-3',
+                                    'text-slate-600',
+                                    'text-sm',
+                                    i < 4 && 'pr-14'
+                                )}
+                                key={label}
+                            >
+                                {label}
+                            </div>
+                        ))}
+                        {refunds.map((refund, i) => (
                             <>
                                 <div
                                     className={twMerge(
@@ -56,10 +120,14 @@ export function OpenRefunds(props: Props) {
                                         'font-semibold',
                                         'h-20',
                                         'items-center',
-                                        'text-black'
+                                        'text-black',
+                                        'text-overflow'
                                     )}
+                                    key={refund.orderId}
                                 >
-                                    {refund.orderId}
+                                    {refund.orderId.length > 10
+                                        ? refund.orderId.substring(0, 10) + '...'
+                                        : refund.orderId}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -154,7 +222,12 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary>Deny Refund</Button.Primary>
+                                                        <Button.Primary
+                                                            onClick={() => rejectRefund(refund.orderId)}
+                                                            pending={denyPending}
+                                                        >
+                                                            Deny Refund
+                                                        </Button.Primary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
@@ -224,7 +297,12 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary>Approve with Wallet</Button.Primary>
+                                                        <Button.Primary
+                                                            onClick={() => getRefundTransaction(refund.orderId)}
+                                                            pending={approvePending}
+                                                        >
+                                                            Approve with Wallet
+                                                        </Button.Primary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>

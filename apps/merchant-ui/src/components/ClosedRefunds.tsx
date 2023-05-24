@@ -1,17 +1,16 @@
 import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 
-import { useMockClosedRefunds, RefundStatus } from '@/hooks/useMockRefunds';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
-import * as Button from './Button';
+import { RefundStatus, useCloseRefunds } from '@/hooks/useRefunds';
 
 interface Props {
     className?: string;
 }
 
 export function ClosedRefunds(props: Props) {
-    const closedRefunds = useMockClosedRefunds();
+    const closedRefunds = useCloseRefunds();
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
@@ -97,7 +96,7 @@ export function ClosedRefunds(props: Props) {
                                     {formatPrice(Math.abs(refund.purchaseAmount))}
                                 </div>
                                 <div className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center')}>
-                                    {refund.status === RefundStatus.RefundApproved ? (
+                                    {refund.status === RefundStatus.RefundApproved && (
                                         <div
                                             className={twMerge(
                                                 'border',
@@ -113,7 +112,8 @@ export function ClosedRefunds(props: Props) {
                                         >
                                             Refunded
                                         </div>
-                                    ) : (
+                                    )}
+                                    {refund.status === RefundStatus.RefundDenied && (
                                         <div
                                             className={twMerge(
                                                 'border',

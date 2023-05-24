@@ -12,6 +12,9 @@ import { Store } from './icons/Store';
 import { ReceiptLong } from './icons/ReceiptLong';
 import { Flag } from './icons/Flag';
 import { Support } from './icons/Support';
+import { useOpenRefunds } from '@/hooks/useRefunds';
+import { useMerchant } from '@/hooks/useMerchant';
+import { isOk } from '@/lib/Result';
 
 interface Props {
     accountIsActive?: boolean;
@@ -19,6 +22,8 @@ interface Props {
 }
 
 export function DefaultLayoutNavigation(props: Props) {
+    const [_, refundCount] = useOpenRefunds();
+    const { merchantInfo } = useMerchant();
     return (
         <NavigationMenu.Root
             className={twMerge(
@@ -59,16 +64,18 @@ export function DefaultLayoutNavigation(props: Props) {
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
                 <div className="mt-16 pb-6 border-b border-slate-200">
-                    <div className="text-black font-semibold text-lg">[shopify id]</div>
+                    <div className="text-black font-semibold text-lg">
+                        {isOk(merchantInfo) ? merchantInfo.data.name : '[shopify id]'}
+                    </div>
                 </div>
                 {props.accountIsActive ? (
                     <div className="mt-6">
-                        <DefaultLayoutNavigationLink href="/transactions" icon={<ReceiptLong />} text="Transactions" />
+                        <DefaultLayoutNavigationLink href="/payments" icon={<ReceiptLong />} text="Payments" />
                         <DefaultLayoutNavigationLink
                             href="/refunds"
                             icon={<Reply />}
                             text="Refunds"
-                            renderInRhs={<RefundCount />}
+                            renderInRhs={<RefundCount refundCount={refundCount} />}
                         />
                         <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant Info" />
                         <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />

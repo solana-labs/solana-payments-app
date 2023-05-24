@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
@@ -10,11 +10,14 @@ import { Input } from './Input';
 import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import { TokenSelect } from './TokenSelect';
+import { PublicKey } from '@solana/web3.js';
+import { updateMerchantAddress, useMerchant } from '@/hooks/useMerchant';
+import { isOk } from '@/lib/Result';
 
 interface FormData {
     name: string;
     logoSrc?: string;
-    walletAddress?: string;
+    walletAddress?: null | PublicKey;
     token: Token;
 }
 
@@ -24,12 +27,46 @@ interface Props {
 
 export function MerchantInfo(props: Props) {
     const [formState, setFormState] = useState<FormData>({
-        name: '[shopify id]',
+        name: '',
         logoSrc: '',
-        walletAddress: '',
+        walletAddress: null,
         token: Token.USDC,
     });
     const [isVerified, setIsVerified] = useState(false);
+    const [pending, setPending] = useState(false);
+
+    const { merchantInfo } = useMerchant();
+
+    useEffect(() => {
+        if (isOk(merchantInfo)) {
+            console.log('merchantInfo', merchantInfo);
+            setFormState({
+                name: merchantInfo.data.name,
+                logoSrc: 'a',
+                walletAddress: merchantInfo.data.paymentAddress
+                    ? new PublicKey(merchantInfo.data.paymentAddress)
+                    : null,
+                token: Token.USDC,
+            });
+        }
+    }, [merchantInfo]);
+
+    function shouldDisable() {
+        const { walletAddress } = formState;
+        let paymentAddress = isOk(merchantInfo) && merchantInfo.data.paymentAddress;
+
+        if (!walletAddress || walletAddress.toString() === paymentAddress) {
+            return true;
+        }
+
+        try {
+            new PublicKey(walletAddress);
+        } catch {
+            return true;
+        }
+
+        return false;
+    }
 
     return (
         <DefaultLayoutContent className={props.className}>
@@ -65,9 +102,10 @@ export function MerchantInfo(props: Props) {
                         onChange={wallet =>
                             setFormState(cur => ({
                                 ...cur,
-                                walletAddress: wallet?.toBase58() || '',
+                                walletAddress: wallet ? new PublicKey(wallet) : null,
                             }))
                         }
+                        defaultValue={formState.walletAddress}
                     />
                 </div>
                 <div className="my-6 border-b border-gray-200 col-span-2" />
@@ -92,7 +130,17 @@ export function MerchantInfo(props: Props) {
             </div>
             <footer className="flex items-center justify-end space-x-3 pt-4">
                 <Button.Secondary>Cancel</Button.Secondary>
-                <Button.Primary>Save</Button.Primary>
+                <Button.Primary
+                    onClick={() => {
+                        setPending(true);
+                        updateMerchantAddress(formState.walletAddress?.toString());
+                        setPending(false);
+                    }}
+                    pending={pending}
+                    disabled={shouldDisable()}
+                >
+                    Save
+                </Button.Primary>
             </footer>
         </DefaultLayoutContent>
     );

@@ -47,7 +47,7 @@ functions:
           path: /refund
           method: post
   # screen-wallet:
-  #   handler: src/handlers/screen-wallet.screenWallet
+  #   handler: src/handlers/testing/screen-wallet.screenWallet
   #   events:
   #     - httpApi:
   #         path: /screen-wallet
