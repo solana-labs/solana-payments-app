@@ -54,8 +54,8 @@ function transformRefund<T extends Refund>(responseData: any): T[] {
         return {
             orderId: item.shopifyOrder,
             status: item.status as RefundStatus,
-            purchaseAmount: parseFloat(item.amount),
-            requestedRefundAmount: parseFloat(item.amount),
+            purchaseAmount: parseFloat(item.refundAmount.substring(0, item.refundAmount.indexOf(' '))),
+            requestedRefundAmount: parseFloat(item.paymentAmount.substring(0, item.paymentAmount.indexOf(' '))),
             requestedOn: 1681336764686,
             refundTo: '', // This field needs to be updated based on actual data
         };

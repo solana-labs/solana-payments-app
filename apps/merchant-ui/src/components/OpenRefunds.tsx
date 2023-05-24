@@ -33,18 +33,19 @@ export function OpenRefunds(props: Props) {
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
     };
-    let refundId = 'kX3BebscSDe9j59kVdZDdN8ssW1Eokw6QsQTNgnTNNj';
+    // let refundId = 'kX3BebscSDe9j59kVdZDdN8ssW1Eokw6QsQTNgnTNNj';
 
     // TODO make sure you're interacting with the right refund and not just id 10
-    async function getRefundTransaction() {
+    async function getRefundTransaction(refundId: string) {
         setApprovePending(true);
-        console.log('in get refund tx');
-        console.log('wallet modal', visible, wallets, connected);
 
-        if (!connected) {
-            console.log('not connected');
-            await select(wallets[0].adapter.name);
-            await connect();
+        try {
+            if (!connected) {
+                await select(wallets[0].adapter.name);
+                await connect();
+            }
+        } catch (error) {
+            console.log('connect error[', error);
         }
 
         try {
@@ -67,16 +68,16 @@ export function OpenRefunds(props: Props) {
         setApprovePending(false);
     }
 
-    async function rejectRefund() {
+    async function rejectRefund(refundId: string) {
         setDenyPending(true);
         try {
             const response = await axios.post(
                 API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
                 { headers: headers }
             );
-            console.log('response: ', response);
+            console.log('reject refund response: ', response);
         } catch (error) {
-            console.log('error: ', error);
+            console.log('reject error: ', error);
         }
         setDenyPending(false);
     }
@@ -119,11 +120,14 @@ export function OpenRefunds(props: Props) {
                                         'font-semibold',
                                         'h-20',
                                         'items-center',
-                                        'text-black'
+                                        'text-black',
+                                        'text-overflow'
                                     )}
                                     key={refund.orderId}
                                 >
-                                    {refund.orderId}
+                                    {refund.orderId.length > 10
+                                        ? refund.orderId.substring(0, 10) + '...'
+                                        : refund.orderId}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -218,7 +222,10 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary onClick={rejectRefund} pending={denyPending}>
+                                                        <Button.Primary
+                                                            onClick={() => rejectRefund(refund.orderId)}
+                                                            pending={denyPending}
+                                                        >
                                                             Deny Refund
                                                         </Button.Primary>
                                                     </div>
@@ -291,7 +298,7 @@ export function OpenRefunds(props: Props) {
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
                                                         <Button.Primary
-                                                            onClick={getRefundTransaction}
+                                                            onClick={() => getRefundTransaction(refund.orderId)}
                                                             pending={approvePending}
                                                         >
                                                             Approve with Wallet
