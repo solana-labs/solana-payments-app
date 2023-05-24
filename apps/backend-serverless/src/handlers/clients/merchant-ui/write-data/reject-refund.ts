@@ -51,7 +51,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
 
     try {
         refundRecord = await refundRecordService.getRefundRecord({
-            id: rejectRefundRequest.refundId,
+            shopId: rejectRefundRequest.refundId,
         });
     } catch (error) {
         return requestErrorResponse(error);

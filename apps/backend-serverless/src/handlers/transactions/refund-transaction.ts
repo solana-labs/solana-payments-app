@@ -62,7 +62,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
 
     try {
         refundRecord = await refundRecordService.getRefundRecord({
-            id: refundRequest.refundId,
+            shopId: refundRequest.refundId,
         });
     } catch (error) {
         return requestErrorResponse(error);
