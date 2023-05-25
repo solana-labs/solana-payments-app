@@ -24,14 +24,13 @@ interface Payment {
 }
 
 function transformPayment(responseData: any): Payment[] {
-    console.log('responseData: ', responseData);
     return responseData.paymentData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
             status: item.status as PaymentStatus,
             amount: parseFloat(item.amount),
-            requestedAt: new Date(item.requestedAt).getTime() / 1000,
-            ...(item.completedAt && { completedAt: new Date(item.completedAt).getTime() / 1000 }),
+            requestedAt: new Date(item.requestedAt).getTime(),
+            ...(item.completedAt && { completedAt: new Date(item.completedAt).getTime() }),
             // refundTo: '', // This field needs to be updated based on actual data
         };
     });

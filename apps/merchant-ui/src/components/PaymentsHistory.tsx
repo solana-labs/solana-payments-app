@@ -77,7 +77,9 @@ export function PaymentsHistory(props: Props) {
                             orderId: id => <div className="font-bold text-sm text-slate-600">#{id}</div>,
                             status: status => <PaymentsHistoryStatus className="mr-10" status={status} />,
                             requestedAt: requestedAt => (
-                                <div className="text-sm text-slate-600 pr-11">{format(requestedAt, 'eee h:mmaaa')}</div>
+                                <div className="text-sm text-slate-600 pr-11">
+                                    {format(requestedAt, 'MMM d, h:mmaaaa')}
+                                </div>
                             ),
                         }}
                     </PaginatedTable>
