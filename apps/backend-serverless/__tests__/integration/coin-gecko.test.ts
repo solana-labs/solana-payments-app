@@ -13,14 +13,12 @@ describe('integration testing coin gecko api', () => {
         // const result = await convertAmountAndCurrencyToUsdcSize(10, 'USD');
         // expect(result).toBeCloseTo(10, 2);
         // commented out because it's not working, but it's not a big deal
-
         // const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
         // const txSig = '5Yt9vFGDwXWMPqgXkhocNB77F7FasrHJrmEtL1UoU9X3G7Lx5LC8yCaxfqJ7TZ4wrHfHrfYPBcjvkGfWwoLNzE8A';
         // const response = await connection.getTransaction(txSig, { encoding: 'base58' });
         // console.log(response);
-
-        const txId = '5Yt9vFGDwXWMPqgXkhocNB77F7FasrHJrmEtL1UoU9X3G7Lx5LC8yCaxfqJ7TZ4wrHfHrfYPBcjvkGfWwoLNzE8A';
-        const tx = await fetchTransaction(txId);
-        console.log(tx);
+        // const txId = '5Yt9vFGDwXWMPqgXkhocNB77F7FasrHJrmEtL1UoU9X3G7Lx5LC8yCaxfqJ7TZ4wrHfHrfYPBcjvkGfWwoLNzE8A';
+        // const tx = await fetchTransaction(txId);
+        // console.log(tx);
     });
 });
