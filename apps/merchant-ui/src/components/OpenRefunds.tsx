@@ -28,14 +28,10 @@ export function OpenRefunds(props: Props) {
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
-    const { visible, setVisible } = useWalletModal();
-
     const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
     };
-    // let refundId = 'kX3BebscSDe9j59kVdZDdN8ssW1Eokw6QsQTNgnTNNj';
 
-    // TODO make sure you're interacting with the right refund and not just id 10
     async function getRefundTransaction(refundId: string) {
         setApprovePending(true);
 
@@ -125,8 +121,8 @@ export function OpenRefunds(props: Props) {
                                     )}
                                     key={refund.orderId}
                                 >
-                                    {refund.orderId.length > 10
-                                        ? refund.orderId.substring(0, 10) + '...'
+                                    {refund.orderId.length > 6
+                                        ? refund.orderId.substring(0, 6) + '...'
                                         : refund.orderId}
                                 </div>
                                 <div
@@ -139,7 +135,7 @@ export function OpenRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {format(refund.requestedOn, 'MMM d, h:mmaaaaa')}
+                                    {format(refund.requestedAt, 'MMM d, h:mmaaaaa')}
                                 </div>
                                 <div
                                     className={twMerge(

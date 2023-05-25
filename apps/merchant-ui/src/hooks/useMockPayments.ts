@@ -7,7 +7,7 @@ enum PaymentStatus {
     Completed,
     Pending,
     RefundRequested,
-    RefundDenied,
+    Rejected,
     Refunded,
 }
 
@@ -26,7 +26,7 @@ function mockPaymentStatus(index: number) {
         PaymentStatus.Completed,
         PaymentStatus.Pending,
         PaymentStatus.RefundRequested,
-        PaymentStatus.RefundDenied,
+        PaymentStatus.Rejected,
         PaymentStatus.Refunded,
     ][index % 6];
 }

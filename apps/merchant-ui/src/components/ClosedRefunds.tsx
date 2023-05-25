@@ -55,7 +55,9 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.orderId}
+                                    {refund.orderId.length > 6
+                                        ? refund.orderId.substring(0, 6) + '...'
+                                        : refund.orderId}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -67,7 +69,7 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {format(refund.requestedOn, 'MMM d, h:mmaaaaa')}
+                                    {format(refund.requestedAt, 'MMM d, h:mmaaaaa')}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -96,7 +98,7 @@ export function ClosedRefunds(props: Props) {
                                     {formatPrice(Math.abs(refund.purchaseAmount))}
                                 </div>
                                 <div className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center')}>
-                                    {refund.status === RefundStatus.RefundApproved && (
+                                    {refund.status === RefundStatus.Paid && (
                                         <div
                                             className={twMerge(
                                                 'border',
@@ -113,7 +115,7 @@ export function ClosedRefunds(props: Props) {
                                             Refunded
                                         </div>
                                     )}
-                                    {refund.status === RefundStatus.RefundDenied && (
+                                    {refund.status === RefundStatus.Rejected && (
                                         <div
                                             className={twMerge(
                                                 'border',

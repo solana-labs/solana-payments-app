@@ -4,9 +4,9 @@ import { API_ENDPOINTS } from '@/lib/endpoints';
 import axios from 'axios';
 
 export enum RefundStatus {
-    AwaitingAction = 'AwaitingAction',
-    RefundApproved = 'RefundApproved',
-    RefundDenied = 'RefundDenied',
+    Pending = 'pending',
+    Paid = 'paid',
+    Rejected = 'rejected',
 }
 
 interface ServerRefund {
@@ -28,35 +28,37 @@ export interface Refund {
     status: RefundStatus;
     purchaseAmount: number;
     requestedRefundAmount: number;
-    requestedOn: number; //date
-
+    requestedAt: number; //date
+    completedAt: number; //date
     refundTo: string;
 }
 
 export interface OpenRefund extends Refund {
-    status: RefundStatus.AwaitingAction;
+    status: RefundStatus.Pending;
 }
 
 export interface ClosedRefund extends Refund {
-    status: RefundStatus.RefundApproved | RefundStatus.RefundDenied;
+    status: RefundStatus.Paid | RefundStatus.Rejected;
 }
 
 function refundIsOpen(refund: Refund): refund is OpenRefund {
-    return refund.status === RefundStatus.AwaitingAction;
+    return refund.status === RefundStatus.Pending;
 }
 
 function refundIsClosed(refund: Refund): refund is ClosedRefund {
-    return refund.status !== RefundStatus.AwaitingAction;
+    return refund.status !== RefundStatus.Pending;
 }
 
 function transformRefund<T extends Refund>(responseData: any): T[] {
+    console.log('responseData: ', responseData, responseData.refundData.data[0].status);
     return responseData.refundData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
             status: item.status as RefundStatus,
             purchaseAmount: parseFloat(item.refundAmount.substring(0, item.refundAmount.indexOf(' '))),
             requestedRefundAmount: parseFloat(item.paymentAmount.substring(0, item.paymentAmount.indexOf(' '))),
-            requestedOn: 1681336764686,
+            requestedAt: new Date(item.requestedAt).getTime(),
+            ...(item.completedAt && { completedAt: new Date(item.completedAt).getTime() }),
             refundTo: '', // This field needs to be updated based on actual data
         };
     });
@@ -77,7 +79,6 @@ export function useOpenRefunds(): [RE.Result<OpenRefund[]>, number] {
             setResults(RE.pending());
             try {
                 const response = await axios.get(API_ENDPOINTS.refundData, { params });
-                console.log('response: ', response);
 
                 if (response.status !== 200) {
                     setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments 200')));
@@ -127,8 +128,6 @@ export function useCloseRefunds(): RE.Result<ClosedRefund[]> {
 
         fetchRefunds();
     }, []);
-
-    console.log('results: ', results);
 
     return results;
 }
