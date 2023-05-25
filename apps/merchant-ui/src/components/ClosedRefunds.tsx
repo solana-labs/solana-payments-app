@@ -98,7 +98,7 @@ export function ClosedRefunds(props: Props) {
                                     {formatPrice(Math.abs(refund.purchaseAmount))}
                                 </div>
                                 <div className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center')}>
-                                    {refund.status === RefundStatus.Paid && (
+                                    {refund.status === RefundStatus.RefundApproved && (
                                         <div
                                             className={twMerge(
                                                 'border',
@@ -115,7 +115,7 @@ export function ClosedRefunds(props: Props) {
                                             Refunded
                                         </div>
                                     )}
-                                    {refund.status === RefundStatus.Rejected && (
+                                    {refund.status === RefundStatus.RefundDenied && (
                                         <div
                                             className={twMerge(
                                                 'border',
