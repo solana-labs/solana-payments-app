@@ -39,7 +39,7 @@ export const verifyTransferInstructionIsCorrect = (transaction: web3.Transaction
     const paymentRecordUsdcSize = paymentRecord.usdcAmount;
     const paymentRecordUsdcQuantity = paymentRecordUsdcSize * 10 ** 6;
 
-    if (Number(decodedTransferQuantity) === paymentRecordUsdcQuantity) {
+    if (Number(decodedTransferQuantity) !== paymentRecordUsdcQuantity) {
         throw new Error('The token transfer instruction was not for the correct amount of USDC');
     }
 };
