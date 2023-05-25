@@ -51,12 +51,10 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             pageSize: paymentDataRequestParameters.pageSize,
         };
 
-        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
         const paymentResponse = await createPaymentResponse(merchantAuthToken, pagination, prisma);
 
         const responseBodyData = {
             paymentData: paymentResponse,
-            general: generalResponse,
         };
 
         return {
