@@ -65,7 +65,12 @@ export function usePayments(page: number): RE.Result<{
                 } else {
                     console.log('response.data: ', response.data);
                     const payments = transformPayment(response.data); // assuming you have transformRefund function
-                    setResults(RE.ok({ payments: payments, totalPages: response.data.general.refundBadges }));
+                    setResults(
+                        RE.ok({
+                            payments: payments,
+                            totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
+                        })
+                    );
                 }
             } catch (error) {
                 console.log('error: ', error);
