@@ -1,14 +1,17 @@
 import { PaymentRecord } from '@prisma/client';
-import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { web3 } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 
-const validatePaymentTransactionWithPaymentRecord = (
+export const validatePaymentTransactionWithPaymentRecord = (
     paymentRecord: PaymentRecord,
     transaction: web3.Transaction,
     weShouldHaveSigned: boolean
 ) => {
+    if (weShouldHaveSigned) {
+        verifyAppCreatedTheTransaction(transaction);
+    }
+
     verifyTransferInstructionIsCorrect(transaction, paymentRecord);
 };
 
@@ -43,3 +46,19 @@ export const verifyTransferInstructionIsCorrect = (transaction: web3.Transaction
         throw new Error('The token transfer instruction was not for the correct amount of USDC');
     }
 };
+
+const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
+    // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
+
+    const feePayer = transaction.feePayer;
+
+    if (feePayer == null) {
+        throw new Error('The transaction did not have a fee payer');
+    }
+
+    if (!historicalFeePays.includes(feePayer.toBase58())) {
+        throw new Error('The transaction was not created by the app');
+    }
+};
+
+const historicalFeePays = ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'];
