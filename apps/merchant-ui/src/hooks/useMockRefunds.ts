@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import * as RE from '@/lib/Result';
 
 export enum RefundStatus {
-    AwaitingAction,
-    RefundApproved,
-    RefundDenied,
+    Pending,
+    Paid,
+    Rejected,
 }
 
 export interface Refund {
@@ -17,23 +17,23 @@ export interface Refund {
 }
 
 export interface OpenRefund extends Refund {
-    status: RefundStatus.AwaitingAction;
+    status: RefundStatus.Pending;
 }
 
 export interface ClosedRefund extends Refund {
-    status: RefundStatus.RefundApproved | RefundStatus.RefundDenied;
+    status: RefundStatus.Paid | RefundStatus.Rejected;
 }
 
 function refundIsOpen(refund: Refund): refund is OpenRefund {
-    return refund.status === RefundStatus.AwaitingAction;
+    return refund.status === RefundStatus.Pending;
 }
 
 function refundIsClosed(refund: Refund): refund is ClosedRefund {
-    return refund.status !== RefundStatus.AwaitingAction;
+    return refund.status !== RefundStatus.Pending;
 }
 
 function mockRefundStatus(index: number) {
-    return [RefundStatus.AwaitingAction, RefundStatus.RefundApproved, RefundStatus.RefundDenied][index % 3];
+    return [RefundStatus.Pending, RefundStatus.Paid, RefundStatus.Rejected][index % 3];
 }
 
 const MOCK_REFUNDS = Array.from({ length: 8 }).map((_, i) => ({
