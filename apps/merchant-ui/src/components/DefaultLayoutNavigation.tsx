@@ -14,7 +14,8 @@ import { Flag } from './icons/Flag';
 import { Support } from './icons/Support';
 import { useOpenRefunds } from '@/hooks/useRefunds';
 import { useMerchant } from '@/hooks/useMerchant';
-import { isOk } from '@/lib/Result';
+import { isOk, isPending } from '@/lib/Result';
+import { LoadingDots } from '@/components/LoadingDots';
 
 interface Props {
     accountIsActive?: boolean;
@@ -64,27 +65,42 @@ export function DefaultLayoutNavigation(props: Props) {
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
                 <div className="mt-16 pb-6 border-b border-slate-200">
-                    <div className="text-black font-semibold text-lg">
-                        {isOk(merchantInfo) ? merchantInfo.data.name : '[shopify id]'}
-                    </div>
+                    {isOk(merchantInfo) ? (
+                        <div className="text-black font-semibold text-lg">{merchantInfo.data.name} </div>
+                    ) : (
+                        <LoadingDots />
+                    )}
                 </div>
-                {props.accountIsActive ? (
+                {isPending(merchantInfo) && (
                     <div className="mt-6">
-                        <DefaultLayoutNavigationLink href="/payments" icon={<ReceiptLong />} text="Payments" />
-                        <DefaultLayoutNavigationLink
-                            href="/refunds"
-                            icon={<Reply />}
-                            text="Refunds"
-                            renderInRhs={<RefundCount refundCount={refundCount} />}
-                        />
-                        <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant Info" />
-                        <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
+                        <LoadingDots />
                     </div>
-                ) : (
-                    <div className="mt-6">
-                        <DefaultLayoutNavigationLink href="/getting-started" icon={<Flag />} text="Getting Started" />
-                        <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
-                    </div>
+                )}
+                {isOk(merchantInfo) && (
+                    <>
+                        {merchantInfo.data.completed ? (
+                            <div className="mt-6">
+                                <DefaultLayoutNavigationLink href="/payments" icon={<ReceiptLong />} text="Payments" />
+                                <DefaultLayoutNavigationLink
+                                    href="/refunds"
+                                    icon={<Reply />}
+                                    text="Refunds"
+                                    renderInRhs={<RefundCount refundCount={refundCount} />}
+                                />
+                                <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant Info" />
+                                <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
+                            </div>
+                        ) : (
+                            <div className="mt-6">
+                                <DefaultLayoutNavigationLink
+                                    href="/getting-started"
+                                    icon={<Flag />}
+                                    text="Getting Started"
+                                />
+                                <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
+                            </div>
+                        )}
+                    </>
                 )}
             </NavigationMenu.List>
             <NavigationMenu.List>
