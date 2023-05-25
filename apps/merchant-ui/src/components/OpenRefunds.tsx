@@ -135,7 +135,7 @@ export function OpenRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {format(refund.requestedAt, 'MMM d, h:mmaaaaa')}
+                                    {format(refund.requestedAt, 'MMM d, h:mmaa')}
                                 </div>
                                 <div
                                     className={twMerge(

@@ -78,7 +78,7 @@ export function PaymentsHistory(props: Props) {
                             status: status => <PaymentsHistoryStatus className="mr-10" status={status} />,
                             requestedAt: requestedAt => (
                                 <div className="text-sm text-slate-600 pr-11">
-                                    {format(requestedAt, 'MMM d, h:mmaaaa')}
+                                    {format(requestedAt, 'MMM d, h:mmaa')}
                                 </div>
                             ),
                         }}
