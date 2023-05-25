@@ -21,3 +21,5 @@ So for all of these things, it's important that i'm not just relying on a single
 Ok i think i could make an interface that defines a set of actions and then i could make classes that conform to that interface and accept the respective types as input either helius or web and then responds as needed
 
 I also really want to be able to verify this stuff before i respond to a transaction request. I'm gonna switch gears there. Might take an extra day or so but it's probably worth it at the end.
+
+I could probably just start working out of the test file and seeing if i can validate there.
