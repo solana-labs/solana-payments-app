@@ -29,7 +29,7 @@ export function OpenRefunds(props: Props) {
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
     };
 
     async function getRefundTransaction(refundId: string) {

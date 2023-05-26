@@ -71,8 +71,24 @@ describe('unit testing shopify install request utilities', () => {
         }).not.toThrow();
     });
 
-    // only including this to have a test here, the above is causing failures, need to figure that out but i want to get this in
-    it('fake test', () => {
-        expect(true).toBe(true);
+    it('testing verifyAndParseShopifyInstallRequest throwing', () => {
+        const mockShopifySecret = 'mock-shopify-secret-key';
+        const incorrectShopifySecret = 'incorrect-shopify-secret-key';
+        process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
+
+        const installParams = {
+            shop: 'https://some-shop.myshopify.com',
+            host: 'some-host',
+            timestamp: 'some-timestamp',
+        };
+
+        const stringifiedParams = stringifyParams(installParams);
+        const hmac = crypto.HmacSHA256(stringifiedParams, incorrectShopifySecret);
+
+        installParams['hmac'] = hmac.toString();
+
+        expect(() => {
+            verifyAndParseShopifyInstallRequest(installParams);
+        }).toThrow();
     });
 });
