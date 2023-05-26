@@ -25,6 +25,7 @@ export function OpenRefunds(props: Props) {
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
     const [denyPending, setDenyPending] = useState(false);
+    const [openApprove, setOpenApprove] = useState<string | null>(null);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
@@ -32,6 +33,8 @@ export function OpenRefunds(props: Props) {
         'Content-Type': 'application/x-www-form-urlencoded',
     };
 
+    // TODO make sure you're interacting with the right refund and not just id 10
+    // currently trying to poll refund status, then close the modal
     async function getRefundTransaction(refundId: string) {
         setApprovePending(true);
 
@@ -53,14 +56,27 @@ export function OpenRefunds(props: Props) {
                 },
                 { headers: headers }
             );
+            // console.log('got back get refund tx response');
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
-            console.log('returned transaction: ', transaction);
-            await sendTransaction(transaction, connection);
+
+            // await sendTransaction(transaction, connection);
+
+            console.log('in whiile');
+            while (true) {
+                const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
+                    headers: headers,
+                });
+                console.log('status', status, status.data);
+                // sleep 2 seconds
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
         } catch (error) {
             console.log('error: ', error);
             // setResults(RE.failed(error));
         }
+
+        setOpenApprove(null);
         setApprovePending(false);
     }
 
@@ -71,7 +87,6 @@ export function OpenRefunds(props: Props) {
                 API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
                 { headers: headers }
             );
-            console.log('reject refund response: ', response);
         } catch (error) {
             console.log('reject error: ', error);
         }
@@ -218,21 +233,26 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary
-                                                            onClick={() => rejectRefund(refund.orderId)}
-                                                            pending={denyPending}
-                                                        >
-                                                            Deny Refund
-                                                        </Button.Primary>
+                                                        <Dialog.Close>
+                                                            <Button.Primary
+                                                                onClick={() => rejectRefund(refund.orderId)}
+                                                                pending={denyPending}
+                                                            >
+                                                                Deny Refund
+                                                            </Button.Primary>
+                                                        </Dialog.Close>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
                                         </Dialog.Portal>
                                     </Dialog.Root>
-                                    <Dialog.Root>
-                                        <Dialog.Trigger asChild>
-                                            <Button.Primary>Approve</Button.Primary>
-                                        </Dialog.Trigger>
+                                    <Dialog.Root
+                                        open={openApprove === refund.orderId}
+                                        onOpenChange={() => setOpenApprove(null)}
+                                    >
+                                        <Button.Primary onClick={() => setOpenApprove(refund.orderId)}>
+                                            Approve
+                                        </Button.Primary>
                                         <Dialog.Portal>
                                             <Dialog.Overlay
                                                 className={twMerge(
