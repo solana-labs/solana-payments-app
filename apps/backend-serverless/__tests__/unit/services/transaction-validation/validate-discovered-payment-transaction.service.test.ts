@@ -1,4 +1,7 @@
-import { verifyTransferInstructionIsCorrect } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import {
+    verifyTransferInstructionIsCorrect,
+    verifyPaymentTransactionWithPaymentRecord,
+} from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import { web3 } from '@project-serum/anchor';
@@ -154,6 +157,52 @@ describe('unit testing validating discovered payment transactions', () => {
         // Verify the transaction
         expect(() => {
             verifyTransferInstructionIsCorrect(mockTransaction, mockPaymentRecord);
+        }).toThrow();
+    });
+
+    it('valid transaction, testing verifyPaymentTransactionWithPaymentRecord', async () => {
+        // Set up the mock record
+        const mockPaymentRecord: PaymentRecord = {
+            id: 'mock-id',
+            status: PaymentRecordStatus.pending,
+            shopId: 'mock-shop-id',
+            shopGid: 'mock-shop-gid',
+            shopGroup: 'mock-shop-group',
+            test: false,
+            amount: 10,
+            currency: 'USD',
+            usdcAmount: 10,
+            cancelURL: 'mock-cancel-url',
+            merchantId: 'mock-merchant-id',
+            transactionSignature: 'mock-transaction-signature',
+            redirectUrl: 'mock-redirect-url',
+            requestedAt: new Date(),
+            completedAt: new Date(),
+        };
+
+        // Set up the transaction
+        const feePayer = new web3.PublicKey('9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T');
+        const aliceKeypair = web3.Keypair.generate();
+        const mintKeypair = web3.Keypair.generate();
+        const aliceAta = await findAssociatedTokenAddress(aliceKeypair.publicKey, mintKeypair.publicKey);
+        const bobKeypair = web3.Keypair.generate();
+        const bobAta = await findAssociatedTokenAddress(bobKeypair.publicKey, mintKeypair.publicKey);
+        const transferQuantity = 10;
+        const transferCheckedInstruction = createTransferCheckedInstruction(
+            aliceAta,
+            mintKeypair.publicKey,
+            bobAta,
+            aliceKeypair.publicKey,
+            transferQuantity,
+            6,
+            [],
+            TOKEN_PROGRAM_ID
+        );
+        const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
+
+        // Verify the transaction
+        expect(() => {
+            verifyPaymentTransactionWithPaymentRecord(mockPaymentRecord, mockTransaction, false);
         }).toThrow();
     });
 });
