@@ -66,14 +66,14 @@ cp .sample.env .env
 required
 
 ```
-SHOPIFY_SECRET_KEY=< this is the secret key from your shopify developer portal >
-SHOPIFY_CLIENT_ID=< this is the client id from your shopify developer portal >
-BASE_URL=< this is the base url for this server where it will be deployed >
-MERCHANT_UI_URL=< this is the base url for where your merchant ui will be deployed >
-PAYMENT_UI_URL=< this is the base url for where your payment ui will be deployed >
-DATABASE_URL=< this is the prisma formatted url for your database. see prisma docs for format or .sample.env for example >
-TRANSACTION_REQUEST_SERVER_URL=< this is the base url for where your transaction request server is deployed >
-TRM_API_KEY=< this is the API key given to you by TRM >
+SHOPIFY_SECRET_KEY=<this is the secret key from your shopify developer portal>
+SHOPIFY_CLIENT_ID=<this is the client id from your shopify developer portal>
+BASE_URL=<this is the base url for this server where it will be deployed>
+MERCHANT_UI_URL=this is the base url for where your merchant ui will be deployed>
+PAYMENT_UI_URL=<this is the base url for where your payment ui will be deployed>
+DATABASE_URL=<this is the prisma formatted url for your database. see prisma docs for format or .sample.env for example>
+TRANSACTION_REQUEST_SERVER_URL=<this is the base url for where your transaction request server is deployed>
+TRM_API_KEY=<this is the API key given to you by TRM>
 AWS_BUCKET_OBJECT_NAME=<the name of the file containing your gas keypair>
 AWS_BUCKET_NAME=<the name of the bucket containing your keypairs>
 AWS_BUCKET_REGION=<the name of the region for your bucket>
