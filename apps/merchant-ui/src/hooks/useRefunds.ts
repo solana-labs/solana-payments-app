@@ -4,9 +4,9 @@ import { API_ENDPOINTS } from '@/lib/endpoints';
 import axios from 'axios';
 
 export enum RefundStatus {
-    AwaitingAction = 'AwaitingAction',
-    RefundApproved = 'RefundApproved',
-    RefundDenied = 'RefundDenied',
+    Pending = 'pending',
+    Paid = 'paid',
+    Rejected = 'rejected',
 }
 
 interface ServerRefund {
@@ -34,19 +34,19 @@ export interface Refund {
 }
 
 export interface OpenRefund extends Refund {
-    status: RefundStatus.AwaitingAction;
+    status: RefundStatus.Pending;
 }
 
 export interface ClosedRefund extends Refund {
-    status: RefundStatus.RefundApproved | RefundStatus.RefundDenied;
+    status: RefundStatus.Paid | RefundStatus.Rejected;
 }
 
 function refundIsOpen(refund: Refund): refund is OpenRefund {
-    return refund.status === RefundStatus.AwaitingAction;
+    return refund.status === RefundStatus.Pending;
 }
 
 function refundIsClosed(refund: Refund): refund is ClosedRefund {
-    return refund.status !== RefundStatus.AwaitingAction;
+    return refund.status !== RefundStatus.Pending;
 }
 
 function transformRefund<T extends Refund>(responseData: any): T[] {
