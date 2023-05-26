@@ -9,7 +9,6 @@ export interface PaymentDataResponse {
 }
 
 export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: PaymentRecord): PaymentDataResponse => {
-    console.log('date', paymentRecord.requestedAt, paymentRecord.completedAt);
     return {
         shopifyOrder: paymentRecord.shopId,
         requestedAt: paymentRecord.requestedAt,
