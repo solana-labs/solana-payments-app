@@ -48,7 +48,7 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
                     await processDiscoveredPaymentTransaction(transactionRecord, transaction, prisma);
                     break;
                 case TransactionType.refund:
-                    await processDiscoveredRefundTransaction(transactionRecord, heliusTransaction, prisma);
+                    await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
                     break;
             }
         } catch (error) {

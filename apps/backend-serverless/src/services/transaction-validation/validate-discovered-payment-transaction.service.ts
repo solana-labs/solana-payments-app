@@ -47,7 +47,7 @@ export const verifyTransferInstructionIsCorrect = (transaction: web3.Transaction
     }
 };
 
-const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
+export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
     // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
 
     const feePayer = transaction.feePayer;
@@ -61,5 +61,22 @@ const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
     }
 };
 
+export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
+    const instructions = transaction.instructions;
+    const singleUseInstruction = instructions[0];
+
+    // Check the instruction is a system program account creation
+
+    if (singleUseInstruction.programId.toBase58() != web3.SystemProgram.programId.toBase58()) {
+        throw new Error('The single use instruction was not a system program instruction.');
+    }
+
+    const systemInstructionType = web3.SystemInstruction.decodeInstructionType(singleUseInstruction);
+
+    if (systemInstructionType != 'Create') {
+        throw new Error('The single use instruction was not a system program account creation.');
+    }
+};
+
 // TODO: Is there a better way to do this?
-const historicalFeePays = ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'];
+export const historicalFeePays = ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'];
