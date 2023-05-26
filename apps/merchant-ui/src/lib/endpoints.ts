@@ -1,5 +1,3 @@
-// const ID = 'boubt4ej72';
-// export const API_BASE_URL = `https://${ID}.execute-api.us-east-1.amazonaws.com`;
 export const API_BASE_URL = 'https://boubt4ej71.execute-api.us-east-1.amazonaws.com';
 
 export const API_ENDPOINTS = {
