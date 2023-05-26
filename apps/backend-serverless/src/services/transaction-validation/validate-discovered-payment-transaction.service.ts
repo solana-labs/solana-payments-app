@@ -3,7 +3,7 @@ import { USDC_MINT } from '../../configs/tokens.config.js';
 import { web3 } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 
-export const validatePaymentTransactionWithPaymentRecord = (
+export const verifyPaymentTransactionWithPaymentRecord = (
     paymentRecord: PaymentRecord,
     transaction: web3.Transaction,
     weShouldHaveSigned: boolean
@@ -61,4 +61,5 @@ const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
     }
 };
 
+// TODO: Is there a better way to do this?
 const historicalFeePays = ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'];

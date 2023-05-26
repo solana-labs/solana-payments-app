@@ -8,6 +8,8 @@ import { PrismaClient, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
+import { web3 } from '@project-serum/anchor';
+import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 
 // TODO: MASSIVE TASK
 // This callback returns an array of transactions, if any of these dont work or throw, we need to make sure we
@@ -29,22 +31,24 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
         return requestErrorResponse(error);
     }
 
-    for (const transaction of heliusEnhancedTransactions) {
+    for (const heliusTransaction of heliusEnhancedTransactions) {
         try {
             const transactionRecord = await transactionRecordService.getTransactionRecord({
-                signature: transaction.signature,
+                signature: heliusTransaction.signature,
             });
 
             if (transactionRecord == null) {
                 throw new Error('Transaction not found.');
             }
 
+            const transaction = await fetchTransaction(transactionRecord.signature);
+
             switch (transactionRecord.type) {
                 case TransactionType.payment:
                     await processDiscoveredPaymentTransaction(transactionRecord, transaction, prisma);
                     break;
                 case TransactionType.refund:
-                    await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
+                    await processDiscoveredRefundTransaction(transactionRecord, heliusTransaction, prisma);
                     break;
             }
         } catch (error) {
