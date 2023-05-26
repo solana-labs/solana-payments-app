@@ -1,6 +1,7 @@
 import {
     verifyTransferInstructionIsCorrect,
     verifyPaymentTransactionWithPaymentRecord,
+    verifySingleUseInstruction,
 } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
@@ -158,6 +159,25 @@ describe('unit testing validating discovered payment transactions', () => {
         expect(() => {
             verifyTransferInstructionIsCorrect(mockTransaction, mockPaymentRecord);
         }).toThrow();
+    });
+
+    it('valid transaction transfer, testing verifySingleUseInstruction', async () => {
+        // Set up the transaction
+        const aliceKeypair = web3.Keypair.generate();
+        const bobKeypair = web3.Keypair.generate();
+        const ix = web3.SystemProgram.createAccount({
+            fromPubkey: aliceKeypair.publicKey,
+            newAccountPubkey: bobKeypair.publicKey,
+            lamports: 0,
+            space: 0,
+            programId: web3.SystemProgram.programId,
+        });
+        const mockTransaction = new web3.Transaction().add(ix);
+
+        // Verify the transaction
+        expect(() => {
+            verifySingleUseInstruction(mockTransaction);
+        }).not.toThrow();
     });
 
     it('valid transaction, testing verifyPaymentTransactionWithPaymentRecord', async () => {

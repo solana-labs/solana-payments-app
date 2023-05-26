@@ -4,17 +4,18 @@ import { RefundRecordService } from '../database/refund-record-service.database.
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 import axios from 'axios';
+import { verifyRefundTransactionWithRefundRecord } from '../transaction-validation/validate-discovered-refund-transaction.service.js';
+import { web3 } from '@project-serum/anchor';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
     transactionRecord: TransactionRecord,
-    transaction: HeliusEnhancedTransaction,
+    transaction: web3.Transaction,
     prisma: PrismaClient
 ) => {
     // we should probably do some validation here to make sure the transaction
     // actually matches the refund record that the transaction is associated with
     // for now i will ignore that, mocked the function for now
-    validateDiscoveredRefundTransaction(transactionRecord, transaction);
 
     const refundRecordService = new RefundRecordService(prisma);
     const merchantService = new MerchantService(prisma);
@@ -58,6 +59,9 @@ export const processDiscoveredRefundTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
+    // Verify against the refund record, if we throw in here, we should catch outside of this for logging
+    verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
+
     try {
         const refundSessionResolve = makeRefundSessionResolve(axios);
         const resolveRefundResponse = await refundSessionResolve(
@@ -74,18 +78,10 @@ export const processDiscoveredRefundTransaction = async (
         // has to return so I should probably return for parity and have a validation function
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: RefundRecordStatus.completed,
-            transactionSignature: transaction.signature,
+            transactionSignature: transactionRecord.signature,
             completedAt: new Date(),
         });
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
     }
-};
-
-const validateDiscoveredRefundTransaction = (
-    transactionRecord: TransactionRecord,
-    transaction: HeliusEnhancedTransaction
-) => {
-    transaction;
-    transactionRecord;
 };
