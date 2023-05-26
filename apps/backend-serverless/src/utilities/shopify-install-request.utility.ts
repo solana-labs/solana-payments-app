@@ -1,6 +1,6 @@
 import { AppInstallQueryParam, parseAndValidateAppInstallQueryParms } from '../models/install-query-params.model.js';
-import queryString from 'query-string';
 import crypto from 'crypto-js';
+import { stringifyParams } from './stringify-params.utility.js';
 
 export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): AppInstallQueryParam => {
     // Verify that the object passed in can be parsed into an AppInstallQueryParam object
@@ -25,7 +25,7 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
     }
 
     delete parsedAppInstallQuery['hmac'];
-    const queryStringAfterRemoving = queryString.stringify(parsedAppInstallQuery);
+    const queryStringAfterRemoving = stringifyParams(parsedAppInstallQuery);
 
     const secret = process.env.SHOPIFY_SECRET_KEY;
 

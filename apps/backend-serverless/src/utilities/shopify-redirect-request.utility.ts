@@ -3,8 +3,8 @@ import {
     appRedirectQueryParmSchema,
     parseAndValidateAppRedirectQueryParams,
 } from '../models/redirect-query-params.model.js';
-import queryString from 'query-string';
 import crypto from 'crypto-js';
+import { stringifyParams } from './stringify-params.utility.js';
 
 export const verifyAndParseShopifyRedirectRequest = (appRedirectQuery: unknown): AppRedirectQueryParam => {
     // Verify that the object passed in can be parsed into an AppRedirectQueryParam object
@@ -23,7 +23,7 @@ export const verifyAndParseShopifyRedirectRequest = (appRedirectQuery: unknown):
     }
 
     delete parsedAppRedirectQuery['hmac'];
-    const queryStringAfterRemoving = queryString.stringify(parsedAppRedirectQuery);
+    const queryStringAfterRemoving = stringifyParams(parsedAppRedirectQuery);
 
     const secret = process.env.SHOPIFY_SECRET_KEY;
 

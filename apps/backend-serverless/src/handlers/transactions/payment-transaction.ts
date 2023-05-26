@@ -9,7 +9,6 @@ import {
 } from '../../models/payment-transaction-request-parameters.model.js';
 import { encodeBufferToBase58 } from '../../utilities/encode-transaction.utility.js';
 import { decode } from '../../utilities/string.utility.js';
-import queryString from 'query-string';
 import { encodeTransaction } from '../../utilities/encode-transaction.utility.js';
 import { web3 } from '@project-serum/anchor';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
