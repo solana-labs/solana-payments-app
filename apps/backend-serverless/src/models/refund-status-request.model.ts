@@ -2,7 +2,7 @@ import { object, string, InferType } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
 
 export const refundStatusRequestScheme = object().shape({
-    refundId: string().required(),
+    shopId: string().required(),
 });
 
 export type RefundStatusRequest = InferType<typeof refundStatusRequestScheme>;

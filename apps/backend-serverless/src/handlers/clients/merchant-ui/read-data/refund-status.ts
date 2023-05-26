@@ -51,11 +51,7 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
-            refundStatusResponse = await createRefundStatusResponse(
-                merchantAuthToken,
-                refundStatusRequestParameters.refundId,
-                prisma
-            );
+            refundStatusResponse = await createRefundStatusResponse(refundStatusRequestParameters.shopId, prisma);
         } catch (error) {
             return requestErrorResponse(error);
         }
