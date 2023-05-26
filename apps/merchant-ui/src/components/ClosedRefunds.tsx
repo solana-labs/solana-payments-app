@@ -55,7 +55,9 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.orderId}
+                                    {refund.orderId.length > 6
+                                        ? refund.orderId.substring(0, 6) + '...'
+                                        : refund.orderId}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -67,7 +69,7 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {format(refund.requestedOn, 'MMM d, h:mmaaaaa')}
+                                    {format(refund.requestedAt, 'MMM d, h:mmaaaaa')}
                                 </div>
                                 <div
                                     className={twMerge(

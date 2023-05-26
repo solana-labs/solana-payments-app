@@ -18,7 +18,8 @@ interface Payment {
     amount: number;
     orderId: string;
     status: PaymentStatus;
-    ts: number;
+    requestedAt: number;
+    completedAt?: number;
     // user: string;
 }
 
@@ -28,7 +29,8 @@ function transformPayment(responseData: any): Payment[] {
             orderId: item.shopifyOrder,
             status: item.status as PaymentStatus,
             amount: parseFloat(item.amount),
-            ts: 1681336764686,
+            requestedAt: new Date(item.requestedAt).getTime(),
+            ...(item.completedAt && { completedAt: new Date(item.completedAt).getTime() }),
             // refundTo: '', // This field needs to be updated based on actual data
         };
     });
@@ -63,7 +65,12 @@ export function usePayments(page: number): RE.Result<{
                 } else {
                     console.log('response.data: ', response.data);
                     const payments = transformPayment(response.data); // assuming you have transformRefund function
-                    setResults(RE.ok({ payments: payments, totalPages: response.data.general.refundBadges }));
+                    setResults(
+                        RE.ok({
+                            payments: payments,
+                            totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
+                        })
+                    );
                 }
             } catch (error) {
                 console.log('error: ', error);

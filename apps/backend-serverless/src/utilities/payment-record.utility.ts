@@ -2,7 +2,8 @@ import { PaymentRecord } from '@prisma/client';
 
 export interface PaymentDataResponse {
     shopifyOrder: string;
-    date: string;
+    requestedAt: Date;
+    completedAt?: Date;
     status: string;
     amount: string;
 }
@@ -10,7 +11,8 @@ export interface PaymentDataResponse {
 export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: PaymentRecord): PaymentDataResponse => {
     return {
         shopifyOrder: paymentRecord.shopId,
-        date: 'some-date-here',
+        requestedAt: paymentRecord.requestedAt,
+        ...(paymentRecord.completedAt && { completedAt: paymentRecord.completedAt }),
         status: paymentRecord.status,
         amount: paymentRecord.amount ? `${paymentRecord.amount} ${paymentRecord.currency}` : 'Not Availible',
     };

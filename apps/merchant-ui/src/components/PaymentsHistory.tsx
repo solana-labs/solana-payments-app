@@ -48,13 +48,13 @@ export function PaymentsHistory(props: Props) {
                 <Tabs.Content value="all-payments">
                     <PaginatedTable
                         className="mt-8"
-                        columns={['orderId', 'ts', 'status', 'amount']}
+                        columns={['orderId', 'requestedAt', 'status', 'amount']}
                         curPage={RE.map(payments, ({ payments }) => payments)}
                         headers={{
                             amount: 'Amount',
                             orderId: 'Shopify Order #',
                             status: 'Status',
-                            ts: 'Date',
+                            requestedAt: 'Date',
                         }}
                         numPages={totalNumPages}
                         rowHeight="h-20"
@@ -76,8 +76,10 @@ export function PaymentsHistory(props: Props) {
                             ),
                             orderId: id => <div className="font-bold text-sm text-slate-600">#{id}</div>,
                             status: status => <PaymentsHistoryStatus className="mr-10" status={status} />,
-                            ts: time => (
-                                <div className="text-sm text-slate-600 pr-11">{format(time, 'eee h:mmaaa')}</div>
+                            requestedAt: requestedAt => (
+                                <div className="text-sm text-slate-600 pr-11">
+                                    {format(requestedAt, 'MMM d, h:mmaa')}
+                                </div>
                             ),
                         }}
                     </PaginatedTable>

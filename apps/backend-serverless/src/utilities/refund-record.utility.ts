@@ -3,7 +3,8 @@ import { payment } from '../handlers/shopify-handlers/payment.js';
 
 export interface RefundDataResponse {
     shopifyOrder: string;
-    date: string;
+    requestedAt: Date;
+    completedAt?: Date;
     status: string;
     refundAmount: string;
     paymentAmount: string;
@@ -14,7 +15,8 @@ export const createRefundDataResponseFromRefundRecord = (
 ): RefundDataResponse => {
     return {
         shopifyOrder: refundRecord.shopId,
-        date: 'some-date-here',
+        requestedAt: refundRecord.requestedAt,
+        ...(refundRecord.completedAt && { completedAt: refundRecord.completedAt }),
         status: refundRecord.status,
         refundAmount: `${refundRecord.amount} ${refundRecord.currency}`,
         paymentAmount: refundRecord.paymentRecord

@@ -11,7 +11,7 @@ export interface Refund {
     orderId: string;
     purchaseAmount: number;
     refundTo: string;
-    requestedOn: number;
+    requestedAt: number;
     requestedRefundAmount: number;
     status: RefundStatus;
 }
@@ -40,7 +40,7 @@ const MOCK_REFUNDS = Array.from({ length: 8 }).map((_, i) => ({
     orderId: `123${i}`,
     purchaseAmount: -50 + i * 23.58,
     refundTo: '03nryBDu2hqmpyAjssubxVda3Si1QAfA9yEAFAdV4TQ',
-    requestedOn: 1681336764686,
+    requestedAt: 1681336764686,
     requestedRefundAmount: -50 + i * 23.58,
     status: mockRefundStatus(i),
 }));
