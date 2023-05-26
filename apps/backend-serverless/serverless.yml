@@ -56,12 +56,6 @@ functions:
       - httpApi:
           path: /refund
           method: post
-  # screen-wallet:
-  #   handler: src/handlers/testing/screen-wallet.screenWallet
-  #   events:
-  #     - httpApi:
-  #         path: /screen-wallet
-  #         method: get
   helius:
     handler: src/handlers/webhooks/helius.helius
     events:
@@ -128,12 +122,6 @@ functions:
       - httpApi:
           path: /payment-data
           method: get
-  # login:
-  #   handler: src/handlers/testing/login.login
-  #   events:
-  #     - httpApi:
-  #         path: /login
-  #         method: get
   update-merchant:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
