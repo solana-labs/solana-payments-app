@@ -50,7 +50,6 @@ function refundIsClosed(refund: Refund): refund is ClosedRefund {
 }
 
 function transformRefund<T extends Refund>(responseData: any): T[] {
-    console.log('responseData: ', responseData, responseData.refundData.data[0].status);
     return responseData.refundData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
@@ -105,20 +104,33 @@ export function useCloseRefunds(): RE.Result<ClosedRefund[]> {
     const params: any = {
         page: 1,
         pageSize: 10,
-        refundStatus: 'rejected',
     };
 
     useEffect(() => {
         async function fetchRefunds() {
             setResults(RE.pending());
             try {
-                const responseRejected = await axios.get(API_ENDPOINTS.refundData, { params });
+                const responseRejected = await axios.get(API_ENDPOINTS.refundData, {
+                    params: { ...params, refundStatus: 'rejected' },
+                });
+                const responsePaid = await axios.get(API_ENDPOINTS.refundData, {
+                    params: { ...params, refundStatus: 'paid' },
+                });
 
-                if (responseRejected.status !== 200) {
-                    setResults(RE.failed(new Error(responseRejected.data.message || 'Failed to fetch refunds')));
+                if (responseRejected.status !== 200 || responsePaid.status !== 200) {
+                    let errorMsg = 'Failed to fetch refunds';
+                    if (responseRejected.status !== 200) {
+                        errorMsg = responseRejected.data.message || errorMsg;
+                    }
+                    if (responsePaid.status !== 200) {
+                        errorMsg = responsePaid.data.message || errorMsg;
+                    }
+                    setResults(RE.failed(new Error(errorMsg)));
                 } else {
-                    const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data); // assuming you have transformRefund function
-                    setResults(RE.ok(refundsRejected));
+                    const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data);
+                    const refundsPaid = transformRefund<ClosedRefund>(responsePaid.data);
+                    const refunds = [...refundsRejected, ...refundsPaid];
+                    setResults(RE.ok(refunds));
                 }
             } catch (error) {
                 console.log('error: ', error);

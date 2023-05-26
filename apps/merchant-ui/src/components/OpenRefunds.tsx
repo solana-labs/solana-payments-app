@@ -1,14 +1,14 @@
 import { twMerge } from 'tailwind-merge';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
-import { useOpenRefunds } from '@/hooks/useRefunds';
+import { RefundStatus, useOpenRefunds } from '@/hooks/useRefunds';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -27,6 +27,8 @@ export function OpenRefunds(props: Props) {
     const [denyPending, setDenyPending] = useState(false);
     const [openApprove, setOpenApprove] = useState<string | null>(null);
 
+    const approvePendingRef = useRef(approvePending);
+
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     const headers = {
@@ -37,6 +39,7 @@ export function OpenRefunds(props: Props) {
     // currently trying to poll refund status, then close the modal
     async function getRefundTransaction(refundId: string) {
         setApprovePending(true);
+        approvePendingRef.current = true;
 
         try {
             if (!connected) {
@@ -48,7 +51,6 @@ export function OpenRefunds(props: Props) {
         }
 
         try {
-            // console.log('publicKey: ', publicKey.toString());
             const response = await axios.post(
                 API_ENDPOINTS.refundTransaction + '?refundId=' + refundId,
                 {
@@ -56,28 +58,30 @@ export function OpenRefunds(props: Props) {
                 },
                 { headers: headers }
             );
-            // console.log('got back get refund tx response');
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
 
-            // await sendTransaction(transaction, connection);
+            await sendTransaction(transaction, connection);
 
-            console.log('in whiile');
-            while (true) {
+            while (approvePendingRef.current) {
                 const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
                     headers: headers,
                 });
-                console.log('status', status, status.data);
-                // sleep 2 seconds
-                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (status.data.refundStatus.status !== RefundStatus.Pending) {
+                    console.log('approved');
+                    break;
+                }
             }
         } catch (error) {
             console.log('error: ', error);
-            // setResults(RE.failed(error));
         }
 
-        setOpenApprove(null);
-        setApprovePending(false);
+        if (approvePendingRef.current) {
+            setOpenApprove(null);
+            setApprovePending(false);
+        }
     }
 
     async function rejectRefund(refundId: string) {
@@ -87,6 +91,7 @@ export function OpenRefunds(props: Props) {
                 API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
                 { headers: headers }
             );
+            await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
             console.log('reject error: ', error);
         }
@@ -267,7 +272,15 @@ export function OpenRefunds(props: Props) {
                                                     'z-10'
                                                 )}
                                             >
-                                                <Dialog.Content className="bg-white rounded-xl overflow-hidden">
+                                                <Dialog.Content
+                                                    className="bg-white rounded-xl overflow-hidden"
+                                                    onPointerDownOutside={() => {
+                                                        console.log('outside, setting approve to false');
+                                                        approvePendingRef.current = false;
+                                                        setOpenApprove(null);
+                                                        setApprovePending(false);
+                                                    }}
+                                                >
                                                     <div className="px-6 pt-6 pb-9">
                                                         <div className="flex items-start justify-between">
                                                             <div>
