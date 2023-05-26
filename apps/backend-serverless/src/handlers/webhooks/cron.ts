@@ -6,6 +6,8 @@ import { TransactionRecordService } from '../../services/database/transaction-re
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
 import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
+import { web3 } from '@project-serum/anchor';
+import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -24,10 +26,10 @@ export const cron = Sentry.AWSLambda.wrapHandler(
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
         for (const transactionRecord of allTransactionRecords) {
-            let transaction: HeliusEnhancedTransaction | null;
+            let transaction: web3.Transaction | null;
 
             try {
-                transaction = await fetchEnhancedTransaction(transactionRecord.signature);
+                transaction = await fetchTransaction(transactionRecord.signature);
             } catch (error) {
                 // this will fail if our fetch transaction fails, it shouldnt throw if the tx isn't on chain though
                 // if the tx isn't on chain, it should return null and we will continue in the next logic block
