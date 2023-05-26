@@ -70,7 +70,6 @@ export function OpenRefunds(props: Props) {
 
                 await new Promise(resolve => setTimeout(resolve, 500));
                 if (status.data.refundStatus.status !== RefundStatus.Pending) {
-                    console.log('approved');
                     break;
                 }
             }
@@ -275,7 +274,6 @@ export function OpenRefunds(props: Props) {
                                                 <Dialog.Content
                                                     className="bg-white rounded-xl overflow-hidden"
                                                     onPointerDownOutside={() => {
-                                                        console.log('outside, setting approve to false');
                                                         approvePendingRef.current = false;
                                                         setOpenApprove(null);
                                                         setApprovePending(false);
