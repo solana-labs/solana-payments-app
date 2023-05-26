@@ -56,12 +56,6 @@ functions:
       - httpApi:
           path: /refund
           method: post
-  # screen-wallet:
-  #   handler: src/handlers/testing/screen-wallet.screenWallet
-  #   events:
-  #     - httpApi:
-  #         path: /screen-wallet
-  #         method: get
   helius:
     handler: src/handlers/webhooks/helius.helius
     events:
@@ -128,18 +122,30 @@ functions:
       - httpApi:
           path: /payment-data
           method: get
-  # login:
-  #   handler: src/handlers/testing/login.login
-  #   events:
-  #     - httpApi:
-  #         path: /login
-  #         method: get
   update-merchant:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
       - httpApi:
           path: /update-merchant
           method: put
+  customers-data-request:
+    handler: src/handlers/webhooks/gdpr/customers-data-request.customersDataRequest
+    events:
+      - httpApi:
+          path: /customers/data_request
+          method: post
+  customers-redact:
+    handler: src/handlers/webhooks/gdpr/customers-redact.customersRedact
+    events:
+      - httpApi:
+          path: /customers/redact
+          method: post
+  shop-redact:
+    handler: src/handlers/webhooks/gdpr/shop-redact.shopRedact
+    events:
+      - httpApi:
+          path: /shop/redact
+          method: post
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
