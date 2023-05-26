@@ -12,11 +12,56 @@ Right now the overall documentation is federated to respective directories. Over
 
 ## How to Deploy
 
-1. Clone this repo
+1. clone the repo
 
 ```
 git clone git@github.com:solana-labs/solana-payments-app.git
 ```
+
+2. install the dependcies at the root
+
+```
+(from root)
+yarn
+```
+
+2. install the app specific dependcies for the serverless apps
+
+```
+(from /apps/backend-sereverless/)
+yarn
+```
+
+```
+(from /apps/transaction-request-serverless/)
+yarn
+```
+
+3. configure your aws credentials
+
+```
+aws configure
+[enter your user aws access key id]
+[enter your user aws secret access key]
+```
+
+4. deploy the transaction request server
+
+```
+(from /apps/transaction-request-serverless/)
+serverless deploy
+```
+
+**note** save the base url output by the deploy command
+
+5. create your backend server .env
+
+```
+(from /apps/backend-serverless/)
+cp .sample.env .env
+```
+
+6. replace all of the sample values with your actual values
 
 ## How to Contribute
 
