@@ -1,4 +1,4 @@
-import { parseAndValidatePaymentStatusRequest } from '../../../src/models/payment-status-request.model.js';
+import { parseAndValidatePaymentTransactionRequest } from '../../../src/models/payment-transaction-request-parameters.model.js';
 
 describe('unit testing the payment transaction request parameters model', () => {
     it('valid payment transaction request parameters', () => {
@@ -7,7 +7,7 @@ describe('unit testing the payment transaction request parameters model', () => 
         };
 
         expect(() => {
-            parseAndValidatePaymentStatusRequest(validPaymentTransactionRequestParameters);
+            parseAndValidatePaymentTransactionRequest(validPaymentTransactionRequestParameters);
         }).not.toThrow();
     });
 
@@ -17,7 +17,7 @@ describe('unit testing the payment transaction request parameters model', () => 
         };
 
         expect(() => {
-            parseAndValidatePaymentStatusRequest(invalidPaymentTransactionRequestParameters);
+            parseAndValidatePaymentTransactionRequest(invalidPaymentTransactionRequestParameters);
         }).toThrow();
     });
 });
