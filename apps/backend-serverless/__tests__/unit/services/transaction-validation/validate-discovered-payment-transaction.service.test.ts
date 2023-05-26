@@ -6,7 +6,6 @@ import {
 import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import { web3 } from '@project-serum/anchor';
-import { create } from 'lodash';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
 
 export const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: web3.PublicKey = new web3.PublicKey(
