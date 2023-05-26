@@ -163,7 +163,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             body: JSON.stringify(
                 {
                     transaction: transactionString,
-                    message: 'gm',
+                    message: `Paying ${merchant.name} ${paymentRecord.usdcAmount.toFixed(2)} USDC`,
                 },
                 null,
                 2
