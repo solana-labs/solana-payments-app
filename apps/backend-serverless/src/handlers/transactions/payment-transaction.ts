@@ -111,7 +111,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58()
             );
         } catch (error) {
-            console.log(error);
             return requestErrorResponse(error);
         }
 
