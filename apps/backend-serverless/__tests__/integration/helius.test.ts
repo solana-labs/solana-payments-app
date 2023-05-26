@@ -18,7 +18,10 @@ describe('integration testing coin gecko api', () => {
         // } catch (error) {
         //     console.log(error);
         // }
+<<<<<<< HEAD
 >>>>>>> 7924de7 (we have actual tests now for it)
+=======
+>>>>>>> 5035e97833fa99b3bfce07daa837ba4a8e2c152e
         expect(true).toBe(true);
     });
 });
