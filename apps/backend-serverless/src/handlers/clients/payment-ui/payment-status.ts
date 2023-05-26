@@ -18,16 +18,22 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
 
+    console.log('a');
+
     try {
         parsedPaymentStatusQuery = await parseAndValidatePaymentStatusRequest(event.queryStringParameters);
     } catch (error: unknown) {
         return requestErrorResponse(error);
     }
 
+    console.log('b');
+
     try {
         paymentRecord = await paymentRecordService.getPaymentRecord({
             id: parsedPaymentStatusQuery.id,
         });
+
+        console.log('c');
 
         if (paymentRecord == null) {
             return requestErrorResponse(
@@ -36,9 +42,13 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
             );
         }
 
+        console.log('d');
+
         merchant = await merchantService.getMerchant({
             id: paymentRecord.merchantId,
         });
+
+        console.log('e');
 
         if (merchant == null) {
             return requestErrorResponse(
@@ -50,6 +60,8 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         return requestErrorResponse(error);
     }
 
+    console.log('f');
+
     const paymentStatusResponse = {
         merchantDisplayName: merchant.shop,
         totalAmountFiatDisplay: `${paymentRecord.amount.toFixed(2)} ${paymentRecord.currency}`,
@@ -58,6 +70,8 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         redirectUrl: paymentRecord.redirectUrl,
         completed: paymentRecord.redirectUrl ? true : false,
     };
+
+    console.log('g');
 
     const responseBodyData = {
         paymentStatus: paymentStatusResponse,

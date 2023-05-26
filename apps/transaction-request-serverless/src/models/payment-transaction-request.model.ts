@@ -37,27 +37,27 @@ export const paymentTransactionRequestScheme = object().shape({
     receivingToken: publicKeySchema.required(),
     feePayer: publicKeySchema.required(),
     receivingAmount: number().required(),
-    amountType: string().oneOf(Object.values(AmountType), 'Invalid amount type').required(),
+    amountType: string().oneOf(Object.values(AmountType), 'Invalid amount type.').required(),
     transactionType: string().oneOf(Object.values(TransactionType), 'Invalid transaction type').required(),
     createAta: boolean().required(),
     singleUseNewAcc: publicKeySchema.required(),
     singleUsePayer: publicKeySchema.required(),
-    indexInputs: string()
-        .required()
-        .test(
-            'is-comma-separated-no-spaces',
-            'indexInputs must be a comma separated string with no spaces in individual strings',
-            value => {
-                if (typeof value !== 'string') return false;
+    indexInputs: string().required(),
+    // .required()
+    // .test(
+    //     'is-comma-separated-no-spaces',
+    //     'indexInputs must be a comma separated string with no spaces in individual strings',
+    //     value => {
+    //         if (typeof value !== 'string') return false;
 
-                // TODO: There is some limit to what these input strings can be, figure out what it is
-                // and validate that constraint here
-                // Check if every part of the split string is non-empty and does not contain spaces
-                return value.split(',').every(substring => {
-                    return substring.length > 0 && !substring.includes(' ');
-                });
-            }
-        ),
+    //         // TODO: There is some limit to what these input strings can be, figure out what it is
+    //         // and validate that constraint here
+    //         // Check if every part of the split string is non-empty and does not contain spaces
+    //         return value.split(',').every(substring => {
+    //             return substring.length > 0 && !substring.includes(' ');
+    //         });
+    //     }
+    // ),
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;

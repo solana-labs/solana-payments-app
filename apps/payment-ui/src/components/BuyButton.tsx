@@ -12,7 +12,7 @@ const BuyButton = () => {
 
     const fetchAndSendTransaction = async () => {
         const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         };
 
         // TODO: FIX THIS AND MAKE IT NICER AND CLEANER

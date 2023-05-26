@@ -94,11 +94,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
 
-        try {
-            await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
-        } catch (error) {
-            // TODO: Log this error in sentry
-        }
+        // try {
+        //     await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
+        // } catch (error) {
+        //     // TODO: Log this error in sentry
+        //     return requestErrorResponse(error);
+        // }
 
         try {
             paymentTransaction = await fetchPaymentTransaction(
@@ -110,6 +111,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58()
             );
         } catch (error) {
+            console.log(error);
             return requestErrorResponse(error);
         }
 

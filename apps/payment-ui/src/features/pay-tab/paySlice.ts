@@ -59,7 +59,7 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
         const paymentId = state.pay.paymentId;
         if (paymentId != null) {
             const response = await axios.get(
-                `https://uj1ctqe20k.execute-api.us-east-1.amazonaws.com/payment-status?id=${paymentId}`
+                `https://boubt4ej71.execute-api.us-east-1.amazonaws.com/payment-status?paymentId=${paymentId}`
             );
             const paymentStatusResponse = response.data.paymentStatus;
             const errorResponse = response.data.error;
@@ -136,7 +136,6 @@ export const getRedirectUrl = (state: any): string | null => state.pay.redirectU
 
 export const getPayerAccount = (state: any): string => state.pay.payerAccount;
 
-export const getPaymentDetails = (state: any): PaymentDetails | null =>
-    state.pay.paymentDetails ?? initialPaymentDetails;
+export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.pay.paymentDetails;
 
 export const getPaymentErrors = (state: RootState): PayError | null => state.pay.paymentError;
