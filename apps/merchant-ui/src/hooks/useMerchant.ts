@@ -10,6 +10,7 @@ interface MerchantInfo {
     paymentAddress: string;
     acceptedTermsAndConditions: boolean;
     dismissCompleted: boolean;
+    completed: boolean;
 }
 
 export function useMerchant(): { merchantInfo: RE.Result<MerchantInfo>; getMerchantInfo: () => Promise<void> } {
@@ -26,6 +27,7 @@ export function useMerchant(): { merchantInfo: RE.Result<MerchantInfo>; getMerch
                 paymentAddress: merchantJson.merchantData.paymentAddress,
                 acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
                 dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
+                completed: merchantJson.merchantData.onboarding.completed,
             })
         );
     };
