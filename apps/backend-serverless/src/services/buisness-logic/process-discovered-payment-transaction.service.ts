@@ -55,9 +55,7 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
-    // Ok so now I have to verify the transaction.
-    // I could change this to check against the web3.Transaction object or query that here.
-    // I really only use it at the end so I could just query before this.
+    // Verify against the payment record, if we throw in here, we should catch outside of this for logging
     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
 
     // Ok so this part is interesting because if this were to throw, we would actully want different behavior
@@ -94,12 +92,4 @@ export const processDiscoveredPaymentTransaction = async (
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
     }
-};
-
-const validateDiscoveredPaymentTransaction = (
-    transactionRecord: TransactionRecord,
-    transaction: HeliusEnhancedTransaction
-) => {
-    transactionRecord;
-    transaction;
 };
