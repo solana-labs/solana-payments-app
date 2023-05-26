@@ -12,6 +12,8 @@ export const verifyPaymentTransactionWithPaymentRecord = (
         verifyAppCreatedTheTransaction(transaction);
     }
 
+    verifySingleUseInstruction(transaction);
+
     verifyTransferInstructionIsCorrect(transaction, paymentRecord);
 };
 

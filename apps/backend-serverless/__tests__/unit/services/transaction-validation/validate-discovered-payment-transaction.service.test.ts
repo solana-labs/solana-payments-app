@@ -201,16 +201,14 @@ describe('unit testing validating discovered payment transactions', () => {
         };
 
         // Set up the transaction
-        const feePayer = new web3.PublicKey('9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T');
         const aliceKeypair = web3.Keypair.generate();
-        const mintKeypair = web3.Keypair.generate();
-        const aliceAta = await findAssociatedTokenAddress(aliceKeypair.publicKey, mintKeypair.publicKey);
+        const aliceAta = await findAssociatedTokenAddress(aliceKeypair.publicKey, USDC_MINT);
         const bobKeypair = web3.Keypair.generate();
-        const bobAta = await findAssociatedTokenAddress(bobKeypair.publicKey, mintKeypair.publicKey);
-        const transferQuantity = 10;
+        const bobAta = await findAssociatedTokenAddress(bobKeypair.publicKey, USDC_MINT);
+        const transferQuantity = 10 * 10 ** 6;
         const transferCheckedInstruction = createTransferCheckedInstruction(
             aliceAta,
-            mintKeypair.publicKey,
+            USDC_MINT,
             bobAta,
             aliceKeypair.publicKey,
             transferQuantity,
@@ -218,11 +216,21 @@ describe('unit testing validating discovered payment transactions', () => {
             [],
             TOKEN_PROGRAM_ID
         );
-        const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
+        const ix = web3.SystemProgram.createAccount({
+            fromPubkey: aliceKeypair.publicKey,
+            newAccountPubkey: bobKeypair.publicKey,
+            lamports: 0,
+            space: 0,
+            programId: web3.SystemProgram.programId,
+        });
+        const mockTransaction = new web3.Transaction()
+            .add(ix)
+            .add(transferCheckedInstruction)
+            .add(transferCheckedInstruction);
 
         // Verify the transaction
         expect(() => {
             verifyPaymentTransactionWithPaymentRecord(mockPaymentRecord, mockTransaction, false);
-        }).toThrow();
+        }).not.toThrow();
     });
 });
