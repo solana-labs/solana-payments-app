@@ -5,17 +5,14 @@ import { MerchantService } from '../database/merchant-service.database.service.j
 import { getCustomerFromHeliusEnhancedTransaction } from '../../utilities/get-customer.utility.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
+import { verifyPaymentTransactionWithPaymentRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
+import { web3 } from '@project-serum/anchor';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
-    transaction: HeliusEnhancedTransaction,
+    transaction: web3.Transaction,
     prisma: PrismaClient
 ) => {
-    // we should probably do some validation here to make sure the transaction
-    // actually matches the payment record that the transaction is associated with
-    // for now i will ignore that, mocked the function for now
-    validateDiscoveredPaymentTransaction(transactionRecord, transaction);
-
     const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
 
@@ -58,6 +55,9 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
+    // Verify against the payment record, if we throw in here, we should catch outside of this for logging
+    verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+
     // Ok so this part is interesting because if this were to throw, we would actully want different behavior
     // If we throw here, we want to retry this message later, but also, if it succeeds, and we check that the return
     // value fails, we also want to try again later, so basically we should either try/catch here and then
@@ -86,18 +86,10 @@ export const processDiscoveredPaymentTransaction = async (
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.completed,
             redirectUrl: redirectUrl,
-            transactionSignature: transaction.signature,
+            transactionSignature: transactionRecord.signature,
             completedAt: new Date(),
         });
     } catch (error) {
         // TODO: Handle the error by adding it to the retry queue
     }
-};
-
-const validateDiscoveredPaymentTransaction = (
-    transactionRecord: TransactionRecord,
-    transaction: HeliusEnhancedTransaction
-) => {
-    transactionRecord;
-    transaction;
 };

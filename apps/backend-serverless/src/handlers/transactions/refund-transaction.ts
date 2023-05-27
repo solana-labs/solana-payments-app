@@ -17,6 +17,7 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { verifyRefundTransactionWithRefundRecord } from '../../services/transaction-validation/validate-discovered-refund-transaction.service.js';
 
 export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let refundRecord: RefundRecord | null;
@@ -115,6 +116,12 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
 
     if (transactionSignature == null) {
         return requestErrorResponse(new Error('No transaction signature.'));
+    }
+
+    try {
+        verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
+    } catch (error) {
+        return requestErrorResponse(error);
     }
 
     const signatureBuffer = transactionSignature;

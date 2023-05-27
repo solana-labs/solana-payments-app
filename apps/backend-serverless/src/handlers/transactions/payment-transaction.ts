@@ -19,6 +19,7 @@ import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/gener
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import * as Sentry from '@sentry/serverless';
+import { verifyPaymentTransactionWithPaymentRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -129,6 +130,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         transaction.partialSign(gasKeypair);
         transaction.partialSign(singleUseKeypair);
+
+        try {
+            verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+        } catch (error) {
+            return requestErrorResponse(error);
+        }
 
         const transactionSignature = transaction.signature;
 
