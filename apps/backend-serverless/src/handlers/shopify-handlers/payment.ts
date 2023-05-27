@@ -70,7 +70,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         }
 
         return {
-            statusCode: 200,
+            statusCode: 201,
             body: JSON.stringify({
                 redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
             }),
