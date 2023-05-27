@@ -43,9 +43,9 @@ export const paymentTransactionRequestScheme = object().shape({
         .default(TransactionType.blockhash)
         .required(),
     createAta: boolean().default(true).required(),
-    singleUseNewAcc: publicKeySchema.required(),
-    singleUsePayer: publicKeySchema.required(),
-    indexInputs: string().required(),
+    singleUseNewAcc: publicKeySchema.nullable(),
+    singleUsePayer: publicKeySchema.nullable(),
+    indexInputs: string().nullable(),
     // .required()
     // .test(
     //     'is-comma-separated-no-spaces',
@@ -87,7 +87,7 @@ export class PaymentTransactionBuilder {
     private createAta: boolean;
     private singleUseNewAcc: web3.PublicKey | null;
     private singleUsePayer: web3.PublicKey | null;
-    private indexInputs: string[];
+    private indexInputs: string[] | null;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
@@ -105,7 +105,9 @@ export class PaymentTransactionBuilder {
         this.singleUsePayer = paymentTransactionRequest.singleUsePayer
             ? new web3.PublicKey(paymentTransactionRequest.singleUsePayer)
             : null;
-        this.indexInputs = paymentTransactionRequest.indexInputs.split(',');
+        this.indexInputs = paymentTransactionRequest.indexInputs
+            ? paymentTransactionRequest.indexInputs.split(',')
+            : null;
     }
 
     public async buildPaymentTransaction(connection: web3.Connection): Promise<web3.Transaction> {
@@ -170,8 +172,7 @@ export class PaymentTransactionBuilder {
             createIxs = await createAccountIx(this.singleUseNewAcc, this.singleUsePayer, connection);
         }
 
-        // TODO: Make this check for null as well when we make this optional
-        if (this.indexInputs.length > 0) {
+        if (this.indexInputs && this.indexInputs.length > 0) {
             indexIxs = await createIndexingIx(this.feePayer, this.indexInputs);
         }
 
