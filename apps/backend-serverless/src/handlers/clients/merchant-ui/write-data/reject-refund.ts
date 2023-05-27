@@ -1,6 +1,5 @@
 import { Merchant, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import queryString from 'query-string';
 import { decode } from '../../../../utilities/string.utility.js';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
 import {

@@ -33,7 +33,6 @@
     "dotenv": "^16.0.3",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
-    "query-string": "^8.1.0",
     "yup": "1.2.0"
   },
   "devDependencies": {

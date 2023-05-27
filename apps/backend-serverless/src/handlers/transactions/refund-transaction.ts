@@ -1,7 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import queryString from 'query-string';
 import { decode } from '../../utilities/string.utility.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import {
@@ -38,8 +37,11 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
 
     const trmService = new TrmService(TRM_API_KEY);
 
-    const decodedBody = event.body ? decode(event.body) : '';
-    const body = queryString.parse(decodedBody);
+    if (event.body == null) {
+        return requestErrorResponse(new Error('No body provided.'));
+    }
+
+    const body = JSON.parse(event.body);
     const account = body['account'] as string | null;
 
     if (account == null) {

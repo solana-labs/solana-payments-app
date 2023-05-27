@@ -24,7 +24,6 @@
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
     "next": "latest",
-    "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-dom": "latest",
     "react-icons": "^4.8.0",
