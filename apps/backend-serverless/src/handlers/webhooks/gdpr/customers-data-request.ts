@@ -7,6 +7,7 @@ import {
 } from '../../../models/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/verify-shopify-webhook-header.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -20,15 +21,15 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
         }
 
         if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-            return requestErrorResponse(new Error('Invalid topic'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
         }
 
         if (event.body == null) {
-            return requestErrorResponse(new Error('Missing body'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
 
         const cusomterDataBodyString = JSON.stringify(event.body);
@@ -36,7 +37,7 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         try {
             verifyShopifyWebhook(cusomterDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.invalidSecurityInput);
         }
 
         // At this point we would have verified the webhook. We do not store any customer

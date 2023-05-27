@@ -7,6 +7,7 @@ import { MerchantService } from '../../../../services/database/merchant-service.
 import { PrismaClient } from '@prisma/client';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -23,13 +24,13 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Merchant not found'));
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);

@@ -9,6 +9,7 @@ import { AccessTokenResponse } from '../../models/access-token-response.model.js
 import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
 import axios from 'axios';
 import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -21,13 +22,13 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
     if (redirectUrl == null || jwtSecretKey == null) {
-        return requestErrorResponse(new Error('Redirect URL or JWT secret key is not set'));
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
     }
 
     try {
         parsedAppRedirectQuery = await verifyAndParseShopifyRedirectRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
 
     const shop = parsedAppRedirectQuery.shop;
@@ -42,7 +43,7 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     let merchant = await merchantService.getMerchant({ shop: shop });
 
     if (merchant == null) {
-        return requestErrorResponse(new Error('Merchant not found'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
     }
 
     const updateData = {
@@ -53,7 +54,7 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     try {
         merchant = await merchantService.updateMerchant(merchant, updateData);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     // TODO: Verify output and throw if it's bad
@@ -61,15 +62,11 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     const paymentAppConfigure = makePaymentAppConfigure(axios);
     const configure = await paymentAppConfigure(merchant.id, true, shop, accessTokenResponse.access_token);
 
-    if (redirectUrl == null) {
-        return requestErrorResponse(new Error('Merchant redirect location is not set'));
-    }
-
     let merchantAuthCookieHeader: string;
     try {
         merchantAuthCookieHeader = createMechantAuthCookieHeader(merchant.id);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     return {

@@ -18,9 +18,9 @@ import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { verifyRefundTransactionWithRefundRecord } from '../../services/transaction-validation/validate-discovered-refund-transaction.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let refundRecord: RefundRecord | null;
     let refundRequest: RefundTransactionRequest;
     let refundTransaction: TransactionRequestResponse;
     let transaction: web3.Transaction;
@@ -33,26 +33,26 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     const TRM_API_KEY = process.env.TRM_API_KEY;
 
     if (TRM_API_KEY == null) {
-        return requestErrorResponse(new Error('Missing internal config.'));
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
     }
 
     const trmService = new TrmService(TRM_API_KEY);
 
     if (event.body == null) {
-        return requestErrorResponse(new Error('No body provided.'));
+        return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
     }
 
     const body = JSON.parse(event.body);
     const account = body['account'] as string | null;
 
     if (account == null) {
-        return requestErrorResponse(new Error('No account provided.'));
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
 
     try {
         refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
 
     let gasKeypair: web3.Keypair;
@@ -60,19 +60,15 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     try {
         gasKeypair = await fetchGasKeypair();
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
-    try {
-        refundRecord = await refundRecordService.getRefundRecord({
-            shopId: refundRequest.refundId,
-        });
-    } catch (error) {
-        return requestErrorResponse(error);
-    }
+    const refundRecord = await refundRecordService.getRefundRecord({
+        shopId: refundRequest.refundId,
+    });
 
     if (refundRecord == null) {
-        return requestErrorResponse(new Error('No refund record found.'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
     }
 
     const merchant = await merchantService.getMerchant({
@@ -80,7 +76,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     });
 
     if (merchant == null) {
-        return requestErrorResponse(new Error('Merchant not found.'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
     }
 
     const singleUseKeypair = await generateSingleUseKeypairFromRefundRecord(refundRecord);
@@ -94,19 +90,19 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
             gasKeypair.publicKey.toBase58()
         );
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     try {
-        await trmService.screenAddress(account!);
+        await trmService.screenAddress(account);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     try {
         transaction = encodeTransaction(refundTransaction.transaction);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     transaction.partialSign(gasKeypair);
@@ -115,13 +111,13 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     const transactionSignature = transaction.signature;
 
     if (transactionSignature == null) {
-        return requestErrorResponse(new Error('No transaction signature.'));
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     try {
         verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     const signatureBuffer = transactionSignature;
@@ -136,7 +132,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
             refundRecord.id
         );
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     const transactionBuffer = transaction.serialize({

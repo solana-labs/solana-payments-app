@@ -20,6 +20,7 @@ import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair
 import { TrmService } from '../../services/trm-service.service.js';
 import * as Sentry from '@sentry/serverless';
 import { verifyPaymentTransactionWithPaymentRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -28,7 +29,6 @@ Sentry.AWSLambda.init({
 
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-        let paymentRecord: PaymentRecord | null;
         let paymentTransaction: TransactionRequestResponse;
         let paymentRequest: PaymentTransactionRequestParameters;
         let transaction: web3.Transaction;
@@ -41,13 +41,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const TRM_API_KEY = process.env.TRM_API_KEY;
 
         if (TRM_API_KEY == null) {
-            return requestErrorResponse(new Error('Missing internal config.'));
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
         }
 
         const trmService = new TrmService(TRM_API_KEY);
 
         if (event.body == null) {
-            return requestErrorResponse(new Error('No body provided.'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
 
         const body = JSON.parse(event.body);
@@ -55,13 +55,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const account = body['account'] as string | null;
 
         if (account == null) {
-            return requestErrorResponse(new Error('No account provided.'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
         try {
             paymentRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
         let gasKeypair: web3.Keypair;
@@ -69,19 +69,15 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        try {
-            paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: paymentRequest.paymentId,
-            });
-        } catch (error) {
-            return requestErrorResponse(error);
-        }
+        const paymentRecord = await paymentRecordService.getPaymentRecord({
+            id: paymentRequest.paymentId,
+        });
 
         if (paymentRecord == null) {
-            return requestErrorResponse(new Error('Payment record not found.'));
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
         const merchant = await merchantService.getMerchant({
@@ -89,7 +85,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Merchant not found.'));
+            // Not sure if this should be 500 or 404, will do 404 for now
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
@@ -98,7 +95,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         //     await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
         // } catch (error) {
         //     // TODO: Log this error in sentry
-        //     return requestErrorResponse(error);
+        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         // }
 
         try {
@@ -111,7 +108,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58()
             );
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         try {
@@ -119,13 +116,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             // TODO: Check trm error code to see if it failed or was rejected, if it's failed we can try again
             // if it's rejected, we need to reject the payment sessions
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         try {
             transaction = encodeTransaction(paymentTransaction.transaction);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         transaction.partialSign(gasKeypair);
@@ -134,13 +131,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         const transactionSignature = transaction.signature;
 
         if (transactionSignature == null) {
-            return requestErrorResponse(new Error('No transaction signature.'));
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         const signatureBuffer = transactionSignature;
@@ -155,7 +152,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 null
             );
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         const transactionBuffer = transaction.serialize({

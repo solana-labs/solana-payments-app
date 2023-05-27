@@ -10,6 +10,7 @@ import {
 } from '../../../../models/payment-address-request.model.js';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -21,13 +22,13 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
     try {
         merchantAuthToken = withAuth(event.cookies);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
     }
 
     try {
         merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(event.body);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
 
     if (
@@ -36,13 +37,13 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
         merchantUpdateRequest.acceptedTermsAndConditions == null &&
         merchantUpdateRequest.dismissCompleted == null
     ) {
-        return requestErrorResponse(new Error('No info to update is provided.'));
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
 
     let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
     if (merchant == null) {
-        return requestErrorResponse(new Error('No merchant found.'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
     }
 
     const merchantUpdateQuery = {};
@@ -66,7 +67,7 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
     try {
         merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
     } catch {
-        return requestErrorResponse(new Error('Failed to update merchant.'));
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);

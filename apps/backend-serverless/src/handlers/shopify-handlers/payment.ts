@@ -7,6 +7,12 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    errorResponse,
+    errorTypeForError,
+} from '../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -21,30 +27,31 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         const paymentUiUrl = process.env.PAYMENT_UI_URL;
 
         if (paymentUiUrl == null) {
-            return requestErrorResponse(new Error('Missing internal config.'));
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
         }
 
         if (event.body == null) {
-            return requestErrorResponse(new Error('Missing body.'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
 
         const shop = event.headers['shopify-shop-domain'];
 
         if (shop == null) {
-            return requestErrorResponse(new Error('Missing shop.'));
+            return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
         }
 
         const merchant = await merchantService.getMerchant({ shop: shop });
 
         if (merchant == null) {
-            throw new Error('Merchant not found');
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         let paymentInitiation;
+
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
         let paymentRecord = await paymentRecordService.getPaymentRecord({
@@ -65,7 +72,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize
                 );
             } catch (error) {
-                return requestErrorResponse(error);
+                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
             }
         }
 

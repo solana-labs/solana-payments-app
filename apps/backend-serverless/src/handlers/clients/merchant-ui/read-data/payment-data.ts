@@ -14,6 +14,7 @@ import { MerchantService } from '../../../../services/database/merchant-service.
 import { createPaymentDataResponseFromPaymentRecord } from '../../../../utilities/payment-record.utility.js';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 import { createPaymentResponse } from '../../../../utilities/create-payment-response.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -31,19 +32,19 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Could not find merchant.'));
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         try {
             paymentDataRequestParameters = parseAndValidatePaymentDataRequestParameters(event.queryStringParameters);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
         const pagination: Pagination = {
