@@ -5,10 +5,10 @@ describe('unit testing shopify webhooks headers model', () => {
         const validShopifyRequestHeaders = {
             'X-Shopify-Topic': 'customers/data_request',
             'X-Shopify-Hmac-Sha256': 'some-hmac',
-            'X-Shopify-Shop-Domain': 'some-api-version',
+            'X-Shopify-Shop-Domain': 'some-domain',
             'X-Shopify-API-Version': 'some-api-version',
-            'X-Shopify-Webhook-Id': 'some-api-version',
-            'X-Shopify-Triggered-At': 'some-api-version',
+            'X-Shopify-Webhook-Id': 'some-webhook-id',
+            'X-Shopify-Triggered-At': 'some-triggered-at',
         };
 
         expect(() => {

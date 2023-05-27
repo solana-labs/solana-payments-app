@@ -18,30 +18,27 @@ export enum ShopifyWebhookTopic {
     shopReact = 'shop/redact',
 }
 
-export const shopifyWebhookHeadersScheme = object()
-    .shape({
-        'X-Shopify-Topic': string().oneOf(Object.values(ShopifyWebhookTopic), 'Invalid shopify topic type').required(),
-        'X-Shopify-Hmac-Sha256': string().required(),
-        'X-Shopify-Shop-Domain': string().required(),
-        'X-Shopify-API-Version': string().required(),
-        'X-Shopify-Webhook-Id': string().required(),
-        'X-Shopify-Triggered-At': string().required(),
-    })
-    .transform((_, originalValue) => toCamelCase(originalValue));
-
+export const shopifyWebhookHeadersScheme = object().shape({
+    'X-Shopify-Topic': string().oneOf(Object.values(ShopifyWebhookTopic), 'Invalid shopify topic type').required(),
+    'X-Shopify-Hmac-Sha256': string().required(),
+    'X-Shopify-Shop-Domain': string().required(),
+    'X-Shopify-API-Version': string().required(),
+    'X-Shopify-Webhook-Id': string().required(),
+    'X-Shopify-Triggered-At': string().required(),
+});
 export type ShopifyWebhookHeaders = InferType<typeof shopifyWebhookHeadersScheme>;
 
-export type ParsedShopifyWebhookHeaders = {
-    shopifyTopic: string;
-    hmacSha256: string;
-    shopDomain: string;
-    apiVersion: string;
-    webhookId: string;
-    triggeredAt: string;
-};
+// export type ParsedShopifyWebhookHeaders = {
+//     topic: string;
+//     hmacSha256: string;
+//     shopDomain: string;
+//     apiVersion: string;
+//     webhookId: string;
+//     triggeredAt: string;
+// };
 
-export const parseAndValidateShopifyWebhookHeaders = (shopifyRequestHeaders: any): ParsedShopifyWebhookHeaders => {
-    return parseAndValidateStrict<ParsedShopifyWebhookHeaders>(
+export const parseAndValidateShopifyWebhookHeaders = (shopifyRequestHeaders: any): ShopifyWebhookHeaders => {
+    return parseAndValidate<ShopifyWebhookHeaders>(
         shopifyRequestHeaders,
         shopifyWebhookHeadersScheme,
         'Could not parse the shopify webhook headers. Unknown Reason.'
