@@ -47,7 +47,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         }
 
         const pagination: Pagination = {
-            page: refundDataRequestParameters.page,
+            page: refundDataRequestParameters.pageNumber,
             pageSize: refundDataRequestParameters.pageSize,
         };
 
