@@ -3,15 +3,11 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    RPC_URL: ${env:RPC_URL}
 package:
   excludeDevDependencies: false
 functions:
-  hello:
-    handler: src/handlers/hello.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   pay:
     handler: src/handlers/pay.pay
     events:

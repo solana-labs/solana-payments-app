@@ -33,7 +33,7 @@
     "dotenv": "^16.0.3",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
-    "yup": "^0.32.11"
+    "yup": "1.2.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.101",

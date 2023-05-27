@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
-    ParsedShopifyWebhookHeaders,
+    ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify-webhook-headers.model.js';
@@ -15,7 +15,7 @@ Sentry.AWSLambda.init({
 
 export const customersReact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        let webhookHeaders: ParsedShopifyWebhookHeaders;
+        let webhookHeaders: ShopifyWebhookHeaders;
 
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
@@ -23,7 +23,7 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        if (webhookHeaders.shopifyTopic != ShopifyWebhookTopic.customerData) {
+        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
             return requestErrorResponse(new Error('Invalid topic'));
         }
 
@@ -34,7 +34,7 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
         const customerRedactBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders.hmacSha256);
+            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
             return requestErrorResponse(error);
         }

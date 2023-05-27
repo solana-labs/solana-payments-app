@@ -47,7 +47,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         }
 
         const pagination: Pagination = {
-            page: paymentDataRequestParameters.page,
+            page: paymentDataRequestParameters.pageNumber,
             pageSize: paymentDataRequestParameters.pageSize,
         };
 
