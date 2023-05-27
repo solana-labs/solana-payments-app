@@ -37,9 +37,12 @@ export const paymentTransactionRequestScheme = object().shape({
     receivingToken: publicKeySchema.required(),
     feePayer: publicKeySchema.required(),
     receivingAmount: number().required(),
-    amountType: string().oneOf(Object.values(AmountType), 'Invalid amount type.').required(),
-    transactionType: string().oneOf(Object.values(TransactionType), 'Invalid transaction type').required(),
-    createAta: boolean().required(),
+    amountType: string().oneOf(Object.values(AmountType), 'Invalid amount type.').default(AmountType.size).required(),
+    transactionType: string()
+        .oneOf(Object.values(TransactionType), 'Invalid transaction type')
+        .default(TransactionType.blockhash)
+        .required(),
+    createAta: boolean().default(true).required(),
     singleUseNewAcc: publicKeySchema.nullable(),
     singleUsePayer: publicKeySchema.nullable(),
     indexInputs: string().nullable(),
