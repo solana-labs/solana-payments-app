@@ -3,6 +3,8 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    RPC_URL: ${env:RPC_URL}
 package:
   excludeDevDependencies: false
 functions:
