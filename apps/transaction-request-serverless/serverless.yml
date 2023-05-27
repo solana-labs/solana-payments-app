@@ -6,12 +6,6 @@ provider:
 package:
   excludeDevDependencies: false
 functions:
-  hello:
-    handler: src/handlers/hello.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   pay:
     handler: src/handlers/pay.pay
     events:
