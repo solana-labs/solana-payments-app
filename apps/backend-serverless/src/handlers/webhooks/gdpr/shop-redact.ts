@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
-    ParsedShopifyWebhookHeaders,
+    ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify-webhook-headers.model.js';
@@ -18,7 +18,7 @@ Sentry.AWSLambda.init({
 
 export const shopRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        let webhookHeaders: ParsedShopifyWebhookHeaders;
+        let webhookHeaders: ShopifyWebhookHeaders;
         const prisma = new PrismaClient();
         const merchantService = new MerchantService(prisma);
 
@@ -28,7 +28,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        if (webhookHeaders.shopifyTopic != ShopifyWebhookTopic.customerData) {
+        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
             return requestErrorResponse(new Error('Invalid topic'));
         }
 
@@ -39,7 +39,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         const shopRedactBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(shopRedactBodyString, webhookHeaders.hmacSha256);
+            verifyShopifyWebhook(shopRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
             return requestErrorResponse(error);
         }
