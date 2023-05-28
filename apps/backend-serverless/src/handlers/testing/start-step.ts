@@ -20,6 +20,9 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
 
         const stepFunctionParams = {
             stateMachineArn: retryMachineArn,
+            input: JSON.stringify({
+                seconds: 5,
+            }),
         };
 
         const stepFunctions = new StepFunctions();
