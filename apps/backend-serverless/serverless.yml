@@ -24,6 +24,7 @@ provider:
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
     AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
     AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
+    RETRY_ARN: ${self:resources.Outputs.Retry.Value}
 
   httpApi:
     cors: true
@@ -146,6 +147,32 @@ functions:
       - httpApi:
           path: /shop/redact
           method: post
+  retry:
+    handler: handler.retry
+
+stepFunctions:
+  stateMachines:
+    retry:
+        name: retry
+        definition:
+          StartAt: wait_using_seconds
+          States: 
+            wait_using_seconds: 
+              Type: Wait
+              Seconds: 5
+              Next: process_retry
+            process_retry: 
+              Type: Task
+              Resource: arn:aws:lambda:${opt:region}:${self:custom.accountId}:function:${self:service}-${opt:stage}-sendNotification
+              End: true
+
+resources:
+  Outputs:
+    Timer:
+      Description: The ARN of the retry machine
+      Value:
+        Ref: Retry
+
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
