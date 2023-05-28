@@ -156,7 +156,6 @@ functions:
           method: get
       - sqs:
           arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
-
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -169,6 +168,18 @@ functions:
 
   retry-request:
     handler: src/handlers/webhooks/retry.retry
+
+  queue:
+    handler: src/handlers/testing/queue.queue
+    events:
+      - httpApi:
+          path: /queue
+          method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
 
 stepFunctions:
   stateMachines:
