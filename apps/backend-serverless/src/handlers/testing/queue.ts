@@ -21,8 +21,9 @@ export const queue = Sentry.AWSLambda.wrapHandler(
                 .sendMessage({
                     QueueUrl: queueUrl,
                     MessageBody: JSON.stringify({
-                        topic: 'testing',
-                        payment: '4',
+                        recordId: '1234',
+                        recordType: 'payment',
+                        seconds: 5,
                     }),
                 })
                 .promise();

@@ -1,9 +1,16 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import {
+    APIGatewayProxyEventV2,
+    APIGatewayProxyResultV2,
+    SQSHandler,
+    SQSEvent,
+    SQSMessageAttributes,
+} from 'aws-lambda';
 import pkg from 'aws-sdk';
 // const AWS = require('aws-sdk');
 const { StepFunctions } = pkg;
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { parseAndValidateMessageQueuePayload } from '../../models/message-queue-payload.model.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -12,8 +19,10 @@ Sentry.AWSLambda.init({
 
 // TODO: read the message from the queue
 export const startStep = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+    async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
         // TODO: read the message from the queue
+
+        const stepFunctions = new StepFunctions();
 
         const retryMachineArn = process.env.RETRY_ARN;
 
@@ -21,27 +30,44 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('RETRY_ARN is not defined'));
         }
 
-        const stepFunctionParams = {
-            stateMachineArn: retryMachineArn,
-            input: JSON.stringify({
-                seconds: 5, // TODO: make this dynamic based on message value
-            }),
-        };
+        for (const record of event.Records) {
+            console.log(record);
 
-        const stepFunctions = new StepFunctions();
+            try {
+                const messagePayload = parseAndValidateMessageQueuePayload(JSON.parse(record.body));
 
-        try {
-            // TODO: figure out why this doesn't always log
-            stepFunctions.startExecution(stepFunctionParams, (err, data) => {
-                if (err) {
-                    console.log(err);
-                    console.log('error with step function. long live the king!');
-                } else {
-                    console.log('successfully started step function. long live the king!');
+                console.log(messagePayload);
+
+                const stepFunctionParams = {
+                    stateMachineArn: retryMachineArn,
+                    input: JSON.stringify({
+                        seconds: 5, // TODO: make this dynamic based on message value
+                        // recordId: messagePayload.recordId,
+                        // recordType: messagePayload.recordType,
+                    }),
+                };
+
+                // await sqs
+                // .sendMessage({
+                //     QueueUrl: queueUrl,
+                //     MessageBody: JSON.stringify({
+                //         // recordId: '1234',
+                //         // recordType: 'payment',
+                //         seconds: 5,
+                //     }),
+                // })
+                // .promise();
+
+                try {
+                    await stepFunctions.startExecution(stepFunctionParams).promise();
+                } catch (error) {
+                    console.log(error);
                 }
-            });
-        } catch {
-            return requestErrorResponse(new Error('Error starting step function'));
+            } catch (err) {
+                // TODO: Log with sentry
+                console.log(err);
+                continue;
+            }
         }
 
         return {

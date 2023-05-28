@@ -151,9 +151,6 @@ functions:
     environment:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
-      - httpApi:
-          path: /start
-          method: get
       - sqs:
           arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
     iamRoleStatements:
