@@ -8,7 +8,7 @@ Sentry.AWSLambda.init({
 
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        console.log('successfully got to retry function');
+        console.log('successfully got here! to the retry! and it was variable!');
 
         return {
             statusCode: 200,

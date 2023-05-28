@@ -172,7 +172,7 @@ stepFunctions:
           States: 
             wait_using_seconds: 
               Type: Wait
-              Seconds: 5
+              SecondsPath: "$.seconds"
               Next: process_retry
             process_retry: 
               Type: Task
