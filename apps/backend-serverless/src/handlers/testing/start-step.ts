@@ -10,8 +10,11 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
+// TODO: read the message from the queue
 export const startStep = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        // TODO: read the message from the queue
+
         const retryMachineArn = process.env.RETRY_ARN;
 
         if (retryMachineArn == null) {
@@ -21,7 +24,7 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
         const stepFunctionParams = {
             stateMachineArn: retryMachineArn,
             input: JSON.stringify({
-                seconds: 5,
+                seconds: 5, // TODO: make this dynamic based on message value
             }),
         };
 
