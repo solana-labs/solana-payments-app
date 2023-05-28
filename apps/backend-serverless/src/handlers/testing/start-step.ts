@@ -25,15 +25,17 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
             }),
         };
 
+        console.log('hello world');
+
         const stepFunctions = new StepFunctions();
 
         try {
             stepFunctions.startExecution(stepFunctionParams, (err, data) => {
                 if (err) {
                     console.log(err);
-                    console.log('error with step function');
+                    console.log('error with step function. long live the king!');
                 } else {
-                    console.log('successfully started step function');
+                    console.log('successfully started step function. long live the king!');
                 }
             });
         } catch {
