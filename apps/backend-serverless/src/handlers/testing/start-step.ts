@@ -42,8 +42,8 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
                     stateMachineArn: retryMachineArn,
                     input: JSON.stringify({
                         seconds: 5, // TODO: make this dynamic based on message value
-                        // recordId: messagePayload.recordId,
-                        // recordType: messagePayload.recordType,
+                        recordId: messagePayload.recordId,
+                        recordType: messagePayload.recordType,
                     }),
                 };
 

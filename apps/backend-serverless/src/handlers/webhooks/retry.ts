@@ -7,10 +7,9 @@ Sentry.AWSLambda.init({
 });
 
 export const retry = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        // console.log(event);
+    async (event: unknown): Promise<APIGatewayProxyResultV2> => {
         console.log('successfully went down the line!');
-        // console.log(JSON.stringify(event));
+        // parse the event here and retry it all
 
         return {
             statusCode: 200,
