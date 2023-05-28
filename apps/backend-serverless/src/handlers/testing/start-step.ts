@@ -25,11 +25,10 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
             }),
         };
 
-        console.log('hello world');
-
         const stepFunctions = new StepFunctions();
 
         try {
+            // TODO: figure out why this doesn't always log
             stepFunctions.startExecution(stepFunctionParams, (err, data) => {
                 if (err) {
                     console.log(err);
