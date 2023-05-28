@@ -154,11 +154,18 @@ functions:
       - httpApi:
           path: /start
           method: get
+      - sqs:
+          arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
     iamRoleStatements:
       - Effect: Allow
         Action:
           - states:StartExecution
         Resource: ${self:resources.Outputs.RetryMachine.Value}
+      - Effect: Allow
+        Action:
+          - sqs:ReceiveMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
 
   retry-request:
     handler: src/handlers/webhooks/retry.retry
