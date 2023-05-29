@@ -13,6 +13,7 @@ import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import axios from 'axios';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -21,58 +22,48 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
 
     let merchantAuthToken: MerchantAuthToken;
     let rejectRefundRequest: RejectRefundRequest;
-    let refundRecord: RefundRecord | null;
-    let merchant: Merchant | null;
 
     try {
         merchantAuthToken = withAuth(event.cookies);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
     }
 
     try {
         rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
 
-    try {
-        merchant = await merchantService.getMerchant({
-            id: merchantAuthToken.id,
-        });
-    } catch (error) {
-        return requestErrorResponse(error);
-    }
-
-    if (merchant == null) {
-        return requestErrorResponse(new Error('No merchant found.'));
-    }
-
-    try {
-        refundRecord = await refundRecordService.getRefundRecord({
-            shopId: rejectRefundRequest.refundId,
-        });
-    } catch (error) {
-        return requestErrorResponse(error);
-    }
+    const refundRecord = await refundRecordService.getRefundRecord({
+        shopId: rejectRefundRequest.refundId,
+    });
 
     if (refundRecord == null) {
-        return requestErrorResponse(new Error('No refund record found.'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
+    }
+
+    const merchant = await merchantService.getMerchant({
+        id: merchantAuthToken.id,
+    });
+
+    if (merchant == null) {
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
     }
 
     if (merchant.id !== refundRecord.merchantId) {
-        return requestErrorResponse(new Error('Refund record does not belong to merchant.'));
+        return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
     }
 
     if (refundRecord.status !== RefundRecordStatus.pending) {
-        return requestErrorResponse(new Error('Refund record is not pending.'));
+        return errorResponse(ErrorType.conflict, ErrorMessage.incorrectRefundRecordState);
     }
 
     const shop = merchant.shop;
     const accessToken = merchant.accessToken;
 
     if (accessToken == null) {
-        return requestErrorResponse(new Error('Could not mutate on behalf of the Shopify merchant.'));
+        return errorResponse(ErrorType.notFound, ErrorMessage.unauthorizedMerchant);
     }
 
     let rejectRefundResponse: RejectRefundResponse;
@@ -86,7 +77,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
             accessToken
         );
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     // TODO: Validate response from Shopify
@@ -96,12 +87,13 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
             status: RefundRecordStatus.rejected,
         });
     } catch (error) {
-        return requestErrorResponse(error);
+        // This will leave us in an odd spot because Shopify would be updated but we would not be
+        // TODO: Address this
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
-    // TODO: Define what the response should be
     return {
-        statusCode: 200,
-        body: JSON.stringify(rejectRefundResponse, null, 2),
+        statusCode: 204,
+        body: JSON.stringify({}),
     };
 };

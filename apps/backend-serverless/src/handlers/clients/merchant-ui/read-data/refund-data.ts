@@ -14,6 +14,7 @@ import { DEFAULT_PAGINATION_SIZE, Pagination } from '../../../../utilities/datab
 import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/refund-record.utility.js';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 import { createRefundResponse } from '../../../../utilities/create-refund-response.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -31,19 +32,19 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Could not find merchant.'));
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         try {
             refundDataRequestParameters = parseAndValidateRefundDataRequestParameters(event.queryStringParameters);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
         const pagination: Pagination = {

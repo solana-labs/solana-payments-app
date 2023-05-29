@@ -8,6 +8,7 @@ import {
 } from '../../utilities/shopify-install-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let parsedAppInstallQuery: AppInstallQueryParam;
@@ -18,7 +19,7 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     try {
         parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
 
     const shop = parsedAppInstallQuery.shop;
@@ -36,7 +37,7 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             });
         }
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
     const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);

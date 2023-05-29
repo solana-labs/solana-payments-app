@@ -9,6 +9,7 @@ import { RefundRecordService } from '../../services/database/refund-record-servi
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const prisma = new PrismaClient();
@@ -16,26 +17,26 @@ export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
     const merchantService = new MerchantService(prisma);
 
     if (event.body == null) {
-        return requestErrorResponse(new Error('Missing body.'));
+        return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
     }
 
     const shop = event.headers['shopify-shop-domain'];
 
     if (shop == null) {
-        return requestErrorResponse(new Error('Missing shop.'));
+        return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
     }
 
     let merchant = await merchantService.getMerchant({ shop: shop });
 
     if (merchant == null) {
-        throw new Error('Merchant not found.');
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
     }
 
     let refundInitiation: ShopifyRefundInitiation;
     try {
         refundInitiation = parseAndValidateShopifyRefundInitiation(JSON.parse(event.body));
     } catch (error) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
 
     let refundRecord = await refundRecordService.getRefundRecord({
@@ -56,7 +57,7 @@ export const refund = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
                 usdcSize
             );
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
     }
 

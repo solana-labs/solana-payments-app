@@ -7,11 +7,10 @@ import {
 } from '../../../models/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
 
 export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let parsedPaymentStatusQuery: PaymentStatusRequest;
-    let paymentRecord: PaymentRecord | null;
-    let merchant: Merchant | null;
 
     const prisma = new PrismaClient();
 
@@ -21,33 +20,23 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
     try {
         parsedPaymentStatusQuery = await parseAndValidatePaymentStatusRequest(event.queryStringParameters);
     } catch (error: unknown) {
-        return requestErrorResponse(error);
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
 
-    try {
-        paymentRecord = await paymentRecordService.getPaymentRecord({
-            id: parsedPaymentStatusQuery.id,
-        });
+    const paymentRecord = await paymentRecordService.getPaymentRecord({
+        id: parsedPaymentStatusQuery.paymentId,
+    });
 
-        if (paymentRecord == null) {
-            return requestErrorResponse(
-                // TODO: Create a custom error type for this.
-                new Error(`Could not find payment.`)
-            );
-        }
+    if (paymentRecord == null) {
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+    }
 
-        merchant = await merchantService.getMerchant({
-            id: paymentRecord.merchantId,
-        });
+    const merchant = await merchantService.getMerchant({
+        id: paymentRecord.merchantId,
+    });
 
-        if (merchant == null) {
-            return requestErrorResponse(
-                // TODO: Create a custom error type for this.
-                new Error(`Could not find merchant.`)
-            );
-        }
-    } catch (error) {
-        return requestErrorResponse(error);
+    if (merchant == null) {
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
     }
 
     const paymentStatusResponse = {

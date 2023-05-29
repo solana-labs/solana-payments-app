@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { MissingEnvError } from '../errors/missing-env.error.js';
 
 export const AUTH_TOKEN_COOKIE_NAME = 'authToken';
 
@@ -14,7 +15,7 @@ export const createMechantAuthCookieHeader = (id: string): string => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
     if (jwtSecretKey == null) {
-        throw new Error('JWT secret key is not set');
+        throw new MissingEnvError('jwt secret key');
     }
 
     const payload = {

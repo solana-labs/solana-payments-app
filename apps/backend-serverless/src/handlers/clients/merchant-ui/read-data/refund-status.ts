@@ -15,8 +15,12 @@ import {
     parseAndValidateRefundStatusRequest,
     RefundStatusRequest,
 } from '../../../../models/refund-status-request.model.js';
-import { createRefundStatusResponse } from '../../../../utilities/create-refund-status-response.utility.js';
-import { RefundDataResponse } from '../../../../utilities/refund-record.utility.js';
+import {
+    RefundDataResponse,
+    createRefundDataResponseFromRefundRecord,
+} from '../../../../utilities/refund-record.utility.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -27,34 +31,38 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
         const merchantService = new MerchantService(prisma);
+        const refundRecordService = new RefundRecordService(prisma);
 
         let merchantAuthToken: MerchantAuthToken;
         let refundStatusRequestParameters: RefundStatusRequest;
-        let refundStatusResponse: RefundDataResponse;
 
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
         const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
         if (merchant == null) {
-            return requestErrorResponse(new Error('Could not find merchant.'));
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
         try {
             refundStatusRequestParameters = parseAndValidateRefundStatusRequest(event.queryStringParameters);
         } catch (error) {
-            return requestErrorResponse(error);
+            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
-        try {
-            refundStatusResponse = await createRefundStatusResponse(refundStatusRequestParameters.shopId, prisma);
-        } catch (error) {
-            return requestErrorResponse(error);
+        const refundRecord = await refundRecordService.getRefundRecordWithPayment({
+            shopId: refundStatusRequestParameters.shopId,
+        });
+
+        if (refundRecord == null) {
+            return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
         }
+
+        const refundStatusResponse = createRefundDataResponseFromRefundRecord(refundRecord);
 
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
