@@ -33,7 +33,7 @@ export const retryAppConfigure = async (appConfigureInfo: ShopifyMutationAppConf
 
         // Validate the response
 
-        // TODO: Update the merchant record to reflect that we configured the app
+        // TODO: Update the merchant record to reflect that we configured the app, this will come after we implement KYB
     } catch (error) {
         // Throw an error specifically about the database, might be able to handle this differently
         // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database

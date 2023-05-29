@@ -14,11 +14,7 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
             try {
                 const attributes = record.messageAttributes;
 
-                console.log('attributes');
-                console.log(attributes);
-
                 if (attributes == null) {
-                    console.log('No attributes');
                     // Right now we are not likely to get here as we only have one type of message that should have attribites
                     // Let's log and flag this as a critical error
                     console.log('No attributes');
@@ -43,6 +39,9 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
                         console.log('Couldnt execute');
                         console.log(error);
                     }
+                } else {
+                    // We have a messageType that we don't know how to handle
+                    // TODO: Log and flag as a critical error with sentry
                 }
             } catch (err) {
                 // TODO: Log with sentry

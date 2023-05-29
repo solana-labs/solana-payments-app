@@ -98,25 +98,35 @@ export const sendRetryMessage = async (
 
     const retryTimeInterval = nextRetryTimeInterval(retryStepIndex);
 
-    await sqs
-        .sendMessage({
-            QueueUrl: queueUrl,
-            MessageBody: JSON.stringify({
-                retryType: retryType,
-                retryStepIndex: retryStepIndex,
-                retrySeconds: retryTimeInterval,
-                paymentResolve: paymentResolve,
-                paymentReject: paymentReject,
-                refundResolve: refundResolve,
-                refundReject: refundReject,
-                appConfigure: appConfigure,
-            }),
-            MessageAttributes: {
-                'message-type': {
-                    DataType: 'String',
-                    StringValue: 'shopify-mutation-retry',
-                },
-            },
-        })
-        .promise();
+    var numberOfSendMessageAttempts = 0;
+    const maxNumberOfSendMessageAttempts = 3;
+
+    while (numberOfSendMessageAttempts < maxNumberOfSendMessageAttempts) {
+        try {
+            await sqs
+                .sendMessage({
+                    QueueUrl: queueUrl,
+                    MessageBody: JSON.stringify({
+                        retryType: retryType,
+                        retryStepIndex: retryStepIndex,
+                        retrySeconds: retryTimeInterval,
+                        paymentResolve: paymentResolve,
+                        paymentReject: paymentReject,
+                        refundResolve: refundResolve,
+                        refundReject: refundReject,
+                        appConfigure: appConfigure,
+                    }),
+                    MessageAttributes: {
+                        'message-type': {
+                            DataType: 'String',
+                            StringValue: 'shopify-mutation-retry',
+                        },
+                    },
+                })
+                .promise();
+        } catch (error) {
+            // TODO: Log the error with sentry every time we hit this
+            numberOfSendMessageAttempts += 1;
+        }
+    }
 };
