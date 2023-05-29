@@ -88,6 +88,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                 // TODO: Handle this with some kind of redunndancy
                 // I need to figure out what to do in the case of SQS failures
                 // The odds are low but never zero!
+                throw new Error('SQS Failure'); // TODO: Critical Error
             }
         }
 

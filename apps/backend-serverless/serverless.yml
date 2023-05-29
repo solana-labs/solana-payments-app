@@ -154,6 +154,7 @@ functions:
     events:
       - sqs:
           arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+          batchSize: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
