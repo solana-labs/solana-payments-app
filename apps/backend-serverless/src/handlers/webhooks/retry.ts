@@ -30,6 +30,8 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         try {
             shopifyMutationRetry = parseAndValidateShopifyMutationRetry(event);
         } catch (error) {
+            // Throwing should cause the step function to be retried. However, we should
+            // manually view the error becuase it shouldn't work next titme either.
             throw new InvalidInputError('shopify mutation retry body'); // TODO: Critical Error
         }
 
@@ -62,10 +64,10 @@ export const retry = Sentry.AWSLambda.wrapHandler(
             // if its a shopify error, then it should go back on the queue
             const nextStep = shopifyMutationRetry.retryStepIndex + 1;
             if (exhaustedRetrySteps(nextStep)) {
-                // TODO: Figure out how to handle this
-                // Figure out how to exit the step function here without adding another message
-                // This would be a critical error, so i would want to be notified, we would likley need
-                // to reach out to shopify for support.
+                // Ok so I think what I'm going to do here is just add a new payment or refund
+                // status called 'terminal' and if we get to the end, i will just set it to terminal
+                // and exit out of the step function
+                // TODO: Add terminal status
                 return {
                     statusCode: 200,
                     body: JSON.stringify({}),
@@ -83,7 +85,9 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                     nextStep
                 );
             } catch (error) {
-                // TODO: Handle this
+                // TODO: Handle this with some kind of redunndancy
+                // I need to figure out what to do in the case of SQS failures
+                // The odds are low but never zero!
             }
         }
 
