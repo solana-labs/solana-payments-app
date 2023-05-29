@@ -4,7 +4,7 @@ Shopify has a list of technical requirements that payment apps are to support [h
 
 ## [Idempotency](https://shopify.dev/docs/apps/payments/implementation#idempotency)
 
-As a payments app we need to support idempotency in both directions. Meaning even if Shopify sends us duplicate requests, this cannot result in customers paying twice or merchants refunding twice.
+As a payments app we need to support idempotency in both directions. Meaning even if Shopify sends us duplicate requests, this cannot result in customers paying twice or merchants refunding twice. On the other side, Shopify guarentees us that duplicate requests made will have no ill side effects.
 
 ### Shopify to Us
 
@@ -16,7 +16,7 @@ Both of these requests inlcude an `id` in the request body that serves as the id
 
 **Database** - When creating a PaymentRecord or RefundRecord in the database, we assign the given `id` value from shopify as the `shopId` on the entry. To prevent duplicate records, we have marked `shopId` as unique. This should then result in throwing an error if we try to create another PaymentRecord with the same `shopId` as another record in the database.
 
-**Transaction Building Logic** - An imporant part of the system design for our payment app is having an open endpoint to generate transactions. This enables us to support [Solana Pay Transaction Requests](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#specification-transaction-request). To prevent double spending, it is not enough to check against the database for the state of a given record. This has to led to us using a conecpt we are calling [Single Use Accounts](../README.md#single-use-accounts). In each transaction we build for a given record, we generate a deterministic keypair that is generated using the `shopId` as input. This keypair is then used in a System Program Create Account instruction which is added to each transaction. Then, even if we end up in situation where multiple transactions are fetched for a single record, only one of those transactions will be able to land on chain.
+**Transaction Building Logic** - An imporant part of the system design for our payment app is having an open endpoint to generate on chain transactions. This enables us to support [Solana Pay Transaction Requests](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#specification-transaction-request). To prevent double spending, it is not enough to check against the database for the state of a given record. This has to led to us using a conecpt we are calling [Single Use Accounts](../README.md#single-use-accounts). In each transaction we build for a given record, we generate a deterministic keypair that is generated using the `shopId` as input. This keypair is then used in a System Program Create Account instruction which is added to each transaction. Then, even if we end up in situation where multiple transactions are fetched for a single record, only one of those transactions will be able to land on chain.
 
 ### Us to Shopify
 
@@ -68,3 +68,17 @@ We currently get the rate limiting values back from Shopify when we make the gra
 We currently support API version 2023-01. We will soon add checks at the begining of our handlers and in the requests to Shopify. After release of the first version, we will start adding support for 2023-04.
 
 ## [GDPR](https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks)
+
+There are three mantatory APIs that Shopify requires we support.
+
+1. customer data request
+2. customer data redact
+3. shop redact
+
+Currently, we don't store any info about customers in our app ( bullish on privacy ) so the first two APIs aren't very important to us. For these, we still
+
+-   host them
+-   protect them with mTLS
+-   verify they are accessed with correct payloads
+
+For the shop redact, we are still figuring out how this effects our existing records and future refunds. Once those details are discovered, we will likley either immediatly remove items from the database or store the request to proccess these manually.
