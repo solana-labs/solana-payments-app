@@ -57,7 +57,7 @@ export const sendRefundResolveRetryMessage = async (refundId: string) => {
     );
 };
 
-export const sendRefundRejectRetryMessage = async (refundId: string, reason: string) => {
+export const sendRefundRejectRetryMessage = async (refundId: string, code: string, reason: string) => {
     await sendRetryMessage(
         ShopifyMutationRetryType.refundReject,
         null,
@@ -65,6 +65,7 @@ export const sendRefundRejectRetryMessage = async (refundId: string, reason: str
         null,
         {
             refundId: refundId,
+            code: code,
             reason: reason,
         },
         null

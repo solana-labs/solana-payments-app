@@ -17,6 +17,7 @@ export const shopifyMutationAppConfigureSchema = object().shape({
 export const shopifyMutationRefundRejectSchema = object().shape({
     refundId: string().required(),
     reason: string().required(),
+    code: string().required(),
 });
 
 export const shopifyMutationRefundResolveSchema = object().shape({

@@ -82,7 +82,7 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
         // TODO: Validate the response from Shopify
     } catch (error) {
         try {
-            await sendRefundRejectRetryMessage(refundRecord.id, 'PROCESSING_ERROR');
+            await sendRefundRejectRetryMessage(refundRecord.id, 'PROCESSING_ERROR', rejectRefundRequest.merchantReason);
         } catch (sendMessageError) {
             // TODO: This should not happen but if it does we should log it
             // We will add some kind of redudancy to this later

@@ -4,6 +4,7 @@ import { RefundRecordService } from '../database/refund-record-service.database.
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import { makeRefundSessionReject } from '../shopify/refund-session-reject.service.js';
 import axios from 'axios';
+import { reject } from 'lodash';
 
 export const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundReject | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
@@ -38,8 +39,8 @@ export const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundR
     try {
         const resolveRefundResponse = await refundSessionReject(
             refundRecord.shopGid,
+            refundRejectInfo.code,
             refundRejectInfo.reason,
-            'some reason',
             merchant.shop,
             merchant.accessToken
         );
