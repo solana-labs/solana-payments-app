@@ -13,17 +13,25 @@ Sentry.AWSLambda.init({
 // TODO: I hate this but idk why, gonna move on for now
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
+        console.log('here for beer! lfg!');
+
         for (const record of event.Records) {
+            console.log(record);
             try {
                 const attributes = record.messageAttributes;
 
+                console.log('attributes');
+                console.log(attributes);
+
                 if (attributes == null) {
+                    console.log('No attributes');
                     throw new Error('No attributes');
                 }
 
                 const messageType = attributes['message-type'].stringValue;
 
                 if (messageType == null) {
+                    console.log('No message type');
                     throw new Error('No message type');
                 }
 
@@ -31,6 +39,7 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
                     try {
                         await startExecutionOfShopifyMutationRetry(record.body);
                     } catch (error) {
+                        console.log('Couldnt execute');
                         console.log(error);
                     }
                 }

@@ -27,12 +27,6 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         const prisma = new PrismaClient();
         const stepFunctions = new StepFunctions();
 
-        const retryMachineArn = process.env.RETRY_ARN;
-
-        if (retryMachineArn == null) {
-            throw new MissingEnvError('retry arn'); // TODO: Critical Error
-        }
-
         let shopifyMutationRetry: ShopifyMutationRetry;
 
         try {
@@ -44,63 +38,63 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         try {
             switch (shopifyMutationRetry.retryType) {
                 case ShopifyMutationRetryType.paymentResolve:
-                    await retryPaymentResolve(shopifyMutationRetry.paymentResolve, prisma);
+                    console.log('payment resolve');
+                    // await retryPaymentResolve(shopifyMutationRetry.paymentResolve, prisma);
                     break;
                 case ShopifyMutationRetryType.paymentReject:
-                    await retryPaymentReject(shopifyMutationRetry.paymentReject, prisma);
+                    console.log('payment reject');
+                    // await retryPaymentReject(shopifyMutationRetry.paymentReject, prisma);
                     break;
                 case ShopifyMutationRetryType.refundResolve:
-                    await retryRefundResolve(shopifyMutationRetry.refundResolve, prisma);
+                    console.log('refund resolve');
+                    // await retryRefundResolve(shopifyMutationRetry.refundResolve, prisma);
                     break;
                 case ShopifyMutationRetryType.refundReject:
-                    await retryRefundReject(shopifyMutationRetry.refundReject, prisma);
+                    console.log('refund reject');
+                    // await retryRefundReject(shopifyMutationRetry.refundReject, prisma);
                     break;
                 case ShopifyMutationRetryType.appConfigure:
-                    await retryAppConfigure(shopifyMutationRetry.appConfigure, prisma);
+                    console.log('app configure');
+                    // await retryAppConfigure(shopifyMutationRetry.appConfigure, prisma);
                     break;
             }
         } catch (error) {
             // add it back to the queue, then thing is though, it depends on what kind of error it is.
             // no merchant might not go back on the queue, that might require manual intervention
             // if its a shopify error, then it should go back on the queue
-
-            const nextStep = shopifyMutationRetry.retryStepIndex + 1;
-
-            if (exhaustedRetrySteps(nextStep)) {
-                // TODO: Figure out how to handle this
-                // Figure out how to exit the step function here without adding another message
-                // This would be a critical error, so i would want to be notified, we would likley need
-                // to reach out to shopify for support.
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({}),
-                };
-            }
-
-            const nextTimeInterval = nextRetryTimeInterval(nextStep);
-
+            // const nextStep = shopifyMutationRetry.retryStepIndex + 1;
+            // if (exhaustedRetrySteps(nextStep)) {
+            //     // TODO: Figure out how to handle this
+            //     // Figure out how to exit the step function here without adding another message
+            //     // This would be a critical error, so i would want to be notified, we would likley need
+            //     // to reach out to shopify for support.
+            //     return {
+            //         statusCode: 200,
+            //         body: JSON.stringify({}),
+            //     };
+            // }
+            // const nextTimeInterval = nextRetryTimeInterval(nextStep);
             // omg u idiot you dont do this here
-            const stepFunctionParams = {
-                stateMachineArn: retryMachineArn,
-                input: JSON.stringify({
-                    retryType: shopifyMutationRetry.retryType,
-                    retryStepIndex: nextStep,
-                    retrySeconds: nextTimeInterval,
-                    paymentResolve: shopifyMutationRetry.paymentResolve,
-                    paymentReject: shopifyMutationRetry.paymentReject,
-                    refundResolve: shopifyMutationRetry.refundResolve,
-                    refundReject: shopifyMutationRetry.refundReject,
-                    appConfigure: shopifyMutationRetry.appConfigure,
-                }),
-            };
-
-            try {
-                await stepFunctions.startExecution(stepFunctionParams).promise();
-            } catch (error) {
-                // TODO: What happens if this fails?
-                // TODO: If this fails, I probably  want ot throw and log what ever error made it throw
-                // The reason I would want to throw is to cause this attempt to retry and hopefully succeed
-            }
+            // const stepFunctionParams = {
+            //     stateMachineArn: retryMachineArn,
+            //     input: JSON.stringify({
+            //         retryType: shopifyMutationRetry.retryType,
+            //         retryStepIndex: nextStep,
+            //         retrySeconds: nextTimeInterval,
+            //         paymentResolve: shopifyMutationRetry.paymentResolve,
+            //         paymentReject: shopifyMutationRetry.paymentReject,
+            //         refundResolve: shopifyMutationRetry.refundResolve,
+            //         refundReject: shopifyMutationRetry.refundReject,
+            //         appConfigure: shopifyMutationRetry.appConfigure,
+            //     }),
+            // };
+            // try {
+            //     await stepFunctions.startExecution(stepFunctionParams).promise();
+            // } catch (error) {
+            //     // TODO: What happens if this fails?
+            //     // TODO: If this fails, I probably  want ot throw and log what ever error made it throw
+            //     // The reason I would want to throw is to cause this attempt to retry and hopefully succeed
+            // }
         }
 
         return {
