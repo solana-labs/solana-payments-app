@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { MessageQueuePayload, parseAndValidateMessageQueuePayload } from '../../models/message-queue-payload.model.js';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, PaymentRecordStatus } from '@prisma/client';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
@@ -130,20 +130,40 @@ const retryPayment = async (paymentId: string, prisma: PrismaClient) => {
 
     const paymentSessionResolve = makePaymentSessionResolve(axios);
 
+    const resolvePaymentResponse = await paymentSessionResolve(
+        paymentRecord.shopGid,
+        merchant.shop,
+        merchant.accessToken
+    );
+
+    // Validate the response
+
+    // Update the payment record
+    const nextAction = resolvePaymentResponse.data.paymentSessionResolve.paymentSession.nextAction;
+
+    if (nextAction == null) {
+        throw new Error('Could not find next action.');
+    }
+
+    const action = nextAction.action;
+    const nextActionContext = nextAction.context;
+
+    if (nextActionContext == null) {
+        throw new Error('Could not find next action context.');
+    }
+
+    const redirectUrl = nextActionContext.redirectUrl;
+
     try {
-        const resolvePaymentResponse = await paymentSessionResolve(
-            paymentRecord.shopGid,
-            merchant.shop,
-            merchant.accessToken
-        );
-
-        // Validate the response
-
-        // Update the payment record
-    } catch (error) {
-        // What happens if this fails?
-        // well if it fails, that means they got us fucked up again, im gonna need to help them fuck around and find out
-        // or i can just add it to a message queue again
+        await paymentRecordService.updatePaymentRecord(paymentRecord, {
+            status: PaymentRecordStatus.completed,
+            redirectUrl: redirectUrl,
+            transactionSignature: '',
+            completedAt: new Date(),
+        });
+    } catch {
+        // Throw an error specifically about the database, might be able to handle this differently
+        throw new Error('Could not update payment record.');
     }
 };
 
