@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-<<<<<<< HEAD
 import { MessageQueuePayload, parseAndValidateMessageQueuePayload } from '../../models/message-queue-payload.model.js';
 import { PrismaClient } from '@prisma/client';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -11,8 +10,6 @@ import axios from 'axios';
 import { makePaymentSessionResolve } from '../../services/shopify/payment-session-resolve.service.js';
 import { makeRefundSessionResolve } from '../../services/shopify/refund-session-resolve.service.js';
 import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
-=======
->>>>>>> 3357fcddd7ab9c6db0494c63d1921eaf5735dd28
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -20,7 +17,6 @@ Sentry.AWSLambda.init({
 });
 
 export const retry = Sentry.AWSLambda.wrapHandler(
-<<<<<<< HEAD
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
         let retryMessage: MessageQueuePayload;
@@ -54,10 +50,6 @@ export const retry = Sentry.AWSLambda.wrapHandler(
             // no merchant might not go back on the queue, that might require manual intervention
             // if its a shopify error, then it should go back on the queue
         }
-=======
-    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        console.log('successfully got here! to the retry! and it was variable!');
->>>>>>> 3357fcddd7ab9c6db0494c63d1921eaf5735dd28
 
         return {
             statusCode: 200,
@@ -68,7 +60,6 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         rethrowAfterCapture: true,
     }
 );
-<<<<<<< HEAD
 
 enum RetryTime {
     ZeroSeconds = 0,
@@ -222,5 +213,3 @@ const retryConfigureApp = async (merchantId: string, prisma: PrismaClient) => {
         // What happens if this fails?
     }
 };
-=======
->>>>>>> 3357fcddd7ab9c6db0494c63d1921eaf5735dd28
