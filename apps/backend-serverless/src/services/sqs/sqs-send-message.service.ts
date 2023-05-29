@@ -9,6 +9,7 @@ import {
     ShopifyMutationRefundResolve,
     ShopifyMutationRetryType,
 } from '../../models/shopify-mutation-retry.model.js';
+import { nextRetryTimeInterval } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 const { SQS } = pkg;
 
 /*
@@ -77,13 +78,14 @@ export const sendAppConfigureRetryMessage = async (merchantId: string, state: bo
     });
 };
 
-const sendRetryMessage = async (
+export const sendRetryMessage = async (
     retryType: ShopifyMutationRetryType,
     paymentResolve: ShopifyMutationPaymentResolve | null,
     paymentReject: ShopifyMutationPaymentReject | null,
     refundResolve: ShopifyMutationRefundResolve | null,
     refundReject: ShopifyMutationRefundReject | null,
-    appConfigure: ShopifyMutationAppConfigure | null
+    appConfigure: ShopifyMutationAppConfigure | null,
+    retryStepIndex: number = 0
 ) => {
     const queueUrl = process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL;
 
@@ -93,13 +95,15 @@ const sendRetryMessage = async (
 
     const sqs = new SQS();
 
+    const retryTimeInterval = nextRetryTimeInterval(retryStepIndex);
+
     await sqs
         .sendMessage({
             QueueUrl: queueUrl,
             MessageBody: JSON.stringify({
                 retryType: retryType,
-                retryStepIndex: 0,
-                retrySeconds: 0,
+                retryStepIndex: retryStepIndex,
+                retrySeconds: retryTimeInterval,
                 paymentResolve: paymentResolve,
                 paymentReject: paymentReject,
                 refundResolve: refundResolve,
