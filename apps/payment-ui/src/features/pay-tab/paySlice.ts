@@ -55,17 +55,19 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
             const mockTotalUSDCDisplay = process.env.NEXT_PUBLIC_MOCK_TOTAL_USDC_DISPLAY;
             const mockTotalFiat = process.env.NEXT_PUBLIC_MOCK_TOTAL_FIAT;
 
-            return {
-                details: {
-                    merchantDisplayName: mockMerchantDisplayName!,
-                    totalAmountUSDCDisplay: mockTotalUSDCDisplay!,
-                    totalAmountFiatDisplay: mockTotalFiat!,
-                    cancelUrl: null,
-                    completed: false,
-                    redirectUrl: null,
-                },
-                error: null,
-            };
+            if (mockMerchantDisplayName != null && mockTotalUSDCDisplay != null && mockTotalFiat != null) {
+                return {
+                    details: {
+                        merchantDisplayName: mockMerchantDisplayName,
+                        totalAmountUSDCDisplay: mockTotalUSDCDisplay,
+                        totalAmountFiatDisplay: mockTotalFiat,
+                        cancelUrl: null,
+                        completed: false,
+                        redirectUrl: null,
+                    },
+                    error: null,
+                };
+            }
 
             if (backendUrl == null) {
                 throw new Error('Backend URL is null');
