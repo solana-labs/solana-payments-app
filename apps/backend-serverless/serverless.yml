@@ -25,7 +25,6 @@ provider:
     AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
     AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
     AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
-
   httpApi:
     cors: true
 package:
@@ -196,6 +195,12 @@ stepFunctions:
               Resource:
                 Fn::GetAtt: [retry-request, Arn]
               End: true
+              Retry:  # This is the retry policy
+                - ErrorEquals: ["States.ALL"]  # Which errors apply to this retry policy
+                  IntervalSeconds: 5  # Time before the first retry
+                  MaxAttempts: 5  # Maximum number of retries
+                  BackoffRate: 1.5  # Multiplier for the retry interval
+
 
 resources:
   Outputs:
