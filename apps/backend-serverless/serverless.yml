@@ -195,12 +195,6 @@ stepFunctions:
               Resource:
                 Fn::GetAtt: [retry-request, Arn]
               End: true
-              Retry:  # This is the retry policy
-                - ErrorEquals: ["States.ALL"]  # Which errors apply to this retry policy
-                  IntervalSeconds: 5  # Time before the first retry
-                  MaxAttempts: 5  # Maximum number of retries
-                  BackoffRate: 1.5  # Multiplier for the retry interval
-
 
 resources:
   Outputs:

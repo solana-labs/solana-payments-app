@@ -124,9 +124,12 @@ export const sendRetryMessage = async (
                     },
                 })
                 .promise();
+
+            break;
         } catch (error) {
             // TODO: Log the error with sentry every time we hit this
-            numberOfSendMessageAttempts += 1;
         }
+
+        numberOfSendMessageAttempts += 1;
     }
 };

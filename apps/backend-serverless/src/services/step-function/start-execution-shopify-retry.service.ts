@@ -27,10 +27,12 @@ export const startExecutionOfShopifyMutationRetry = async (input: string) => {
                     input: input,
                 })
                 .promise();
+            break;
         } catch (error) {
             // TODO: Log the error with sentry every time we hit this
-            numberOfExecutionAttempts += 1;
         }
+
+        numberOfExecutionAttempts += 1;
     }
 
     if (numberOfExecutionAttempts == maxNumberOfExecutionAttempts) {
