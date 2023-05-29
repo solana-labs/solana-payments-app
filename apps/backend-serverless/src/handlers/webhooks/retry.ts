@@ -5,7 +5,7 @@ import {
     ShopifyMutationRetryType,
     parseAndValidateShopifyMutationRetry,
 } from '../../models/shopify-mutation-retry.model.js';
-import { PrismaClient, PaymentRecordStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { InvalidInputError } from '../../errors/InvalidInput.error.js';
 import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
@@ -84,6 +84,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
 
             const nextTimeInterval = nextRetryTimeInterval(nextStep);
 
+            // omg u idiot you dont do this here
             const stepFunctionParams = {
                 stateMachineArn: retryMachineArn,
                 input: JSON.stringify({
