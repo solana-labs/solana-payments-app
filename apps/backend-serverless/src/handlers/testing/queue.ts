@@ -12,7 +12,11 @@ Sentry.AWSLambda.init({
 // TODO: read the message from the queue
 export const queue = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        const queueUrl: string = 'https://sqs.us-east-1.amazonaws.com/177666607693/pay-shopify-retry-queue';
+        const queueUrl = process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL;
+
+        if (queueUrl == null) {
+            return requestErrorResponse(new Error('AWS_SHOPIFY_MUTATION_QUEUE_URL is not defined'));
+        }
 
         const sqs = new SQS();
 
@@ -21,9 +25,14 @@ export const queue = Sentry.AWSLambda.wrapHandler(
                 .sendMessage({
                     QueueUrl: queueUrl,
                     MessageBody: JSON.stringify({
-                        recordId: '1234',
-                        recordType: 'payment',
-                        seconds: 5,
+                        retryType: '1234',
+                        retryStepIndex: 'payment',
+                        retrySeconds: 5,
+                        paymentResolve: null,
+                        paymentReject: null,
+                        refundResolve: null,
+                        refundReject: null,
+                        appConfigure: null,
                     }),
                 })
                 .promise();

@@ -1,16 +1,8 @@
 import * as Sentry from '@sentry/serverless';
-import {
-    APIGatewayProxyEventV2,
-    APIGatewayProxyResultV2,
-    SQSHandler,
-    SQSEvent,
-    SQSMessageAttributes,
-} from 'aws-lambda';
+import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
 import pkg from 'aws-sdk';
-// const AWS = require('aws-sdk');
 const { StepFunctions } = pkg;
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
-import { parseAndValidateSQSMessage } from '../../models/sqs-message.model.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -19,7 +11,7 @@ Sentry.AWSLambda.init({
 
 // TODO: rename this handler to something about the sqs starting here
 // TODO: read the message from the queue
-export const startStep = Sentry.AWSLambda.wrapHandler(
+export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
         const stepFunctions = new StepFunctions();
 
@@ -29,6 +21,8 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(new Error('RETRY_ARN is not defined'));
         }
 
+        // TODO: Process the message attributes
+
         for (const record of event.Records) {
             console.log(record);
 
@@ -36,6 +30,9 @@ export const startStep = Sentry.AWSLambda.wrapHandler(
                 // TODO: Replace this with a conditional for a message attribute on the type of message
                 if (true) {
                     try {
+                        // TODO: I could parse the message here if we want as well so we can find out about
+                        // the bad body before we execute the step function
+
                         await stepFunctions
                             .startExecution({
                                 stateMachineArn: retryMachineArn,

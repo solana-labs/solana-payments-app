@@ -146,8 +146,8 @@ functions:
       - httpApi:
           path: /shop/redact
           method: post
-  start-step:
-    handler: src/handlers/testing/start-step.startStep
+  sqs-message-receive:
+    handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
     environment:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
