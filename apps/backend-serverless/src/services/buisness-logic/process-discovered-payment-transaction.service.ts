@@ -7,6 +7,7 @@ import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.se
 import axios from 'axios';
 import { verifyPaymentTransactionWithPaymentRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
+import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
@@ -113,18 +114,13 @@ export const processDiscoveredPaymentTransaction = async (
             completedAt: new Date(),
         });
     } catch (error) {
-        /**
-         * Only the follow situations should have gotten us here
-         * 1. Error making the call to shopify, this is good because this is a place for us to add
-         * to the retry queue.
-         * 2. A bad response from Shopify, again, this is probably good given their idempotency. We
-         * should eventually get a valid response.
-         * 3. A bad update to our database. Again, with Shopify being idempotent, we should be able to
-         * make the same call later and get a valid response. Then the data should be there and we should be able
-         * to make the call to the database. The error however would be odd.
-         *
-         * Thought, what happens if the retry queue fails? I mean ffs how many things can fail at the same time?
-         * Can't I just trust a single dependency?
-         */
+        // TODO: Log the error with Sentry, generally could be a normal situation to arise but it's still good to try why it happened
+        try {
+            await sendPaymentResolveRetryMessage(paymentRecord.id);
+        } catch (err) {
+            // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
+            // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
+            // build in a way to manually intervene here if needed.
+        }
     }
 };
