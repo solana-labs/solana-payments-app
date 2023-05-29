@@ -11,6 +11,11 @@ import {
 } from '../../models/shopify-mutation-retry.model.js';
 const { SQS } = pkg;
 
+/*
+    NOTE: If you call any of these methods, you will need to add the iam role sqs:SendMessage
+    to the lambda inside of the serverless.yml file
+*/
+
 export const sendPaymentResolveRetryMessage = async (paymentId: string) => {
     await sendRetryMessage(
         ShopifyMutationRetryType.paymentResolve,
@@ -101,6 +106,12 @@ const sendRetryMessage = async (
                 refundReject: refundReject,
                 appConfigure: appConfigure,
             }),
+            MessageAttributes: {
+                'message-type': {
+                    DataType: 'String',
+                    StringValue: 'shopify-mutation-retry',
+                },
+            },
         })
         .promise();
 };

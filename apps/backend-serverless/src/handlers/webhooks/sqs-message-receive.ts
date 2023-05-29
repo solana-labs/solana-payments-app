@@ -1,44 +1,35 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import pkg from 'aws-sdk';
-const { StepFunctions } = pkg;
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { error } from 'console';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import { startExecutionOfShopifyMutationRetry } from '../../services/step-function/start-execution-shopify-retry.service.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
     tracesSampleRate: 1.0,
 });
 
+// TODO: I hate this but idk why, gonna move on for now
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
-        const stepFunctions = new StepFunctions();
-
-        const retryMachineArn = process.env.RETRY_ARN;
-
-        if (retryMachineArn == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
-        }
-
-        // TODO: Process the message attributes
-
         for (const record of event.Records) {
-            console.log(record);
-
             try {
-                // TODO: Replace this with a conditional for a message attribute on the type of message
-                if (true) {
-                    try {
-                        // TODO: I could parse the message here if we want as well so we can find out about
-                        // the bad body before we execute the step function
+                const attributes = record.messageAttributes;
 
-                        await stepFunctions
-                            .startExecution({
-                                stateMachineArn: retryMachineArn,
-                                input: record.body,
-                            })
-                            .promise();
+                if (attributes == null) {
+                    throw new Error('No attributes');
+                }
+
+                const messageType = attributes['message-type'].stringValue;
+
+                if (messageType == null) {
+                    throw new Error('No message type');
+                }
+
+                if (messageType == 'shopify-mutation-retry') {
+                    try {
+                        await startExecutionOfShopifyMutationRetry(record.body);
                     } catch (error) {
                         console.log(error);
                     }

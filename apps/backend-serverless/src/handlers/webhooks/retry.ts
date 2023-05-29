@@ -21,12 +21,7 @@ Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
     tracesSampleRate: 1.0,
 });
-/*
-A good next step here is to define everything that can go wrong to make sure we're handling it.
-Also, i want to figure out if I can have a single structure for all of these retries or if I need 
-multiple message types. It's probably best to handle multiple message types so that I can add more later if
-needed without breaking anything.
- */
+
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
