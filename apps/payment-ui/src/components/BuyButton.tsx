@@ -26,7 +26,7 @@ const BuyButton = () => {
             const buffer = Buffer.from(response.data.transaction, 'base64');
 
             const transaction = web3.Transaction.from(buffer);
-            // TODO: Remove RPC from here if possible
+            // TODO: Use default RPC from wallet adapter
             const connection = new web3.Connection(
                 'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
             );
