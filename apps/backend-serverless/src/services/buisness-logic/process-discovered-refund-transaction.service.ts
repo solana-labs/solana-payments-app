@@ -6,6 +6,7 @@ import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.serv
 import axios from 'axios';
 import { verifyRefundTransactionWithRefundRecord } from '../transaction-validation/validate-discovered-refund-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
+import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
@@ -82,6 +83,13 @@ export const processDiscoveredRefundTransaction = async (
             completedAt: new Date(),
         });
     } catch (error) {
-        // TODO: Handle the error by adding it to the retry queue
+        // TODO: Log the error with Sentry, generally could be a normal situation to arise but it's still good to try why it happened
+        try {
+            await sendRefundResolveRetryMessage(refundRecord.id);
+        } catch (err) {
+            // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
+            // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
+            // build in a way to manually intervene here if needed.
+        }
     }
 };
