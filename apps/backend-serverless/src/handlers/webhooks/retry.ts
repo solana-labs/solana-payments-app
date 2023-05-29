@@ -1,6 +1,15 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { MessageQueuePayload, parseAndValidateMessageQueuePayload } from '../../models/message-queue-payload.model.js';
+import {
+    ShopifyMutationAppConfigure,
+    ShopifyMutationPaymentReject,
+    ShopifyMutationPaymentResolve,
+    ShopifyMutationRefundReject,
+    ShopifyMutationRefundResolve,
+    ShopifyMutationRetry,
+    ShopifyMutationRetryType,
+    parseAndValidateShopifyMutationRetry,
+} from '../../models/shopify-mutation-retry.model.js';
 import { PrismaClient, PaymentRecordStatus } from '@prisma/client';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
@@ -16,13 +25,21 @@ import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected
 import { DependencyError } from '../../errors/dependency.error.js';
 import pkg from 'aws-sdk';
 import { makeRefundSessionReject } from '../../services/shopify/refund-session-reject.service.js';
+import { refund } from '../shopify-handlers/refund.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { InvalidInputError } from '../../errors/InvalidInput.error.js';
 const { StepFunctions } = pkg;
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
     tracesSampleRate: 1.0,
 });
-
+/*
+A good next step here is to define everything that can go wrong to make sure we're handling it.
+Also, i want to figure out if I can have a single structure for all of these retries or if I need 
+multiple message types. It's probably best to handle multiple message types so that I can add more later if
+needed without breaking anything.
+ */
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
         console.log('retry handler ping');
@@ -32,39 +49,33 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         const retryMachineArn = process.env.RETRY_ARN;
 
         if (retryMachineArn == null) {
-            // I think i can safely throw here since this is a handler for my step function
-            // I can then configure the step function to retry this handler
-            // This would be a critical error, so i would want to be notified
-            return requestErrorResponse(new Error('RETRY_ARN is not defined'));
+            throw new MissingEnvError('retry arn'); // TODO: Critical Error
         }
 
-        let retryMessage: MessageQueuePayload;
+        let shopifyMutationRetry: ShopifyMutationRetry;
 
         try {
-            retryMessage = parseAndValidateMessageQueuePayload(event);
+            shopifyMutationRetry = parseAndValidateShopifyMutationRetry(event);
         } catch (error) {
-            // If we can't parse a message on the queue, its a real problem that might require manual intervention
-            // this would be a critical error
-            // TODO: More details
-            return requestErrorResponse(error);
+            throw new InvalidInputError('shopify mutation retry body'); // TODO: Critical Error
         }
 
         try {
-            switch (retryMessage.recordType) {
-                // TODO Make these cases an enum
-                case 'payment-resolve':
-                    await retryPaymentResolve(retryMessage.recordId, prisma);
+            switch (shopifyMutationRetry.retryType) {
+                case ShopifyMutationRetryType.paymentResolve:
+                    await retryPaymentResolve(shopifyMutationRetry.paymentResolve, prisma);
                     break;
-                case 'payment-reject':
+                case ShopifyMutationRetryType.paymentReject:
+                    await retryPaymentReject(shopifyMutationRetry.paymentReject, prisma);
                     break;
-                case 'refund-resolve':
-                    await retryRefundResolve(retryMessage.recordId, prisma);
+                case ShopifyMutationRetryType.refundResolve:
+                    await retryRefundResolve(shopifyMutationRetry.refundResolve, prisma);
                     break;
-                case 'refund-reject':
-                    await retryRefundResolve(retryMessage.recordId, prisma);
+                case ShopifyMutationRetryType.refundReject:
+                    await retryRefundReject(shopifyMutationRetry.refundReject, prisma);
                     break;
-                case 'app-configure':
-                    await retryConfigureApp(retryMessage.recordId, prisma);
+                case ShopifyMutationRetryType.appConfigure:
+                    await retryAppConfigure(shopifyMutationRetry.appConfigure, prisma);
                     break;
             }
         } catch (error) {
@@ -72,14 +83,32 @@ export const retry = Sentry.AWSLambda.wrapHandler(
             // no merchant might not go back on the queue, that might require manual intervention
             // if its a shopify error, then it should go back on the queue
 
-            const timeInterval = nextTimeInterval(retryMessage.seconds);
+            const nextStep = shopifyMutationRetry.retryStepIndex + 1;
+
+            if (exhaustedRetrySteps(nextStep)) {
+                // TODO: Figure out how to handle this
+                // Figure out how to exit the step function here without adding another message
+                // This would be a critical error, so i would want to be notified, we would likley need
+                // to reach out to shopify for support.
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({}),
+                };
+            }
+
+            const nextTimeInterval = nextRetryTimeInterval(nextStep);
 
             const stepFunctionParams = {
                 stateMachineArn: retryMachineArn,
                 input: JSON.stringify({
-                    seconds: timeInterval,
-                    recordId: retryMessage.recordId,
-                    recordType: retryMessage.recordType,
+                    retryType: shopifyMutationRetry.retryType,
+                    retryStepIndex: nextStep,
+                    retrySeconds: nextTimeInterval,
+                    paymentResolve: shopifyMutationRetry.paymentResolve,
+                    paymentReject: shopifyMutationRetry.paymentReject,
+                    refundResolve: shopifyMutationRetry.refundResolve,
+                    refundReject: shopifyMutationRetry.refundReject,
+                    appConfigure: shopifyMutationRetry.appConfigure,
                 }),
             };
 
@@ -87,7 +116,8 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                 await stepFunctions.startExecution(stepFunctionParams).promise();
             } catch (error) {
                 // TODO: What happens if this fails?
-                // What would i do if this fails? Can i return an error and have my step function retry this?
+                // TODO: If this fails, I probably  want ot throw and log what ever error made it throw
+                // The reason I would want to throw is to cause this attempt to retry and hopefully succeed
             }
         }
 
@@ -118,40 +148,43 @@ enum RetryTime {
     FourHours = 18240,
 }
 
-// Right now this is based on number of seconds but i might want to just make an enum of "steps"
-// instead to handle for repeat numbers of seconds
-const nextTimeInterval = (seconds: number) => {
-    switch (seconds) {
-        case RetryTime.ZeroSeconds:
-            return RetryTime.FiveSeconds;
-        case RetryTime.FiveSeconds:
-            return RetryTime.TenSeconds;
-        case RetryTime.TenSeconds:
-            return RetryTime.ThirtySeconds;
-        case RetryTime.ThirtySeconds:
-            return RetryTime.FortyFiveSeconds;
-        case RetryTime.FortyFiveSeconds:
-            return RetryTime.OneMinute;
-        case RetryTime.OneMinute:
-            return RetryTime.TwoMinutes;
-        case RetryTime.TwoMinutes:
-            return RetryTime.FiveMinutes;
-        case RetryTime.FiveMinutes:
-            return RetryTime.TwelveMinutes;
-        case RetryTime.TwelveMinutes:
-            return RetryTime.ThirtyEightMinutes;
-        case RetryTime.ThirtyEightMinutes:
-            return RetryTime.OneHour;
-        case RetryTime.OneHour:
-            return RetryTime.TwoHours;
-    }
+const retryStepTimes: RetryTime[] = [
+    RetryTime.ZeroSeconds,
+    RetryTime.FiveSeconds,
+    RetryTime.TenSeconds,
+    RetryTime.ThirtySeconds,
+    RetryTime.FortyFiveSeconds,
+    RetryTime.OneMinute,
+    RetryTime.TwoMinutes,
+    RetryTime.FiveMinutes,
+    RetryTime.TwelveMinutes,
+    RetryTime.ThirtyEightMinutes,
+    RetryTime.OneHour,
+    RetryTime.TwoHours,
+    RetryTime.FourHours,
+    RetryTime.FourHours,
+    RetryTime.FourHours,
+    RetryTime.FourHours,
+    RetryTime.FourHours,
+];
+
+const nextRetryTimeInterval = (stepIndex: number) => {
+    return retryStepTimes[stepIndex];
 };
 
-const retryPaymentResolve = async (paymentId: string, prisma: PrismaClient) => {
+const exhaustedRetrySteps = (stepIndex: number) => {
+    return stepIndex >= retryStepTimes.length;
+};
+
+const retryPaymentResolve = async (paymentResolveInfo: ShopifyMutationPaymentResolve | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
 
-    const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentId });
+    if (paymentResolveInfo == null) {
+        throw new Error('Payment resolve info is null.');
+    }
+
+    const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentResolveInfo.paymentId });
 
     if (paymentRecord == null) {
         throw new MissingExpectedDatabaseRecordError('payment record');
@@ -188,6 +221,7 @@ const retryPaymentResolve = async (paymentId: string, prisma: PrismaClient) => {
         throw new Error('Could not find next action.');
     }
 
+    // TODO: Change these states to be more acturate for states of returning
     const action = nextAction.action;
     const nextActionContext = nextAction.context;
 
@@ -209,11 +243,15 @@ const retryPaymentResolve = async (paymentId: string, prisma: PrismaClient) => {
     }
 };
 
-const retryPaymentReject = async (paymentId: string, prisma: PrismaClient) => {
+const retryPaymentReject = async (paymentRejectInfo: ShopifyMutationPaymentReject | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
 
-    const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentId });
+    if (paymentRejectInfo == null) {
+        throw new Error('Payment reject info is null.');
+    }
+
+    const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentRejectInfo.paymentId });
 
     if (paymentRecord == null) {
         throw new MissingExpectedDatabaseRecordError('payment record');
@@ -237,7 +275,7 @@ const retryPaymentReject = async (paymentId: string, prisma: PrismaClient) => {
 
     const rejectPaymentResponse = await paymentSessionReject(
         paymentRecord.shopGid,
-        'some reason',
+        paymentRejectInfo.reason,
         merchant.shop,
         merchant.accessToken
     );
@@ -254,11 +292,15 @@ const retryPaymentReject = async (paymentId: string, prisma: PrismaClient) => {
     }
 };
 
-const retryRefundResolve = async (refundId: string, prisma: PrismaClient) => {
+const retryRefundResolve = async (refundResolveInfo: ShopifyMutationRefundResolve | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
 
-    const refundRecord = await refundRecordService.getRefundRecord({ id: refundId });
+    if (refundResolveInfo == null) {
+        throw new Error('Refund resolve info is null.');
+    }
+
+    const refundRecord = await refundRecordService.getRefundRecord({ id: refundResolveInfo.refundId });
 
     if (refundRecord == null) {
         throw new Error('Could not find refund record.');
@@ -289,18 +331,26 @@ const retryRefundResolve = async (refundId: string, prisma: PrismaClient) => {
 
         // Validate the response
 
-        // Update the refund record
+        // TODO: Make sure this is how I want to update refunds in this situation
+        await refundRecordService.updateRefundRecord(refundRecord, {
+            status: PaymentRecordStatus.completed,
+            completedAt: new Date(),
+        });
     } catch (error) {
         // Throw an error specifically about the database, might be able to handle this differently
         throw new Error('Could not update refund record.');
     }
 };
 
-const retryRefundReject = async (refundId: string, prisma: PrismaClient) => {
+const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundReject | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
 
-    const refundRecord = await refundRecordService.getRefundRecord({ id: refundId });
+    if (refundRejectInfo == null) {
+        throw new Error('Refund reject info is null.');
+    }
+
+    const refundRecord = await refundRecordService.getRefundRecord({ id: refundRejectInfo.refundId });
 
     if (refundRecord == null) {
         throw new Error('Could not find refund record.');
@@ -325,7 +375,7 @@ const retryRefundReject = async (refundId: string, prisma: PrismaClient) => {
     try {
         const resolveRefundResponse = await refundSessionReject(
             refundRecord.shopGid,
-            'some code',
+            refundRejectInfo.reason,
             'some reason',
             merchant.shop,
             merchant.accessToken
@@ -349,10 +399,14 @@ const retryRefundReject = async (refundId: string, prisma: PrismaClient) => {
     }
 };
 
-const retryConfigureApp = async (merchantId: string, prisma: PrismaClient) => {
+const retryAppConfigure = async (appConfigureInfo: ShopifyMutationAppConfigure | null, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
 
-    const merchant = await merchantService.getMerchant({ id: merchantId });
+    if (appConfigureInfo == null) {
+        throw new Error('App configure info is null.');
+    }
+
+    const merchant = await merchantService.getMerchant({ id: appConfigureInfo.merchantId });
 
     if (merchant == null) {
         throw new Error('Could not find merchant.');
@@ -365,7 +419,12 @@ const retryConfigureApp = async (merchantId: string, prisma: PrismaClient) => {
     const paymentAppConfigure = makePaymentAppConfigure(axios);
 
     try {
-        const configureAppResponse = await paymentAppConfigure(merchant.id, true, merchant.shop, merchant.accessToken);
+        const configureAppResponse = await paymentAppConfigure(
+            merchant.id,
+            appConfigureInfo.state,
+            merchant.shop,
+            merchant.accessToken
+        );
 
         // Validate the response
 

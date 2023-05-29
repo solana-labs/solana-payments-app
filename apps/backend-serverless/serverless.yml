@@ -187,7 +187,7 @@ stepFunctions:
           States: 
             wait_using_seconds: 
               Type: Wait
-              SecondsPath: "$.seconds"
+              SecondsPath: "$.retrySeconds"
               Next: process_retry
             process_retry: 
               Type: Task
