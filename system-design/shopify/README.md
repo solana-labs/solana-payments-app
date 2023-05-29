@@ -39,5 +39,32 @@ We are required to implement a retry policy on all payment app mutations in case
 -   reject payment
 -   resolve refund
 -   reject refund
+-   app configure
 
-We handle this with a message queue using [Amazon SQS](https://aws.amazon.com/sqs/) and [AWS Step Functions](https://aws.amazon.com/step-functions/). On failed requests to Shopify inside [process discovered payment](/apps/backend-serverless/src/services/buisness-logic/process-discovered-payment-transaction.service.ts) and [process discovered refund](/apps/backend-serverless/src/services/buisness-logic/process-discovered-refund-transaction.service.ts) we add a message to the queue. We have set up our [start retry handler]() to get invoked when new messages are added to the queue inside of our [serverless.yml](/apps/backend-serverless/serverless.yml) file. When that handler is invoked it then reads the message, and uses that as input to invoke our step function which is also defined inside of the [serverless.yml](/apps/backend-serverless/serverless.yml) file. It will wait for the inputted number of seconds before invoking the [retry](/apps/backend-serverless/src/handlers/webhooks/retry.ts) handler. In the retry handler, we will retry the original call to Shopify. If it fails, we will once again add a message to our message queue to be picked up by the [start retry handler]().
+We handle this with a message queue using [Amazon SQS](https://aws.amazon.com/sqs/) and [AWS Step Functions](https://aws.amazon.com/step-functions/). On failed requests to Shopify inside [process discovered payment transaction](/apps/backend-serverless/src/services/buisness-logic/process-discovered-payment-transaction.service.ts) and [process discovered refund transaction](/apps/backend-serverless/src/services/buisness-logic/process-discovered-refund-transaction.service.ts) we add a message to the queue. We have set up our [sqs message receive handler](/apps/backend-serverless/src/handlers/webhooks/sqs-message-receive.ts) to get invoked when new messages are added to the queue inside of our [serverless.yml](/apps/backend-serverless/serverless.yml) file. When that handler is invoked it then reads the message, and uses that as input to invoke our step function which is also defined inside of the [serverless.yml](/apps/backend-serverless/serverless.yml) file. It will wait for the inputted number of seconds before invoking the [retry handler](/apps/backend-serverless/src/handlers/webhooks/retry.ts). In the retry handler, we will retry the original call to Shopify. If it fails, we will once again add a message to our message queue to be picked up by the [sqs message receive handler](/apps/backend-serverless/src/handlers/webhooks/sqs-message-receive.ts).
+
+## [Mutual TLS (mTLS)](https://shopify.dev/docs/apps/payments/implementation#mtls-configuration)
+
+As a part of Shopify's security model, we need to implement mTLS for all requests where Shopify acts as the client and we act as the server. For us that is five cases:
+
+1. payment initiation
+2. refund initiation
+3. customer data gdpr webhook
+4. customer redact gdpr webhook
+5. shop redact gdpr webhook
+
+We are still working on our mTLS strategy but we will update a description here when it is finished.
+
+## [HMAC verification](https://shopify.dev/docs/apps/auth/oauth/getting-started#verify-a-request)
+
+HMAC verifiication is one of the security methods shopify uses alongside [mTLS]() and [access tokens](). It is used during the auth flow with Shopify that happens while installing that app to a merchan't Shopify store. We implent this for both the [install]() and [redirect] handlers. It happens in the [install verify]() and [redirect verify]() methods respectivly. There is also a testing suite for the [install verify]() and [redirect verify]() methods.
+
+## [Rate limiting](https://shopify.dev/docs/apps/payments/implementation#rate-limiting)
+
+We currently get the rate limiting values back from Shopify when we make the graphql mutations. We will start storing these values as well before we submit for review but I don't see this becoming an issue so will likely push back rate limiting functionality on our end.
+
+## [API versioning](https://shopify.dev/docs/api/usage/versioning)
+
+We currently support API version 2023-01. We will soon add checks at the begining of our handlers and in the requests to Shopify. After release of the first version, we will start adding support for 2023-04.
+
+## [GDPR](https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks)
