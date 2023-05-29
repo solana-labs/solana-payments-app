@@ -27,16 +27,12 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Transaction record does not have a payment record id');
     }
 
-    const paymentRecord = await paymentRecordService.getPaymentRecord({
+    let paymentRecord = await paymentRecordService.getPaymentRecord({
         id: transactionRecord.paymentRecordId,
     });
 
     if (paymentRecord == null) {
         throw new Error('Payment record not found.');
-    }
-
-    if (paymentRecord.shopGid == null) {
-        throw new Error('Shop gid not found on payment record.');
     }
 
     if (paymentRecord.merchantId == null) {
@@ -48,15 +44,31 @@ export const processDiscoveredPaymentTransaction = async (
     });
 
     if (merchant == null) {
+        // TODO: This would be problematic, if we retry this, it will always fail without a merchant
+        // need to flag this
         throw new Error('Merchant not found with merchant id.');
     }
 
     if (merchant.accessToken == null) {
+        // TODO: This would be problematic, if we retry this, it will always fail without an access key
+        // need to flag this
         throw new Error('Access token not found on merchant.');
     }
 
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+
+    // if we get here, we found a match!
+    // we would hope at this point we could update the database to reflect we found it's match
+    // need to make sure we can guarentee that this can always go back and fix itself
+    paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+        status: PaymentRecordStatus.paid,
+        transactionSignature: transactionRecord.signature,
+    });
+
+    if (paymentRecord.shopGid == null) {
+        throw new Error('Shop gid not found on payment record.');
+    }
 
     // Ok so this part is interesting because if this were to throw, we would actully want different behavior
     // If we throw here, we want to retry this message later, but also, if it succeeds, and we check that the return
@@ -86,7 +98,6 @@ export const processDiscoveredPaymentTransaction = async (
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.completed,
             redirectUrl: redirectUrl,
-            transactionSignature: transactionRecord.signature,
             completedAt: new Date(),
         });
     } catch (error) {

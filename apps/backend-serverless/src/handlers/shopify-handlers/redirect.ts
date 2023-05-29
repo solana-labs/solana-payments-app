@@ -58,7 +58,8 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     }
 
     // TODO: Verify output and throw if it's bad
-    // TODO: Set value to true after KYB
+    // TODO: Set value to true after KYB, this will change once we implement KYB
+    // TODO: Update merchant record to reflect status
     const paymentAppConfigure = makePaymentAppConfigure(axios);
     const configure = await paymentAppConfigure(merchant.id, true, shop, accessTokenResponse.access_token);
 
