@@ -151,8 +151,17 @@ functions:
     environment:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
+<<<<<<< HEAD
       - sqs:
           arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+=======
+      - httpApi:
+          path: /start
+          method: get
+      - sqs:
+          arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
+>>>>>>> 3357fcddd7ab9c6db0494c63d1921eaf5735dd28
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -166,6 +175,7 @@ functions:
   retry-request:
     handler: src/handlers/webhooks/retry.retry
 
+<<<<<<< HEAD
   queue:
     handler: src/handlers/testing/queue.queue
     events:
@@ -178,6 +188,8 @@ functions:
           - sqs:SendMessage
         Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
 
+=======
+>>>>>>> 3357fcddd7ab9c6db0494c63d1921eaf5735dd28
 stepFunctions:
   stateMachines:
     retry:
