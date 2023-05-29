@@ -9,7 +9,8 @@ import axios from 'axios';
 
 export const retryPaymentResolve = async (
     paymentResolveInfo: ShopifyMutationPaymentResolve | null,
-    prisma: PrismaClient
+    prisma: PrismaClient,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
@@ -38,7 +39,7 @@ export const retryPaymentResolve = async (
         throw new MissingExpectedDatabaseValueError('merchant access token');
     }
 
-    const paymentSessionResolve = makePaymentSessionResolve(axios);
+    const paymentSessionResolve = makePaymentSessionResolve(axiosInstance);
 
     const resolvePaymentResponse = await paymentSessionResolve(
         paymentRecord.shopGid,
