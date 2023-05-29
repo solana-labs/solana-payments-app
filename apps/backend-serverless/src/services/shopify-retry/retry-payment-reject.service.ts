@@ -55,6 +55,8 @@ export const retryPaymentReject = async (
         });
     } catch {
         // Throw an error specifically about the database, might be able to handle this differently
+        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
+        // likely not common but i will want to handle these all the same
         throw new Error('Could not update payment record.');
     }
 };

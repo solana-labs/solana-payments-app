@@ -38,15 +38,11 @@ export const retryRefundResolve = async (
 
     const refundSessionResolve = makeRefundSessionResolve(axios);
 
+    const resolveRefundResponse = await refundSessionResolve(refundRecord.shopGid, merchant.shop, merchant.accessToken);
+
+    // Validate the response
+
     try {
-        const resolveRefundResponse = await refundSessionResolve(
-            refundRecord.shopGid,
-            merchant.shop,
-            merchant.accessToken
-        );
-
-        // Validate the response
-
         // TODO: Make sure this is how I want to update refunds in this situation
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: RefundRecordStatus.completed,
@@ -54,6 +50,8 @@ export const retryRefundResolve = async (
         });
     } catch (error) {
         // Throw an error specifically about the database, might be able to handle this differently
+        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
+        // likely not common but i will want to handle these all the same
         throw new Error('Could not update refund record.');
     }
 };

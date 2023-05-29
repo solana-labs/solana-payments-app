@@ -36,29 +36,26 @@ export const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundR
 
     const refundSessionReject = makeRefundSessionReject(axios);
 
+    const resolveRefundResponse = await refundSessionReject(
+        refundRecord.shopGid,
+        refundRejectInfo.code,
+        refundRejectInfo.reason,
+        merchant.shop,
+        merchant.accessToken
+    );
+
+    // TODO: Validate the response
+
     try {
-        const resolveRefundResponse = await refundSessionReject(
-            refundRecord.shopGid,
-            refundRejectInfo.code,
-            refundRejectInfo.reason,
-            merchant.shop,
-            merchant.accessToken
-        );
-
-        // Validate the response
-
-        try {
-            // TODO: Make sure this is how I want to update refunds in this situation
-            await refundRecordService.updateRefundRecord(refundRecord, {
-                status: RefundRecordStatus.rejected,
-                completedAt: new Date(),
-            });
-        } catch {
-            // Throw an error specifically about the database, might be able to handle this differently
-            throw new Error('Could not update refund record.');
-        }
-    } catch (error) {
+        // TODO: Make sure this is how I want to update refunds in this situation
+        await refundRecordService.updateRefundRecord(refundRecord, {
+            status: RefundRecordStatus.rejected,
+            completedAt: new Date(),
+        });
+    } catch {
         // Throw an error specifically about the database, might be able to handle this differently
+        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
+        // likely not common but i will want to handle these all the same
         throw new Error('Could not update refund record.');
     }
 };

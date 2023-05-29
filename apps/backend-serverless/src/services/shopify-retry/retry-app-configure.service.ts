@@ -36,6 +36,8 @@ export const retryAppConfigure = async (appConfigureInfo: ShopifyMutationAppConf
         // TODO: Update the merchant record to reflect that we configured the app
     } catch (error) {
         // Throw an error specifically about the database, might be able to handle this differently
+        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
+        // likely not common but i will want to handle these all the same
         throw new Error('Could not update merchant record.');
     }
 };
