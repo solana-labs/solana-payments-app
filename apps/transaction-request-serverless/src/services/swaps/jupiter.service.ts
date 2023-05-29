@@ -1,4 +1,4 @@
-import { createJupiterQuoteRequestUrl } from '../../utils/jupiter.util.js';
+import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utils/jupiter.util.js';
 import axios from 'axios';
 import * as anchor from '@project-serum/anchor';
 import { SwapIxConfig } from './create-swap-ix.service.js';
@@ -7,7 +7,7 @@ const NO_QUOTE_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for yo
 
 const NO_SWAP_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for your swap.';
 
-const JUPITER_SWAP_REQUEST_URL = 'https://quote-api.jup.ag/v1/swap';
+const JUPITER_SWAP_REQUEST_URL = `${JUPITER_URL}/swap`;
 
 export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<anchor.web3.TransactionInstruction[]> => {
     var { data } = await axios.get(createJupiterQuoteRequestUrl(config.quantity, config.fromMint, config.toMint));
