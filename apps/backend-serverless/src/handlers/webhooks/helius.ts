@@ -24,8 +24,9 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
     try {
         heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(event.body);
     } catch (error) {
-        // Returning an error message here doesn't do much for us now but like I noted at the ending function
-        // return, maybe a bad status would get helius to retry for us.
+        // Returning an error will get Helius to retry but it might not fix it. We should log as a critical error
+        // TODO: Log this, actually might not be critical but we might want to put more logic around seeing if it's critical
+        // In theory, this is an open endpoint, we might actually be able to lock it down somehow, might be a good idea so we can flag
         return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
 
@@ -36,7 +37,8 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
             });
 
             if (transactionRecord == null) {
-                throw new Error('Transaction not found.');
+                // TODO: Log this with Sentry, not critical at all, total pheasble this could happen, still can throw and it will be caught and logged
+                throw new Error('Transaction record not found');
             }
 
             const transaction = await fetchTransaction(transactionRecord.signature);
@@ -51,8 +53,8 @@ export const helius = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
             }
         } catch (error) {
             // We will catch here on odd throws, valuable catches should happen elsewhere
-            // TODO: Add logging around these odd throws
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            // TODO: Add logging around these odd throws with Sentry
+            continue;
         }
     }
 
