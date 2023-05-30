@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function ClosedRefunds(props: Props) {
-    const closedRefunds = useCloseRefunds();
+    const { closedRefunds } = useCloseRefunds();
 
     return (
         <div className={twMerge('grid', 'grid-cols-[1fr,repeat(4,max-content)]', props.className)}>
