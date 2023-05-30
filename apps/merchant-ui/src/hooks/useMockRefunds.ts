@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import * as RE from '@/lib/Result';
 
-export enum RefundStatus {
+enum RefundStatus {
+    AwaitingAction,
+    RefundApproved,
+    RefundDenied,
     Pending,
-    Paid,
-    Rejected,
 }
 
 export interface Refund {
@@ -21,7 +22,7 @@ export interface OpenRefund extends Refund {
 }
 
 export interface ClosedRefund extends Refund {
-    status: RefundStatus.Paid | RefundStatus.Rejected;
+    status: RefundStatus.RefundApproved | RefundStatus.RefundDenied;
 }
 
 function refundIsOpen(refund: Refund): refund is OpenRefund {
@@ -33,7 +34,7 @@ function refundIsClosed(refund: Refund): refund is ClosedRefund {
 }
 
 function mockRefundStatus(index: number) {
-    return [RefundStatus.Pending, RefundStatus.Paid, RefundStatus.Rejected][index % 3];
+    return [RefundStatus.Pending, RefundStatus.RefundApproved, RefundStatus.RefundDenied][index % 3];
 }
 
 const MOCK_REFUNDS = Array.from({ length: 8 }).map((_, i) => ({

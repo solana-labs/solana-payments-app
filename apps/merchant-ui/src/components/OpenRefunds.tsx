@@ -1,14 +1,14 @@
 import { twMerge } from 'tailwind-merge';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
-import { useOpenRefunds } from '@/hooks/useRefunds';
+import { RefundStatus, useOpenRefunds } from '@/hooks/useRefunds';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -25,6 +25,9 @@ export function OpenRefunds(props: Props) {
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
     const [denyPending, setDenyPending] = useState(false);
+    const [openApprove, setOpenApprove] = useState<string | null>(null);
+
+    const approvePendingRef = useRef(approvePending);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
@@ -32,8 +35,11 @@ export function OpenRefunds(props: Props) {
         'Content-Type': 'application/json',
     };
 
+    // TODO make sure you're interacting with the right refund and not just id 10
+    // currently trying to poll refund status, then close the modal
     async function getRefundTransaction(refundId: string) {
         setApprovePending(true);
+        approvePendingRef.current = true;
 
         try {
             if (!connected) {
@@ -45,7 +51,6 @@ export function OpenRefunds(props: Props) {
         }
 
         try {
-            // console.log('publicKey: ', publicKey.toString());
             const response = await axios.post(
                 API_ENDPOINTS.refundTransaction + '?refundId=' + refundId,
                 {
@@ -55,13 +60,27 @@ export function OpenRefunds(props: Props) {
             );
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
-            console.log('returned transaction: ', transaction);
+
             await sendTransaction(transaction, connection);
+
+            while (approvePendingRef.current) {
+                const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
+                    headers: headers,
+                });
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (status.data.refundStatus.status !== RefundStatus.Pending) {
+                    break;
+                }
+            }
         } catch (error) {
             console.log('error: ', error);
-            // setResults(RE.failed(error));
         }
-        setApprovePending(false);
+
+        if (approvePendingRef.current) {
+            setOpenApprove(null);
+            setApprovePending(false);
+        }
     }
 
     async function rejectRefund(refundId: string) {
@@ -71,7 +90,7 @@ export function OpenRefunds(props: Props) {
                 API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
                 { headers: headers }
             );
-            console.log('reject refund response: ', response);
+            await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
             console.log('reject error: ', error);
         }
@@ -218,21 +237,26 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Button.Primary
-                                                            onClick={() => rejectRefund(refund.orderId)}
-                                                            pending={denyPending}
-                                                        >
-                                                            Deny Refund
-                                                        </Button.Primary>
+                                                        <Dialog.Close>
+                                                            <Button.Primary
+                                                                onClick={() => rejectRefund(refund.orderId)}
+                                                                pending={denyPending}
+                                                            >
+                                                                Deny Refund
+                                                            </Button.Primary>
+                                                        </Dialog.Close>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
                                         </Dialog.Portal>
                                     </Dialog.Root>
-                                    <Dialog.Root>
-                                        <Dialog.Trigger asChild>
-                                            <Button.Primary>Approve</Button.Primary>
-                                        </Dialog.Trigger>
+                                    <Dialog.Root
+                                        open={openApprove === refund.orderId}
+                                        onOpenChange={() => setOpenApprove(null)}
+                                    >
+                                        <Button.Primary onClick={() => setOpenApprove(refund.orderId)}>
+                                            Approve
+                                        </Button.Primary>
                                         <Dialog.Portal>
                                             <Dialog.Overlay
                                                 className={twMerge(
@@ -247,7 +271,14 @@ export function OpenRefunds(props: Props) {
                                                     'z-10'
                                                 )}
                                             >
-                                                <Dialog.Content className="bg-white rounded-xl overflow-hidden">
+                                                <Dialog.Content
+                                                    className="bg-white rounded-xl overflow-hidden"
+                                                    onPointerDownOutside={() => {
+                                                        approvePendingRef.current = false;
+                                                        setOpenApprove(null);
+                                                        setApprovePending(false);
+                                                    }}
+                                                >
                                                     <div className="px-6 pt-6 pb-9">
                                                         <div className="flex items-start justify-between">
                                                             <div>
