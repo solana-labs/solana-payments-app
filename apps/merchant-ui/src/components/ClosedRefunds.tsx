@@ -81,8 +81,7 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.requestedRefundAmount >= 0 ? '+' : '-'}$
-                                    {formatPrice(Math.abs(refund.requestedRefundAmount))}
+                                    -{formatPrice(Math.abs(refund.requestedRefundAmount))}
                                 </div>
                                 <div
                                     className={twMerge(
@@ -94,7 +93,6 @@ export function ClosedRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.purchaseAmount >= 0 ? '+' : '-'}$
                                     {formatPrice(Math.abs(refund.purchaseAmount))}
                                 </div>
                                 <div className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center')}>
