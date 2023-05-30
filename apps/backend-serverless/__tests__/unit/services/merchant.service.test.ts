@@ -1,6 +1,6 @@
 import { MerchantService } from '../../../src/services/database/merchant-service.database.service.js';
 import { prismaMock } from '../../../prisma-singleton.js';
-
+import { createMockMerchant } from '../../../src/utilities/testing-helper/create-mock.utility.js';
 describe('Merchant Testing Suite', () => {
     let merchantService: MerchantService;
 
@@ -9,22 +9,11 @@ describe('Merchant Testing Suite', () => {
     });
 
     it('find a merchant with shop', async () => {
-        const mockMerchant = {
-            id: 'abcd',
-            shop: 'mock-merchant.myshopify.com',
-            lastNonce: 'abcd-1234',
-            accessToken: null,
-            scopes: null,
-            paymentAddress: null,
-            name: 'Mock Merchant',
-            acceptedTermsAndConditions: false,
-            dismissCompleted: false,
-        };
-
+        const mockMerchant = createMockMerchant({ shop: 'test-shop.myshopify.com' });
         prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
         const merchant = await merchantService.getMerchant({
-            shop: 'mock-merchant.myshopify.com',
+            shop: 'test-shop.myshopify.com',
         });
 
         expect(merchant).toEqual(mockMerchant);

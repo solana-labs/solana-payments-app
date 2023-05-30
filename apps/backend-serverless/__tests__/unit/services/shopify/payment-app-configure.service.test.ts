@@ -1,23 +1,13 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { makePaymentAppConfigure } from '../../../../src/services/shopify/payment-app-configure.service';
-import { PaymentAppConfigureResponse } from '../../../../src/models/shopify-graphql-responses/payment-app-configure-response.model';
+import { createMockPaymentAppConfigureResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
 
 describe('unit testing payment app configure', () => {
     it('successful response', async () => {
         let mock = new MockAdapter(axios);
-        mock.onPost().reply(200, {
-            data: {
-                paymentsAppConfigure: {
-                    paymentsAppConfiguration: {
-                        externalHandle: 'mock-external-id',
-                        ready: true,
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        });
+        const mockPaymentAppConfigureResponse = createMockPaymentAppConfigureResponse();
+        mock.onPost().reply(200, mockPaymentAppConfigureResponse);
         const mockPaymentAppConfigure = makePaymentAppConfigure(axios);
 
         await expect(

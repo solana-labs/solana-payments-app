@@ -14,6 +14,7 @@ import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import axios from 'axios';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
 
 export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -67,8 +68,9 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
     }
 
     let rejectRefundResponse: RejectRefundResponse;
+    const refundSessionReject = makeRefundSessionReject(axios);
+
     try {
-        const refundSessionReject = makeRefundSessionReject(axios);
         rejectRefundResponse = await refundSessionReject(
             refundRecord.shopGid,
             'PROCESSING_ERROR', // Hardcoding this for now, shopify docs are slightly unclear on what the possible values are
@@ -76,11 +78,19 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
             shop,
             accessToken
         );
+
+        // TODO: Validate the response from Shopify
     } catch (error) {
+        try {
+            await sendRefundRejectRetryMessage(refundRecord.id, 'PROCESSING_ERROR', rejectRefundRequest.merchantReason);
+        } catch (sendMessageError) {
+            // TODO: This should not happen but if it does we should log it
+            // We will add some kind of redudancy to this later
+            // For now we will just return an error. The good thing is that this is the safest error to have, reject-refund
+        }
+
         return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
-
-    // TODO: Validate response from Shopify
 
     try {
         await refundRecordService.updateRefundRecord(refundRecord, {
@@ -88,7 +98,8 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
         });
     } catch (error) {
         // This will leave us in an odd spot because Shopify would be updated but we would not be
-        // TODO: Address this
+        // We should probably retry this as well but this will go along with what ever strategy we
+        // use on failed database updates in general
         return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 

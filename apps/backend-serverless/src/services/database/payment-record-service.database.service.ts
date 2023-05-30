@@ -4,7 +4,7 @@ import { Pagination, calculatePaginationSkip } from '../../utilities/database-se
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
-    redirectUrl: string;
+    transactionSignature: string;
 };
 
 export type TransactionSignatureUpdate = {
@@ -14,11 +14,19 @@ export type TransactionSignatureUpdate = {
 export type StatusRedirectTransactionUpdate = {
     status: PaymentRecordStatus;
     redirectUrl: string;
-    transactionSignature: string;
     completedAt: Date;
 };
 
-export type PaymentRecordUpdate = PaidUpdate | TransactionSignatureUpdate | StatusRedirectTransactionUpdate;
+export type StatusCompletedUpdate = {
+    status: PaymentRecordStatus;
+    completedAt: Date;
+};
+
+export type PaymentRecordUpdate =
+    | PaidUpdate
+    | TransactionSignatureUpdate
+    | StatusRedirectTransactionUpdate
+    | StatusCompletedUpdate;
 
 export type ShopIdQuery = {
     shopId: string;

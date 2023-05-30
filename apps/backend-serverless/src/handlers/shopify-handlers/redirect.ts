@@ -57,10 +57,35 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
         return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
     }
 
-    // TODO: Verify output and throw if it's bad
-    // TODO: Set value to true after KYB
+    // TODO: Set value to true after KYB, this will change once we implement KYB
+    // TODO: Update merchant record to reflect status
     const paymentAppConfigure = makePaymentAppConfigure(axios);
-    const configure = await paymentAppConfigure(merchant.id, true, shop, accessTokenResponse.access_token);
+
+    // TODO: Make this dynamic
+    const isReady = true;
+
+    try {
+        const appConfigureResponse = await paymentAppConfigure(
+            merchant.id,
+            isReady,
+            shop,
+            accessTokenResponse.access_token
+        );
+
+        // TODO: Verify the response and throw if it's bad
+
+        // TODO: Update merchant record to reflect status
+    } catch (error) {
+        try {
+            await sendPaymentAppConfigureRetryMessage(merchant.id, isReady, shop, accessTokenResponse.access_token);
+        } catch (error) {
+            // If this fails we should log a critical error but it's not the end of the world, it just means that we have an issue sending retry messages
+            // We should eventually have some kind of redundant system here but for now we can just send the user back to the merchant ui
+            // in a state that is logged in but not fully set up with Shopify
+            // TODO: Handle this better
+            // TODO: Log critical error
+        }
+    }
 
     let merchantAuthCookieHeader: string;
     try {
@@ -79,3 +104,6 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
         body: JSON.stringify({}),
     };
 };
+function sendPaymentAppConfigureRetryMessage(id: string, arg1: boolean, shop: string, access_token: string) {
+    throw new Error('Function not implemented.');
+}

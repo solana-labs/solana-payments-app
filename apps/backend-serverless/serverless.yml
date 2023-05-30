@@ -24,7 +24,7 @@ provider:
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
     AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
     AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
-
+    AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
   httpApi:
     cors: true
 package:
@@ -146,8 +146,68 @@ functions:
       - httpApi:
           path: /shop/redact
           method: post
+  sqs-message-receive:
+    handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
+    environment:
+      RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
+    events:
+      - sqs:
+          arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+          batchSize: 1
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - states:StartExecution
+        Resource: ${self:resources.Outputs.RetryMachine.Value}
+      - Effect: Allow
+        Action:
+          - sqs:ReceiveMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
+  retry-request:
+    handler: src/handlers/webhooks/retry.retry
+
+  queue:
+    handler: src/handlers/testing/queue.queue
+    events:
+      - httpApi:
+          path: /queue
+          method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
+stepFunctions:
+  stateMachines:
+    retry:
+        name: retry
+        definition:
+          StartAt: wait_using_seconds
+          States: 
+            wait_using_seconds: 
+              Type: Wait
+              SecondsPath: "$.retrySeconds"
+              Next: process_retry
+            process_retry: 
+              Type: Task
+              Resource:
+                Fn::GetAtt: [retry-request, Arn]
+              End: true
+
+resources:
+  Outputs:
+    RetryMachine:
+      Description: The ARN of the retry machine
+      Value:
+        Fn::GetAtt: [Retry, Arn]
+
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
+  - serverless-step-functions
+  - serverless-iam-roles-per-function
+

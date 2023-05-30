@@ -6,7 +6,7 @@ Note: Given we are in the very early stages of development, this should change o
 
 ## Components
 
--   Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network
+-   Backend - Orcastration logic that connects merchants to consumers who want to complete a payment over the Solana network and handles the communication with Shopify as a side effect of the actions taken
 -   Mertchant UI - General merchant managment portal
 -   Payment UI - UI for completing a payment on Solana, lightly coupled to the Solana Payments Appp
 -   Transaction Request Server - Generalized transaction building engine for payments

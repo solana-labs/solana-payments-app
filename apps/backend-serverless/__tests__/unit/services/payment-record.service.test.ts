@@ -90,7 +90,6 @@ describe('Payment Record Testing Suite', () => {
         const paymentRecordAfterUpdate = await paymentRecordService.updatePaymentRecord(paymentRecordBeforeUpdate, {
             status: PaymentRecordStatus.completed,
             redirectUrl: 'https://example.com',
-            transactionSignature: 'abcd',
             completedAt: new Date(),
         });
 
