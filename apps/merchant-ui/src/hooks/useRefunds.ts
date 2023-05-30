@@ -63,21 +63,25 @@ function transformRefund<T extends Refund>(responseData: any): T[] {
     });
 }
 
-export function useOpenRefunds(): {
-    openRefunds: RE.Result<OpenRefund[]>;
+export function useOpenRefunds(page: number): {
+    openRefunds: RE.Result<{ refunds: OpenRefund[]; totalPages: number }>;
     refundCount: number;
     fetchOpenRefunds: () => void;
 } {
-    const [results, setResults] = useState<RE.Result<OpenRefund[]>>(RE.pending());
+    const [results, setResults] = useState<RE.Result<{ refunds: OpenRefund[]; totalPages: number }>>(RE.pending());
     const [refundCount, setRefundCount] = useState<number>(0);
 
-    const params: any = {
-        page: 1,
-        pageSize: 10,
-        refundStatus: 'pending',
-    };
+    const PAGE_SIZE = 5;
 
     async function fetchOpenRefunds() {
+        const params: any = {
+            pageNumber: page + 1,
+            pageSize: 5,
+            refundStatus: 'pending',
+        };
+
+        console.log('page in fetch open: ', page, params);
+
         setResults(RE.pending());
         try {
             const response = await axios.get(API_ENDPOINTS.refundData, { params });
@@ -86,7 +90,13 @@ export function useOpenRefunds(): {
                 setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments 200')));
             } else {
                 const refunds = transformRefund<OpenRefund>(response.data); // assuming you have transformRefund function
-                setResults(RE.ok(refunds));
+                console.log('fetching total', response.data.refundData.total);
+                setResults(
+                    RE.ok({
+                        refunds: refunds,
+                        totalPages: Math.floor(response.data.refundData.total / PAGE_SIZE) + 1,
+                    })
+                );
                 setRefundCount(response.data.refundData.total);
             }
         } catch (error) {
@@ -97,7 +107,7 @@ export function useOpenRefunds(): {
 
     useEffect(() => {
         fetchOpenRefunds();
-    }, []);
+    }, [page]);
 
     return { openRefunds: results, refundCount, fetchOpenRefunds };
 }
