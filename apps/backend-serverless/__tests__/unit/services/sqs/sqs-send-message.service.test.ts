@@ -3,7 +3,7 @@ import { sendRetryMessage } from '../../../../src/services/sqs/sqs-send-message.
 import { SQS } from 'aws-sdk';
 import { ShopifyMutationRetryType } from '../../../../src/models/shopify-mutation-retry.model.js';
 
-describe('sqsRetryService', () => {
+describe('unit testing the sqs send message service', () => {
     it('should call SQS.sendMessage with correct parameters', async () => {
         process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL = 'mock-queue-url';
 

@@ -79,62 +79,6 @@ export const sendAppConfigureRetryMessage = async (merchantId: string, state: bo
     });
 };
 
-// export const sendRetryMessage = async (
-//     retryType: ShopifyMutationRetryType,
-//     paymentResolve: ShopifyMutationPaymentResolve | null,
-//     paymentReject: ShopifyMutationPaymentReject | null,
-//     refundResolve: ShopifyMutationRefundResolve | null,
-//     refundReject: ShopifyMutationRefundReject | null,
-//     appConfigure: ShopifyMutationAppConfigure | null,
-//     retryStepIndex: number = 0
-// ) => {
-//     const queueUrl = process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL;
-
-//     if (queueUrl == null) {
-//         throw new MissingEnvError('aws shopify mutation queue url');
-//     }
-
-//     const sqs = new SQS();
-
-//     const retryTimeInterval = nextRetryTimeInterval(retryStepIndex);
-
-//     var numberOfSendMessageAttempts = 0;
-//     const maxNumberOfSendMessageAttempts = 3;
-
-//     while (numberOfSendMessageAttempts < maxNumberOfSendMessageAttempts) {
-//         try {
-//             await sqs
-//                 .sendMessage({
-//                     QueueUrl: queueUrl,
-//                     MessageBody: JSON.stringify({
-//                         retryType: retryType,
-//                         retryStepIndex: retryStepIndex,
-//                         retrySeconds: retryTimeInterval,
-//                         paymentResolve: paymentResolve,
-//                         paymentReject: paymentReject,
-//                         refundResolve: refundResolve,
-//                         refundReject: refundReject,
-//                         appConfigure: appConfigure,
-//                     }),
-//                     MessageAttributes: {
-//                         'message-type': {
-//                             DataType: 'String',
-//                             StringValue: 'shopify-mutation-retry',
-//                         },
-//                     },
-//                 })
-//                 .promise();
-
-//             break;
-//         } catch (error) {
-//             // TODO: Log the error with sentry every time we hit this
-//         }
-
-//         numberOfSendMessageAttempts += 1;
-//     }
-// };
-
-// Simplify the function parameters to make it easier to test
 export const sendRetryMessage = async (
     retryType: ShopifyMutationRetryType,
     paymentResolve: ShopifyMutationPaymentResolve | null,
