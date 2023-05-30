@@ -3,6 +3,7 @@ import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/r
 import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
 
 /**
  *
@@ -161,6 +162,28 @@ export const createMockSuccessRefundSessionRejectResponse = (
                     state: {
                         code: 'SUCCESS',
                     },
+                },
+                userErrors: [],
+            },
+        },
+        extensions: {},
+    };
+};
+
+/**
+ *
+ * @param paymentAppConfigureResponse: Partial<PaymentAppConfigureResponse>
+ * @returns a mock payment app configure response to be used for testing only
+ */
+export const createMockPaymentAppConfigureResponse = (
+    paymentAppConfigureResponse: Partial<PaymentAppConfigureResponse> = {}
+): PaymentAppConfigureResponse => {
+    return {
+        data: {
+            paymentsAppConfigure: {
+                paymentsAppConfiguration: {
+                    externalHandle: 'mock-external-id',
+                    ready: true,
                 },
                 userErrors: [],
             },

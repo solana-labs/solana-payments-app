@@ -4,7 +4,11 @@ import { MerchantService } from '../database/merchant-service.database.service.j
 import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
 import axios from 'axios';
 
-export const retryAppConfigure = async (appConfigureInfo: ShopifyMutationAppConfigure | null, prisma: PrismaClient) => {
+export const retryAppConfigure = async (
+    appConfigureInfo: ShopifyMutationAppConfigure | null,
+    prisma: PrismaClient,
+    axiosInstance: typeof axios
+) => {
     const merchantService = new MerchantService(prisma);
 
     if (appConfigureInfo == null) {
@@ -21,7 +25,7 @@ export const retryAppConfigure = async (appConfigureInfo: ShopifyMutationAppConf
         throw new Error('Could not find access token.');
     }
 
-    const paymentAppConfigure = makePaymentAppConfigure(axios);
+    const paymentAppConfigure = makePaymentAppConfigure(axiosInstance);
 
     try {
         const configureAppResponse = await paymentAppConfigure(
