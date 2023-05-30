@@ -2,13 +2,13 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
-import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
+import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { PaymentRecordService } from '../../../../services/database/payment-record-service.database.service.js';
 import {
     PaymentDataRequestParameters,
     parseAndValidatePaymentDataRequestParameters,
-} from '../../../../models/payment-data-request.model.js';
+} from '../../../../models/clients/merchant-ui/payment-data-request.model.js';
 import { Pagination, DEFAULT_PAGINATION_SIZE } from '../../../../utilities/database-services.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { createPaymentDataResponseFromPaymentRecord } from '../../../../utilities/payment-record.utility.js';

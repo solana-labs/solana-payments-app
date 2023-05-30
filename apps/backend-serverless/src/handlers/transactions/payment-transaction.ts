@@ -1,12 +1,12 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
-import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
 import {
     PaymentTransactionRequestParameters,
     parseAndValidatePaymentTransactionRequest,
-} from '../../models/payment-transaction-request-parameters.model.js';
+} from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
 import { encodeBufferToBase58 } from '../../utilities/encode-transaction.utility.js';
 import { decode } from '../../utilities/string.utility.js';
 import { encodeTransaction } from '../../utilities/encode-transaction.utility.js';

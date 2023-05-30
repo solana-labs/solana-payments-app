@@ -5,12 +5,12 @@ import { requestErrorResponse } from '../../../../utilities/request-response.uti
 import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,
-} from '../../../../models/reject-refund-request.model.js';
+} from '../../../../models/clients/merchant-ui/reject-refund-request.model.js';
 import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
-import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
+import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import axios from 'axios';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';

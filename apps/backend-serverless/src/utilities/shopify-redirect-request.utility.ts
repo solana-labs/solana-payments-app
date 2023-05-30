@@ -2,7 +2,7 @@ import {
     AppRedirectQueryParam,
     appRedirectQueryParmSchema,
     parseAndValidateAppRedirectQueryParams,
-} from '../models/redirect-query-params.model.js';
+} from '../models/shopify/redirect-query-params.model.js';
 import crypto from 'crypto-js';
 import { stringifyParams } from './stringify-params.utility.js';
 

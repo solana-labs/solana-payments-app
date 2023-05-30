@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { AppInstallQueryParam } from '../../models/install-query-params.model.js';
+import { AppInstallQueryParam } from '../../models/shopify/install-query-params.model.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import {
     verifyAndParseShopifyInstallRequest,

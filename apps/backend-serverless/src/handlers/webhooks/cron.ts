@@ -5,7 +5,7 @@ import { PrismaClient, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
-import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
+import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { web3 } from '@project-serum/anchor';
 import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 

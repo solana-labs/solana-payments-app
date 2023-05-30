@@ -3,18 +3,18 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
 import { PrismaClient, RefundRecord } from '@prisma/client';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
+import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import {
     RefundDataRequestParameters,
     parseAndValidateRefundDataRequestParameters,
-} from '../../../../models/refund-data-request.model.js';
+} from '../../../../models/clients/merchant-ui/refund-data-request.model.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
 import { createRefundResponse } from '../../../../utilities/create-refund-response.utility.js';
 import {
     parseAndValidateRefundStatusRequest,
     RefundStatusRequest,
-} from '../../../../models/refund-status-request.model.js';
+} from '../../../../models/clients/merchant-ui/refund-status-request.model.js';
 import {
     RefundDataResponse,
     createRefundDataResponseFromRefundRecord,
