@@ -14,10 +14,13 @@ import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { PaginatedTable } from '@/components/PaginatedTable';
 
 interface Props {
     className?: string;
 }
+
+const REFUND_COLUMNS = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
 export function OpenRefunds(props: Props) {
     const { openRefunds, fetchOpenRefunds } = useOpenRefunds();
@@ -31,7 +34,6 @@ export function OpenRefunds(props: Props) {
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
 
-    const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
     const headers = {
         'Content-Type': 'application/json',
@@ -364,4 +366,31 @@ export function OpenRefunds(props: Props) {
             )}
         </div>
     );
+    return (
+        <PaginatedTable
+        className={twMerge(
+            props.className,
+        'mt-8')}
+        columns={REFUND_COLUMNS}
+        curPage={}
+        headers={
+            orderId: 'Shopify Order ID',
+            requestedOn: 'Requested On',
+            requestedRefundAmount: 'Requested Refund',
+            purchaseAmount: 'Purchase Amount',
+            status: 'Status',
+        }
+        numPages={}
+        rowHeight={}
+        rowsPerPage={}
+        onPageChange={() => {}}
+        >
+            {{
+
+            }}
+
+
+
+        </PaginatedTable>
+    )
 }
