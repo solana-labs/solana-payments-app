@@ -71,7 +71,7 @@ export function PaymentsHistory(props: Props) {
                                         amount >= 0 ? 'text-gray-600' : 'text-gray-400'
                                     )}
                                 >
-                                    {amount >= 0 ? '+' : '-'} ${formatPrice(Math.abs(amount))}
+                                    ${formatPrice(Math.abs(amount))}
                                 </div>
                             ),
                             orderId: id => <div className="font-bold text-sm text-slate-600">#{id}</div>,
