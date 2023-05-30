@@ -6,7 +6,11 @@ import { makeRefundSessionReject } from '../shopify/refund-session-reject.servic
 import axios from 'axios';
 import { reject } from 'lodash';
 
-export const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundReject | null, prisma: PrismaClient) => {
+export const retryRefundReject = async (
+    refundRejectInfo: ShopifyMutationRefundReject | null,
+    prisma: PrismaClient,
+    axiosInstance: typeof axios
+) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
 
@@ -34,7 +38,7 @@ export const retryRefundReject = async (refundRejectInfo: ShopifyMutationRefundR
         throw new Error('Could not find access token.');
     }
 
-    const refundSessionReject = makeRefundSessionReject(axios);
+    const refundSessionReject = makeRefundSessionReject(axiosInstance);
 
     const resolveRefundResponse = await refundSessionReject(
         refundRecord.shopGid,

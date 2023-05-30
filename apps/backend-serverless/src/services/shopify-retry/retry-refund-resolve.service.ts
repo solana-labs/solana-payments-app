@@ -7,7 +7,8 @@ import axios from 'axios';
 
 export const retryRefundResolve = async (
     refundResolveInfo: ShopifyMutationRefundResolve | null,
-    prisma: PrismaClient
+    prisma: PrismaClient,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
@@ -36,7 +37,7 @@ export const retryRefundResolve = async (
         throw new Error('Could not find access token.');
     }
 
-    const refundSessionResolve = makeRefundSessionResolve(axios);
+    const refundSessionResolve = makeRefundSessionResolve(axiosInstance);
 
     const resolveRefundResponse = await refundSessionResolve(refundRecord.shopGid, merchant.shop, merchant.accessToken);
 
