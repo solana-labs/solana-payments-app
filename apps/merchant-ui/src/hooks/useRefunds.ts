@@ -145,5 +145,5 @@ export function useCloseRefunds(): { closedRefunds: RE.Result<ClosedRefund[]>; f
         fetchClosedRefunds();
     }, []);
 
-    return { results, fetchClosedRefunds };
+    return { closedRefunds: results, fetchClosedRefunds };
 }
