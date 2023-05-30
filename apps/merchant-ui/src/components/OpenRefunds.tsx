@@ -20,14 +20,16 @@ interface Props {
 }
 
 export function OpenRefunds(props: Props) {
-    const [openRefunds] = useOpenRefunds();
+    const { openRefunds, fetchOpenRefunds } = useOpenRefunds();
     const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
     const [denyPending, setDenyPending] = useState(false);
     const [openApprove, setOpenApprove] = useState<string | null>(null);
+    const [denyApprove, setDenyApprove] = useState<string | null>(null);
 
     const approvePendingRef = useRef(approvePending);
+    const denyPendingRef = useRef(denyPending);
 
     const refundColumns = ['Shopify Order #', 'Requested On', 'Requested Refund', 'Purchase Amount', 'Status'];
 
@@ -60,14 +62,12 @@ export function OpenRefunds(props: Props) {
             );
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
-
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await sendTransaction(transaction, connection);
-
             while (approvePendingRef.current) {
                 const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
                     headers: headers,
                 });
-
                 await new Promise(resolve => setTimeout(resolve, 500));
                 if (status.data.refundStatus.status !== RefundStatus.Pending) {
                     break;
@@ -78,6 +78,7 @@ export function OpenRefunds(props: Props) {
         }
 
         if (approvePendingRef.current) {
+            fetchOpenRefunds();
             setOpenApprove(null);
             setApprovePending(false);
         }
@@ -85,16 +86,30 @@ export function OpenRefunds(props: Props) {
 
     async function rejectRefund(refundId: string) {
         setDenyPending(true);
+        denyPendingRef.current = true;
         try {
             const response = await axios.post(
                 API_ENDPOINTS.rejectRefund + '?refundId=' + refundId + '&merchantReason=' + 'test_reason',
                 { headers: headers }
             );
-            await new Promise(resolve => setTimeout(resolve, 500));
+
+            while (denyPendingRef.current) {
+                const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
+                    headers: headers,
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (status.data.refundStatus.status !== RefundStatus.Pending) {
+                    break;
+                }
+            }
         } catch (error) {
             console.log('reject error: ', error);
         }
-        setDenyPending(false);
+
+        if (denyPendingRef.current) {
+            fetchOpenRefunds();
+            setDenyPending(false);
+        }
     }
 
     return (
@@ -166,7 +181,6 @@ export function OpenRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.requestedRefundAmount >= 0 ? '+' : '-'}$
                                     {formatPrice(Math.abs(refund.requestedRefundAmount))}
                                 </div>
                                 <div
@@ -179,7 +193,6 @@ export function OpenRefunds(props: Props) {
                                         'text-black'
                                     )}
                                 >
-                                    {refund.purchaseAmount >= 0 ? '+' : '-'}$
                                     {formatPrice(Math.abs(refund.purchaseAmount))}
                                 </div>
                                 <div
@@ -192,10 +205,13 @@ export function OpenRefunds(props: Props) {
                                         'space-x-3'
                                     )}
                                 >
-                                    <Dialog.Root>
-                                        <Dialog.Trigger asChild>
-                                            <Button.Secondary>Deny</Button.Secondary>
-                                        </Dialog.Trigger>
+                                    <Dialog.Root
+                                        open={denyApprove === refund.orderId}
+                                        onOpenChange={() => setDenyApprove(null)}
+                                    >
+                                        <Button.Secondary onClick={() => setDenyApprove(refund.orderId)}>
+                                            Deny
+                                        </Button.Secondary>
                                         <Dialog.Portal>
                                             <Dialog.Overlay
                                                 className={twMerge(
@@ -210,7 +226,14 @@ export function OpenRefunds(props: Props) {
                                                     'z-10'
                                                 )}
                                             >
-                                                <Dialog.Content className="bg-white rounded-xl overflow-hidden">
+                                                <Dialog.Content
+                                                    className="bg-white rounded-xl overflow-hidden"
+                                                    onPointerDownOutside={() => {
+                                                        denyPendingRef.current = false;
+                                                        setDenyApprove(null);
+                                                        setDenyPending(false);
+                                                    }}
+                                                >
                                                     <div className="px-6 pt-6 pb-9">
                                                         <div className="flex items-start justify-between">
                                                             <div>
@@ -237,14 +260,12 @@ export function OpenRefunds(props: Props) {
                                                         </div>
                                                     </div>
                                                     <div className="bg-slate-50 p-4 flex justify-end">
-                                                        <Dialog.Close>
-                                                            <Button.Primary
-                                                                onClick={() => rejectRefund(refund.orderId)}
-                                                                pending={denyPending}
-                                                            >
-                                                                Deny Refund
-                                                            </Button.Primary>
-                                                        </Dialog.Close>
+                                                        <Button.Primary
+                                                            onClick={() => rejectRefund(refund.orderId)}
+                                                            pending={denyPending}
+                                                        >
+                                                            Deny Refund
+                                                        </Button.Primary>
                                                     </div>
                                                 </Dialog.Content>
                                             </Dialog.Overlay>
