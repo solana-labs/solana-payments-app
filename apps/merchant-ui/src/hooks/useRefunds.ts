@@ -3,6 +3,8 @@ import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import axios from 'axios';
 
+const PAGE_SIZE = 5;
+
 export enum RefundStatus {
     Pending = 'pending',
     Paid = 'paid',
@@ -71,16 +73,12 @@ export function useOpenRefunds(page: number): {
     const [results, setResults] = useState<RE.Result<{ refunds: OpenRefund[]; totalPages: number }>>(RE.pending());
     const [refundCount, setRefundCount] = useState<number>(0);
 
-    const PAGE_SIZE = 5;
-
     async function fetchOpenRefunds() {
         const params: any = {
             pageNumber: page + 1,
             pageSize: 5,
             refundStatus: 'pending',
         };
-
-        console.log('page in fetch open: ', page, params);
 
         setResults(RE.pending());
         try {
@@ -112,15 +110,19 @@ export function useOpenRefunds(page: number): {
     return { openRefunds: results, refundCount, fetchOpenRefunds };
 }
 
-export function useCloseRefunds(): { closedRefunds: RE.Result<ClosedRefund[]>; fetchClosedRefunds: () => void } {
-    const [results, setResults] = useState<RE.Result<ClosedRefund[]>>(RE.pending());
+export function useCloseRefunds(page: number): {
+    closedRefunds: RE.Result<{ refunds: ClosedRefund[]; totalPages: number }>;
 
-    const params: any = {
-        page: 1,
-        pageSize: 10,
-    };
+    fetchClosedRefunds: () => void;
+} {
+    const [results, setResults] = useState<RE.Result<{ refunds: ClosedRefund[]; totalPages: number }>>(RE.pending());
 
     async function fetchClosedRefunds() {
+        const params: any = {
+            page: page + 1,
+            pageSize: PAGE_SIZE,
+        };
+
         setResults(RE.pending());
         try {
             const responseRejected = await axios.get(API_ENDPOINTS.refundData, {
@@ -143,7 +145,16 @@ export function useCloseRefunds(): { closedRefunds: RE.Result<ClosedRefund[]>; f
                 const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data);
                 const refundsPaid = transformRefund<ClosedRefund>(responsePaid.data);
                 const refunds = [...refundsRejected, ...refundsPaid];
-                setResults(RE.ok(refunds));
+                setResults(
+                    RE.ok({
+                        refunds,
+                        totalPages:
+                            Math.floor(
+                                (responseRejected.data.refundData.total + responsePaid.data.refundData.total) /
+                                    PAGE_SIZE
+                            ) + 1,
+                    })
+                );
             }
         } catch (error) {
             console.log('error: ', error);
