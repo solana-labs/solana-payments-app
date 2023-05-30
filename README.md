@@ -88,6 +88,29 @@ USE_AUTH_MOCK=<this is your mock merchant id if you cannot properally set up coo
 TEST_USDC_SIZE=<while testing, this will be the actual cost in usdc size for your payments>
 ```
 
+7. configure your database
+
+```
+(from /apps/backend-serverless/)
+npx prisma generate
+npx prisma migrate dev
+```
+
+9. deploy the backend serverless app
+
+```
+(from /apps/backend-serverless/)
+serverless deploy
+```
+
+10. update your env
+
+modify the BASE_URL from the .env to be the base url that is output from step 9. if you have already set up a custom domain name and put that inside of your .env you can skip this step
+
+11. add the base url to the payment-ui and merchant-ui
+
+you can configure this in the respective .env files for each of these
+
 ## How to Contribute
 
 We need to flesh out more compartmentalized issues for developers to eaisily step in and contribute code. For now, please create issue about further documentation you would like to see. Please make sure you set up our prettier and es-list packages and these don't conflict with your local set up. We use the [es-lint](https://github.com/solana-labs/eslint-config-solana) and [prettier](https://github.com/solana-labs/prettier-config-solana) packages from Solana Labs. Both should be installed with the rest of the dependencies.
