@@ -4,7 +4,6 @@ import { RefundRecordService } from '../database/refund-record-service.database.
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import { makeRefundSessionReject } from '../shopify/refund-session-reject.service.js';
 import axios from 'axios';
-import { reject } from 'lodash';
 
 export const retryRefundReject = async (
     refundRejectInfo: ShopifyMutationRefundReject | null,
