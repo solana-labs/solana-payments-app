@@ -1,4 +1,4 @@
-import { parseAndValidateTrmWalletScreenResponse } from '../../../src/models/dependencies/trm-wallet-screen-response.model.js';
+import { parseAndValidateTrmWalletScreenResponse } from '../../../../src/models/dependencies/trm-wallet-screen-response.model.js';
 
 describe('unit testing the trm wallet screen model', () => {
     it('valid trm wallet screen response body', () => {

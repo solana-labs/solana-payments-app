@@ -1,4 +1,4 @@
-import { parseAndValidateHeliusEnchancedTransaction } from '../../../src/models/dependencies/helius-enhanced-transaction.model.js';
+import { parseAndValidateHeliusEnchancedTransaction } from '../../../../src/models/dependencies/helius-enhanced-transaction.model.js';
 
 describe('unit testing helius enhanced transaction model', () => {
     it('valid ehancted transaction model', () => {
