@@ -65,7 +65,7 @@ function transformRefund<T extends Refund>(responseData: any): T[] {
     });
 }
 
-export function useOpenRefunds(page: number): {
+export function useOpenRefunds(page: number = 0): {
     openRefunds: RE.Result<{ refunds: OpenRefund[]; totalPages: number }>;
     refundCount: number;
     fetchOpenRefunds: () => void;
@@ -110,7 +110,7 @@ export function useOpenRefunds(page: number): {
     return { openRefunds: results, refundCount, fetchOpenRefunds };
 }
 
-export function useCloseRefunds(page: number): {
+export function useCloseRefunds(page: number = 0): {
     closedRefunds: RE.Result<{ refunds: ClosedRefund[]; totalPages: number }>;
 
     fetchClosedRefunds: () => void;
