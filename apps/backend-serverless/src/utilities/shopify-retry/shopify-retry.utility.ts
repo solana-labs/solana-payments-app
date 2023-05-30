@@ -42,3 +42,17 @@ export const nextRetryTimeInterval = (stepIndex: number) => {
 export const exhaustedRetrySteps = (stepIndex: number) => {
     return stepIndex >= retryStepTimes.length;
 };
+
+export const retry = async (fn: () => Promise<any>, maxAttempts: number): Promise<number> => {
+    let attempts = 0;
+    while (attempts < maxAttempts) {
+        try {
+            await fn();
+            break;
+        } catch (error) {
+            // TODO: Log the error with sentry every time we hit this
+            attempts += 1;
+        }
+    }
+    return attempts;
+};
