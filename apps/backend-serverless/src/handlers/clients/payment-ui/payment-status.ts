@@ -1,5 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Merchant, PaymentRecord, PaymentRecordStatus, PrismaClient } from '@prisma/client';
+import {
+    Merchant,
+    PaymentRecord,
+    PaymentRecordRejectionReason,
+    PaymentRecordStatus,
+    PrismaClient,
+} from '@prisma/client';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import {
     parseAndValidatePaymentStatusRequest,
@@ -8,6 +14,7 @@ import {
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { paymentSessionRejectionDisplayMessages } from '../../../services/shopify/payment-session-reject.service.js';
 
 // TODO: Find somewhere to put this
 
@@ -64,10 +71,13 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
     let paymentStatusError: PaymentErrrorResponse | null = null;
 
     if (paymentRecord.status == PaymentRecordStatus.rejected) {
+        const rejectionReason = paymentRecord.rejectionReason ?? PaymentRecordRejectionReason.unknownReason;
+        const rejectionReasonDisplayMesages = paymentSessionRejectionDisplayMessages(rejectionReason);
+
         paymentStatusError = {
-            errorTitle: 'Payment Error', // TODO: Use reason data to populate this
-            errorDetail: 'Payment failed', // TODO: Use reason data to populate this
-            errorRedirect: paymentRecord.cancelURL, // TODO: Use reason data to populate this, ALSO we should probably use the redirect url here but cancel is kinda ok i guess
+            errorTitle: rejectionReasonDisplayMesages.errorTitle,
+            errorDetail: rejectionReasonDisplayMesages.errorDescription,
+            errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL, // TODO: Use reason data to populate this, ALSO we should probably use the redirect url here but cancel is kinda ok i guess
         };
     }
 

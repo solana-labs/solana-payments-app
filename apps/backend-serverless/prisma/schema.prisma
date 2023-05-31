@@ -23,6 +23,13 @@ enum PaymentRecordStatus {
   rejected
 }
 
+enum PaymentRecordRejectionReason {
+  dependencySafetyReason
+  customerSafetyReason
+  internalServerReason
+  unknownReason
+}
+
 enum RefundRecordStatus {
   pending
   paid
@@ -46,9 +53,9 @@ model Merchant {
 }
 
 model PaymentRecord {
-  id                   String              @id // Internal ID
+  id                   String                        @id // Internal ID
   status               PaymentRecordStatus
-  shopId               String              @unique
+  shopId               String                        @unique
   shopGid              String?
   shopGroup            String
   test                 Boolean
@@ -57,14 +64,14 @@ model PaymentRecord {
   usdcAmount           Float
   cancelURL            String
   transactions         TransactionRecord[]
-  merchant             Merchant            @relation(fields: [merchantId], references: [id])
+  merchant             Merchant                      @relation(fields: [merchantId], references: [id])
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
-  requestedAt          DateTime            @default(now())
+  requestedAt          DateTime                      @default(now())
   completedAt          DateTime?
   refundRecord         RefundRecord[]
-  rejectionReason      String?
+  rejectionReason      PaymentRecordRejectionReason?
 }
 
 model RefundRecord {

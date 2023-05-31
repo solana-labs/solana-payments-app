@@ -1,5 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { PaymentRecord, PaymentRecordStatus, PrismaClient, TransactionType } from '@prisma/client';
+import {
+    PaymentRecord,
+    PaymentRecordRejectionReason,
+    PaymentRecordStatus,
+    PrismaClient,
+    TransactionType,
+} from '@prisma/client';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
@@ -25,10 +31,7 @@ import axios from 'axios';
 import { DependencyError } from '../../errors/dependency.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
-import {
-    PaymentSessionRejectionReason,
-    makePaymentSessionReject,
-} from '../../services/shopify/payment-session-reject.service.js';
+import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 
 Sentry.AWSLambda.init({
@@ -132,14 +135,14 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             await trmService.screenAddress(account);
         } catch (error) {
-            let rejectionReason: PaymentSessionRejectionReason = PaymentSessionRejectionReason.unknownError;
+            let rejectionReason: PaymentRecordRejectionReason = PaymentRecordRejectionReason.unknownReason;
 
             if (error instanceof DependencyError) {
-                rejectionReason = PaymentSessionRejectionReason.saftyDependencyError;
+                rejectionReason = PaymentRecordRejectionReason.dependencySafetyReason;
             } else if (error instanceof RiskyWalletError) {
-                rejectionReason = PaymentSessionRejectionReason.customerSafetyError;
+                rejectionReason = PaymentRecordRejectionReason.customerSafetyReason;
             } else if (error instanceof MissingEnvError) {
-                rejectionReason = PaymentSessionRejectionReason.internalServerError;
+                rejectionReason = PaymentRecordRejectionReason.internalServerReason;
             }
 
             const paymentSessionReject = makePaymentSessionReject(axios);
@@ -173,6 +176,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                     status: PaymentRecordStatus.rejected,
                     redirectUrl: redirectUrl!,
                     completedAt: new Date(),
+                    rejectionReason: rejectionReason,
                 });
             } catch (error) {
                 try {
