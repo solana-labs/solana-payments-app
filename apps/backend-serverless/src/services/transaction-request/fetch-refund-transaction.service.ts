@@ -4,7 +4,7 @@ import { PaymentRecord, RefundRecord } from '@prisma/client';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../../models/transaction-request-response.model.js';
+} from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';

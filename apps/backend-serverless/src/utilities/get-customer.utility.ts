@@ -1,5 +1,5 @@
 import { PaymentRecord } from '@prisma/client';
-import { HeliusEnhancedTransaction } from '../models/helius-enhanced-transaction.model.js';
+import { HeliusEnhancedTransaction } from '../models/dependencies/helius-enhanced-transaction.model.js';
 import { USDC_MINT } from '../configs/tokens.config.js';
 
 export const getCustomerFromHeliusEnhancedTransaction = (

@@ -4,7 +4,7 @@ import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
     HeliusEnhancedTransaction,
-} from '../models/helius-enhanced-transaction.model.js';
+} from '../models/dependencies/helius-enhanced-transaction.model.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;

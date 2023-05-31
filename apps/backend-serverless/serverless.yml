@@ -210,4 +210,5 @@ plugins:
   - serverless-prune-plugin
   - serverless-step-functions
   - serverless-iam-roles-per-function
+  - serverless-offline
 

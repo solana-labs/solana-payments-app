@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
     TrmWalletScreenResponse,
     parseAndValidateTrmWalletScreenResponse,
-} from '../models/trm-wallet-screen-response.model.js';
+} from '../models/dependencies/trm-wallet-screen-response.model.js';
 import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../configs/trm.config.js';
 
 export class TrmService {

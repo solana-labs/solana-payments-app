@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
-import { MerchantAuthToken } from '../../../../models/merchant-auth-token.model.js';
+import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { PrismaClient } from '@prisma/client';

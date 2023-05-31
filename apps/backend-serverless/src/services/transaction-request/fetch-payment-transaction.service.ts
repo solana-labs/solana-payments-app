@@ -3,7 +3,7 @@ import { buildPaymentTransactionRequestEndpoint } from '../../utilities/endpoint
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../../models/transaction-request-response.model.js';
+} from '../../models/transaction-requests/transaction-request-response.model.js';
 import { Merchant, PaymentRecord } from '@prisma/client';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 

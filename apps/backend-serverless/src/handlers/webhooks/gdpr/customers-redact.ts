@@ -4,7 +4,7 @@ import {
     ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
-} from '../../../models/shopify-webhook-headers.model.js';
+} from '../../../models/shopify/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/verify-shopify-webhook-header.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';

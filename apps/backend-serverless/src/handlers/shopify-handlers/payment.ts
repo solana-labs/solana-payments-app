@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidateShopifyPaymentInitiation } from '../../models/process-payment-request.model.js';
+import { parseAndValidateShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';

@@ -49,37 +49,35 @@ export function usePayments(page: number): RE.Result<{
         }>
     >(RE.pending());
 
-    const params: any = {
-        page: page + 1,
-        pageSize: PAGE_SIZE,
-    };
+    async function fetchPayments() {
+        const params: any = {
+            pageNumber: page + 1,
+            pageSize: PAGE_SIZE,
+        };
+        setResults(RE.pending());
+        try {
+            const response = await axios.get(API_ENDPOINTS.paymentData, { params });
+
+            if (response.status !== 200) {
+                setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments')));
+            } else {
+                const payments = transformPayment(response.data); // assuming you have transformRefund function
+                setResults(
+                    RE.ok({
+                        payments: payments,
+                        totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
+                    })
+                );
+            }
+        } catch (error) {
+            console.log('error: ', error);
+            setResults(RE.failed(new Error('Failed to fetch open payments')));
+        }
+    }
 
     useEffect(() => {
-        async function fetchPayments() {
-            setResults(RE.pending());
-            try {
-                const response = await axios.get(API_ENDPOINTS.paymentData, { params });
-
-                if (response.status !== 200) {
-                    setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments')));
-                } else {
-                    console.log('response.data: ', response.data);
-                    const payments = transformPayment(response.data); // assuming you have transformRefund function
-                    setResults(
-                        RE.ok({
-                            payments: payments,
-                            totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
-                        })
-                    );
-                }
-            } catch (error) {
-                console.log('error: ', error);
-                setResults(RE.failed(new Error('Failed to fetch open payments')));
-            }
-        }
-
         fetchPayments();
-    }, []);
+    }, [page]);
 
     return results;
 }

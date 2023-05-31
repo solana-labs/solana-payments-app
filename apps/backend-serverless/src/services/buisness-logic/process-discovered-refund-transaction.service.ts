@@ -1,5 +1,5 @@
 import { PrismaClient, RefundRecordStatus, TransactionRecord, TransactionType } from '@prisma/client';
-import { HeliusEnhancedTransaction } from '../../models/helius-enhanced-transaction.model.js';
+import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';

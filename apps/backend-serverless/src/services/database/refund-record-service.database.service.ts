@@ -6,7 +6,7 @@ import {
     PaymentRecordStatus,
     RefundRecordStatus,
 } from '@prisma/client';
-import { ShopifyRefundInitiation } from '../../models/process-refund.request.model.js';
+import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
 
 export type PaidUpdate = {
@@ -88,7 +88,7 @@ export class RefundRecordService {
                 paymentRecord: true,
             },
             take: pagination.pageSize,
-            skip: 0,
+            skip: pagination.pageSize * (pagination.page - 1),
         });
     }
 

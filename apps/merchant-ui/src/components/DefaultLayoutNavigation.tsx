@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function DefaultLayoutNavigation(props: Props) {
-    const [_, refundCount] = useOpenRefunds();
+    const { refundCount } = useOpenRefunds();
     const { merchantInfo } = useMerchant();
     return (
         <NavigationMenu.Root
