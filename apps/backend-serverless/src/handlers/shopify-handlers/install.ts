@@ -37,7 +37,8 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             });
         }
     } catch (error) {
-        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        // return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        return requestErrorResponse(error);
     }
 
     const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
