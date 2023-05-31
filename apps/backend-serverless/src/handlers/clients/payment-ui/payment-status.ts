@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
+import { Merchant, PaymentRecord, PaymentRecordStatus, PrismaClient } from '@prisma/client';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import {
     parseAndValidatePaymentStatusRequest,
@@ -8,6 +8,14 @@ import {
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
+
+// TODO: Find somewhere to put this
+
+interface PaymentErrrorResponse {
+    errorTitle: string;
+    errorDetail: string;
+    errorRedirect: string;
+}
 
 export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let parsedPaymentStatusQuery: PaymentStatusRequest;
@@ -27,6 +35,7 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         id: parsedPaymentStatusQuery.paymentId,
     });
 
+    // TODO: Make this return as expected and show some kind of boof empty state
     if (paymentRecord == null) {
         return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
     }
@@ -35,6 +44,7 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         id: paymentRecord.merchantId,
     });
 
+    // TODO: Make this return as expected and show some kind of boof empty state
     if (merchant == null) {
         return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
     }
@@ -51,9 +61,20 @@ export const paymentStatus = async (event: APIGatewayProxyEvent): Promise<APIGat
         completed: paymentRecord.redirectUrl ? true : false,
     };
 
+    let paymentStatusError: PaymentErrrorResponse | null = null;
+
+    if (paymentRecord.status == PaymentRecordStatus.rejected) {
+        paymentStatusError = {
+            errorTitle: 'Payment Error', // TODO: Use reason data to populate this
+            errorDetail: 'Payment failed', // TODO: Use reason data to populate this
+            errorRedirect: paymentRecord.cancelURL, // TODO: Use reason data to populate this, ALSO we should probably use the redirect url here but cancel is kinda ok i guess
+        };
+    }
+
+    // TODO: Rename these, these are bad
     const responseBodyData = {
         paymentStatus: paymentStatusResponse,
-        error: null,
+        error: paymentStatusError,
     };
 
     return {
