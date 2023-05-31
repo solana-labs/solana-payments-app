@@ -69,6 +69,7 @@ export function GettingStartedAddWallet(props: Props) {
                     onClick={() => {
                         setPending(true);
                         updateMerchantAddress(walletAddress?.toString());
+                        router.push('/getting-started');
                         setPending(false);
                     }}
                     pending={pending}
