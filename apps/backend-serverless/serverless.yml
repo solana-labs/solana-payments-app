@@ -212,3 +212,6 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-offline
 
+custom:
+  serverless-offline:
+    httpPort: 3000
