@@ -65,12 +65,7 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
                         completed: false,
                         redirectUrl: null,
                     },
-                    // details: null,
-                    error: {
-                        errorTitle: 'Payment Error',
-                        errorDetail: 'Payment failed',
-                        errorRedirect: 'https://solana.com',
-                    },
+                    error: null,
                 };
             }
 
