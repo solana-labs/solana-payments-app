@@ -14,14 +14,14 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
     const merchant = await merchantService.getMerchant({ shop: redirectParams.shop });
 
     if (merchant == null) {
-        throw new Error('Did not find the required info to verify.');
+        throw new Error('Did not find the required info to verify. Missing merchant.');
     }
 
     // Save the hmac, remove it from the object, get the query string after removing
     const hmac = redirectParams.hmac;
 
     if (hmac == undefined) {
-        throw new Error('Did not find the required info to verify.');
+        throw new Error('Did not find the required info to verify. Missing hmac.');
     }
 
     delete redirectParams['hmac'];
@@ -31,25 +31,25 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
 
     // Check for a secret key to decode with
     if (secret == undefined) {
-        throw new Error('Did not have the required info to verify.');
+        throw new Error('Did not have the required info to verify. Missing secret.');
     }
 
     const digest = crypto.HmacSHA256(queryStringAfterRemoving, secret);
     const digestString = digest.toString();
 
     if (digestString != hmac) {
-        throw new Error('Did not have the correct info to verify.');
+        throw new Error('Did not have the correct info to verify. Bad hmac.');
     }
 
     const nonce = redirectParams.state;
     const lastNonce = merchant.lastNonce;
 
     if (nonce != lastNonce) {
-        throw new Error('Did not have the correct info to verify.');
+        throw new Error('Did not have the correct info to verify. Bad nonce.');
     }
 
     const shop = redirectParams.shop;
     if (shop != merchant.shop) {
-        throw new Error('Did not have the correct info to verify.');
+        throw new Error('Did not have the correct info to verify. Bad shop.');
     }
 };

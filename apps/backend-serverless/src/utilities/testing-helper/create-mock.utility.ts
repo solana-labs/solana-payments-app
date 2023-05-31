@@ -4,7 +4,7 @@ import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/re
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
-import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { web3 } from '@project-serum/anchor';
 import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';

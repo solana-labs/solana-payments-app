@@ -14,8 +14,6 @@ describe('stringifyParams', () => {
 
         const result = stringifyParams(installParams);
 
-        console.log(result);
-
         const expectedResult =
             'hmac=some-hmac&shop=https://some-shop.myshopify.com&host=some-host&timestamp=some-timestamp';
 

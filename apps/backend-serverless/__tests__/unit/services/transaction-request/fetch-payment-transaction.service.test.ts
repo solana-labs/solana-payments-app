@@ -23,7 +23,6 @@ describe('fetch payment transaction request testing suite', () => {
             payer: mockCustomerKeypair.publicKey,
             receiver: mockMerchantKeypair.publicKey,
         });
-        console.log(mockTransactionResponseResponse);
         mock.onPost().reply(200, mockTransactionResponseResponse);
 
         await fetchPaymentTransaction(

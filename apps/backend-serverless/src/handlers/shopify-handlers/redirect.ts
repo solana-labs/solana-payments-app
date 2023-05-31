@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
+import {
+    AppRedirectQueryParam,
+    parseAndValidateAppRedirectQueryParams,
+} from '../../models/shopify/redirect-query-params.model.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { verifyRedirectParams } from '../../utilities/shopify-redirect-request.utility.js';

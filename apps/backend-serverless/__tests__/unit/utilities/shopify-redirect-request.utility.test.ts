@@ -1,11 +1,12 @@
-import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model';
+import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/shopify/redirect-query-params.model.js';
 import { verifyRedirectParams } from '../../../src/utilities/shopify-redirect-request.utility';
 import { stringifyParams } from '../../../src/utilities/stringify-params.utility.js';
 import crypto from 'crypto-js';
 import { prismaMock } from '../../../prisma-singleton.js';
+import { createMockMerchant } from '../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing shopify install request utilities', () => {
-    it('testing verifyAndParseShopifyRedirectRequest', () => {
+    it('testing verifyAndParseShopifyRedirectRequest', async () => {
         const mockShopifySecret = 'mock-shopify-secret-key';
         process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
 
@@ -24,16 +25,18 @@ describe('unit testing shopify install request utilities', () => {
 
         const params = parseAndValidateAppRedirectQueryParams(redirectParams);
 
-        const mockMerchant = createMockM;
+        const mockMerchant = createMockMerchant({ shop: 'https://some-shop.myshopify.com', lastNonce: 'some-state' });
 
-        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
-        expect(() => {
-            verifyRedirectParams(params);
-        }).not.toThrow();
+        // expect(() => {
+        //     verifyRedirectParams(params, prismaMock);
+        // }).not.toThrow();
+
+        await expect(verifyRedirectParams(params, prismaMock)).resolves.not.toThrow();
     });
 
-    it('testing verifyAndParseShopifyRedirectRequest throwing', () => {
+    it('testing verifyAndParseShopifyRedirectRequest throwing', async () => {
         const mockShopifySecret = 'mock-shopify-secret-key';
         const incorrectShopifySecret = 'incorrect-shopify-secret-key';
         process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
@@ -51,8 +54,12 @@ describe('unit testing shopify install request utilities', () => {
 
         redirectParams['hmac'] = hmac.toString();
 
-        expect(() => {
-            verifyAndParseShopifyRedirectRequest(redirectParams);
-        }).toThrow();
+        const params = parseAndValidateAppRedirectQueryParams(redirectParams);
+
+        const mockMerchant = createMockMerchant();
+
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
+
+        await expect(verifyRedirectParams(params, prismaMock)).rejects.toThrow();
     });
 });
