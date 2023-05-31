@@ -4,6 +4,11 @@ import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/re
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
+import { web3 } from '@project-serum/anchor';
+import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
+import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 
 /**
  *
@@ -190,4 +195,62 @@ export const createMockPaymentAppConfigureResponse = (
         },
         extensions: {},
     };
+};
+
+/**
+ *
+ * @param transactionResponseResponse: Partial<TransactionRequestResponse>
+ * @returns a mock transaction request response to be used for testing
+ */
+export const createMockTransactionRequestResponse = async (
+    transactionResponseResponse: Partial<{
+        payer: web3.PublicKey;
+        receiver: web3.PublicKey;
+        feePayer: web3.PublicKey;
+    }> = {}
+): Promise<TransactionRequestResponse> => {
+    // const mockTransaction = await createMockTransaction(transactionResponseResponse);
+
+    // const transactionBuffer = mockTransaction.serialize({
+    //     verifySignatures: false,
+    //     requireAllSignatures: false,
+    // });
+    // const transactionString = transactionBuffer.toString('base64');
+
+    return {
+        transaction: 'transaction',
+        message: 'mock message',
+    };
+};
+
+/**
+ *
+ * @param transactionResponseResponse: Partial<TransactionRequestResponse>
+ * @returns a mock transaction request response to be used for testing
+ */
+export const createMockTransaction = async (
+    mockTransactionInputs: Partial<{
+        payer: web3.PublicKey | null;
+        receiver: web3.PublicKey | null;
+        feePayer: web3.PublicKey | null;
+    }> = {}
+): Promise<web3.Transaction> => {
+    // Set up the transaction
+    const payerPubkey = mockTransactionInputs.payer ?? web3.Keypair.generate().publicKey;
+    const payerAta = await findAssociatedTokenAddress(payerPubkey, USDC_MINT);
+    const receiverPubkey = mockTransactionInputs.receiver ?? web3.Keypair.generate().publicKey;
+    const receiverAta = await findAssociatedTokenAddress(receiverPubkey, USDC_MINT);
+    const transferQuantity = 10 * 10 ** 6;
+    const transferCheckedInstruction = createTransferCheckedInstruction(
+        payerAta,
+        USDC_MINT,
+        receiverAta,
+        payerPubkey,
+        transferQuantity,
+        6,
+        [],
+        TOKEN_PROGRAM_ID
+    );
+    const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
+    return mockTransaction;
 };

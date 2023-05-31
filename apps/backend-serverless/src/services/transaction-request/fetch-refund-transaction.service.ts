@@ -15,21 +15,19 @@ export const fetchRefundTransaction = async (
     account: string,
     gas: string,
     singleUseNewAcc: string,
-    singleUsePayer: string
+    singleUsePayer: string,
+    axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
     var refundAmount = refundRecord.usdcAmount.toPrecision(4).toString();
 
-    // TODO: Clean this up, this is messy, then document how you can test with it
-    // Allow for testing values
-    if (
-        refundRecord.test == true &&
-        process.env.TEST_USDC_SIZE != null &&
-        isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
-    ) {
-        refundAmount = process.env.TEST_USDC_SIZE;
-    }
+    const isTestRefund = refundRecord.test;
+    const isTestPayment = associatedPaymentRecord.test;
+    const testUsdcSize = process.env.TEST_USDC_SIZE;
+    const isValidTestUsdcSize = isNaN(parseFloat(testUsdcSize || '')) == false;
 
-    const paymentTransaction = associatedPaymentRecord.transactionSignature;
+    if (isTestRefund && isTestPayment && testUsdcSize != null && isValidTestUsdcSize) {
+        refundAmount = testUsdcSize;
+    }
 
     // We can't refund a payment that doesn't exist
     if (associatedPaymentRecord.transactionSignature == null) {
@@ -59,7 +57,7 @@ export const fetchRefundTransaction = async (
         'Content-Type': 'application/x-www-form-urlencoded', // TODO: I think i need to make this json
     };
 
-    const response = await axios.post(endpoint, { account: account }, { headers: headers });
+    const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
 
     if (response.status != 200) {
         throw new Error('Error fetching refund transaction.');
