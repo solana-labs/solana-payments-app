@@ -24,6 +24,10 @@ describe('unit testing shopify install request utilities', () => {
 
         const params = parseAndValidateAppRedirectQueryParams(redirectParams);
 
+        const mockMerchant = createMockM;
+
+        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
+
         expect(() => {
             verifyRedirectParams(params);
         }).not.toThrow();
