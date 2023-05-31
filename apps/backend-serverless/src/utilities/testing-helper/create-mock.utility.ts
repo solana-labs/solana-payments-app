@@ -9,6 +9,7 @@ import { web3 } from '@project-serum/anchor';
 import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
+import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
 
 /**
  *
@@ -191,6 +192,24 @@ export const createMockPaymentAppConfigureResponse = (
                     ready: true,
                 },
                 userErrors: [],
+            },
+        },
+        extensions: {},
+    };
+};
+
+/**
+ *
+ * @param paymentAppConfigureResponse: Partial<PaymentAppConfigureResponse>
+ * @returns a mock payment app configure response to be used for testing only
+ */
+export const createMockAdminDataResponse = (adminDataResponse: Partial<AdminDataResponse> = {}): AdminDataResponse => {
+    return {
+        data: {
+            shop: {
+                name: 'mock-shop-name',
+                email: 'mock-shop-email',
+                enabledPresentmentCurrencies: ['mock-currency-1', 'mock-currency-2'],
             },
         },
         extensions: {},
