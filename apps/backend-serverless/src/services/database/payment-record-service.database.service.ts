@@ -1,6 +1,6 @@
 import { PrismaClient, PaymentRecord, Merchant, PaymentRecordStatus } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
-import { Pagination, calculatePaginationSkip } from '../../utilities/database-services.utility.js';
+import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;

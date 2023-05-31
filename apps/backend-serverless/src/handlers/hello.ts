@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { requestErrorResponse } from '../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../utilities/responses/request-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',

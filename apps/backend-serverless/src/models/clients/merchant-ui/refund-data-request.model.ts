@@ -1,6 +1,6 @@
 import { object, InferType, number, string } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
-import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/database-services.utility.js';
+import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { RefundRecordStatus } from '@prisma/client';
 
 export const refundDataRequestParametersSchema = object().shape({

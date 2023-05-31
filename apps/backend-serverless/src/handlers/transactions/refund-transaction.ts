@@ -2,14 +2,17 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { decode } from '../../utilities/string.utility.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
 } from '../../models/transaction-requests/refund-transaction-request.model.js';
 import { web3 } from '@project-serum/anchor';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
-import { encodeBufferToBase58, encodeTransaction } from '../../utilities/encode-transaction.utility.js';
+import {
+    encodeBufferToBase58,
+    encodeTransaction,
+} from '../../utilities/transaction-request/encode-transaction.utility.js';
 import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';

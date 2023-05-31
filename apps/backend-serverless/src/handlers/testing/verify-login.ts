@@ -1,6 +1,6 @@
 import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
-import { withAuth } from '../../utilities/token-authenticate.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
+import { withAuth } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 
 export const verifyLogin = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const testingMerchantId = 'testing-merchant-id';

@@ -2,7 +2,6 @@ import { PaymentRecordStatus, PrismaClient, TransactionRecord, TransactionType }
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
-import { getCustomerFromHeliusEnhancedTransaction } from '../../utilities/get-customer.utility.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
 import { verifyPaymentTransactionWithPaymentRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
