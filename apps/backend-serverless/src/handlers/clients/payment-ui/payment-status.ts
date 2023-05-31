@@ -1,12 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import {
-    Merchant,
-    PaymentRecord,
-    PaymentRecordRejectionReason,
-    PaymentRecordStatus,
-    PrismaClient,
-} from '@prisma/client';
-import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
+import { PaymentRecordRejectionReason, PaymentRecordStatus, PrismaClient } from '@prisma/client';
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
@@ -17,7 +10,6 @@ import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/respo
 import { paymentSessionRejectionDisplayMessages } from '../../../services/shopify/payment-session-reject.service.js';
 
 // TODO: Find somewhere to put this
-
 interface PaymentErrrorResponse {
     errorTitle: string;
     errorDetail: string;

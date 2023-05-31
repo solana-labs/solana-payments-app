@@ -6,13 +6,6 @@ import {
 } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { PaymentRecordRejectionReason } from '@prisma/client';
 
-// export enum PaymentSessionRejectionReason {
-//     saftyDependencyError = 'SAFETY_DEPENDENCY_ERROR', // Used in the case that we can't validate with TRM
-//     customerSafetyError = 'CUSTOMER_SAFETY_ERROR', // Used in the case that we can validate with TRM, but the wallet is risky
-//     internalServerError = 'INTERNAL_SERVER_ERROR', // Used in the case that we can validate with TRM, but the wallet is risky
-//     unknownError = 'UNKNOWN_ERROR', // Used in the case that we don't know why we couln't validate with TRM
-// }
-
 // TODO: Update these to marketing strings
 export const paymentSessionRejectionDisplayMessages = (
     reason: PaymentRecordRejectionReason
