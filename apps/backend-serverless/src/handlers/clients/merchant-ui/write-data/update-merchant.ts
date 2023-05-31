@@ -26,7 +26,7 @@ export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<API
     }
 
     try {
-        merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(event.body);
+        merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
     } catch (error) {
         return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
     }
