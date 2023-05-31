@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import {
-    PaymentAppConfigureResponse,
-    parseAndValidatePaymentAppConfigureResponse,
-} from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import { parseAndValidatePaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
@@ -34,24 +31,14 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
             },
         };
 
-        let paymentAppConfigureResponse: PaymentAppConfigureResponse;
+        const response = await axiosInstance({
+            url: shopifyGraphQLEndpoint(shop),
+            method: 'POST',
+            headers: headers,
+            data: JSON.stringify(graphqlQuery),
+        });
 
-        try {
-            const response = await axiosInstance({
-                url: shopifyGraphQLEndpoint(shop),
-                method: 'POST',
-                headers: headers,
-                data: JSON.stringify(graphqlQuery),
-            });
-
-            paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
-        } catch (e) {
-            if (e instanceof Error) {
-                throw e;
-            } else {
-                throw new Error('Error configuring payment app.');
-            }
-        }
+        const paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
 
         return paymentAppConfigureResponse;
     };
