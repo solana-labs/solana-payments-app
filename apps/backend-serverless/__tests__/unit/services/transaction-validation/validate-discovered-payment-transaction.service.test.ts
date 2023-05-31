@@ -8,29 +8,15 @@ import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-
 import { web3 } from '@project-serum/anchor';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
 import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
+import { create } from 'lodash';
+import { createMockPaymentRecord } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing validating discovered payment transactions', () => {
     beforeEach(() => {});
 
     it('valid transaction transfer', async () => {
         // Set up the mock record
-        const mockPaymentRecord: PaymentRecord = {
-            id: 'mock-id',
-            status: PaymentRecordStatus.pending,
-            shopId: 'mock-shop-id',
-            shopGid: 'mock-shop-gid',
-            shopGroup: 'mock-shop-group',
-            test: false,
-            amount: 10,
-            currency: 'USD',
-            usdcAmount: 10,
-            cancelURL: 'mock-cancel-url',
-            merchantId: 'mock-merchant-id',
-            transactionSignature: 'mock-transaction-signature',
-            redirectUrl: 'mock-redirect-url',
-            requestedAt: new Date(),
-            completedAt: new Date(),
-        };
+        const mockPaymentRecord = createMockPaymentRecord({ amount: 10, usdcAmount: 10 });
 
         // Set up the transaction
         const aliceKeypair = web3.Keypair.generate();
@@ -58,23 +44,7 @@ describe('unit testing validating discovered payment transactions', () => {
 
     it('invalid transaction transfer, incorrect amount', async () => {
         // Set up the mock record
-        const mockPaymentRecord: PaymentRecord = {
-            id: 'mock-id',
-            status: PaymentRecordStatus.pending,
-            shopId: 'mock-shop-id',
-            shopGid: 'mock-shop-gid',
-            shopGroup: 'mock-shop-group',
-            test: false,
-            amount: 10,
-            currency: 'USD',
-            usdcAmount: 10,
-            cancelURL: 'mock-cancel-url',
-            merchantId: 'mock-merchant-id',
-            transactionSignature: 'mock-transaction-signature',
-            redirectUrl: 'mock-redirect-url',
-            requestedAt: new Date(),
-            completedAt: new Date(),
-        };
+        const mockPaymentRecord = createMockPaymentRecord({ amount: 10, usdcAmount: 10 });
 
         // Set up the transaction
         const aliceKeypair = web3.Keypair.generate();
@@ -102,23 +72,7 @@ describe('unit testing validating discovered payment transactions', () => {
 
     it('invalid transaction transfer, incorrect mint', async () => {
         // Set up the mock record
-        const mockPaymentRecord: PaymentRecord = {
-            id: 'mock-id',
-            status: PaymentRecordStatus.pending,
-            shopId: 'mock-shop-id',
-            shopGid: 'mock-shop-gid',
-            shopGroup: 'mock-shop-group',
-            test: false,
-            amount: 10,
-            currency: 'USD',
-            usdcAmount: 10,
-            cancelURL: 'mock-cancel-url',
-            merchantId: 'mock-merchant-id',
-            transactionSignature: 'mock-transaction-signature',
-            redirectUrl: 'mock-redirect-url',
-            requestedAt: new Date(),
-            completedAt: new Date(),
-        };
+        const mockPaymentRecord = createMockPaymentRecord({ amount: 10, usdcAmount: 10 });
 
         // Set up the transaction
         const aliceKeypair = web3.Keypair.generate();
@@ -166,23 +120,7 @@ describe('unit testing validating discovered payment transactions', () => {
 
     it('valid transaction, testing verifyPaymentTransactionWithPaymentRecord', async () => {
         // Set up the mock record
-        const mockPaymentRecord: PaymentRecord = {
-            id: 'mock-id',
-            status: PaymentRecordStatus.pending,
-            shopId: 'mock-shop-id',
-            shopGid: 'mock-shop-gid',
-            shopGroup: 'mock-shop-group',
-            test: false,
-            amount: 10,
-            currency: 'USD',
-            usdcAmount: 10,
-            cancelURL: 'mock-cancel-url',
-            merchantId: 'mock-merchant-id',
-            transactionSignature: 'mock-transaction-signature',
-            redirectUrl: 'mock-redirect-url',
-            requestedAt: new Date(),
-            completedAt: new Date(),
-        };
+        const mockPaymentRecord = createMockPaymentRecord({ amount: 10, usdcAmount: 10 });
 
         // Set up the transaction
         const aliceKeypair = web3.Keypair.generate();

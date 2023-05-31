@@ -96,6 +96,7 @@ export class PaymentRecordService {
                     usdcAmount: usdcAmount,
                     requestedAt: new Date(),
                     completedAt: null,
+                    rejectionReason: null,
                 },
             });
         } catch {

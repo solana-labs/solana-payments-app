@@ -64,6 +64,7 @@ model PaymentRecord {
   requestedAt          DateTime            @default(now())
   completedAt          DateTime?
   refundRecord         RefundRecord[]
+  rejectionReason      String?
 }
 
 model RefundRecord {
