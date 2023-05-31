@@ -98,6 +98,16 @@ export class RefundRecordService {
         });
     }
 
+    async getPaymentRecordForRefund(query: RefundRecordQuery): Promise<PaymentRecord | null> {
+        const refundRecord = await this.prisma.refundRecord.findFirst({
+            where: query,
+            include: {
+                paymentRecord: true,
+            },
+        });
+        return refundRecord ? refundRecord.paymentRecord : null;
+    }
+
     async createRefundRecord(
         id: string,
         refundInitiation: ShopifyRefundInitiation,
