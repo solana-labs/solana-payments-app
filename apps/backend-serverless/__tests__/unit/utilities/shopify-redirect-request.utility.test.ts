@@ -1,6 +1,8 @@
-import { verifyAndParseShopifyRedirectRequest } from '../../../src/utilities/shopify-redirect-request.utility';
+import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/redirect-query-params.model';
+import { verifyRedirectParams } from '../../../src/utilities/shopify-redirect-request.utility';
 import { stringifyParams } from '../../../src/utilities/stringify-params.utility.js';
 import crypto from 'crypto-js';
+import { prismaMock } from '../../../prisma-singleton.js';
 
 describe('unit testing shopify install request utilities', () => {
     it('testing verifyAndParseShopifyRedirectRequest', () => {
@@ -20,8 +22,10 @@ describe('unit testing shopify install request utilities', () => {
 
         redirectParams['hmac'] = hmac.toString();
 
+        const params = parseAndValidateAppRedirectQueryParams(redirectParams);
+
         expect(() => {
-            verifyAndParseShopifyRedirectRequest(redirectParams);
+            verifyRedirectParams(params);
         }).not.toThrow();
     });
 
