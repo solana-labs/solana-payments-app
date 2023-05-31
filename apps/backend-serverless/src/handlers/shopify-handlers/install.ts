@@ -19,7 +19,7 @@ export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     try {
         parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
     } catch (error) {
-        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+        return requestErrorResponse(error);
     }
 
     const shop = parsedAppInstallQuery.shop;
