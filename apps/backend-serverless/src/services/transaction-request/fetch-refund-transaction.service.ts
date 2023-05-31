@@ -4,7 +4,7 @@ import { RefundRecord } from '@prisma/client';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../../models/transaction-request-response.model.js';
+} from '../../models/transaction-requests/transaction-request-response.model.js';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,

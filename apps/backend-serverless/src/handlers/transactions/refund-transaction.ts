@@ -6,9 +6,9 @@ import { requestErrorResponse } from '../../utilities/request-response.utility.j
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
-} from '../../models/refund-transaction-request.model.js';
+} from '../../models/transaction-requests/refund-transaction-request.model.js';
 import { web3 } from '@project-serum/anchor';
-import { TransactionRequestResponse } from '../../models/transaction-request-response.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { encodeBufferToBase58, encodeTransaction } from '../../utilities/encode-transaction.utility.js';
 import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';

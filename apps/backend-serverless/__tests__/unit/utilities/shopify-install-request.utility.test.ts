@@ -4,7 +4,7 @@ import {
     createShopifyOAuthGrantRedirectUrl,
     verifyAndParseShopifyInstallRequest,
 } from '../../../src/utilities/shopify-install-request.utility.js';
-import { parseAndValidateAppInstallQueryParms } from '../../../src/models/install-query-params.model.js';
+import { parseAndValidateAppInstallQueryParms } from '../../../src/models/shopify/install-query-params.model.js';
 import { stringifyParams } from '../../../src/utilities/stringify-params.utility.js';
 import crypto from 'crypto-js';
 

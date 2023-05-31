@@ -4,7 +4,7 @@ import { requestErrorResponse } from '../../../utilities/request-response.utilit
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
-} from '../../../models/payment-status-request.model.js';
+} from '../../../models/clients/payment-ui/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';

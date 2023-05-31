@@ -4,10 +4,13 @@ import {
     ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
-} from '../../../models/shopify-webhook-headers.model.js';
+} from '../../../models/shopify/shopify-webhook-headers.model.js';
 import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/verify-shopify-webhook-header.utility.js';
-import { ShopRedactRequest, parseAndValidateShopRedactRequestBody } from '../../../models/shop-redact-request.model.js';
+import {
+    ShopRedactRequest,
+    parseAndValidateShopRedactRequestBody,
+} from '../../../models/shopify/shop-redact-request.model.js';
 import { Merchant, PrismaClient } from '@prisma/client';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';

@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
-} from '../../models/process-refund.request.model.js';
+} from '../../models/shopify/process-refund.request.model.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { PrismaClient, RefundRecord, Merchant } from '@prisma/client';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
