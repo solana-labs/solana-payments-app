@@ -8,7 +8,6 @@ import {
     parseAndValidatePaymentTransactionRequest,
 } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
 import { encodeBufferToBase58 } from '../../utilities/transaction-request/encode-transaction.utility.js';
-import { decode } from '../../utilities/string.utility.js';
 import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
 import { web3 } from '@project-serum/anchor';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';

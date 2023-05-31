@@ -1,7 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { decode } from '../../utilities/string.utility.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import {
     RefundTransactionRequest,
@@ -22,6 +21,7 @@ import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/genera
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { verifyRefundTransactionWithRefundRecord } from '../../services/transaction-validation/validate-discovered-refund-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import axios from 'axios';
 
 export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let refundRequest: RefundTransactionRequest;
@@ -31,6 +31,7 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     const prisma = new PrismaClient();
     const transactionRecordService = new TransactionRecordService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
+    const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
 
     const TRM_API_KEY = process.env.TRM_API_KEY;
@@ -74,6 +75,12 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
         return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
     }
 
+    const paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
+
+    if (paymentRecord == null) {
+        return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+    }
+
     const merchant = await merchantService.getMerchant({
         id: refundRecord.merchantId,
     });
@@ -87,10 +94,12 @@ export const refundTransaction = async (event: APIGatewayProxyEvent): Promise<AP
     try {
         refundTransaction = await fetchRefundTransaction(
             refundRecord,
+            paymentRecord,
             account,
             gasKeypair.publicKey.toBase58(),
             singleUseKeypair.publicKey.toBase58(),
-            gasKeypair.publicKey.toBase58()
+            gasKeypair.publicKey.toBase58(),
+            axios
         );
     } catch (error) {
         return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
