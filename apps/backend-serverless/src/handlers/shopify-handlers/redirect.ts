@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
+import {
+    AppRedirectQueryParam,
+    parseAndValidateAppRedirectQueryParams,
+} from '../../models/shopify/redirect-query-params.model.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
-import { verifyAndParseShopifyRedirectRequest } from '../../utilities/shopify-redirect-request.utility.js';
+import { verifyRedirectParams } from '../../utilities/shopify-redirect-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
 import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
@@ -26,7 +29,13 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     }
 
     try {
-        parsedAppRedirectQuery = await verifyAndParseShopifyRedirectRequest(event.queryStringParameters);
+        parsedAppRedirectQuery = await parseAndValidateAppRedirectQueryParams(event.queryStringParameters);
+    } catch (error) {
+        return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+    }
+
+    try {
+        await verifyRedirectParams(parsedAppRedirectQuery, prisma);
     } catch (error) {
         return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
     }
