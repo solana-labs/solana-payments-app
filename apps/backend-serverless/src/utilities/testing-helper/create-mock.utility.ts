@@ -19,6 +19,7 @@ import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-
 export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Merchant => {
     return {
         id: merchantData.id ?? 'some-merchant-id',
+        email: merchantData.email ?? 'some-merchant-email',
         shop: merchantData.shop ?? 'some-merchant-shop.myshopify.com',
         lastNonce: merchantData.lastNonce ?? 'some-nonce',
         accessToken: merchantData.accessToken ?? null,
