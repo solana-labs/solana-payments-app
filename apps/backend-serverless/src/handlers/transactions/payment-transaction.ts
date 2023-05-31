@@ -21,6 +21,7 @@ import { TrmService } from '../../services/trm-service.service.js';
 import * as Sentry from '@sentry/serverless';
 import { verifyPaymentTransactionWithPaymentRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import axios from 'axios';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -105,7 +106,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 account,
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
-                gasKeypair.publicKey.toBase58()
+                gasKeypair.publicKey.toBase58(),
+                axios
             );
         } catch (error) {
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
