@@ -88,7 +88,7 @@ export class RefundRecordService {
                 paymentRecord: true,
             },
             take: pagination.pageSize,
-            skip: 0,
+            skip: pagination.pageSize * (pagination.page - 1),
         });
     }
 
