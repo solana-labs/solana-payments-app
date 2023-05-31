@@ -1,5 +1,6 @@
 service: transaction-request-serverless
 frameworkVersion: '3'
+useDotenv: true
 provider:
   name: aws
   runtime: nodejs18.x
@@ -19,3 +20,8 @@ plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3003

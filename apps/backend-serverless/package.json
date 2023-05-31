@@ -32,6 +32,7 @@
     "bs58": "5.0.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
     "yup": "1.2.0"
@@ -51,7 +52,7 @@
     "serverless": "^3.21.0",
     "serverless-esbuild": "^1.43.1",
     "serverless-iam-roles-per-function": "^3.2.0",
-    "serverless-offline": "^9.1.6",
+    "serverless-offline": "^12.0.4",
     "serverless-plugin-common-excludes": "^4.0.0",
     "serverless-plugin-include-dependencies": "^5.1.0",
     "serverless-plugin-typescript": "2.1.4",
