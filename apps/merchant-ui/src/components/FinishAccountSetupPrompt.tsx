@@ -8,6 +8,7 @@ import { updateMerchantTos, useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -69,7 +70,7 @@ export function FinishAccountSetupPrompt(props: Props) {
             case RemainingSetupItem.AddWallet:
                 return merchantInfo.data.paymentAddress !== null;
             case RemainingSetupItem.VerifyBusiness:
-                return false;
+                return true;
         }
     }
 
@@ -90,9 +91,24 @@ export function FinishAccountSetupPrompt(props: Props) {
 
     if (remainingSetupItems.length === 0) {
         return (
-            <div className={twMerge('bg-slate-50', 'py-5', 'px-4', 'text-center', props.className)}>
+            <div
+                className={twMerge(
+                    'bg-slate-50',
+                    'py-5',
+                    'px-4',
+                    'text-center',
+                    'flex',
+                    'space-y-2',
+                    'flex-col',
+                    'items-center',
+                    props.className
+                )}
+            >
                 <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
                 <div className="text-black">Your store now accepts Solana and USDC payments.</div>
+                <Link href="/payments">
+                    <Primary>Go to Portal</Primary>
+                </Link>
             </div>
         );
     }

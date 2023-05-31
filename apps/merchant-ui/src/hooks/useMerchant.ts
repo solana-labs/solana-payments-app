@@ -70,11 +70,11 @@ export async function updateMerchantTos() {
         const response = await axios.put(
             API_ENDPOINTS.updateMerchant,
             {
-                acceptedTermsAndConditions: true,
+                acceptedTermsAndConditions: 'true',
             },
             { headers: headers }
         );
     } catch (error) {
-        console.log('update wallet error', error);
+        console.log('update tos error', error);
     }
 }

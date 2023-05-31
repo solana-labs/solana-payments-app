@@ -92,7 +92,7 @@ export function useOpenRefunds(page: number = 0): {
                 setResults(
                     RE.ok({
                         refunds: refunds,
-                        totalPages: Math.floor(response.data.refundData.total / PAGE_SIZE) + 1,
+                        totalPages: Math.floor((response.data.refundData.total + 1) / PAGE_SIZE),
                     })
                 );
                 setRefundCount(response.data.refundData.total);
@@ -148,11 +148,10 @@ export function useCloseRefunds(page: number = 0): {
                 setResults(
                     RE.ok({
                         refunds,
-                        totalPages:
-                            Math.floor(
-                                (responseRejected.data.refundData.total + responsePaid.data.refundData.total) /
-                                    PAGE_SIZE
-                            ) + 1,
+                        totalPages: Math.floor(
+                            (responseRejected.data.refundData.total + responsePaid.data.refundData.total + 1) /
+                                PAGE_SIZE
+                        ),
                     })
                 );
             }
