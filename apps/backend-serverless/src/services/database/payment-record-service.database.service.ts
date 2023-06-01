@@ -1,4 +1,10 @@
-import { PrismaClient, PaymentRecord, Merchant, PaymentRecordStatus } from '@prisma/client';
+import {
+    PrismaClient,
+    PaymentRecord,
+    Merchant,
+    PaymentRecordStatus,
+    PaymentRecordRejectionReason,
+} from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 
@@ -17,6 +23,13 @@ export type StatusRedirectTransactionUpdate = {
     completedAt: Date;
 };
 
+export type StatusRedirectRejectionUpdate = {
+    status: PaymentRecordStatus;
+    redirectUrl: string;
+    completedAt: Date;
+    rejectionReason: PaymentRecordRejectionReason;
+};
+
 export type StatusCompletedUpdate = {
     status: PaymentRecordStatus;
     completedAt: Date;
@@ -26,7 +39,8 @@ export type PaymentRecordUpdate =
     | PaidUpdate
     | TransactionSignatureUpdate
     | StatusRedirectTransactionUpdate
-    | StatusCompletedUpdate;
+    | StatusCompletedUpdate
+    | StatusRedirectRejectionUpdate;
 
 export type ShopIdQuery = {
     shopId: string;
@@ -96,6 +110,7 @@ export class PaymentRecordService {
                     usdcAmount: usdcAmount,
                     requestedAt: new Date(),
                     completedAt: null,
+                    rejectionReason: null,
                 },
             });
         } catch {

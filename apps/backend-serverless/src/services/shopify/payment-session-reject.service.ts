@@ -4,6 +4,23 @@ import {
     RejectPaymentResponse,
     parseAndValidateResolvePaymentResponse,
 } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
+import { PaymentRecordRejectionReason } from '@prisma/client';
+
+// TODO: Update these to marketing strings
+export const paymentSessionRejectionDisplayMessages = (
+    reason: PaymentRecordRejectionReason
+): { errorTitle: string; errorDescription: string } => {
+    switch (reason) {
+        case PaymentRecordRejectionReason.dependencySafetyReason:
+            return { errorTitle: 'Something went wrong', errorDescription: 'Please try again later.' };
+        case PaymentRecordRejectionReason.customerSafetyReason:
+            return { errorTitle: 'Something went wrong', errorDescription: 'Please try again later.' };
+        case PaymentRecordRejectionReason.internalServerReason:
+            return { errorTitle: 'Something went wrong', errorDescription: 'Please try again later.' };
+        case PaymentRecordRejectionReason.unknownReason:
+            return { errorTitle: 'Something went wrong', errorDescription: 'Please try again later.' };
+    }
+};
 
 const paymentSessionRejectMutation = `mutation PaymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
     paymentSessionReject(id: $id, reason: $reason) {

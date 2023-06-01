@@ -1,6 +1,7 @@
 import { PaymentRecordService } from '../../../src/services/database/payment-record-service.database.service.js';
 import { prismaMock } from '../../../prisma-singleton.js';
 import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
+import { createMockPaymentRecord } from '../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('Payment Record Testing Suite', () => {
     let paymentRecordService: PaymentRecordService;
@@ -10,24 +11,7 @@ describe('Payment Record Testing Suite', () => {
     });
 
     it('find a payment record', async () => {
-        const mockPaymentRecord = {
-            status: PaymentRecordStatus.pending,
-            id: 'abcd',
-            shopId: '1234',
-            shopGid: 'abcd',
-            shopGroup: 'efgh',
-            test: true,
-            amount: 19.94,
-            usdcAmount: 19.94,
-            currency: 'USD',
-            customerAddress: null,
-            merchantId: 'qwer',
-            cancelURL: 'https://example.com',
-            redirectUrl: null,
-            transactionSignature: null,
-            requestedAt: new Date(),
-            completedAt: null,
-        };
+        const mockPaymentRecord = createMockPaymentRecord({ id: 'abcd' });
 
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
 
@@ -39,55 +23,18 @@ describe('Payment Record Testing Suite', () => {
     });
 
     it('update a payment record', async () => {
-        const mockPaymentRecordBeforeUpdate = {
-            id: 'abcd',
-            status: PaymentRecordStatus.pending,
-            shopId: 'abcd',
-            shopGid: 'gid://shopify/Shop/1234',
-            shopGroup: 'fdsaf',
-            test: true,
-            amount: 19.42,
-            usdcAmount: 19.42,
-            currency: 'USD',
-            merchantId: 'qwer',
-            cancelURL: 'https://example.com',
-            redirectUrl: null,
-            transactionSignature: null,
-            requestedAt: new Date(),
-            completedAt: null,
-        };
-
-        const mockPaymentRecordAfterUpdate = {
+        const mockPaymentRecordBeforeUpdate = createMockPaymentRecord({ id: 'abcd' });
+        const mockPaymentRecordAfterUpdate = createMockPaymentRecord({
             id: 'abcd',
             status: PaymentRecordStatus.completed,
-            shopId: 'abcd',
-            shopGid: 'gid://shopify/Shop/1234',
-            shopGroup: 'fdsaf',
-            test: true,
-            amount: 19.42,
-            usdcAmount: 19.42,
-            currency: 'USD',
-            merchantId: 'qwer',
-            cancelURL: 'https://example.com',
-            redirectUrl: null,
-            transactionSignature: null,
-            requestedAt: new Date(),
-            completedAt: null,
-        };
-
-        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
-
-        const paymentRecordBeforeUpdate = await paymentRecordService.getPaymentRecord({
-            id: 'abcd',
+            redirectUrl: 'https://example.com',
+            completedAt: new Date(),
         });
 
-        if (paymentRecordBeforeUpdate === null) {
-            return;
-        }
-
+        prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecordBeforeUpdate);
         prismaMock.paymentRecord.update.mockResolvedValue(mockPaymentRecordAfterUpdate);
 
-        const paymentRecordAfterUpdate = await paymentRecordService.updatePaymentRecord(paymentRecordBeforeUpdate, {
+        const paymentRecordAfterUpdate = await paymentRecordService.updatePaymentRecord(mockPaymentRecordBeforeUpdate, {
             status: PaymentRecordStatus.completed,
             redirectUrl: 'https://example.com',
             completedAt: new Date(),
