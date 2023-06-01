@@ -6,6 +6,12 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
+import {
+    PaymentSessionNextActionAction,
+    PaymentSessionStateCode,
+    PaymentSessionStateResolved,
+} from '../../models/shopify-graphql-responses/shared.model.js';
+import { payment } from '../../handlers/shopify-handlers/payment.js';
 
 export const retryPaymentResolve = async (
     paymentResolveInfo: ShopifyMutationPaymentResolve | null,
@@ -47,24 +53,34 @@ export const retryPaymentResolve = async (
         merchant.accessToken
     );
 
-    // Update the payment record
-    const nextAction = resolvePaymentResponse.data.paymentSessionResolve.paymentSession.nextAction;
+    // TODO: Move this into a utility
+    const paymentSession = resolvePaymentResponse.data.paymentSessionResolve.paymentSession;
 
-    // This might be unnecessary, if this should always be present for success
-    // then we should reflect that in the parsing and types
-    if (nextAction == null) {
-        throw new Error('Could not find next action.');
+    if (paymentSession == null) {
+        // TODO: Log why it failed
+        throw new Error('Payment session resolve failed.');
     }
 
-    // TODO: Change these states to be more acturate for states of returning
-    const action = nextAction.action;
-    const nextActionContext = nextAction.context;
+    const paymentSessionStateTestResolved = paymentSession.state as PaymentSessionStateResolved;
+    const code = paymentSessionStateTestResolved.code;
 
-    if (nextActionContext == null) {
-        throw new Error('Could not find next action context.');
+    if (code != PaymentSessionStateCode.resolved) {
+        throw new Error('Payment session did not resolve.');
     }
 
-    const redirectUrl = nextActionContext.redirectUrl;
+    const paymentSessionNextAction = paymentSession.nextAction;
+
+    if (paymentSessionNextAction == null) {
+        throw new Error('Payment session next action is null.');
+    }
+
+    const action = paymentSessionNextAction.action;
+
+    if (action != PaymentSessionNextActionAction.redirect) {
+        throw new Error('Payment session next action is not redirect.');
+    }
+
+    const redirectUrl = paymentSessionNextAction.context.redirectUrl;
 
     try {
         await paymentRecordService.updatePaymentRecord(paymentRecord, {

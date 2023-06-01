@@ -10,6 +10,13 @@ import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
+import {
+    PaymentSessionNextActionAction,
+    PaymentSessionStateCode,
+    PaymentSessionStateRejectedReason,
+    RefundSessionStateCode,
+    RefundSessionStateRejectedReason,
+} from '../../models/shopify-graphql-responses/shared.model.js';
 
 /**
  *
@@ -93,9 +100,14 @@ export const createMockSuccessPaymentSessionResolveResponse = (
                 paymentSession: {
                     id: 'some-mock-payment-session-id',
                     state: {
-                        code: 'SUCCESS',
+                        code: PaymentSessionStateCode.resolved,
                     },
-                    nextAction: { action: 'redirect', context: { redirectUrl: 'https://example.com' } },
+                    nextAction: {
+                        action: PaymentSessionNextActionAction.redirect,
+                        context: {
+                            redirectUrl: 'https://example.com',
+                        },
+                    },
                 },
                 userErrors: [],
             },
@@ -118,9 +130,13 @@ export const createMockSuccessPaymentSessionRejectResponse = (
                 paymentSession: {
                     id: 'some-mock-payment-session-id',
                     state: {
-                        code: 'SUCCESS',
+                        code: PaymentSessionStateCode.rejected,
+                        reason: PaymentSessionStateRejectedReason.risky,
                     },
-                    nextAction: { action: 'redirect', context: { redirectUrl: 'https://example.com' } },
+                    nextAction: {
+                        action: PaymentSessionNextActionAction.redirect,
+                        context: { redirectUrl: 'https://example.com' },
+                    },
                 },
                 userErrors: [],
             },
@@ -143,7 +159,7 @@ export const createMockSuccessRefundSessionResolveResponse = (
                 refundSession: {
                     id: 'some-mock-refund-session-id',
                     state: {
-                        code: 'SUCCESS',
+                        code: RefundSessionStateCode.resolved,
                     },
                 },
                 userErrors: [],
@@ -167,7 +183,9 @@ export const createMockSuccessRefundSessionRejectResponse = (
                 refundSession: {
                     id: 'some-mock-refund-session-id',
                     state: {
-                        code: 'SUCCESS',
+                        code: RefundSessionStateCode.rejected,
+                        reason: RefundSessionStateRejectedReason.processingError,
+                        merchantMessage: 'some lil reason thing',
                     },
                 },
                 userErrors: [],

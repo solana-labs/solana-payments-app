@@ -1,22 +1,9 @@
 import { parseAndValidateResolveRefundResponse } from '../../../../src/models/shopify-graphql-responses/resolve-refund-response.model';
+import { createMockSuccessRefundSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
 
 describe('unit testing resolve refund response model', () => {
     it('valid resolve refund response', () => {
-        const validResolveRefundResponse = {
-            data: {
-                refundSessionResolve: {
-                    refundSession: {
-                        id: 'mock-shopify-id',
-                        state: {
-                            reason: 'SUCCESS',
-                            merchantMessage: 'the refund was successful',
-                        },
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        };
+        const validResolveRefundResponse = createMockSuccessRefundSessionResolveResponse();
 
         expect(() => {
             parseAndValidateResolveRefundResponse(validResolveRefundResponse);

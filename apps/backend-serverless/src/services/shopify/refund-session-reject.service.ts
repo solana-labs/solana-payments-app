@@ -62,11 +62,7 @@ export const makeRefundSessionReject =
 
         let rejectRefundResponse: RejectRefundResponse;
 
-        try {
-            rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
-        } catch (error) {
-            throw new Error();
-        }
+        rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
 
         return rejectRefundResponse;
     };

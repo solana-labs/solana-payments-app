@@ -1,4 +1,4 @@
-import { object, string, array, mixed, number } from 'yup';
+import { object, string, array, mixed, number, InferType } from 'yup';
 
 enum RefundSessionResolveUserErrorCode {
     invalidState = 'REFUND_SESSION_INVALID_STATE',
@@ -6,25 +6,25 @@ enum RefundSessionResolveUserErrorCode {
 }
 
 // The possible values that can be used to describe the state of a finalized refund transaction.
-enum RefundSessionStateCode {
+export enum RefundSessionStateCode {
     rejected = 'REJECTED',
     resolved = 'RESOLVED',
 }
 
 // The possible values that can be used to describe the reason why the refund is rejected.
-enum RefundSessionStateRejectedReason {
+export enum RefundSessionStateRejectedReason {
     processingError = 'PROCESSING_ERROR',
 }
 
 // The possible values that can be used to describe the state of a payment transaction.
-enum PaymentSessionStateCode {
+export enum PaymentSessionStateCode {
     pending = 'PENDING',
     rejected = 'REJECTED',
     resolved = 'RESOLVED',
 }
 
 // The possible values that can be used to describe the reasons why a payment is rejected.
-enum PaymentSessionStateRejectedReason {
+export enum PaymentSessionStateRejectedReason {
     processingError = 'PROCESSING_ERROR',
     risky = 'RISKY',
 }
@@ -53,18 +53,25 @@ export const shopifyResponseExtensionsSchema = object().shape({
 });
 
 export const refundSessionStateRejectedSchema = object().shape({
-    code: string().oneOf(Object.values(RefundSessionStateCode)).optional(), // The error code.
+    code: string().oneOf(Object.values(RefundSessionStateCode)).required(), // The error code.
     merchantMessage: string().optional(), // The custom, localized message for the merchant.
-    reason: string().oneOf(Object.values(RefundSessionStateRejectedReason)).optional(), // The reason the refund is rejected.
+    reason: string().oneOf(Object.values(RefundSessionStateRejectedReason)).required(), // The reason the refund is rejected.
 });
 
 export const refundSessionStateResolvedSchema = object().shape({
-    code: string().oneOf(Object.values(RefundSessionStateCode)).optional(), // The refund state code.
+    code: string().oneOf(Object.values(RefundSessionStateCode)).required(), // The refund state code.
 });
 
 export const refundSessionSchema = object().shape({
     id: string().required(), // A globally-unique ID.
-    state: mixed().oneOf([refundSessionStateRejectedSchema, refundSessionStateResolvedSchema]).required(), // Details about the refund state.
+    state: mixed()
+        .test('valid-state', 'Invalid state', function (value) {
+            return (
+                refundSessionStateResolvedSchema.isValidSync(value) ||
+                refundSessionStateRejectedSchema.isValidSync(value)
+            );
+        })
+        .required(),
 });
 
 export const refundSessionResolveUserErrorSchema = object().shape({
@@ -74,12 +81,12 @@ export const refundSessionResolveUserErrorSchema = object().shape({
 });
 
 export const sharedRefundResponseRootSchema = object().shape({
-    refundSession: refundSessionSchema.required(), // The updated refund session.
+    refundSession: refundSessionSchema.optional(), // The updated refund session.
     userErrors: array().of(refundSessionResolveUserErrorSchema).required(), // The list of errors that occurred from executing the mutation.
 });
 
 // The possible values that can be used to describe the next action that a Partner should do after a payment is finalized.
-enum PaymentSessionNextActionAction {
+export enum PaymentSessionNextActionAction {
     redirect = 'REDIRECT',
 }
 
@@ -110,17 +117,29 @@ export const paymentSessionNextActionSchema = object().shape({
 export const paymentSessionSchema = object().shape({
     id: string().required(),
     state: mixed()
-        .oneOf([paymentSessionStatePendingSchema, paymentSessionStateRejectedSchema, paymentSessionStateResolvedSchema])
+        .test('valid-state', 'Invalid state', function (value) {
+            return (
+                paymentSessionStateResolvedSchema.isValidSync(value) ||
+                paymentSessionStateRejectedSchema.isValidSync(value) ||
+                paymentSessionStateResolvedSchema.isValidSync(value)
+            );
+        })
         .required(),
     nextAction: paymentSessionNextActionSchema.optional(),
 });
 
 export const userErrorsSchema = object().shape({
     field: array().of(string()).optional(), // The path to the input field that caused the error.
-    message: string().optional(), // The error message.
+    message: string().required(), // The error message.
 });
 
 export const sharedPaymentSessionSchema = object().shape({
     paymentSession: paymentSessionSchema.optional(), // The updated payment session.
-    userErrors: userErrorsSchema.required(), // The list of errors that occurred from executing the mutation.
+    userErrors: array().of(userErrorsSchema).required(), // The list of errors that occurred from executing the mutation.
 });
+
+export type ShopifyUserError = InferType<typeof userErrorsSchema>;
+
+export type PaymentSessionStatePending = InferType<typeof paymentSessionStatePendingSchema>;
+export type PaymentSessionStateRejected = InferType<typeof paymentSessionStateRejectedSchema>;
+export type PaymentSessionStateResolved = InferType<typeof paymentSessionStateResolvedSchema>;

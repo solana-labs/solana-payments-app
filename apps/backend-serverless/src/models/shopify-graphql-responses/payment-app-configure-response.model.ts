@@ -9,7 +9,7 @@ export const paymentsAppConfigurationSchema = object().shape({
 
 export const paymentsAppConfigureSchema = object().shape({
     paymentsAppConfiguration: paymentsAppConfigurationSchema.optional(),
-    userErrors: userErrorsSchema.required(),
+    userErrors: array().of(userErrorsSchema).required(),
 });
 
 export const dataPaymentAppConfigureResponseSchema = object().shape({

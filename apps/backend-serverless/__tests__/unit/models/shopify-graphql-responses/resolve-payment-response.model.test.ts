@@ -1,29 +1,9 @@
 import { parseAndValidateResolvePaymentResponse } from '../../../../src/models/shopify-graphql-responses/resolve-payment-response.model';
+import { createMockSuccessPaymentSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
 
 describe('unit testing resolve payment response model', () => {
     it('valid resolve payment response', () => {
-        const validResolvePaymentResponse = {
-            data: {
-                paymentSessionResolve: {
-                    paymentSession: {
-                        id: 'mock-shopify-id',
-                        state: {
-                            code: 'SUCCESS',
-                            reason: 'SUCCESS',
-                            merchantMessage: 'the payment was successful',
-                        },
-                        nextAction: {
-                            action: 'REDIRECT',
-                            context: {
-                                redirectUrl: 'https://mock-shopify-url.com',
-                            },
-                        },
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        };
+        const validResolvePaymentResponse = createMockSuccessPaymentSessionResolveResponse();
 
         expect(() => {
             parseAndValidateResolvePaymentResponse(validResolvePaymentResponse);

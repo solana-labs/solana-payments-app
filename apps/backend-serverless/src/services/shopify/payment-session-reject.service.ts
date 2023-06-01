@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     RejectPaymentResponse,
-    parseAndValidateResolvePaymentResponse,
+    parseAndValidateRejectPaymentResponse,
 } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 
 const paymentSessionRejectMutation = `mutation PaymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
@@ -61,7 +61,7 @@ export const makePaymentSessionReject =
                 data: JSON.stringify(graphqlQuery),
             });
 
-            paymentSessionRejectResponse = parseAndValidateResolvePaymentResponse(response.data);
+            paymentSessionRejectResponse = parseAndValidateRejectPaymentResponse(response.data);
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
