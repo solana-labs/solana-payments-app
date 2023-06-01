@@ -18,7 +18,7 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
-export const rejectRefund = Sentry.AWSLambda.wrapHandler(
+export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();
         const merchantService = new MerchantService(prisma);
