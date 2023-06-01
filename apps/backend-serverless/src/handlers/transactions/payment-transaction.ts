@@ -6,7 +6,6 @@ import {
     PrismaClient,
     TransactionType,
 } from '@prisma/client';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
 import {
@@ -32,6 +31,8 @@ import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
+import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
+import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -134,17 +135,15 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             await trmService.screenAddress(account);
         } catch (error) {
-            let rejectionReason: PaymentRecordRejectionReason = PaymentRecordRejectionReason.unknownReason;
+            let rejectionReason: PaymentSessionStateRejectedReason = PaymentSessionStateRejectedReason.processingError;
 
-            if (error instanceof DependencyError) {
-                rejectionReason = PaymentRecordRejectionReason.dependencySafetyReason;
-            } else if (error instanceof RiskyWalletError) {
-                rejectionReason = PaymentRecordRejectionReason.customerSafetyReason;
-            } else if (error instanceof MissingEnvError) {
-                rejectionReason = PaymentRecordRejectionReason.internalServerReason;
+            if (error instanceof RiskyWalletError) {
+                rejectionReason = PaymentSessionStateRejectedReason.risky;
             }
 
             const paymentSessionReject = makePaymentSessionReject(axios);
+
+            let paymentSessionData: { redirectUrl: string };
 
             try {
                 const paymentSessionRejectResponse = await paymentSessionReject(
@@ -154,29 +153,18 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                     merchant.accessToken
                 );
 
-                // TODO: Validate response
+                paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
 
-                // StatusRedirectTransactionUpdate = {
-                //     status: PaymentRecordStatus;
-                //     redirectUrl: string;
-                //     completedAt: Date;
-                // };
-
-                const redirectUrl =
-                    paymentSessionRejectResponse.data.paymentSessionReject.paymentSession.nextAction?.context
-                        ?.redirectUrl;
-
-                // I don't think we should ever get in the situation where this doesn't work
-                // TODO: modify the types so we always have this redirect object as a part of validation
-                // TODO:: remove force unwrap from the redirectUrl
-                // Update the payment record database that it was rejected
-                // TODO: CLEAN THIS UP OMGGGG
-                paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
-                    status: PaymentRecordStatus.rejected,
-                    redirectUrl: redirectUrl!,
-                    completedAt: new Date(),
-                    rejectionReason: rejectionReason,
-                });
+                try {
+                    paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+                        status: PaymentRecordStatus.rejected,
+                        redirectUrl: paymentSessionData.redirectUrl,
+                        completedAt: new Date(),
+                        rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
+                    });
+                } catch (error) {
+                    // TODO: Handle the database update failing here
+                }
             } catch (error) {
                 try {
                     await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
