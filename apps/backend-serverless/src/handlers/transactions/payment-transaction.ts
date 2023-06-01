@@ -143,6 +143,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
             const paymentSessionReject = makePaymentSessionReject(axios);
 
+            let paymentSessionData: { redirectUrl: string };
+
             try {
                 const paymentSessionRejectResponse = await paymentSessionReject(
                     paymentRecord.shopGid,
@@ -151,14 +153,18 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                     merchant.accessToken
                 );
 
-                const paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
+                paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
 
-                paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
-                    status: PaymentRecordStatus.rejected,
-                    redirectUrl: paymentSessionData.redirectUrl,
-                    completedAt: new Date(),
-                    rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
-                });
+                try {
+                    paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+                        status: PaymentRecordStatus.rejected,
+                        redirectUrl: paymentSessionData.redirectUrl ?? paymentRecord.cancelURL,
+                        completedAt: new Date(),
+                        rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
+                    });
+                } catch (error) {
+                    // TODO: Handle the database update failing here
+                }
             } catch (error) {
                 try {
                     await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
