@@ -121,6 +121,6 @@ export const userErrorsSchema = object().shape({
 });
 
 export const sharedPaymentSessionSchema = object().shape({
-    paymentSession: paymentSessionSchema.required(), // The updated payment session.
+    paymentSession: paymentSessionSchema.optional(), // The updated payment session.
     userErrors: userErrorsSchema.required(), // The list of errors that occurred from executing the mutation.
 });
