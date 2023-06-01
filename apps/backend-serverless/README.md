@@ -10,6 +10,22 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 4. populate the .env with your values
 5. from solana-payments-app/apps/serverless-backed from 'serverless deploy'
 
+### Database setup
+
+Make sure mysql is installed.
+
+Create a root user and database, update the DATABASE_URL in your .env.development file. Update the sample data in prisma/data.ts if needed.
+
+Now, to develop and interface with a local test database, run
+
+serverless offline --stage dev
+
+Make sure the endpoints.ts file in the merchant-ui points to this endpoint
+
+To deploy and interface with the production database, run
+
+serverless deploy --stage prod
+
 ## Where to Find Stuff
 
 -   The endpoints are all defined in serverless.yml and the handlers are in serverless-backed/src/handlers/
