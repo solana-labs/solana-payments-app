@@ -102,7 +102,7 @@ export const processDiscoveredPaymentTransaction = async (
 
         // TODO: Do some parsing on this to validate that shopify recognized the update
         const paymentSession = resolvePaymentResponse.data.paymentSessionResolve.paymentSession;
-        const redirectUrl = paymentSession.nextAction?.context?.redirectUrl;
+        const redirectUrl = paymentSession?.nextAction?.context?.redirectUrl;
 
         if (redirectUrl == null) {
             throw new Error('Redirect url not found on payment session resolve response.');
