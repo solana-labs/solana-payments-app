@@ -9,6 +9,11 @@ import {
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 
+export type PaidTransactionUpdate = {
+    status: PaymentRecordStatus;
+    transactionSignature: string;
+};
+
 export type PaidUpdate = {
     status: PaymentRecordStatus;
 };
@@ -19,7 +24,7 @@ export type StatusTransactionUpdate = {
     completedAt: Date;
 };
 
-export type RefundRecordUpdate = PaidUpdate | StatusTransactionUpdate;
+export type RefundRecordUpdate = PaidUpdate | StatusTransactionUpdate | PaidTransactionUpdate;
 
 export type ShopIdQuery = {
     shopId: string;

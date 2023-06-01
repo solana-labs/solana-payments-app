@@ -64,6 +64,12 @@ export const processDiscoveredRefundTransaction = async (
     // Verify against the refund record, if we throw in here, we should catch outside of this for logging
     verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
 
+    // TODO: Try catch this and handle cases where database updates fail
+    refundRecordService.updateRefundRecord(refundRecord, {
+        status: RefundRecordStatus.paid,
+        transactionSignature: transactionRecord.signature,
+    });
+
     try {
         const refundSessionResolve = makeRefundSessionResolve(axios);
 

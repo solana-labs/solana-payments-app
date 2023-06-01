@@ -47,6 +47,12 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Merchant ID not found on payment record.');
     }
 
+    if (paymentRecord.shopGid == null) {
+        // Another case that shouldn't happen. This could mean that a payment record got updated to remove
+        // a shop gid or that we created a transaction record without a shop gid.
+        throw new Error('Shop gid not found on payment record.');
+    }
+
     const merchant = await merchantService.getMerchant({
         id: paymentRecord.merchantId,
     });
@@ -73,18 +79,11 @@ export const processDiscoveredPaymentTransaction = async (
     // need to make sure we can guarentee that this can always go back and fix itself
     // TODO: Figure out strategy for retrying this if it fails, I think cron job will suffice but
     // let's be sure. No state should have changed so cron job should cover us.
-    paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+    // TODO, update can fail so add try/catch here
+    await paymentRecordService.updatePaymentRecord(paymentRecord, {
         status: PaymentRecordStatus.paid,
         transactionSignature: transactionRecord.signature,
     });
-
-    if (paymentRecord.shopGid == null) {
-        // This is a simple check that we have already done above here, but after updating the payment
-        // record, we'd like to repeat this as we need the value for a call below. If this were to throw
-        // then we should be certain it would get recovered. I'm not sure though how that would happen
-        // without the shopGid.
-        throw new Error('Shop gid not found on payment record.');
-    }
 
     try {
         const paymentSessionResolve = makePaymentSessionResolve(axios);
