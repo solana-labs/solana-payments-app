@@ -5,7 +5,9 @@ import {
     PaymentSessionStateRejected,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
-export const validatePaymentSessionRejected = (paymentSessionRejectResponse: RejectPaymentResponse) => {
+export const validatePaymentSessionRejected = (
+    paymentSessionRejectResponse: RejectPaymentResponse
+): { redirectUrl: string } => {
     const userErrors = paymentSessionRejectResponse.data.paymentSessionReject.userErrors;
 
     if (userErrors.length > 0) {
@@ -57,6 +59,8 @@ export const validatePaymentSessionRejected = (paymentSessionRejectResponse: Rej
     // Ok I think by here we have resolved, we have to decide if we want to return this redirect url or just
     // do everything in this handler
     const redirectUrl = paymentSessionNextAction.context.redirectUrl;
+
+    return { redirectUrl };
 
     // TODO: Validate paymentSessionStateTestResolved is actually the type we expect and it has the other reject values
 };

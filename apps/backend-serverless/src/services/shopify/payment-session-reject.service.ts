@@ -5,6 +5,7 @@ import {
     parseAndValidateRejectPaymentResponse,
 } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { PaymentRecordRejectionReason } from '@prisma/client';
+import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 
 // TODO: Update these to marketing strings
 export const paymentSessionRejectionDisplayMessages = (
@@ -52,7 +53,12 @@ const paymentSessionRejectMutation = `mutation PaymentSessionReject($id: ID!, $r
 
 export const makePaymentSessionReject =
     (axiosInstance: AxiosInstance) =>
-    async (id: string, reason: string, shop: string, token: string): Promise<RejectPaymentResponse> => {
+    async (
+        id: string,
+        reason: PaymentSessionStateRejectedReason,
+        shop: string,
+        token: string
+    ): Promise<RejectPaymentResponse> => {
         const headers = {
             'content-type': 'application/graphql',
             'X-Shopify-Access-Token': token,
