@@ -4,6 +4,7 @@ import { MerchantService } from '../database/merchant-service.database.service.j
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 import axios from 'axios';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
 
 export const retryRefundResolve = async (
     refundResolveInfo: ShopifyMutationRefundResolve | null,
@@ -41,7 +42,7 @@ export const retryRefundResolve = async (
 
     const resolveRefundResponse = await refundSessionResolve(refundRecord.shopGid, merchant.shop, merchant.accessToken);
 
-    // Validate the response
+    validateRefundSessionResolved(resolveRefundResponse);
 
     try {
         // TODO: Make sure this is how I want to update refunds in this situation

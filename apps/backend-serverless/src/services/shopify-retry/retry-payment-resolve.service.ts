@@ -12,6 +12,7 @@ import {
     PaymentSessionStateResolved,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 import { payment } from '../../handlers/shopify-handlers/payment.js';
+import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 
 export const retryPaymentResolve = async (
     paymentResolveInfo: ShopifyMutationPaymentResolve | null,
@@ -53,39 +54,12 @@ export const retryPaymentResolve = async (
         merchant.accessToken
     );
 
-    // TODO: Move this into a utility
-    const paymentSession = resolvePaymentResponse.data.paymentSessionResolve.paymentSession;
-
-    if (paymentSession == null) {
-        // TODO: Log why it failed
-        throw new Error('Payment session resolve failed.');
-    }
-
-    const paymentSessionStateTestResolved = paymentSession.state as PaymentSessionStateResolved;
-    const code = paymentSessionStateTestResolved.code;
-
-    if (code != PaymentSessionStateCode.resolved) {
-        throw new Error('Payment session did not resolve.');
-    }
-
-    const paymentSessionNextAction = paymentSession.nextAction;
-
-    if (paymentSessionNextAction == null) {
-        throw new Error('Payment session next action is null.');
-    }
-
-    const action = paymentSessionNextAction.action;
-
-    if (action != PaymentSessionNextActionAction.redirect) {
-        throw new Error('Payment session next action is not redirect.');
-    }
-
-    const redirectUrl = paymentSessionNextAction.context.redirectUrl;
+    const resolvePaymentData = validatePaymentSessionResolved(resolvePaymentResponse);
 
     try {
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.completed,
-            redirectUrl: redirectUrl,
+            redirectUrl: resolvePaymentData.redirectUrl,
             completedAt: new Date(),
         });
     } catch {

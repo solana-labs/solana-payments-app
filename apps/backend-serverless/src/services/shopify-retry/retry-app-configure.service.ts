@@ -3,6 +3,7 @@ import { ShopifyMutationAppConfigure } from '../../models/shopify-mutation-retry
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
 import axios from 'axios';
+import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
 
 export const retryAppConfigure = async (
     appConfigureInfo: ShopifyMutationAppConfigure | null,
@@ -35,7 +36,7 @@ export const retryAppConfigure = async (
             merchant.accessToken
         );
 
-        // Validate the response
+        validatePaymentAppConfigured(configureAppResponse);
 
         // TODO: Update the merchant record to reflect that we configured the app, this will come after we implement KYB
     } catch (error) {
