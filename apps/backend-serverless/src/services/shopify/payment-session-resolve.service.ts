@@ -55,6 +55,9 @@ export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
                 data: JSON.stringify(graphqlQuery),
             });
 
+            // TODO: For all of these graphql requests, check for the specific error codes here
+            // https://shopify.dev/docs/api/payments-apps#status_and_error_codes
+
             if (response.status != 200) {
                 throw new Error('Error resolving payment session.');
             }

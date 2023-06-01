@@ -143,3 +143,6 @@ export type ShopifyUserError = InferType<typeof userErrorsSchema>;
 export type PaymentSessionStatePending = InferType<typeof paymentSessionStatePendingSchema>;
 export type PaymentSessionStateRejected = InferType<typeof paymentSessionStateRejectedSchema>;
 export type PaymentSessionStateResolved = InferType<typeof paymentSessionStateResolvedSchema>;
+
+export type RefundSessionStateRejected = InferType<typeof refundSessionStateRejectedSchema>;
+export type RefundSessionStateResolved = InferType<typeof refundSessionStateResolvedSchema>;
