@@ -18,6 +18,7 @@ describe('unit testing payment session resolve', () => {
 
     it('invalid response, missing id', async () => {
         let mock = new MockAdapter(axios);
+        const mockPaymentSessionResolveResponse = createMockSuccessPaymentSessionResolveResponse();
         mock.onPost().reply(200, {
             data: {
                 paymentSessionResolve: {
