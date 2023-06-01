@@ -70,7 +70,6 @@ export function OpenRefunds(props: Props) {
             );
             const buffer = Buffer.from(response.data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
-            await new Promise(resolve => setTimeout(resolve, 1000));
             await sendTransaction(transaction, connection);
             while (approvePendingRef.current) {
                 const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
@@ -105,7 +104,6 @@ export function OpenRefunds(props: Props) {
                 const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
                     headers: headers,
                 });
-                await new Promise(resolve => setTimeout(resolve, 500));
                 if (status.data.refundStatus.status !== RefundStatus.Pending) {
                     break;
                 }
