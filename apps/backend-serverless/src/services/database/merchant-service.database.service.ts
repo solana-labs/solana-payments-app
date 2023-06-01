@@ -36,6 +36,7 @@ export type MerchantNamePaymentAddressUpdate = {
 export type MerchantUpdate = {
     paymentyAddress: string;
     name: string;
+    email: string;
     acceptedTermsAndConditions: boolean;
     dismissCompleted: boolean;
     accessToken: string;
