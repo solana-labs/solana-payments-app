@@ -3,11 +3,11 @@ import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
 } from '../../models/shopify/process-refund.request.model.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { PrismaClient, RefundRecord, Merchant } from '@prisma/client';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
+import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 

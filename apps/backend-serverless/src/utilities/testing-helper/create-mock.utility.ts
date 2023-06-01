@@ -60,6 +60,7 @@ export const createMockPaymentRecord = (paymentRecordData: Partial<PaymentRecord
         redirectUrl: paymentRecordData.redirectUrl ?? null,
         requestedAt: paymentRecordData.requestedAt ?? new Date(),
         completedAt: paymentRecordData.completedAt ?? null,
+        rejectionReason: paymentRecordData.rejectionReason ?? null,
     };
 };
 

@@ -1,5 +1,5 @@
-import { MerchantAuthToken } from '../models/clients/merchant-ui/merchant-auth-token.model.js';
-import { RefundRecordService } from '../services/database/refund-record-service.database.service.js';
+import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
+import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 
 export interface GeneralResponse {

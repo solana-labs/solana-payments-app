@@ -1,5 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { PaymentRecord, PrismaClient, TransactionType } from '@prisma/client';
+import {
+    PaymentRecord,
+    PaymentRecordRejectionReason,
+    PaymentRecordStatus,
+    PrismaClient,
+    TransactionType,
+} from '@prisma/client';
 import { requestErrorResponse } from '../../utilities/request-response.utility.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
@@ -7,9 +13,8 @@ import {
     PaymentTransactionRequestParameters,
     parseAndValidatePaymentTransactionRequest,
 } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
-import { encodeBufferToBase58 } from '../../utilities/encode-transaction.utility.js';
-import { decode } from '../../utilities/string.utility.js';
-import { encodeTransaction } from '../../utilities/encode-transaction.utility.js';
+import { encodeBufferToBase58 } from '../../utilities/transaction-request/encode-transaction.utility.js';
+import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
 import { web3 } from '@project-serum/anchor';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
@@ -22,6 +27,11 @@ import * as Sentry from '@sentry/serverless';
 import { verifyPaymentTransactionWithPaymentRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
+import { DependencyError } from '../../errors/dependency.error.js';
+import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
+import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -73,12 +83,16 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        const paymentRecord = await paymentRecordService.getPaymentRecord({
+        let paymentRecord = await paymentRecordService.getPaymentRecord({
             id: paymentRequest.paymentId,
         });
 
         if (paymentRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+        }
+
+        if (paymentRecord.shopGid == null) {
+            return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
         const merchant = await merchantService.getMerchant({
@@ -88,6 +102,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         if (merchant == null) {
             // Not sure if this should be 500 or 404, will do 404 for now
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+        }
+
+        if (merchant.accessToken == null) {
+            return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
         const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
@@ -116,8 +134,59 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             await trmService.screenAddress(account);
         } catch (error) {
-            // TODO: Check trm error code to see if it failed or was rejected, if it's failed we can try again
-            // if it's rejected, we need to reject the payment sessions
+            let rejectionReason: PaymentRecordRejectionReason = PaymentRecordRejectionReason.unknownReason;
+
+            if (error instanceof DependencyError) {
+                rejectionReason = PaymentRecordRejectionReason.dependencySafetyReason;
+            } else if (error instanceof RiskyWalletError) {
+                rejectionReason = PaymentRecordRejectionReason.customerSafetyReason;
+            } else if (error instanceof MissingEnvError) {
+                rejectionReason = PaymentRecordRejectionReason.internalServerReason;
+            }
+
+            const paymentSessionReject = makePaymentSessionReject(axios);
+
+            try {
+                const paymentSessionRejectResponse = await paymentSessionReject(
+                    paymentRecord.shopGid,
+                    rejectionReason,
+                    merchant.shop,
+                    merchant.accessToken
+                );
+
+                // TODO: Validate response
+
+                // StatusRedirectTransactionUpdate = {
+                //     status: PaymentRecordStatus;
+                //     redirectUrl: string;
+                //     completedAt: Date;
+                // };
+
+                const redirectUrl =
+                    paymentSessionRejectResponse.data.paymentSessionReject.paymentSession.nextAction?.context
+                        ?.redirectUrl;
+
+                // I don't think we should ever get in the situation where this doesn't work
+                // TODO: modify the types so we always have this redirect object as a part of validation
+                // TODO:: remove force unwrap from the redirectUrl
+                // Update the payment record database that it was rejected
+                // TODO: CLEAN THIS UP OMGGGG
+                paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+                    status: PaymentRecordStatus.rejected,
+                    redirectUrl: redirectUrl!,
+                    completedAt: new Date(),
+                    rejectionReason: rejectionReason,
+                });
+            } catch (error) {
+                try {
+                    await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
+                } catch (error) {
+                    // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
+                    // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
+                    // build in a way to manually intervene here if needed.
+                }
+            }
+
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 

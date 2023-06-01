@@ -1,7 +1,6 @@
 import { Merchant, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { decode } from '../../../../utilities/string.utility.js';
-import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,
@@ -9,7 +8,7 @@ import {
 import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import axios from 'axios';
