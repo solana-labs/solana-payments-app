@@ -15,6 +15,7 @@ import { makePaymentAppConfigure } from '../../services/shopify/payment-app-conf
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { makeAdminData } from '../../services/shopify/admin-data.service.js';
 import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
+import { validatePaymentAppConfigured } from '../../services/shopify/validate-payment-app-configured.service.js';
 
 export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -98,7 +99,7 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
             accessTokenResponse.access_token
         );
 
-        // TODO: Verify the response and throw if it's bad
+        validatePaymentAppConfigured(appConfigureResponse);
 
         // TODO: Update merchant record to reflect status
     } catch (error) {

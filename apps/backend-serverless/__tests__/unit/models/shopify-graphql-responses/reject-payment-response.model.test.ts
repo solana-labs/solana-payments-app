@@ -1,4 +1,4 @@
-import { parseAndValidateResolvePaymentResponse } from '../../../../src/models/shopify-graphql-responses/reject-payment-response.model';
+import { parseAndValidateRejectPaymentResponse } from '../../../../src/models/shopify-graphql-responses/reject-payment-response.model.js';
 
 describe('unit testing reject payment response model', () => {
     it('valid reject payment response', () => {
@@ -26,7 +26,7 @@ describe('unit testing reject payment response model', () => {
         };
 
         expect(() => {
-            parseAndValidateResolvePaymentResponse(validRejectPaymentResponse);
+            parseAndValidateRejectPaymentResponse(validRejectPaymentResponse);
         }).not.toThrow();
     });
 
@@ -54,7 +54,7 @@ describe('unit testing reject payment response model', () => {
         };
 
         expect(() => {
-            parseAndValidateResolvePaymentResponse(invalidRejectPaymentResponse);
+            parseAndValidateRejectPaymentResponse(invalidRejectPaymentResponse);
         }).toThrow();
     });
 });

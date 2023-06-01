@@ -7,6 +7,7 @@ import axios from 'axios';
 import { verifyPaymentTransactionWithPaymentRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
+import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
@@ -85,11 +86,6 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Shop gid not found on payment record.');
     }
 
-    // Ok so this part is interesting because if this were to throw, we would actully want different behavior
-    // If we throw here, we want to retry this message later, but also, if it succeeds, and we check that the return
-    // value fails, we also want to try again later, so basically we should either try/catch here and then
-    // handle it here, or we can throw inside of paymentSessionResolve if it parses weird, and still handle it here,
-    // either way, i'm thinking we want to handle it here
     try {
         const paymentSessionResolve = makePaymentSessionResolve(axios);
 
@@ -99,17 +95,11 @@ export const processDiscoveredPaymentTransaction = async (
             merchant.accessToken
         );
 
-        // TODO: Do some parsing on this to validate that shopify recognized the update
-        const paymentSession = resolvePaymentResponse.data.paymentSessionResolve.paymentSession;
-        const redirectUrl = paymentSession.nextAction?.context?.redirectUrl;
-
-        if (redirectUrl == null) {
-            throw new Error('Redirect url not found on payment session resolve response.');
-        }
+        const resolvePaymentData = validatePaymentSessionResolved(resolvePaymentResponse);
 
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.completed,
-            redirectUrl: redirectUrl,
+            redirectUrl: resolvePaymentData.redirectUrl,
             completedAt: new Date(),
         });
     } catch (error) {

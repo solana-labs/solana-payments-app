@@ -4,6 +4,8 @@ import { RefundRecordService } from '../database/refund-record-service.database.
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import { makeRefundSessionReject } from '../shopify/refund-session-reject.service.js';
 import axios from 'axios';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
+import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service.js';
 
 export const retryRefundReject = async (
     refundRejectInfo: ShopifyMutationRefundReject | null,
@@ -39,7 +41,7 @@ export const retryRefundReject = async (
 
     const refundSessionReject = makeRefundSessionReject(axiosInstance);
 
-    const resolveRefundResponse = await refundSessionReject(
+    const rejectRefundResponse = await refundSessionReject(
         refundRecord.shopGid,
         refundRejectInfo.code,
         refundRejectInfo.reason,
@@ -47,7 +49,7 @@ export const retryRefundReject = async (
         merchant.accessToken
     );
 
-    // TODO: Validate the response
+    validateRefundSessionRejected(rejectRefundResponse);
 
     try {
         // TODO: Make sure this is how I want to update refunds in this situation

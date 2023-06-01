@@ -2,21 +2,21 @@ import { object, string, InferType, array } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 import { sharedRefundResponseRootSchema, shopifyResponseExtensionsSchema } from './shared.model.js';
 
-export const rejectRefundResponseDataSchema = object().shape({
+export const dataRefundSessionRejectSchema = object().shape({
     refundSessionReject: sharedRefundResponseRootSchema.required(),
 });
 
-export const rejectRefundResponseSchema = object().shape({
-    data: rejectRefundResponseDataSchema.required(),
+export const refundSessionRejectResponseSchema = object().shape({
+    data: dataRefundSessionRejectSchema.required(),
     extensions: shopifyResponseExtensionsSchema.required(),
 });
 
-export type RejectRefundResponse = InferType<typeof rejectRefundResponseSchema>;
+export type RejectRefundResponse = InferType<typeof refundSessionRejectResponseSchema>;
 
 export const parseAndValidateRejectRefundResponse = (rejectRefundResponeBody: any): RejectRefundResponse => {
     return parseAndValidate<RejectRefundResponse>(
         rejectRefundResponeBody,
-        rejectRefundResponseSchema,
+        refundSessionRejectResponseSchema,
         'Could not parse the reject refund response body. Unknown Reason.'
     );
 };

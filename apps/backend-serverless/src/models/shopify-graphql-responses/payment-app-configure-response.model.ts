@@ -1,23 +1,23 @@
 import { object, string, InferType, array, boolean } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
-import { shopifyResponseExtensionsSchema } from './shared.model.js';
+import { shopifyResponseExtensionsSchema, userErrorsSchema } from './shared.model.js';
 
-export const paymentsAppConfigureResponsePaymentsAppConfigurationSchema = object().shape({
-    externalHandle: string().required(),
+export const paymentsAppConfigurationSchema = object().shape({
+    externalHandle: string().optional(),
     ready: boolean().required(),
 });
 
-export const paymentsAppConfigureResponsePaymentsAppConfigureSchema = object().shape({
-    paymentsAppConfiguration: paymentsAppConfigureResponsePaymentsAppConfigurationSchema.required(),
-    userErrors: array().of(string()).required(),
+export const paymentsAppConfigureSchema = object().shape({
+    paymentsAppConfiguration: paymentsAppConfigurationSchema.optional(),
+    userErrors: array().of(userErrorsSchema).required(),
 });
 
-export const paymentAppConfigureResponseDataSchema = object().shape({
-    paymentsAppConfigure: paymentsAppConfigureResponsePaymentsAppConfigureSchema.required(),
+export const dataPaymentAppConfigureResponseSchema = object().shape({
+    paymentsAppConfigure: paymentsAppConfigureSchema.required(),
 });
 
 export const paymentAppConfigureResponseSchema = object().shape({
-    data: paymentAppConfigureResponseDataSchema.required(),
+    data: dataPaymentAppConfigureResponseSchema.required(),
     extensions: shopifyResponseExtensionsSchema.required(),
 });
 

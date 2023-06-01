@@ -6,6 +6,13 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
+import {
+    PaymentSessionNextActionAction,
+    PaymentSessionStateCode,
+    PaymentSessionStateResolved,
+} from '../../models/shopify-graphql-responses/shared.model.js';
+import { payment } from '../../handlers/shopify-handlers/payment.js';
+import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 
 export const retryPaymentResolve = async (
     paymentResolveInfo: ShopifyMutationPaymentResolve | null,
@@ -47,29 +54,12 @@ export const retryPaymentResolve = async (
         merchant.accessToken
     );
 
-    // Update the payment record
-    const nextAction = resolvePaymentResponse.data.paymentSessionResolve.paymentSession.nextAction;
-
-    // This might be unnecessary, if this should always be present for success
-    // then we should reflect that in the parsing and types
-    if (nextAction == null) {
-        throw new Error('Could not find next action.');
-    }
-
-    // TODO: Change these states to be more acturate for states of returning
-    const action = nextAction.action;
-    const nextActionContext = nextAction.context;
-
-    if (nextActionContext == null) {
-        throw new Error('Could not find next action context.');
-    }
-
-    const redirectUrl = nextActionContext.redirectUrl;
+    const resolvePaymentData = validatePaymentSessionResolved(resolvePaymentResponse);
 
     try {
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.completed,
-            redirectUrl: redirectUrl,
+            redirectUrl: resolvePaymentData.redirectUrl,
             completedAt: new Date(),
         });
     } catch {

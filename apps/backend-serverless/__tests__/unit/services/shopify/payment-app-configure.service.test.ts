@@ -15,13 +15,13 @@ describe('unit testing payment app configure', () => {
         ).resolves.not.toThrow();
     });
 
-    it('invalid response, missing external handle', async () => {
+    it('invalid response, missing external ready', async () => {
         let mock = new MockAdapter(axios);
         mock.onPost().reply(200, {
             data: {
                 paymentsAppConfigure: {
                     paymentsAppConfiguration: {
-                        ready: true,
+                        extenalHandle: 'mock-external-id',
                     },
                     userErrors: [],
                 },

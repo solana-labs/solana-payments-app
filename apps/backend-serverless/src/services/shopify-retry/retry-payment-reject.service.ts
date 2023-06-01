@@ -6,6 +6,7 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { makePaymentSessionReject } from '../shopify/payment-session-reject.service.js';
 import axios from 'axios';
+import { validatePaymentSessionRejected } from '../shopify/validate-payment-session-rejected.service.js';
 
 export const retryPaymentReject = async (
     paymentRejectInfo: ShopifyMutationPaymentReject | null,
@@ -47,6 +48,8 @@ export const retryPaymentReject = async (
         merchant.shop,
         merchant.accessToken
     );
+
+    validatePaymentSessionRejected(rejectPaymentResponse);
 
     try {
         // TODO: We havne't implemented rejected payments yet, need to get this working then when i handle all of that

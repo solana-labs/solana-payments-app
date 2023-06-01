@@ -20,12 +20,12 @@ describe('unit testing payment app configure model', () => {
         }).not.toThrow();
     });
 
-    it('invalid payment app configure response, missing externalHandleId', () => {
+    it('invalid payment app configure response, missing ready', () => {
         const invalidPaymentAppConfigureResponse = {
             data: {
                 paymentsAppConfigure: {
                     paymentsAppConfiguration: {
-                        ready: true,
+                        externalHandle: 'mock-internal-id',
                     },
                     userErrors: [],
                 },

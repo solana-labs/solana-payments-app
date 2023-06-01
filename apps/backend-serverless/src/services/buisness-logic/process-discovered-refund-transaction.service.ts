@@ -7,6 +7,7 @@ import axios from 'axios';
 import { verifyRefundTransactionWithRefundRecord } from '../transaction-validation/validate-discovered-refund-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
 import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
@@ -65,18 +66,15 @@ export const processDiscoveredRefundTransaction = async (
 
     try {
         const refundSessionResolve = makeRefundSessionResolve(axios);
+
         const resolveRefundResponse = await refundSessionResolve(
             refundRecord.shopGid,
             merchant.shop,
             merchant.accessToken
         );
 
-        // TODO: Validate the response here
+        validateRefundSessionResolved(resolveRefundResponse);
 
-        // If this were to throw, then we could just try again or add it to the retry queue, adding to the retry queue
-        // works also because we would just make the same calls to shopify and because of idemoency, it would just
-        // work. I also either need to validate the response here or just not return anything. The equivilent payment one
-        // has to return so I should probably return for parity and have a validation function
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: RefundRecordStatus.completed,
             transactionSignature: transactionRecord.signature,

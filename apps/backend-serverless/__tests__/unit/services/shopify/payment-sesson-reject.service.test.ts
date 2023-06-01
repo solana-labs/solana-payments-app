@@ -9,6 +9,7 @@ describe('unit testing payment session reject', () => {
         let mock = new MockAdapter(axios);
         const mockPaymentSessionRejectResponse = createMockSuccessPaymentSessionRejectResponse();
         mock.onPost().reply(200, mockPaymentSessionRejectResponse);
+        console.log(mockPaymentSessionRejectResponse);
         const mockPaymentSessionReject = makePaymentSessionReject(axios);
 
         await expect(

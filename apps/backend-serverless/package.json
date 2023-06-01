@@ -14,7 +14,8 @@
     "lint:fix": "eslint --fix .",
     "test": "jest",
     "test:integration": "jest integration",
-    "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js"
+    "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js",
+    "test:help": "jest unit/services/shopify/help"
   },
   "keywords": [],
   "author": "@tj_littlejohn",
