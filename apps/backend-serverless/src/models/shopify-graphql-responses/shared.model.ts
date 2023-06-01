@@ -49,7 +49,7 @@ export const resolvePaymentResponseNextActionSchema = object().shape({
 
 export const sharedPaymentResponsePaymentSessionSchema = object().shape({
     id: string().required(),
-    state: sharedPaymentResponseStateSchema.optional(),
+    state: sharedPaymentResponseStateSchema.required(),
     nextAction: resolvePaymentResponseNextActionSchema.optional(),
 });
 
