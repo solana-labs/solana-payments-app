@@ -158,7 +158,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 try {
                     paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
                         status: PaymentRecordStatus.rejected,
-                        redirectUrl: paymentSessionData.redirectUrl ?? paymentRecord.cancelURL,
+                        redirectUrl: paymentSessionData.redirectUrl,
                         completedAt: new Date(),
                         rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
                     });
