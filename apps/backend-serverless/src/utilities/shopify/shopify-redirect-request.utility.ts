@@ -2,11 +2,11 @@ import {
     AppRedirectQueryParam,
     appRedirectQueryParmSchema,
     parseAndValidateAppRedirectQueryParams,
-} from '../models/shopify/redirect-query-params.model.js';
+} from '../../models/shopify/redirect-query-params.model.js';
 import crypto from 'crypto-js';
 import { stringifyParams } from './stringify-params.utility.js';
 import { PrismaClient } from '@prisma/client';
-import { MerchantService } from '../services/database/merchant-service.database.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 
 export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);

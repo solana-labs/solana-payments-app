@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { buildRefundTransactionRequestEndpoint } from '../../utilities/endpoints.utility.js';
+import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { PaymentRecord, RefundRecord } from '@prisma/client';
 import {
     TransactionRequestResponse,

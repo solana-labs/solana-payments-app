@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { buildPaymentTransactionRequestEndpoint } from '../../utilities/endpoints.utility.js';
+import { buildPaymentTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,

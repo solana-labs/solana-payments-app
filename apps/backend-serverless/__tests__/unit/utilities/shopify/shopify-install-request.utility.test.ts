@@ -3,9 +3,9 @@ import {
     createScopeString,
     createShopifyOAuthGrantRedirectUrl,
     verifyAndParseShopifyInstallRequest,
-} from '../../../src/utilities/shopify-install-request.utility.js';
-import { parseAndValidateAppInstallQueryParms } from '../../../src/models/shopify/install-query-params.model.js';
-import { stringifyParams } from '../../../src/utilities/stringify-params.utility.js';
+} from '../../../../src/utilities/shopify/shopify-install-request.utility.js';
+import { parseAndValidateAppInstallQueryParms } from '../../../../src/models/shopify/install-query-params.model.js';
+import { stringifyParams } from '../../../../src/utilities/shopify/stringify-params.utility.js';
 import crypto from 'crypto-js';
 
 describe('unit testing shopify install request utilities', () => {

@@ -41,6 +41,7 @@ model Merchant {
   id             String          @id // Internal ID
   shop           String          @unique
   name           String?
+  email          String?
   accessToken    String?
   scopes         String?
   lastNonce      String

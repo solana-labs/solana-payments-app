@@ -1,5 +1,5 @@
 import { PrismaClient, Merchant } from '@prisma/client';
-import { filterUndefinedFields } from '../../utilities/filter-underfined-fields.utility.js';
+import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 
 export type ShopQuery = {
     shop: string;
@@ -36,6 +36,7 @@ export type MerchantNamePaymentAddressUpdate = {
 export type MerchantUpdate = {
     paymentyAddress: string;
     name: string;
+    email: string;
     acceptedTermsAndConditions: boolean;
     dismissCompleted: boolean;
     accessToken: string;

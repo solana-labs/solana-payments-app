@@ -1,6 +1,6 @@
-import { parseAndValidateMerchantAuthToken } from '../../../src/models/clients/merchant-ui/merchant-auth-token.model.js';
+import { parseAndValidateMerchantAuthToken } from '../../../../../src/models/clients/merchant-ui/merchant-auth-token.model.js';
 import jwt from 'jsonwebtoken';
-import { withAuth } from '../../../src/utilities/token-authenticate.utility.js';
+import { withAuth } from '../../../../../src/utilities/clients/merchant-ui/token-authenticate.utility.js';
 describe('unit testing the token authenticate utility', () => {
     it('valid token authentication', () => {
         // Set my mock JWT_SECRET_KEY

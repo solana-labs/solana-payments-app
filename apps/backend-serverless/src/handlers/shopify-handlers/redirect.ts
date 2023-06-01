@@ -5,14 +5,16 @@ import {
     parseAndValidateAppRedirectQueryParams,
 } from '../../models/shopify/redirect-query-params.model.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
-import { verifyRedirectParams } from '../../utilities/shopify-redirect-request.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
+import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
-import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import axios from 'axios';
 import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import { makeAdminData } from '../../services/shopify/admin-data.service.js';
+import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
 
 export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -64,6 +66,21 @@ export const redirect = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
         merchant = await merchantService.updateMerchant(merchant, updateData);
     } catch (error) {
         return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+    }
+
+    const adminData = makeAdminData(axios);
+
+    let adminDataResponse: AdminDataResponse;
+
+    try {
+        adminDataResponse = await adminData(shop, accessTokenResponse.access_token);
+        merchant = await merchantService.updateMerchant(merchant, {
+            name: adminDataResponse.data.shop.name,
+            email: adminDataResponse.data.shop.email,
+        });
+    } catch {
+        // I don't think we would want to fail anything here, at best we can retry it
+        // TODO: Figure out failure strategy
     }
 
     // TODO: Set value to true after KYB, this will change once we implement KYB
