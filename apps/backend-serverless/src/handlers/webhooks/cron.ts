@@ -10,12 +10,10 @@ import { web3 } from '@project-serum/anchor';
 import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 
 Sentry.AWSLambda.init({
-    dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
+    dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
 });
 
-// I want to clarify this isn't for retrying messages to shopify. This is equivilant to the helius webhook. We will be doing shopify
-// things in another chron job.
 export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const prisma = new PrismaClient();

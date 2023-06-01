@@ -17,7 +17,7 @@ import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry
 import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 
 Sentry.AWSLambda.init({
-    dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
+    dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
 });
 

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 import { PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { AppInstallQueryParam } from '../../models/shopify/install-query-params.model.js';
@@ -10,47 +11,54 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
-export const install = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let parsedAppInstallQuery: AppInstallQueryParam;
+Sentry.AWSLambda.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+});
 
-    const prisma = new PrismaClient();
-    const merchantService = new MerchantService(prisma);
+export const install = Sentry.AWSLambda.wrapHandler(
+    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        let parsedAppInstallQuery: AppInstallQueryParam;
 
-    try {
-        parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
-    } catch (error) {
-        return requestErrorResponse(error);
-    }
+        const prisma = new PrismaClient();
+        const merchantService = new MerchantService(prisma);
 
-    const shop = parsedAppInstallQuery.shop;
-    const newNonce = await generatePubkeyString();
-
-    try {
-        const merchant = await merchantService.getMerchant({ shop: shop });
-
-        if (merchant == null) {
-            const newMerchantId = await generatePubkeyString();
-            await merchantService.createMerchant(newMerchantId, shop, newNonce);
-        } else {
-            await merchantService.updateMerchant(merchant, {
-                lastNonce: newNonce,
-            });
+        try {
+            parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
+        } catch (error) {
+            return requestErrorResponse(error);
         }
-    } catch (error) {
-        // return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        return requestErrorResponse(error);
+
+        const shop = parsedAppInstallQuery.shop;
+        const newNonce = await generatePubkeyString();
+
+        try {
+            const merchant = await merchantService.getMerchant({ shop: shop });
+
+            if (merchant == null) {
+                const newMerchantId = await generatePubkeyString();
+                await merchantService.createMerchant(newMerchantId, shop, newNonce);
+            } else {
+                await merchantService.updateMerchant(merchant, {
+                    lastNonce: newNonce,
+                });
+            }
+        } catch (error) {
+            // return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return requestErrorResponse(error);
+        }
+
+        const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
+
+        return {
+            statusCode: 302,
+            headers: {
+                Location: redirectUrl,
+                'Content-Type': 'text/html',
+            },
+            body: JSON.stringify({
+                message: 'Redirecting..',
+            }),
+        };
     }
-
-    const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
-
-    return {
-        statusCode: 302,
-        headers: {
-            Location: redirectUrl,
-            'Content-Type': 'text/html',
-        },
-        body: JSON.stringify({
-            message: 'Redirecting..',
-        }),
-    };
-};
+);
