@@ -13,15 +13,17 @@ import { web3 } from '@project-serum/anchor';
 import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
-        const prisma = new PrismaClient();
         const transactionRecordService = new TransactionRecordService(prisma);
 
         try {

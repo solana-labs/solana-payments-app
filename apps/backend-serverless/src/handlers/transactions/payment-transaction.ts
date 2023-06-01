@@ -34,9 +34,12 @@ import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-messa
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
@@ -44,8 +47,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         let paymentTransaction: TransactionRequestResponse;
         let paymentRequest: PaymentTransactionRequestParameters;
         let transaction: web3.Transaction;
-
-        const prisma = new PrismaClient();
 
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
