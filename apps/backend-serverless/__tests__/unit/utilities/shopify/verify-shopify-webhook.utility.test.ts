@@ -1,4 +1,4 @@
-import { verifyShopifyWebhook } from '../../../src/utilities/verify-shopify-webhook-header.utility.js';
+import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-shopify-webhook-header.utility.js';
 import * as crypto from 'crypto-js';
 
 describe('unit testing the verify shopify webhook utility', () => {

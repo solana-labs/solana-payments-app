@@ -1,9 +1,9 @@
-import { parseAndValidateAppRedirectQueryParams } from '../../../src/models/shopify/redirect-query-params.model.js';
-import { verifyRedirectParams } from '../../../src/utilities/shopify-redirect-request.utility';
-import { stringifyParams } from '../../../src/utilities/stringify-params.utility.js';
+import { parseAndValidateAppRedirectQueryParams } from '../../../../src/models/shopify/redirect-query-params.model.js';
+import { verifyRedirectParams } from '../../../../src/utilities/shopify/shopify-redirect-request.utility.js';
+import { stringifyParams } from '../../../../src/utilities/shopify/stringify-params.utility.js';
 import crypto from 'crypto-js';
-import { prismaMock } from '../../../prisma-singleton.js';
-import { createMockMerchant } from '../../../src/utilities/testing-helper/create-mock.utility.js';
+import { prismaMock } from '../../../../prisma-singleton.js';
+import { createMockMerchant } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing shopify install request utilities', () => {
     it('testing verifyAndParseShopifyRedirectRequest', async () => {

@@ -1,12 +1,12 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { parseAndValidateShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
-import { generatePubkeyString } from '../../utilities/generate-pubkey.js';
+import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import {
     ErrorMessage,
     ErrorType,

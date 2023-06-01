@@ -1,6 +1,6 @@
 import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
-import { createMechantAuthCookieHeader } from '../../utilities/create-cookie-header.utility.js';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const testingMerchantId = 'testing-merchant-id';

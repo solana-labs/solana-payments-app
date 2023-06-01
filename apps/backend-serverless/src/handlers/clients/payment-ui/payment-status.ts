@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
-import { requestErrorResponse } from '../../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../../utilities/responses/request-response.utility.js';
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,

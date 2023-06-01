@@ -1,15 +1,15 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
-import { withAuth } from '../../../../utilities/token-authenticate.utility.js';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import {
     MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
 } from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
-import { createGeneralResponse } from '../../../../utilities/create-general-response.js';
-import { createOnboardingResponse } from '../../../../utilities/create-onboarding-response.utility.js';
+import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
+import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 export const updateMerchant = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {

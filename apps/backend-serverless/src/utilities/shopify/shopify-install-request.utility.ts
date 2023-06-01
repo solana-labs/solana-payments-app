@@ -1,7 +1,7 @@
 import {
     AppInstallQueryParam,
     parseAndValidateAppInstallQueryParms,
-} from '../models/shopify/install-query-params.model.js';
+} from '../../models/shopify/install-query-params.model.js';
 import crypto from 'crypto-js';
 import { stringifyParams } from './stringify-params.utility.js';
 

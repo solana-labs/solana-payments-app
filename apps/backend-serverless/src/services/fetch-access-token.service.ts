@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { accessTokenEndpoint } from '../utilities/endpoints.utility.js';
+import { accessTokenEndpoint } from '../utilities/transaction-request/endpoints.utility.js';
 import { accessTokenResponseSchema, AccessTokenResponse } from '../models/shopify/access-token-response.model.js';
 
 export const fetchAccessToken = async (shop: string, authCode: string) => {

@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { requestErrorResponse } from '../../utilities/request-response.utility.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { TrmService } from '../../services/trm-service.service.js';
 
 export const screenWallet = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
