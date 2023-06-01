@@ -60,5 +60,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
                 message: 'Redirecting..',
             }),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );

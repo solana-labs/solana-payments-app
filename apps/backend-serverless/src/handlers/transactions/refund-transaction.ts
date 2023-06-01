@@ -166,5 +166,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 2
             ),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );

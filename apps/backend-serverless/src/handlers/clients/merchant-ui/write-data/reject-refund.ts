@@ -119,5 +119,8 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
             statusCode: 204,
             body: JSON.stringify({}),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );

@@ -68,5 +68,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             statusCode: 200,
             body: JSON.stringify({}, null, 2),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );

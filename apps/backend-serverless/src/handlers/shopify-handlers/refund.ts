@@ -73,5 +73,8 @@ export const refund = Sentry.AWSLambda.wrapHandler(
             statusCode: 201,
             body: JSON.stringify({}),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );

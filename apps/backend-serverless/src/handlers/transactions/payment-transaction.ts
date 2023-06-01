@@ -234,6 +234,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     },
     {
         captureTimeoutWarning: false, // Adjust this according to your needs
+        rethrowAfterCapture: true,
     }
 );
 

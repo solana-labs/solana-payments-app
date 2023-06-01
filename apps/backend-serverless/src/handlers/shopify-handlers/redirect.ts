@@ -138,5 +138,8 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             },
             body: JSON.stringify({}),
         };
+    },
+    {
+        rethrowAfterCapture: true,
     }
 );
