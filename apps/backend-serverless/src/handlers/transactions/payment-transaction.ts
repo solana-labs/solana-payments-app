@@ -46,6 +46,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         let transaction: web3.Transaction;
 
         const prisma = new PrismaClient();
+
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);

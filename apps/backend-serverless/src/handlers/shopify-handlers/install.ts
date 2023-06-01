@@ -20,14 +20,14 @@ export const install = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let parsedAppInstallQuery: AppInstallQueryParam;
 
-        const prisma = new PrismaClient();
-        const merchantService = new MerchantService(prisma);
-
         try {
             parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
         } catch (error) {
             return requestErrorResponse(error);
         }
+
+        const prisma = new PrismaClient();
+        const merchantService = new MerchantService(prisma);
 
         const shop = parsedAppInstallQuery.shop;
         const newNonce = await generatePubkeyString();
