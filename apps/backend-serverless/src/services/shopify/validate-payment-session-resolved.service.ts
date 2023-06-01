@@ -5,26 +5,9 @@ import {
     PaymentSessionStateResolved,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
-export const validatePaymentSessionResolved = async (paymentSessionResolveResponse: ResolvePaymentResponse) => {
-    /**
-     *
-     *  ok so what do we need to do here? so i will always have the context here that im trying to resolve a
-     *  payment session. but the reality is there are multiple responses that could come back. for one, we could
-     *  get some userErrors, that would be bad and it would mean we didn't resolve. another thing  that could happen
-     *  is that the data we get back doesnt match the idea of resolving, like we could get a session back that has
-     *  a state of rejected. the payment session object could also be null, that would be an issue. the state value could
-     *  not be resolved, but i kinda already said that. next action could also be null and that would be an issue.
-     *
-     *  so with that here are the things i need to check
-     *  1. are there user errrors
-     *  2. is payment session null
-     *  3. is the code resolved
-     *  4. is the next action null
-     *  5. is action set to redirect
-     *  6. is redirect a valid url
-     *
-     */
-
+export const validatePaymentSessionResolved = (
+    paymentSessionResolveResponse: ResolvePaymentResponse
+): { redirectUrl: string } => {
     const userErrors = paymentSessionResolveResponse.data.paymentSessionResolve.userErrors;
 
     if (userErrors.length > 0) {
@@ -76,4 +59,6 @@ export const validatePaymentSessionResolved = async (paymentSessionResolveRespon
     // Ok I think by here we have resolved, we have to decide if we want to return this redirect url or just
     // do everything in this handler
     const redirectUrl = paymentSessionNextAction.context.redirectUrl;
+
+    return { redirectUrl };
 };

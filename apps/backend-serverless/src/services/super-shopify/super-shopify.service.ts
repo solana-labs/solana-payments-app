@@ -56,48 +56,48 @@ export class SuperShopify<A, B, C, D, E, Z> {
     ) {}
 }
 
-const temp = async () => {
-    const paymentSessionResolveGather = async (input: { paymentId: string }, source: PrismaClient): Promise<> => {
-        const paymentRecordService = new PaymentRecordService(source);
-        const merchantSerice = new MerchantService(source);
+// const temp = async () => {
+//     const paymentSessionResolveGather = async (input: { paymentId: string }, source: PrismaClient): Promise<> => {
+//         const paymentRecordService = new PaymentRecordService(source);
+//         const merchantSerice = new MerchantService(source);
 
-        let paymentRecord = await paymentRecordService.getPaymentRecord({
-            id: input.paymentId,
-        });
+//         let paymentRecord = await paymentRecordService.getPaymentRecord({
+//             id: input.paymentId,
+//         });
 
-        if (paymentRecord == null) {
-            // This case shouldn't come up because right now we don't have a strategy for pruning
-            // records from the database. So if the transaction record refrences a payment record
-            // but we can't find that payment record, then we have a problem with our database or
-            // how we created this transaction record.
-            throw new Error('Payment record not found.');
-        }
+//         if (paymentRecord == null) {
+//             // This case shouldn't come up because right now we don't have a strategy for pruning
+//             // records from the database. So if the transaction record refrences a payment record
+//             // but we can't find that payment record, then we have a problem with our database or
+//             // how we created this transaction record.
+//             throw new Error('Payment record not found.');
+//         }
 
-        if (paymentRecord.merchantId == null) {
-            // Another case that shouldn't happen. This could mean that a payment record got updated to remove
-            // a merchant id or that we created a transaction record without a merchant id.
-            throw new Error('Merchant ID not found on payment record.');
-        }
+//         if (paymentRecord.merchantId == null) {
+//             // Another case that shouldn't happen. This could mean that a payment record got updated to remove
+//             // a merchant id or that we created a transaction record without a merchant id.
+//             throw new Error('Merchant ID not found on payment record.');
+//         }
 
-        const merchant = await merchantSerice.getMerchant({
-            id: paymentRecord.merchantId,
-        });
+//         const merchant = await merchantSerice.getMerchant({
+//             id: paymentRecord.merchantId,
+//         });
 
-        if (merchant == null) {
-            // Another situation that shouldn't happen but could if a merchant deletes our app and we try to
-            // process some kind of transaction after they're deleted
-            // TODO: Figure out what happens if a merchant deletes our app but then a customer wants a refund
-            throw new Error('Merchant not found with merchant id.');
-        }
+//         if (merchant == null) {
+//             // Another situation that shouldn't happen but could if a merchant deletes our app and we try to
+//             // process some kind of transaction after they're deleted
+//             // TODO: Figure out what happens if a merchant deletes our app but then a customer wants a refund
+//             throw new Error('Merchant not found with merchant id.');
+//         }
 
-        if (merchant.accessToken == null) {
-            // This isn't likely as we shouldn't be gettings calls to create payments for merchants without
-            // access tokens. A more likely situation is that the access token is invalid. This could mean
-            // that the access token was deleted for some reason which would be a bug.
-            throw new Error('Access token not found on merchant.');
-        }
-    };
-};
+//         if (merchant.accessToken == null) {
+//             // This isn't likely as we shouldn't be gettings calls to create payments for merchants without
+//             // access tokens. A more likely situation is that the access token is invalid. This could mean
+//             // that the access token was deleted for some reason which would be a bug.
+//             throw new Error('Access token not found on merchant.');
+//         }
+//     };
+// };
 
 /**
  *

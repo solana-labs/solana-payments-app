@@ -4,14 +4,7 @@ import {
     RefundSessionStateRejected,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
-export const validateRefundSessionRejected = async (refundSessionRejectResponse: RejectRefundResponse) => {
-    /**
-     * 1. are there user errors
-     * 2. is refund session null
-     * 3. is the code rejected
-     * 4. is the reason set to what we expected it to be
-     */
-
+export const validateRefundSessionRejected = (refundSessionRejectResponse: RejectRefundResponse) => {
     const userErrors = refundSessionRejectResponse.data.refundSessionReject.userErrors;
 
     if (userErrors.length > 0) {

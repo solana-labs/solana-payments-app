@@ -15,6 +15,8 @@ import { makeRefundSessionReject } from '../../../../services/shopify/refund-ses
 import axios from 'axios';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
+import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service.js';
+import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model.js';
 
 export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const prisma = new PrismaClient();
@@ -73,16 +75,20 @@ export const rejectRefund = async (event: APIGatewayProxyEventV2): Promise<APIGa
     try {
         rejectRefundResponse = await refundSessionReject(
             refundRecord.shopGid,
-            'PROCESSING_ERROR', // Hardcoding this for now, shopify docs are slightly unclear on what the possible values are
+            RefundSessionStateRejectedReason.processingError,
             rejectRefundRequest.merchantReason,
             shop,
             accessToken
         );
 
-        // TODO: Validate the response from Shopify
+        validateRefundSessionRejected(rejectRefundResponse);
     } catch (error) {
         try {
-            await sendRefundRejectRetryMessage(refundRecord.id, 'PROCESSING_ERROR', rejectRefundRequest.merchantReason);
+            await sendRefundRejectRetryMessage(
+                refundRecord.id,
+                RefundSessionStateRejectedReason.processingError,
+                rejectRefundRequest.merchantReason
+            );
         } catch (sendMessageError) {
             // TODO: This should not happen but if it does we should log it
             // We will add some kind of redudancy to this later

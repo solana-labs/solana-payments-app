@@ -5,27 +5,7 @@ import {
     PaymentSessionStateRejected,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
-export const validatePaymentSessionRejected = async (paymentSessionRejectResponse: RejectPaymentResponse) => {
-    /**
-     *
-     * ok so we're looking to do something similar to what we do for payment session resolved
-     * what do we need to check here? well again, the first thing to look at is user errors. if there are user errors
-     * then we had a problem with our request. the next thing to check is if the payment session is null. if it is null
-     * we have another problem. the next thing to check is if the state is rejected. if it is not rejected, then we have
-     * another problem, i also think when we reject, we will get a redirect url, so we need to check for that as well as
-     * the null values along the way.
-     *
-     * so with that here are the things i need to check
-     *  1. are there user errrors
-     *  2. is payment session null
-     *  3. is the code rejected
-     *  4. is the next action null
-     *  5. is action set to redirect
-     *  6. is redirect a valid url
-     *  7. is the reason set to what we expected it to be
-     *
-     */
-
+export const validatePaymentSessionRejected = (paymentSessionRejectResponse: RejectPaymentResponse) => {
     const userErrors = paymentSessionRejectResponse.data.paymentSessionReject.userErrors;
 
     if (userErrors.length > 0) {

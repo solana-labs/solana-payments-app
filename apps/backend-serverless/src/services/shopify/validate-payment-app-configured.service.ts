@@ -1,12 +1,6 @@
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
 
-export const validatePaymentAppConfigured = async (paymentAppConfiguredResponse: PaymentAppConfigureResponse) => {
-    /**
-     * 1. are there user errors
-     * 2. is payment app configured null
-     * 3. is the external handle what we expected if its there
-     */
-
+export const validatePaymentAppConfigured = (paymentAppConfiguredResponse: PaymentAppConfigureResponse) => {
     const userErrors = paymentAppConfiguredResponse.data.paymentsAppConfigure.userErrors;
 
     if (userErrors.length > 0) {

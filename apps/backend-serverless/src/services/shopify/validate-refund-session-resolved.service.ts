@@ -5,19 +5,7 @@ import {
     RefundSessionStateResolved,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
-export const validateRefundSessionResolved = async (refundSessionResolveResponse: ResolveRefundResponse) => {
-    /**
-     *
-     * ok kinda the same thing
-     *
-     * 1. are there user errors, these user errors are actually different
-     * 2. is refund session null
-     * 3. is the code resolved
-     * 4. thats it, ezpz
-     *
-     *
-     */
-
+export const validateRefundSessionResolved = (refundSessionResolveResponse: ResolveRefundResponse) => {
     const userErrors = refundSessionResolveResponse.data.refundSessionResolve.userErrors;
 
     if (userErrors.length > 0) {
