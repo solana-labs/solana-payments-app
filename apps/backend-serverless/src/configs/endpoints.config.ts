@@ -9,5 +9,5 @@ export const shopifyAdminGraphQLEndpoint = (shopDomain: string) => {
         throw new Error('Invalid shop domain.');
     }
 
-    return `https://${shopName}.myshopify.com/admin/api/2023-04/graphql.json`;
+    return `https://${shopName}/admin/api/2023-04/graphql.json`;
 };

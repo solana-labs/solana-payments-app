@@ -25,6 +25,24 @@ functions:
       - httpApi:
           path: /admin/oauth/authorize
           method: get
+  admin:
+    handler: src/handlers/authorize.authorize
+    events:
+      - httpApi:
+          path: /admin/api/2023-04/graphql.json
+          method: post
+  payments-app:
+    handler: src/handlers/payment-app.paymentApp
+    events:
+      - httpApi:
+          path: /payments_apps/api/2022-10/graphql.json
+          method: post
+  payment:
+    handler: src/handlers/payment.payment
+    events:
+      - httpApi:
+          path: /payment
+          method: get
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies

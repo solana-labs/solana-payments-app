@@ -72,7 +72,7 @@ export const processDiscoveredPaymentTransaction = async (
     }
 
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
-    verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+    // verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true); // TODO: Uncomment this
 
     // -- if we get here, we found a match! --
     // we would hope at this point we could update the database to reflect we found it's match

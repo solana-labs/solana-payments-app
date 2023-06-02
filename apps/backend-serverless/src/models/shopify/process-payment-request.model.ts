@@ -45,7 +45,7 @@ export const shopifyPaymentInitiationScheme = object().shape({
     payment_method: paymentMethodSchema.required(),
     proposed_at: string().required(),
     kind: string().required(),
-    customer: shopifyPaymentInitiationCustomerScheme.optional(),
+    customer: shopifyPaymentInitiationCustomerScheme.nullable(),
 });
 
 export type ShopifyPaymentInitiation = InferType<typeof shopifyPaymentInitiationScheme>;

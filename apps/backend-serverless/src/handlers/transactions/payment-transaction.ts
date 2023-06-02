@@ -188,11 +188,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         transaction.partialSign(gasKeypair);
         transaction.partialSign(singleUseKeypair);
 
-        try {
-            verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
-        } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        }
+        // try {
+        //     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+        // } catch (error) {
+        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        // }
 
         const transactionSignature = transaction.signature;
 

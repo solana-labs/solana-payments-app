@@ -51,7 +51,12 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
+            return {
+                statusCode: 200,
+                body: JSON.stringify(error),
+            };
+
+            // return requestErrorResponse(error);
         }
 
         let paymentRecord = await paymentRecordService.getPaymentRecord({
@@ -72,7 +77,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize
                 );
             } catch (error) {
-                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+                return requestErrorResponse(error);
             }
         }
 

@@ -1,3 +1,9 @@
 export const buildPaymentTransactionRequestEndpoint = (paymentId: string): string => {
-    return `https://boubt4ej71.execute-api.us-east-1.amazonaws.com/payment-transaction?paymentId=${paymentId}`;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (backendUrl == null) {
+        throw new Error('Missing NEXT_PUBLIC_BACKEND_URL');
+    }
+
+    return `${backendUrl}/payment-transaction?paymentId=${paymentId}`;
 };
