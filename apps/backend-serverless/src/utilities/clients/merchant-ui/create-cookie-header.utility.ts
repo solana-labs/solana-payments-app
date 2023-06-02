@@ -33,7 +33,7 @@ export const createMechantAuthCookieHeader = (id: string): string => {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/',
-        domain: 'http://localhost',
+        domain: 'localhost',
     };
 
     return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${

@@ -35,6 +35,8 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
 
     const decodedToken = jwt.verify(bearerToken, jwtSecretKey);
 
+    console.log(decodedToken);
+
     let merchantAuthToken: MerchantAuthToken;
 
     try {
