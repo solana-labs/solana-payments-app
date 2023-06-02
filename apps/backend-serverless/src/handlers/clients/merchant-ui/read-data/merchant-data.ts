@@ -41,7 +41,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
-        if (merchant.kybInquiry && merchant.kybState !== KybState.Finished) {
+        if (merchant.kybInquiry && merchant.kybState !== KybState.Finished && merchant.kybState !== KybState.Failed) {
             try {
                 merchant = await syncKybState(merchant);
             } catch (error) {
