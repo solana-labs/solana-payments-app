@@ -3,7 +3,7 @@ import { Merchant } from '@prisma/client';
 export const createOnboardingResponse = (merchant: Merchant) => {
     const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
     const addedWallet = merchant.paymentAddress != null;
-    const kybState = 'finished';
+    const kybState = merchant.kybState;
     const dismissCompleted = merchant.dismissCompleted;
 
     return {

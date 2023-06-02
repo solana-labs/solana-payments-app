@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { Merchant, PrismaClient } from '@prisma/client';
-import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
+import { MerchantService, MerchantUpdate, KybState } from '../../../../services/database/merchant-service.database.service.js';
+import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import {
@@ -11,6 +12,7 @@ import {
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 
 const prisma = new PrismaClient();
 
@@ -47,7 +49,8 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateRequest.name == null &&
             merchantUpdateRequest.paymentAddress == null &&
             merchantUpdateRequest.acceptedTermsAndConditions == null &&
-            merchantUpdateRequest.dismissCompleted == null
+            merchantUpdateRequest.dismissCompleted == null &&
+            merchantUpdateRequest.kybInquiry == null
         ) {
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
@@ -82,10 +85,22 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
         }
 
+        if (merchantUpdateRequest.kybInquiry != null) {
+            merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
+        }
+
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
         } catch {
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        }
+
+        if (merchant.kybInquiry && merchant.kybState !== KybState.Finished) {
+            try {
+                merchant = await syncKybState(merchant);
+            } catch (error) {
+                return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            }
         }
 
         // TODO: try/catch this
