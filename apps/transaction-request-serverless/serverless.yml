@@ -24,4 +24,5 @@ plugins:
 
 custom:
   serverless-offline:
-    httpPort: 3003
+    httpPort: 4002
+    lambdaPort: 4003

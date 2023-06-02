@@ -50,7 +50,7 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
         const paymentId = state.pay.paymentId;
 
         try {
-            const backendUrl = process.env.BACKEND_URL;
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
             const mockMerchantDisplayName = process.env.NEXT_PUBLIC_MOCK_MERCHANT_DISPLAY_NAME;
             const mockTotalUSDCDisplay = process.env.NEXT_PUBLIC_MOCK_TOTAL_USDC_DISPLAY;
             const mockTotalFiat = process.env.NEXT_PUBLIC_MOCK_TOTAL_FIAT;
@@ -77,7 +77,10 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
                 throw new Error('Payment ID is null');
             }
 
-            const response = await axios.get(`${backendUrl}/payment-status?paymentId=${paymentId}`);
+            const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
+
+            const response = await axios.get(url);
+
             const paymentStatusResponse = response.data.paymentStatus;
             const errorResponse = response.data.error;
 
@@ -93,6 +96,8 @@ export const timerTick = createAsyncThunk<{ details: PaymentDetails | null; erro
                 error: errorResponse,
             };
         } catch (error) {
+            console.log(error);
+
             return {
                 details: null,
                 error: null,

@@ -15,7 +15,9 @@
     "test": "jest",
     "test:integration": "jest integration",
     "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js",
-    "test:help": "jest unit/services/shopify/help"
+    "test:help": "jest unit/services/shopify/help",
+    "preoffline": "npx prisma generate",
+    "offline": "NODE_ENV=development sls offline"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

@@ -45,7 +45,7 @@ export var pay = function (event) { return __awaiter(void 0, void 0, void 0, fun
             case 0:
                 console.log(event.body);
                 decodedBody = event.body ? decode(event.body) : '';
-                console.log('hello');
+                console.log(decodedBody);
                 body = queryString.parse(decodedBody);
                 account = body['account'];
                 if (account == null) {

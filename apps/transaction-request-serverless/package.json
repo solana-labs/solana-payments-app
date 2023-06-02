@@ -13,7 +13,8 @@
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
         "test": "jest",
-        "test:integration": "jest integration"
+        "test:integration": "jest integration",
+        "offline": "NODE_ENV=development sls offline"
     },
     "keywords": [],
     "author": "@tj_littlejohn",
