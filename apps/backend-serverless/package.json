@@ -16,7 +16,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
     "test:integration": "jest integration",
-    "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js",
+    "hello": "node scripts/listen.cjs",
     "test:help": "jest unit/services/shopify/help",
     "preoffline": "npx prisma generate",
     "offline": "NODE_ENV=development sls offline"
@@ -47,6 +47,7 @@
     "@types/aws-lambda": "^8.10.101",
     "@types/crypto-js": "4.1.1",
     "@types/jest": "^29.5.1",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "axios-mock-adapter": "^1.21.4",
@@ -66,6 +67,7 @@
     "serverless-prune-plugin": "^2.0.2",
     "serverless-step-functions": "^3.13.1",
     "ts-jest": "^29.1.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "winston": "^3.9.0"
   }
 }

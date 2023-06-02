@@ -12,11 +12,18 @@ import { processDiscoveredRefundTransaction } from '../../services/buisness-logi
 import { web3 } from '@project-serum/anchor';
 import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import winston from 'winston';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
 });
+
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
 
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -24,12 +31,18 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         const prisma = new PrismaClient();
         const transactionRecordService = new TransactionRecordService(prisma);
 
+        if (event.body == null) {
+            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+        }
+
         try {
-            heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(event.body);
+            heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(JSON.parse(event.body));
         } catch (error) {
             // Returning an error will get Helius to retry but it might not fix it. We should log as a critical error
             // TODO: Log this, actually might not be critical but we might want to put more logic around seeing if it's critical
             // In theory, this is an open endpoint, we might actually be able to lock it down somehow, might be a good idea so we can flag
+
+            Sentry.captureException(error);
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
@@ -41,22 +54,24 @@ export const helius = Sentry.AWSLambda.wrapHandler(
 
                 if (transactionRecord == null) {
                     // TODO: Log this with Sentry, not critical at all, total pheasble this could happen, still can throw and it will be caught and logged
+                    Sentry.captureException(new Error('Transaction record not found'));
                     throw new Error('Transaction record not found');
                 }
 
-                const transaction = await fetchTransaction(transactionRecord.signature);
+                // const transaction = await fetchTransaction(transactionRecord.signature);
 
                 switch (transactionRecord.type) {
                     case TransactionType.payment:
-                        await processDiscoveredPaymentTransaction(transactionRecord, transaction, prisma);
+                        await processDiscoveredPaymentTransaction(transactionRecord, null, prisma);
                         break;
                     case TransactionType.refund:
-                        await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
+                        // await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
                         break;
                 }
             } catch (error) {
                 // We will catch here on odd throws, valuable catches should happen elsewhere
                 // TODO: Add logging around these odd throws with Sentry
+                Sentry.captureException(error);
                 continue;
             }
         }
@@ -70,6 +85,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

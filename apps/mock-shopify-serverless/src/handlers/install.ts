@@ -10,6 +10,15 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 export const install = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const mockShopifySecret = 'MOCK_SHOPIFY_SECRET';
 
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+    console.log('HELLO TEEJ');
+
     const installParams = {
         host: 'LETSGOPANTHERS',
         shop: 'localhost:4004',

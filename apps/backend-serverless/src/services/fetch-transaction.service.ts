@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import { web3 } from '@project-serum/anchor';
-import { decode } from 'bs58';
+import pkg from 'bs58';
+const { decode } = pkg;
 
 export const fetchTransaction = async (transactionId: string): Promise<web3.Transaction> => {
     const {
