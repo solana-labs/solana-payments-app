@@ -7,6 +7,7 @@ import {
 } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -65,26 +66,32 @@ export class PaymentRecordService {
     }
 
     async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {
-        return await this.prisma.paymentRecord.findFirst({
-            where: query,
-        });
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.findFirst({
+                where: query,
+            })
+        );
     }
 
     async getPaymentRecordsForMerchantWithPagination(
         query: PaymentRecordQuery,
         pagination: Pagination
     ): Promise<PaymentRecord[] | null> {
-        return await this.prisma.paymentRecord.findMany({
-            where: query,
-            take: pagination.pageSize,
-            skip: calculatePaginationSkip(pagination),
-        });
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.findMany({
+                where: query,
+                take: pagination.pageSize,
+                skip: calculatePaginationSkip(pagination),
+            })
+        );
     }
 
     async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {
-        return await this.prisma.paymentRecord.count({
-            where: query,
-        });
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.count({
+                where: query,
+            })
+        );
     }
 
     async createPaymentRecord(
@@ -93,8 +100,8 @@ export class PaymentRecordService {
         merchant: Merchant,
         usdcAmount: number
     ): Promise<PaymentRecord> {
-        try {
-            return await this.prisma.paymentRecord.create({
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.create({
                 data: {
                     id: id,
                     status: PaymentRecordStatus.pending,
@@ -112,22 +119,18 @@ export class PaymentRecordService {
                     completedAt: null,
                     rejectionReason: null,
                 },
-            });
-        } catch {
-            throw new Error('Failed to create payment record.');
-        }
+            })
+        );
     }
 
     async updatePaymentRecord(paymentRecord: PaymentRecord, update: PaymentRecordUpdate): Promise<PaymentRecord> {
-        try {
-            return await this.prisma.paymentRecord.update({
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.update({
                 where: {
                     id: paymentRecord.id,
                 },
                 data: update,
-            });
-        } catch {
-            throw new Error('Failed to update payment record.');
-        }
+            })
+        );
     }
 }

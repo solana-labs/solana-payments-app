@@ -13,6 +13,7 @@ import {
     createMockSuccessRefundSessionResolveResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 import { retryRefundResolve } from '../../../../src/services/shopify-retry/retry-refund-resolve.service.js';
+import { RefundSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
 
 describe('Shopify Retry Refund Resolve Testing Suite', () => {
     it('should execute successfully', async () => {
@@ -31,8 +32,8 @@ describe('Shopify Retry Refund Resolve Testing Suite', () => {
         // Set up retry resolve info
         const refundResolveInfo: ShopifyMutationRefundReject = {
             refundId: 'example-payment-id',
-            code: 'RETURNED',
-            reason: 'Customer didnt want it.',
+            code: RefundSessionStateRejectedReason.processingError,
+            merchantMessage: 'Customer didnt want it.',
         };
 
         // Test

@@ -1,6 +1,10 @@
 import { object, string, InferType, number, boolean } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
-
+import {
+    PaymentSessionStateRejectedReason,
+    RefundSessionStateRejectedReason,
+} from './shopify-graphql-responses/shared.model.js';
+import { RefundSessionStateCode } from './shopify-graphql-responses/shared.model.js';
 export enum ShopifyMutationRetryType {
     paymentResolve = 'payment-resolve',
     paymentReject = 'payment-reject',
@@ -16,8 +20,8 @@ export const shopifyMutationAppConfigureSchema = object().shape({
 
 export const shopifyMutationRefundRejectSchema = object().shape({
     refundId: string().required(),
-    reason: string().required(),
-    code: string().required(),
+    code: string().oneOf(Object.values(RefundSessionStateRejectedReason)).required(),
+    merchantMessage: string().optional(),
 });
 
 export const shopifyMutationRefundResolveSchema = object().shape({
@@ -26,7 +30,7 @@ export const shopifyMutationRefundResolveSchema = object().shape({
 
 export const shopifyMutationPaymentRejectSchema = object().shape({
     paymentId: string().required(),
-    reason: string().required(),
+    reason: string().oneOf(Object.values(PaymentSessionStateRejectedReason)).required(),
 });
 
 export const shopifyMutationPaymentResolveSchema = object().shape({
