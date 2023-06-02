@@ -26,6 +26,8 @@ export const prismaErrorHandler = async <T>(promise: Promise<T>): Promise<T> => 
             console.error('An unexpected error occurred: ', error);
         }
 
-        throw error; // Rethrow the error
+        Sentry.captureException(error);
+        // i'm not sure if throwing is good here since sentry will rethrow after capturing but probably no side effects
+        throw error;
     }
 };
