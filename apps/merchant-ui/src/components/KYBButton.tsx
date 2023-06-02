@@ -64,7 +64,6 @@ export function KYBButton(props: Props) {
                             frameWidth={PERSONA_WIDTH}
                             frameHeight={PERSONA_HEIGHT}
                             onComplete={async ({ inquiryId, status, fields }) => {
-                                console.log(inquiryId, status, fields);
                                 await updateMerchantKybInquiry(inquiryId);
                                 await getMerchantInfo();
                                 props.onVerified?.();
