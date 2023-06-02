@@ -11,9 +11,12 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const install = Sentry.AWSLambda.wrapHandler(
@@ -26,7 +29,6 @@ export const install = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        const prisma = new PrismaClient();
         const merchantService = new MerchantService(prisma);
 
         const shop = parsedAppInstallQuery.shop;

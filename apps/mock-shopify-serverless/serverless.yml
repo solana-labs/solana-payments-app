@@ -1,0 +1,41 @@
+service: mock-shopify-serverless
+frameworkVersion: '3'
+useDotenv: true
+provider:
+  name: aws
+  runtime: nodejs18.x
+package:
+  excludeDevDependencies: false
+functions:
+  accessToken:
+    handler: src/handlers/access-token.accessToken
+    events:
+      - httpApi:
+          path: /admin/oauth/access_token
+          method: post
+  install:
+    handler: src/handlers/install.install
+    events:
+      - httpApi:
+          path: /install
+          method: get
+  authorize:
+    handler: src/handlers/authorize.authorize
+    events:
+      - httpApi:
+          path: /admin/oauth/authorize
+          method: get
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4004
+    lambdaPort: 4005
+    httpsProtocol: "dev-certs"
+
+
+        # return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${createScopeString([

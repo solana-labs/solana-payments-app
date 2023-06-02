@@ -4,7 +4,7 @@ export const requestErrorResponse = (error: unknown) => {
             statusCode: 500,
             body: JSON.stringify(
                 {
-                    error: error.message,
+                    error: error,
                 },
                 null,
                 2
