@@ -28,6 +28,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         let merchantAuthToken: MerchantAuthToken;
         let paymentDataRequestParameters: PaymentDataRequestParameters;
 
+        console.log('payment event', event);
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {

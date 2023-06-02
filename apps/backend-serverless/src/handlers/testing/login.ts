@@ -3,7 +3,7 @@ import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const testingMerchantId = 'testing-merchant-id';
+    const testingMerchantId = 'HnWuBCBMZrug12qFG9t8b8KEoHbtGMq2X3EyyQZBLQqV';
 
     let merchantAuthCookieHeader: string;
     try {
