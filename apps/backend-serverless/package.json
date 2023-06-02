@@ -10,8 +10,10 @@
   },
   "type": "module",
   "scripts": {
+    "dev": "NODE_ENV=development sls offline",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
     "test:integration": "jest integration",
     "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js",

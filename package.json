@@ -3,11 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "apps/payment-ui"
+    "apps/payment-ui",
+    "apps/merchant-ui",
+    "apps/backend-serverless",
+    "apps/transaction-request-serverless"
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "docker-compose up & turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
