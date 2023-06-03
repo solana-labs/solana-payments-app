@@ -1,4 +1,4 @@
-service: backend-serverless
+service: backend-serverless-green
 frameworkVersion: '3'
 useDotenv: true
 provider:

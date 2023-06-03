@@ -1,0 +1,230 @@
+service: backend-serverless-purple
+frameworkVersion: '3'
+useDotenv: true
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
+    SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
+    BACKEND_URL: ${env:BACKEND_URL}
+    MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
+    DATABASE_URL: ${env:DATABASE_URL}
+    PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
+    TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
+    TRM_API_KEY: ${env:TRM_API_KEY}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    AWS_BUCKET_OBJECT_NAME: ${env:AWS_BUCKET_OBJECT_NAME}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}
+    AWS_GAS_SECRET_KEY: ${env:AWS_GAS_SECRET_KEY}
+    AWS_BUCKET_REGION: ${env:AWS_BUCKET_REGION}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
+    AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
+    AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
+    AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
+    SENTRY_DSN: ${env:SENTRY_DSN}
+    SENTRY_RELEASE: ${env:SENTRY_RELEASE}
+  http:
+    cors: true
+package:
+  excludeDevDependencies: true
+  patterns:
+    - 'node_modules/.prisma/**'
+functions:
+  install:
+    handler: src/handlers/shopify-handlers/install.install
+    events:
+      - httpApi:
+          path: /install
+          method: get
+  redirect:
+    handler: src/handlers/shopify-handlers/redirect.redirect
+    events:
+      - httpApi:
+          path: /redirect
+          method: get
+  payment:
+    handler: src/handlers/shopify-handlers/payment.payment
+    events:
+      - httpApi:
+          path: /payment
+          method: post
+  refund:
+    handler: src/handlers/shopify-handlers/refund.refund
+    events:
+      - httpApi:
+          path: /refund
+          method: post
+  helius:
+    handler: src/handlers/webhooks/helius.helius
+    events:
+      - httpApi:
+          path: /helius
+          method: post
+  cron:
+    handler: src/handlers/webhooks/cron.cron
+    events:
+      - httpApi:
+          path: /cron
+          method: get
+  payment-transaction:
+    handler: src/handlers/transactions/payment-transaction.paymentTransaction
+    events:
+      - httpApi:
+          path: /payment-transaction
+          method: post
+  refund-transaction:
+    handler: src/handlers/transactions/refund-transaction.refundTransaction
+    events:
+      - httpApi:
+          path: /refund-transaction
+          method: post
+  reject-refund:
+    handler: src/handlers/clients/merchant-ui/write-data/reject-refund.rejectRefund
+    events:
+      - httpApi:
+          path: /reject-refund
+          method: post
+  payment-metadata:
+    handler: src/handlers/transactions/payment-transaction.paymentMetadata
+    events:
+      - httpApi:
+          path: /payment-transaction
+          method: get
+  payment-status:
+    handler: src/handlers/clients/payment-ui/payment-status.paymentStatus
+    events:
+      - httpApi:
+          path: /payment-status
+          method: get
+  merchant-data:
+    handler: src/handlers/clients/merchant-ui/read-data/merchant-data.merchantData
+    events:
+      - httpApi:
+          path: /merchant-data
+          method: get
+  refund-data:
+    handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
+    events:
+      - httpApi:
+          path: /refund-data
+          method: get
+  refund-status:
+    handler: src/handlers/clients/merchant-ui/read-data/refund-status.refundStatus
+    events:
+      - httpApi:
+          path: /refund-status
+          method: get
+  payment-data:
+    handler: src/handlers/clients/merchant-ui/read-data/payment-data.paymentData
+    events:
+      - httpApi:
+          path: /payment-data
+          method: get
+  update-merchant:
+    handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
+    events:
+      - httpApi:
+          path: /update-merchant
+          method: put
+  customers-data-request:
+    handler: src/handlers/webhooks/gdpr/customers-data-request.customersDataRequest
+    events:
+      - httpApi:
+          path: /customers/data_request
+          method: post
+  customers-redact:
+    handler: src/handlers/webhooks/gdpr/customers-redact.customersRedact
+    events:
+      - httpApi:
+          path: /customers/redact
+          method: post
+  shop-redact:
+    handler: src/handlers/webhooks/gdpr/shop-redact.shopRedact
+    events:
+      - httpApi:
+          path: /shop/redact
+          method: post
+  sqs-message-receive:
+    handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
+    environment:
+      RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
+    events:
+      - sqs:
+          arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+          batchSize: 1
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - states:StartExecution
+        Resource: ${self:resources.Outputs.RetryMachine.Value}
+      - Effect: Allow
+        Action:
+          - sqs:ReceiveMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
+  retry-request:
+    handler: src/handlers/webhooks/retry.retry
+
+  queue:
+    handler: src/handlers/testing/queue.queue
+    events:
+      - httpApi:
+          path: /queue
+          method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+
+stepFunctions:
+  stateMachines:
+    retry:
+        name: retry
+        definition:
+          StartAt: wait_using_seconds
+          States: 
+            wait_using_seconds: 
+              Type: Wait
+              SecondsPath: "$.retrySeconds"
+              Next: process_retry
+            process_retry: 
+              Type: Task
+              Resource:
+                Fn::GetAtt: [retry-request, Arn]
+              End: true
+
+resources:
+  Outputs:
+    RetryMachine:
+      Description: The ARN of the retry machine
+      Value:
+        Fn::GetAtt: [Retry, Arn]
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
+  - serverless-prune-plugin
+  - serverless-step-functions
+  - serverless-iam-roles-per-function
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 4001
+  development:
+    tlsApiGatewayId: dev-tls-api-gateway-id
+    tlsRootResourceId: dev-tls-api-gateway-root-resource-id
+    mtlsApiGatewayId: dev-mtls-api-gateway-id
+    mtlsRootResourceId: dev-mtls-api-gateway-root-resource-id
+  production:
+    tlsApiGatewayId: prod-tls-api-gateway-id
+    tlsRootResourceId: prod-tls-api-gateway-root-resource-id
+    mtlsApiGatewayId: prod-mtls-api-gateway-id
+    mtlsRootResourceId: prod-mtls-api-gateway-root-resource-id
