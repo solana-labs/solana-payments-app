@@ -8,6 +8,7 @@ import {
     createMockSuccessPaymentSessionRejectResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 import { retryPaymentReject } from '../../../../src/services/shopify-retry/retry-payment-reject.service.js';
+import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
 
 describe('Shopify Retry Payment Reject Testing Suite', () => {
     it('should execute successfully', async () => {
@@ -26,7 +27,7 @@ describe('Shopify Retry Payment Reject Testing Suite', () => {
         // Set up retry reject info
         const paymentRejectInfo: ShopifyMutationPaymentReject = {
             paymentId: 'example-payment-id',
-            reason: 'PROCESSING_ERROR',
+            reason: PaymentSessionStateRejectedReason.processingError,
         };
 
         // Test

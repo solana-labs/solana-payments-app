@@ -8,7 +8,7 @@ import { validateRefundSessionResolved } from '../shopify/validate-refund-sessio
 import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service.js';
 
 export const retryRefundReject = async (
-    refundRejectInfo: ShopifyMutationRefundReject | null,
+    refundRejectInfo: ShopifyMutationRefundReject | undefined,
     prisma: PrismaClient,
     axiosInstance: typeof axios
 ) => {
@@ -44,7 +44,7 @@ export const retryRefundReject = async (
     const rejectRefundResponse = await refundSessionReject(
         refundRecord.shopGid,
         refundRejectInfo.code,
-        refundRejectInfo.reason,
+        refundRejectInfo.merchantMessage,
         merchant.shop,
         merchant.accessToken
     );

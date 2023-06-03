@@ -8,6 +8,7 @@ import {
 } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -55,10 +56,6 @@ export type RefundRecordQuery =
     | MerchantAndStatusQuery
     | RefundIdMerchantIdQuery;
 
-// --- RefundRecordService CRUD Operations ---
-// 1. getRefundRecord
-// 2. createRefundRecord
-// 3. updateRefundRecord
 export class RefundRecordService {
     private prisma: PrismaClient;
 
@@ -67,49 +64,60 @@ export class RefundRecordService {
     }
 
     async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord | null> {
-        return await this.prisma.refundRecord.findFirst({
-            where: query,
-        });
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findFirst({
+                where: query,
+            })
+        );
     }
 
     async getRefundRecordWithPayment(
         query: RefundRecordQuery
     ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null }) | null> {
-        return await this.prisma.refundRecord.findFirst({
-            where: query,
-            include: {
-                paymentRecord: true,
-            },
-        });
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findFirst({
+                where: query,
+                include: {
+                    paymentRecord: true,
+                },
+            })
+        );
     }
 
     async getRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
         pagination: Pagination
     ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
-        return await this.prisma.refundRecord.findMany({
-            where: query,
-            include: {
-                paymentRecord: true,
-            },
-            take: pagination.pageSize,
-            skip: pagination.pageSize * (pagination.page - 1),
-        });
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findMany({
+                where: query,
+                include: {
+                    paymentRecord: true,
+                },
+                take: pagination.pageSize,
+                skip: pagination.pageSize * (pagination.page - 1),
+            })
+        );
     }
 
     async getTotalRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number | null> {
-        return await this.prisma.refundRecord.count({
-            where: query,
-        });
+        return await prismaErrorHandler(
+            this.prisma.refundRecord.count({
+                where: query,
+            })
+        );
     }
 
     async getPaymentRecordForRefund(query: RefundRecordQuery): Promise<PaymentRecord | null> {
-        const refundRecord = await this.prisma.refundRecord.findFirst({
-            where: query,
-            include: {
-                paymentRecord: true,
-            },
-        });
+        const refundRecord = await prismaErrorHandler(
+            this.prisma.refundRecord.findFirst({
+                where: query,
+                include: {
+                    paymentRecord: true,
+                },
+            })
+        );
+
         return refundRecord ? refundRecord.paymentRecord : null;
     }
 
