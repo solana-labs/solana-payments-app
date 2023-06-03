@@ -18,14 +18,16 @@ import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-
 import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service.js';
 import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const rejectRefund = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        const prisma = new PrismaClient();
         const refundRecordService = new RefundRecordService(prisma);
         const merchantService = new MerchantService(prisma);
 

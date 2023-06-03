@@ -16,15 +16,16 @@ import { retryAppConfigure } from '../../services/shopify-retry/retry-app-config
 import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
-        const prisma = new PrismaClient();
-
         let shopifyMutationRetry: ShopifyMutationRetry;
 
         try {

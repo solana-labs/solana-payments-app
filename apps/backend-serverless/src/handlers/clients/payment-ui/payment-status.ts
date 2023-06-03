@@ -17,16 +17,17 @@ interface PaymentErrrorResponse {
     errorRedirect: string;
 }
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const paymentStatus = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let parsedPaymentStatusQuery: PaymentStatusRequest;
-
-        const prisma = new PrismaClient();
 
         const merchantService = new MerchantService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);

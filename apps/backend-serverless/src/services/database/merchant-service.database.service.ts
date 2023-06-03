@@ -1,5 +1,6 @@
 import { PrismaClient, Merchant } from '@prisma/client';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type ShopQuery = {
     shop: string;
@@ -52,33 +53,35 @@ export class MerchantService {
     }
 
     async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
-        return await this.prisma.merchant.findUnique({
-            where: query,
-        });
+        return prismaErrorHandler(
+            this.prisma.merchant.findUnique({
+                where: query,
+            })
+        );
     }
 
     async createMerchant(id: string, shop: string, lastNonce: string): Promise<Merchant> {
-        return await this.prisma.merchant.create({
-            data: {
-                id: id,
-                shop: shop,
-                lastNonce: lastNonce,
-            },
-        });
+        return prismaErrorHandler(
+            this.prisma.merchant.create({
+                data: {
+                    id: id,
+                    shop: shop,
+                    lastNonce: lastNonce,
+                },
+            })
+        );
     }
 
     async updateMerchant(merchant: Merchant, update: Partial<MerchantUpdate>): Promise<Merchant> {
         const filteredUpdate = filterUndefinedFields(update);
 
-        try {
-            return await this.prisma.merchant.update({
+        return prismaErrorHandler(
+            this.prisma.merchant.update({
                 where: {
                     id: merchant.id,
                 },
                 data: filteredUpdate,
-            });
-        } catch {
-            throw new Error('Failed to update merchant');
-        }
+            })
+        );
     }
 }

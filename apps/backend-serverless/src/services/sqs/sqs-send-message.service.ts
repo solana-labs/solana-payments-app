@@ -10,6 +10,11 @@ import {
     ShopifyMutationRetryType,
 } from '../../models/shopify-mutation-retry.model.js';
 import { nextRetryTimeInterval, retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
+import {
+    PaymentSessionStateRejectedReason,
+    RefundSessionStateCode,
+    RefundSessionStateRejectedReason,
+} from '../../models/shopify-graphql-responses/shared.model.js';
 const { SQS } = pkg;
 
 /*
@@ -30,7 +35,7 @@ export const sendPaymentResolveRetryMessage = async (paymentId: string) => {
     );
 };
 
-export const sendPaymentRejectRetryMessage = async (paymentId: string, reason: string) => {
+export const sendPaymentRejectRetryMessage = async (paymentId: string, reason: PaymentSessionStateRejectedReason) => {
     await sendRetryMessage(
         ShopifyMutationRetryType.paymentReject,
         null,
@@ -57,7 +62,11 @@ export const sendRefundResolveRetryMessage = async (refundId: string) => {
     );
 };
 
-export const sendRefundRejectRetryMessage = async (refundId: string, code: string, reason: string) => {
+export const sendRefundRejectRetryMessage = async (
+    refundId: string,
+    code: RefundSessionStateRejectedReason,
+    reason: string | undefined
+) => {
     await sendRetryMessage(
         ShopifyMutationRetryType.refundReject,
         null,
@@ -66,7 +75,7 @@ export const sendRefundRejectRetryMessage = async (refundId: string, code: strin
         {
             refundId: refundId,
             code: code,
-            reason: reason,
+            merchantMessage: reason,
         },
         null
     );

@@ -30,7 +30,7 @@ export const makeRefundSessionReject =
     async (
         id: string,
         code: string,
-        merchantMessage: string,
+        merchantMessage: string | undefined,
         shop: string,
         token: string
     ): Promise<RejectRefundResponse> => {
@@ -38,14 +38,20 @@ export const makeRefundSessionReject =
             'content-type': 'application/json',
             'X-Shopify-Access-Token': token,
         };
+
+        const reason = {
+            code,
+        };
+
+        if (merchantMessage != undefined) {
+            reason['merchantMessage'] = merchantMessage;
+        }
+
         const graphqlQuery = {
             query: refundSessionRejectMutation,
             variables: {
                 id,
-                reason: {
-                    code,
-                    merchantMessage,
-                },
+                reason: reason,
             },
         };
 

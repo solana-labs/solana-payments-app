@@ -12,9 +12,12 @@ import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const refund = Sentry.AWSLambda.wrapHandler(
