@@ -9,14 +9,16 @@ import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
+const prisma = new PrismaClient();
+
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
 export const merchantData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        const prisma = new PrismaClient();
         const merchantService = new MerchantService(prisma);
 
         let merchantAuthToken: MerchantAuthToken;

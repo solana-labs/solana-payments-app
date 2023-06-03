@@ -24,13 +24,20 @@ import { verifyRefundTransactionWithRefundRecord } from '../../services/transact
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
 
-export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
+const prisma = new PrismaClient();
+
+Sentry.AWSLambda.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
+});
+
+export const refundTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let refundRequest: RefundTransactionRequest;
         let refundTransaction: TransactionRequestResponse;
         let transaction: web3.Transaction;
 
-        const prisma = new PrismaClient();
         const transactionRecordService = new TransactionRecordService(prisma);
         const refundRecordService = new RefundRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
