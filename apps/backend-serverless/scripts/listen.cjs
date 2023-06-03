@@ -1,14 +1,33 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const { Helius } = require("helius-sdk");
+const dotenv = require("dotenv");
 
-var app = express();
-app.use(bodyParser.json());
+dotenv.config();
+const helius = new Helius(process.env.HELIUS_API_KEY);
+const webhookUrl = process.env.HELIUS_WEBHOOK_URL;
 
-app.post('/', function (req, res) {
-  console.log(req.body);
-  res.sendStatus(200);
-});
+helius.getAllWebhooks().then((webhooks) => {
 
-app.listen(5005, function () {
-  console.log('Listening on port 5005');
-});
+  if (webhooks.length == 0) {
+
+    helius.createWebhook({
+      webhookURL: webhookUrl,
+      transactionTypes: ['ANY'],
+      accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'],
+      webhookType: 'ENHANCED',
+      encoding: 'jsonParsed',
+    }).catch((err) => {
+      console.log("Could not create webhook with helius: ", err);
+    })
+
+  } else {
+
+    helius.editWebhook(
+      webhooks[0].webhookID,
+      { accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'] } // This will ONLY update accountAddresses, not the other fields on the webhook object
+    ).catch((err) => {
+      console.log("Could not edit webhook with helius: ", err);
+    })
+    
+  }
+
+})

@@ -50,8 +50,8 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
 // redirect url specified here: https://shopify.dev/apps/auth/oauth/getting-started#redirect-to-the-grant-screen-using-a-3xx-redirect
 export const createShopifyOAuthGrantRedirectUrl = (shop: string, nonce: string) => {
     const clientId = process.env.SHOPIFY_CLIENT_ID;
-    const BASE_URL = process.env.BASE_URL;
-    const redirectUrl = BASE_URL + '/redirect';
+    const BACKEND_URL = process.env.BACKEND_URL;
+    const redirectUrl = BACKEND_URL + '/redirect';
     return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${createScopeString([
         ShopifyScope.WRITE_PAYMENT_GATEWAYS,
         ShopifyScope.WRITE_PAYMENT_SESSIONS,

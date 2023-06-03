@@ -26,7 +26,7 @@ functions:
           path: /admin/oauth/authorize
           method: get
   admin:
-    handler: src/handlers/authorize.authorize
+    handler: src/handlers/admin.admin
     events:
       - httpApi:
           path: /admin/api/2023-04/graphql.json
@@ -54,6 +54,3 @@ custom:
     httpPort: 4004
     lambdaPort: 4005
     httpsProtocol: "dev-certs"
-
-
-        # return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${createScopeString([

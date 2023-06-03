@@ -47,7 +47,10 @@ export const install = Sentry.AWSLambda.wrapHandler(
             }
         } catch (error) {
             // return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-            return requestErrorResponse(error);
+            return {
+                statusCode: 200,
+                body: JSON.stringify(error),
+            };
         }
 
         const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);

@@ -87,7 +87,11 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
                 name: adminDataResponse.data.shop.name,
                 email: adminDataResponse.data.shop.email,
             });
-        } catch {
+        } catch (error) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify(error),
+            };
             // I don't think we would want to fail anything here, at best we can retry it
             // TODO: Figure out failure strategy
         }
@@ -132,7 +136,7 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 301,
             headers: {
-                Location: redirectUrl,
+                Location: `${redirectUrl}/merchant`,
                 'Content-Type': 'text/html',
                 'Set-Cookie': merchantAuthCookieHeader,
             },

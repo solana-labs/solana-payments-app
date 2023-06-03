@@ -7,7 +7,7 @@ provider:
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
-    BASE_URL: ${env:BASE_URL}
+    BACKEND_URL: ${env:BACKEND_URL}
     MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
@@ -27,7 +27,7 @@ provider:
     AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
-  httpApi:
+  http:
     cors: true
 package:
   excludeDevDependencies: true

@@ -10,16 +10,17 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem NODE_ENV=development sls offline",
+    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem NODE_ENV=development sls offline --stage development",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
     "test:integration": "jest integration",
-    "hello": "node scripts/listen.cjs",
+    "helius": "NODE_ENV=development node scripts/listen.cjs",
     "test:help": "jest unit/services/shopify/help",
     "preoffline": "npx prisma generate",
-    "offline": "NODE_ENV=development sls offline"
+    "offline": "NODE_ENV=development sls offline",
+    "ngrok": "node scripts/capture-value.cjs"
   },
   "keywords": [],
   "author": "@tj_littlejohn",
@@ -38,12 +39,14 @@
     "bs58": "5.0.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
+    "helius-sdk": "^1.0.7",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
     "yup": "1.2.0"
   },
   "devDependencies": {
+    "@ngrok/ngrok": "^0.5.2",
     "@types/aws-lambda": "^8.10.101",
     "@types/crypto-js": "4.1.1",
     "@types/jest": "^29.5.1",

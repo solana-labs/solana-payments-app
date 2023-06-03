@@ -15,7 +15,7 @@
         "lint:fix": "eslint --fix .",
         "test": "jest",
         "test:integration": "jest integration",
-        "offline": "NODE_ENV=development sls offline"
+        "offline": "NODE_ENV=development sls offline --stage development"
     },
     "keywords": [],
     "author": "@tj_littlejohn",

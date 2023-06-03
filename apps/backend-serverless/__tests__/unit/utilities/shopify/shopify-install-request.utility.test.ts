@@ -10,7 +10,7 @@ import crypto from 'crypto-js';
 
 describe('unit testing shopify install request utilities', () => {
     it('testing createShopifyOAuthGrantRedirectUrl', () => {
-        process.env.BASE_URL = 'some-base-url.com';
+        process.env.BACKEND_URL = 'some-base-url.com';
         process.env.SHOPIFY_CLIENT_ID = 'some-client-id';
 
         const mockShop = 'some-shop.shopify.com';
