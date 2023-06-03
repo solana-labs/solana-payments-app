@@ -38,3 +38,27 @@ export const createMechantAuthCookieHeader = (id: string): string => {
         cookieOptions.httpOnly ? 'true' : ''
     }${cookieOptions.secure ? ' Secure' : ''}; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
 };
+
+export const createSignedShopifyCookie = (cookie: string): string => {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+
+    if (jwtSecretKey == null) {
+        throw new MissingEnvError('jwt secret key');
+    }
+
+    const signedCookie = jwt.sign(cookie, jwtSecretKey, {});
+
+    return signedCookie;
+};
+
+export const decodeSignedCookie = (signedCookie: string): string => {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+
+    if (jwtSecretKey == null) {
+        throw new MissingEnvError('jwt secret key');
+    }
+
+    const cookie = jwt.verify(signedCookie, jwtSecretKey, {});
+
+    return cookie as string;
+};
