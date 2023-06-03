@@ -35,29 +35,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { PaymentTransactionBuilder, parseAndValidatePaymentTransactionRequest, } from '../models/payment-transaction-request.model.js';
-import { decode } from '../utils/strings.util.js';
-import queryString from 'querystring';
 import { createConnection } from '../utils/connection.util.js';
 export var pay = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-    var paymentTransactionRequest, decodedBody, body, account, queryParameters, transactionBuilder, connection, transaction, error_1, base;
+    var paymentTransactionRequest, body, account, queryParameters, transactionBuilder, connection, transaction, error_1, base;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log(event.body);
-                decodedBody = event.body ? decode(event.body) : '';
-                console.log(decodedBody);
-                body = queryString.parse(decodedBody);
+                if (event.body == null) {
+                    return [2 /*return*/, {
+                            statusCode: 501,
+                            body: JSON.stringify({ error: 'fuck' }, null, 2),
+                        }];
+                }
+                body = JSON.parse(event.body);
                 account = body['account'];
                 if (account == null) {
                     return [2 /*return*/, {
-                            statusCode: 500,
-                            body: JSON.stringify({ error: body }, null, 2),
+                            statusCode: 507,
+                            body: JSON.stringify({ error: 'fuck' }, null, 2),
                         }];
                 }
                 if (event.queryStringParameters == null) {
                     return [2 /*return*/, {
-                            statusCode: 500,
-                            body: JSON.stringify({ message: 'no query' }, null, 2),
+                            statusCode: 509,
+                            body: JSON.stringify({ message: 'damn' }, null, 2),
                         }];
                 }
                 queryParameters = event.queryStringParameters;
@@ -67,8 +68,8 @@ export var pay = function (event) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 catch (error) {
                     return [2 /*return*/, {
-                            statusCode: 500,
-                            body: JSON.stringify(error, null, 2),
+                            statusCode: 503,
+                            body: JSON.stringify({ message: 'bufff' }, null, 2),
                         }];
                 }
                 transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
@@ -84,11 +85,19 @@ export var pay = function (event) { return __awaiter(void 0, void 0, void 0, fun
                 error_1 = _a.sent();
                 console.log(error_1);
                 return [2 /*return*/, {
-                        statusCode: 500,
-                        body: JSON.stringify(error_1, null, 2),
+                        statusCode: 504,
+                        body: JSON.stringify({ message: 'ahhh' }, null, 2),
                     }];
             case 4:
-                base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+                try {
+                    base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+                }
+                catch (_b) {
+                    return [2 /*return*/, {
+                            statusCode: 505,
+                            body: JSON.stringify({ message: 'grrr' }, null, 2),
+                        }];
+                }
                 return [2 /*return*/, {
                         statusCode: 200,
                         body: JSON.stringify({

@@ -13,7 +13,7 @@ export const payment = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     try {
         const response = await axios({
-            url: 'http://localhost:4000/payment',
+            url: 'http://localhost:4006/payment',
             method: 'POST',
             headers: {
                 'content-type': 'application/json',

@@ -10,7 +10,7 @@
     },
     "type": "module",
     "scripts": {
-        "dev": "NODE_ENV=development sls offline --stage development",
+        "dev": "NODE_ENV=development serverless offline start --stage dev",
         "lint": "eslint .",
         "lint:fix": "eslint --fix ."
     },

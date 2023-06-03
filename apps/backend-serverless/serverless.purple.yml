@@ -186,13 +186,3 @@ custom:
   serverless-offline:
     httpPort: 4000
     lambdaPort: 4001
-  development:
-    tlsApiGatewayId: dev-tls-api-gateway-id
-    tlsRootResourceId: dev-tls-api-gateway-root-resource-id
-    mtlsApiGatewayId: dev-mtls-api-gateway-id
-    mtlsRootResourceId: dev-mtls-api-gateway-root-resource-id
-  production:
-    tlsApiGatewayId: prod-tls-api-gateway-id
-    tlsRootResourceId: prod-tls-api-gateway-root-resource-id
-    mtlsApiGatewayId: prod-mtls-api-gateway-id
-    mtlsRootResourceId: prod-mtls-api-gateway-root-resource-id

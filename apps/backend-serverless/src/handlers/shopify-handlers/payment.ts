@@ -51,12 +51,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
         } catch (error) {
-            return {
-                statusCode: 200,
-                body: JSON.stringify(error),
-            };
-
-            // return requestErrorResponse(error);
+            return requestErrorResponse(error);
         }
 
         let paymentRecord = await paymentRecordService.getPaymentRecord({
@@ -65,16 +60,16 @@ export const payment = Sentry.AWSLambda.wrapHandler(
 
         if (paymentRecord == null) {
             try {
-                const usdcSize = await convertAmountAndCurrencyToUsdcSize(
-                    paymentInitiation.amount,
-                    paymentInitiation.currency
-                );
+                // const usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                //     paymentInitiation.amount,
+                //     paymentInitiation.currency
+                // );
                 const newPaymentRecordId = await generatePubkeyString();
                 paymentRecord = await paymentRecordService.createPaymentRecord(
                     newPaymentRecordId,
                     paymentInitiation,
                     merchant,
-                    usdcSize
+                    0.001
                 );
             } catch (error) {
                 return requestErrorResponse(error);

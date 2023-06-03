@@ -47,7 +47,7 @@ export const fetchPaymentTransaction = async (
         'test-one,test-two'
     );
     const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded', // TODO: I think i need to make this json
+        'Content-Type': 'application/json', // TODO: I think i need to make this json
     };
 
     const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });

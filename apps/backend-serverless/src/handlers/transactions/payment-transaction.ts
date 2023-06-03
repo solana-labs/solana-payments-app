@@ -33,6 +33,7 @@ import { makePaymentSessionReject } from '../../services/shopify/payment-session
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,

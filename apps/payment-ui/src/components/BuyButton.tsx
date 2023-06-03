@@ -23,6 +23,8 @@ const BuyButton = () => {
                 { headers: headers }
             );
 
+            console.log(response.data)
+
             const buffer = Buffer.from(response.data.transaction, 'base64');
 
             const transaction = web3.Transaction.from(buffer);

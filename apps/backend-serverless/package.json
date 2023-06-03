@@ -10,17 +10,13 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem NODE_ENV=development sls offline --stage development",
+    "predev": "yarn helius",
+    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.green.yml",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
-    "test:integration": "jest integration",
-    "helius": "NODE_ENV=development node scripts/listen.cjs",
-    "test:help": "jest unit/services/shopify/help",
-    "preoffline": "npx prisma generate",
-    "offline": "NODE_ENV=development sls offline",
-    "ngrok": "node scripts/capture-value.cjs"
+    "helius": "node scripts/helius.cjs"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

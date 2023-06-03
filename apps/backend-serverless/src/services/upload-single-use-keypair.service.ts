@@ -1,6 +1,7 @@
 import { PaymentRecord } from '@prisma/client';
 import { web3 } from '@project-serum/anchor';
-import * as AWS from 'aws-sdk';
+import pkg from 'aws-sdk';
+const { S3 } = pkg;
 
 // This service method should upload the keypair to an encrypted s3 bucket for rent collection
 // at a later time.
@@ -15,7 +16,7 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
         throw new Error('AWS credentials not found');
     }
 
-    const s3 = new AWS.S3({
+    const s3 = new S3({
         region: region,
         accessKeyId: accessKey,
         secretAccessKey: secretKey,
