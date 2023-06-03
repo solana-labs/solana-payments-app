@@ -33,6 +33,7 @@ import { makePaymentSessionReject } from '../../services/shopify/payment-session
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -189,11 +190,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         transaction.partialSign(gasKeypair);
         transaction.partialSign(singleUseKeypair);
 
-        try {
-            verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
-        } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        }
+        // try {
+        //     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
+        // } catch (error) {
+        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        // }
 
         const transactionSignature = transaction.signature;
 

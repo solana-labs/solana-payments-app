@@ -10,7 +10,13 @@ Right now the overall documentation is federated to respective directories. Over
 [Payment UI](apps/payment-ui/README.md) - The payment frontend where customers can complete payments.<br>
 [System Design](system-design/README.md) - Where we communicate overall system design decisions for the current state.<br>
 
-## How to Deploy
+## How to Deploy Locally
+
+### Get Your Helius API Key
+
+Go to [Helius](https://www.helius.dev/) and create a new account. You can use an existing account if you like, but we will modify your webhooks so it is advised you create a new account. Once you have your API key from Helius, come back here.
+
+### Set up the Application
 
 1. clone the repo
 
@@ -45,71 +51,56 @@ aws configure
 [enter your user aws secret access key]
 ```
 
-4. deploy the transaction request server
+4. run ngrok to expose your local service to helius for transaction webhooks
 
 ```
-(from /apps/transaction-request-serverless/)
-serverless deploy
+ngrok http 4000
 ```
 
-**NOTE** save the base url output by the `serverless deploy` command
+5. create your .env.development files
 
-5. create your backend server .env
+In each app
 
-```
-(from /apps/backend-serverless/)
-cp .sample.env .env
-```
+-   backend-serverless
+-   payment-ui
+-   merchant-ui
+-   transaction-request-serverless
 
-6. replace all of the sample values with your actual values. note, some are required and some are optional
-
-required
+You will need to copy the .sample.env.development file and replace the values that need to be changed, these are marked in the sample files.
 
 ```
-SHOPIFY_SECRET_KEY=<this is the secret key from your shopify developer portal>
-SHOPIFY_CLIENT_ID=<this is the client id from your shopify developer portal>
-BASE_URL=<this is the base url for this server where it will be deployed>
-MERCHANT_UI_URL=this is the base url for where your merchant ui will be deployed>
-PAYMENT_UI_URL=<this is the base url for where your payment ui will be deployed>
-DATABASE_URL=<this is the prisma formatted url for your database. see prisma docs for format or .sample.env for example>
-TRANSACTION_REQUEST_SERVER_URL=<this is the base url for where your transaction request server is deployed>
-TRM_API_KEY=<this is the API key given to you by TRM>
-AWS_BUCKET_OBJECT_NAME=<the name of the file containing your gas keypair>
-AWS_BUCKET_NAME=<the name of the bucket containing your keypairs>
-AWS_BUCKET_REGION=<the name of the region for your bucket>
-AWS_ACCESS_KEY=<the access key for your user with read access to your bucket>
-AWS_SECRET_KEY=<the secret key for your user with read access to your bucket>
+cp .sample.env.development .env.development
 ```
 
-optional
+Make sure you use the ngrok url from the previous step for the HELIUS_WEBHOOK_URL var.
 
-```
-USE_AUTH_MOCK=<this is your mock merchant id if you cannot properly set up cookies on merchant-ui/backend-serverless>
-TEST_USDC_SIZE=<while testing, this will be the actual cost in usdc size for your payments>
-```
-
-7. configure your database
+7. generate your database database model
 
 ```
 (from /apps/backend-serverless/)
 npx prisma generate
+```
+
+8. migrate your database
+
+Note: To migrate your database, it must be running. If you're using the local database we help stand up through docker-compose, do that now.
+
+```
+(from root)
+docker-compose up // If you're using our assisted local database
+
+(from /apps/backend-serverless)
 npx prisma migrate dev
 ```
 
-9. deploy the backend serverless app
+9. stand everything up
+
+If you've done everything correctly to this point, standing up the app should be a single command
 
 ```
-(from /apps/backend-serverless/)
-serverless deploy
+(from root)
+yarn dev
 ```
-
-10. update your env
-
-modify the BASE_URL from the .env to be the base url that is output from step 9. if you have already set up a custom domain name and put that inside of your .env you can skip this step
-
-11. add the base url to the payment-ui and merchant-ui
-
-you can configure this in the respective .env files for each of these
 
 ## How to Contribute
 

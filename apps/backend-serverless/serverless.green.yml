@@ -1,0 +1,78 @@
+service: backend-serverless-green
+frameworkVersion: '3'
+useDotenv: true
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
+    SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
+    BACKEND_URL: ${env:BACKEND_URL}
+    MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
+    DATABASE_URL: ${env:DATABASE_URL}
+    PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
+    TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
+    TRM_API_KEY: ${env:TRM_API_KEY}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    AWS_BUCKET_OBJECT_NAME: ${env:AWS_BUCKET_OBJECT_NAME}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}
+    AWS_GAS_SECRET_KEY: ${env:AWS_GAS_SECRET_KEY}
+    AWS_BUCKET_REGION: ${env:AWS_BUCKET_REGION}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
+    AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
+    AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
+    AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
+    SENTRY_DSN: ${env:SENTRY_DSN}
+    SENTRY_RELEASE: ${env:SENTRY_RELEASE}
+package:
+  excludeDevDependencies: true
+  patterns:
+    - 'node_modules/.prisma/**'
+functions:
+  payment:
+    handler: src/handlers/shopify-handlers/payment.payment
+    events:
+      - httpApi:
+          path: /payment
+          method: post
+  refund:
+    handler: src/handlers/shopify-handlers/refund.refund
+    events:
+      - httpApi:
+          path: /refund
+          method: post
+  customers-data-request:
+    handler: src/handlers/webhooks/gdpr/customers-data-request.customersDataRequest
+    events:
+      - httpApi:
+          path: /customers/data_request
+          method: post
+  customers-redact:
+    handler: src/handlers/webhooks/gdpr/customers-redact.customersRedact
+    events:
+      - httpApi:
+          path: /customers/redact
+          method: post
+  shop-redact:
+    handler: src/handlers/webhooks/gdpr/shop-redact.shopRedact
+    events:
+      - httpApi:
+          path: /shop/redact
+          method: post
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
+  - serverless-prune-plugin
+  - serverless-step-functions
+  - serverless-iam-roles-per-function
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4006
+    lambdaPort: 4007

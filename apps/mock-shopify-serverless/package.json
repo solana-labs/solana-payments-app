@@ -1,5 +1,5 @@
 {
-    "name": "transaction-request-serverless",
+    "name": "mock-shopify-serverless",
     "version": "0.0.1",
     "description": "",
     "main": "handler.js",
@@ -10,19 +10,14 @@
     },
     "type": "module",
     "scripts": {
-        "dev": "NODE_ENV=development sls offline",
+        "dev": "NODE_ENV=development serverless offline start --stage dev",
         "lint": "eslint .",
-        "lint:fix": "eslint --fix .",
-        "test": "jest",
-        "test:integration": "jest integration",
-        "offline": "NODE_ENV=development serverless offline start --stage dev"
+        "lint:fix": "eslint --fix ."
     },
     "keywords": [],
     "author": "@tj_littlejohn",
     "license": "ISC",
     "dependencies": {
-        "@project-serum/anchor": "^0.26.0",
-        "@solana/spl-token": "^0.3.7",
         "@types/node": "18.15.3",
         "aws-lambda": "^1.0.7",
         "axios": "^1.3.4",
@@ -31,21 +26,17 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.101",
         "@types/crypto-js": "4.1.1",
-        "@types/jest": "^29.5.1",
         "@typescript-eslint/eslint-plugin": "^5.59.1",
         "@typescript-eslint/parser": "^5.59.1",
         "esbuild": "^0.17.18",
         "eslint": "^8.39.0",
         "eslint-plugin-require-extensions": "^0.1.3",
-        "jest": "^29.5.0",
-        "jest-mock-extended": "2.0.4",
         "serverless": "^3.21.0",
         "serverless-esbuild": "^1.43.1",
         "serverless-offline": "^12.0.4",
         "serverless-plugin-common-excludes": "^4.0.0",
         "serverless-plugin-include-dependencies": "^5.1.0",
         "serverless-plugin-typescript": "2.1.4",
-        "ts-jest": "^29.1.0",
         "typescript": "^4.7.4"
     }
 }

@@ -10,12 +10,13 @@
   },
   "type": "module",
   "scripts": {
+    "predev": "yarn helius",
+    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.green.yml",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
-    "test:integration": "jest integration",
-    "hello": "tsc scripts/hello.ts && node scripts/hello.js && rimraf scripts/hello.js",
-    "test:help": "jest unit/services/shopify/help"
+    "helius": "node scripts/helius.cjs"
   },
   "keywords": [],
   "author": "@tj_littlejohn",
@@ -34,15 +35,18 @@
     "bs58": "5.0.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
+    "helius-sdk": "^1.0.7",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
     "yup": "1.2.0"
   },
   "devDependencies": {
+    "@ngrok/ngrok": "^0.5.2",
     "@types/aws-lambda": "^8.10.101",
     "@types/crypto-js": "4.1.1",
     "@types/jest": "^29.5.1",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "axios-mock-adapter": "^1.21.4",
@@ -62,6 +66,7 @@
     "serverless-prune-plugin": "^2.0.2",
     "serverless-step-functions": "^3.13.1",
     "ts-jest": "^29.1.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "winston": "^3.9.0"
   }
 }

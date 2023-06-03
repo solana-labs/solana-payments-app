@@ -1,4 +1,4 @@
-service: backend-serverless
+service: backend-serverless-purple
 frameworkVersion: '3'
 useDotenv: true
 provider:
@@ -7,7 +7,7 @@ provider:
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
-    BASE_URL: ${env:BASE_URL}
+    BACKEND_URL: ${env:BACKEND_URL}
     MERCHANT_UI_URL: ${env:MERCHANT_UI_URL}
     DATABASE_URL: ${env:DATABASE_URL}
     PAYMENT_UI_URL: ${env:PAYMENT_UI_URL}
@@ -27,8 +27,6 @@ provider:
     AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
-  httpApi:
-    cors: true
 package:
   excludeDevDependencies: true
   patterns:
@@ -46,18 +44,6 @@ functions:
       - httpApi:
           path: /redirect
           method: get
-  payment:
-    handler: src/handlers/shopify-handlers/payment.payment
-    events:
-      - httpApi:
-          path: /payment
-          method: post
-  refund:
-    handler: src/handlers/shopify-handlers/refund.refund
-    events:
-      - httpApi:
-          path: /refund
-          method: post
   helius:
     handler: src/handlers/webhooks/helius.helius
     events:
@@ -130,24 +116,6 @@ functions:
       - httpApi:
           path: /update-merchant
           method: put
-  customers-data-request:
-    handler: src/handlers/webhooks/gdpr/customers-data-request.customersDataRequest
-    events:
-      - httpApi:
-          path: /customers/data_request
-          method: post
-  customers-redact:
-    handler: src/handlers/webhooks/gdpr/customers-redact.customersRedact
-    events:
-      - httpApi:
-          path: /customers/redact
-          method: post
-  shop-redact:
-    handler: src/handlers/webhooks/gdpr/shop-redact.shopRedact
-    events:
-      - httpApi:
-          path: /shop/redact
-          method: post
   sqs-message-receive:
     handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
     environment:
@@ -216,4 +184,5 @@ plugins:
 
 custom:
   serverless-offline:
-    httpPort: 3000
+    httpPort: 4000
+    lambdaPort: 4001

@@ -1,0 +1,56 @@
+service: mock-shopify-serverless
+frameworkVersion: '3'
+useDotenv: true
+provider:
+  name: aws
+  runtime: nodejs18.x
+package:
+  excludeDevDependencies: false
+functions:
+  accessToken:
+    handler: src/handlers/access-token.accessToken
+    events:
+      - httpApi:
+          path: /admin/oauth/access_token
+          method: post
+  install:
+    handler: src/handlers/install.install
+    events:
+      - httpApi:
+          path: /install
+          method: get
+  authorize:
+    handler: src/handlers/authorize.authorize
+    events:
+      - httpApi:
+          path: /admin/oauth/authorize
+          method: get
+  admin:
+    handler: src/handlers/admin.admin
+    events:
+      - httpApi:
+          path: /admin/api/2023-04/graphql.json
+          method: post
+  payments-app:
+    handler: src/handlers/payment-app.paymentApp
+    events:
+      - httpApi:
+          path: /payments_apps/api/2022-10/graphql.json
+          method: post
+  payment:
+    handler: src/handlers/payment.payment
+    events:
+      - httpApi:
+          path: /payment
+          method: get
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
+  - serverless-plugin-include-dependencies
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4004
+    lambdaPort: 4005
+    httpsProtocol: "dev-certs"

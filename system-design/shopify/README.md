@@ -53,7 +53,12 @@ As a part of Shopify's security model, we need to implement mTLS for all request
 4. customer redact gdpr webhook
 5. shop redact gdpr webhook
 
-We are still working on our mTLS strategy but we will update a description here when it is finished.
+How we handle this is create two seperate services:
+
+1. [backend-serverless-purple](/apps/backend-serverless/serverless.purple.yml)
+2. [backend-serverless-green](/apps/backend-serverless/serverless.green.yml)
+
+Each of these get deployed to their own API gateway where we can map the respective service to a custom domain name. [backend-serverless-green](/apps/backend-serverless/serverless.green.yml) has custom domain name that is configured with mTLS while [backend-serverless-purple](/apps/backend-serverless/serverless.purple.yml) is configured with TLS.
 
 ## [HMAC verification](https://shopify.dev/docs/apps/auth/oauth/getting-started#verify-a-request)
 

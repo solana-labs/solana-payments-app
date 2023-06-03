@@ -9,9 +9,15 @@
         "./apps/payment-ui/.next/**"
       ]
     },
+    "build:merchant-ui": {
+      "outputs": [
+        "./apps/merchant-ui/.next/**"
+      ]
+    },
     "build": {
       "dependsOn": [
-        "build:payment-ui"
+        "build:payment-ui",
+        "build:merchant-ui"
       ],
       "outputs": []
     },
