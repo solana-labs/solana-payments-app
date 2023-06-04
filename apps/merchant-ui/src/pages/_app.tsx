@@ -14,12 +14,16 @@ import {
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useMerchantStore } from '@/stores/merchantStore';
+import { useOpenRefundStore } from '@/stores/refundStore';
+import { get } from 'http';
 
 export default function App({ Component, pageProps }: AppProps) {
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+    const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
 
     useEffect(() => {
         getMerchantInfo().catch(console.error); // Fetch merchantInfo when App loads
+        getOpenRefunds(0).catch(console.error); // Fetch open refunds when App loads
     }, [getMerchantInfo]); // Dependency array
 
     return (

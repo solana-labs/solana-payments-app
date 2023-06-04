@@ -1,38 +1,12 @@
-import { useState, useEffect } from 'react';
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
+import { create } from 'zustand';
 import axios from 'axios';
-
-const PAGE_SIZE = 5;
 
 export enum RefundStatus {
     Pending = 'pending',
     Paid = 'paid',
     Rejected = 'rejected',
-}
-
-interface ServerRefund {
-    id: string; // Internal ID
-    status: RefundStatus;
-    amount: number;
-
-    currency: string;
-    shopId: string; // Given Id from Shopify
-    shopGid: string; // Given Gid from Shopify
-    shopPaymentId: string; // Given payment_id from Shopify, it will link to the 'shopId' in our database or 'id' from Shopify
-    test: boolean;
-    merchantId: string;
-    transactionSignature?: string; // Signature of the on-chain transaction that was used to settle the payment with Shopify
-}
-
-export interface Refund {
-    orderId: string;
-    status: RefundStatus;
-    purchaseAmount: number;
-    requestedRefundAmount: number;
-    requestedAt: number; //date
-    completedAt: number; //date
-    refundTo: string;
 }
 
 export interface OpenRefund extends Refund {
@@ -43,12 +17,14 @@ export interface ClosedRefund extends Refund {
     status: RefundStatus.Paid | RefundStatus.Rejected;
 }
 
-function refundIsOpen(refund: Refund): refund is OpenRefund {
-    return refund.status === RefundStatus.Pending;
-}
-
-function refundIsClosed(refund: Refund): refund is ClosedRefund {
-    return refund.status !== RefundStatus.Pending;
+export interface Refund {
+    orderId: string;
+    status: RefundStatus;
+    purchaseAmount: number;
+    requestedRefundAmount: number;
+    requestedAt: number; //date
+    completedAt: number; //date
+    refundTo: string;
 }
 
 function transformRefund<T extends Refund>(responseData: any): T[] {
@@ -65,65 +41,62 @@ function transformRefund<T extends Refund>(responseData: any): T[] {
     });
 }
 
-export function useOpenRefunds(page: number = 0): {
+type OpenRefundStore = {
     openRefunds: RE.Result<{ refunds: OpenRefund[]; totalPages: number }>;
     refundCount: number;
-    fetchOpenRefunds: () => void;
-} {
-    const [results, setResults] = useState<RE.Result<{ refunds: OpenRefund[]; totalPages: number }>>(RE.pending());
-    const [refundCount, setRefundCount] = useState<number>(0);
+    getOpenRefunds: (page: number) => Promise<void>;
+};
 
-    async function fetchOpenRefunds() {
+const PAGE_SIZE = 5;
+
+export const useOpenRefundStore = create<OpenRefundStore>(set => ({
+    openRefunds: RE.pending(),
+    refundCount: 0,
+    getOpenRefunds: async (page: number) => {
         const params: any = {
             pageNumber: page + 1,
             pageSize: 5,
             refundStatus: 'pending',
         };
 
-        setResults(RE.pending());
         try {
             const response = await axios.get(API_ENDPOINTS.refundData, { params });
 
             if (response.status !== 200) {
-                setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments 200')));
+                set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
             } else {
                 const refunds = transformRefund<OpenRefund>(response.data); // assuming you have transformRefund function
                 console.log('fetching total', response.data.refundData.total);
-                setResults(
-                    RE.ok({
+                set({
+                    openRefunds: RE.ok({
                         refunds: refunds,
                         totalPages: Math.floor((response.data.refundData.total + 1) / PAGE_SIZE),
-                    })
-                );
-                setRefundCount(response.data.refundData.total);
+                    }),
+                });
+                set({ refundCount: response.data.refundData.total });
             }
         } catch (error) {
             console.log('error: ', error);
-            setResults(RE.failed(new Error('Failed to fetch open refunds')));
+            set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
         }
-    }
+    },
+}));
 
-    useEffect(() => {
-        fetchOpenRefunds();
-    }, [page]);
-
-    return { openRefunds: results, refundCount, fetchOpenRefunds };
-}
-
-export function useCloseRefunds(page: number = 0): {
+type ClosedRefundStore = {
     closedRefunds: RE.Result<{ refunds: ClosedRefund[]; totalPages: number }>;
+    refundCount: number;
+    getClosedRefunds: (page: number) => Promise<void>;
+};
 
-    fetchClosedRefunds: () => void;
-} {
-    const [results, setResults] = useState<RE.Result<{ refunds: ClosedRefund[]; totalPages: number }>>(RE.pending());
-
-    async function fetchClosedRefunds() {
+export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
+    closedRefunds: RE.pending(),
+    refundCount: 0,
+    getClosedRefunds: async (page: number) => {
         const params: any = {
-            page: page + 1,
+            pageNumber: page + 1,
             pageSize: PAGE_SIZE,
         };
 
-        setResults(RE.pending());
         try {
             const responseRejected = await axios.get(API_ENDPOINTS.refundData, {
                 params: { ...params, refundStatus: 'rejected' },
@@ -133,37 +106,32 @@ export function useCloseRefunds(page: number = 0): {
             });
 
             if (responseRejected.status !== 200 || responsePaid.status !== 200) {
-                let errorMsg = 'Failed to fetch refunds';
+                let errorMsg = 'Failed to fetch closed refunds';
                 if (responseRejected.status !== 200) {
                     errorMsg = responseRejected.data.message || errorMsg;
                 }
                 if (responsePaid.status !== 200) {
                     errorMsg = responsePaid.data.message || errorMsg;
                 }
-                setResults(RE.failed(new Error(errorMsg)));
+                set({ closedRefunds: RE.failed(new Error(errorMsg)) });
             } else {
                 const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data);
                 const refundsPaid = transformRefund<ClosedRefund>(responsePaid.data);
                 const refunds = [...refundsRejected, ...refundsPaid];
-                setResults(
-                    RE.ok({
-                        refunds,
+                set({
+                    closedRefunds: RE.ok({
+                        refunds: refunds,
                         totalPages: Math.floor(
                             (responseRejected.data.refundData.total + responsePaid.data.refundData.total + 1) /
                                 PAGE_SIZE
                         ),
-                    })
-                );
+                    }),
+                });
+                set({ refundCount: responseRejected.data.refundData.total + responsePaid.data.refundData.total });
             }
         } catch (error) {
             console.log('error: ', error);
-            setResults(RE.failed(new Error('Failed to fetch refunds in useCloseRefunds')));
+            set({ closedRefunds: RE.failed(new Error('Failed to fetch closed refunds')) });
         }
-    }
-
-    useEffect(() => {
-        fetchClosedRefunds();
-    }, []);
-
-    return { closedRefunds: results, fetchClosedRefunds };
-}
+    },
+}));
