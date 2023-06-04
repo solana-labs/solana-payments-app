@@ -1,9 +1,6 @@
-import BuyButton from './BuyButton';
 import { Wallet } from './Wallet';
-import WalletButton from './WalletButton';
-
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import WalletSection from './WalletSection';
 
 const PayWithWalletSection = () => {
     const { publicKey, sendTransaction } = useWallet();
@@ -12,6 +9,7 @@ const PayWithWalletSection = () => {
         <div className="flex flex-col justify-end h-full">
             <div className="pb-4">
                 <Wallet />
+                {/* <WalletSection /> */}
             </div>
         </div>
     );
