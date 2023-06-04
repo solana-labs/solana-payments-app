@@ -1,4 +1,4 @@
-import { object, string, number, InferType, boolean } from 'yup';
+import { object, string, number, InferType, boolean, bool } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 /*
     SPEC: https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite
@@ -40,7 +40,7 @@ export const shopifyPaymentInitiationScheme = object().shape({
     group: string().required(),
     amount: number().required(), // must be numeric
     currency: string().required(), // three string IOS 4217 code
-    test: boolean().required(),
+    test: bool().required(),
     merchant_locale: string().required(),
     payment_method: paymentMethodSchema.required(),
     proposed_at: string().required(),

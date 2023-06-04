@@ -1,6 +1,7 @@
 {
   "name": "backend-serverless",
   "version": "0.0.1",
+  "private": true,
   "description": "",
   "main": "handler.js",
   "workspaces": {
@@ -10,7 +11,7 @@
   },
   "type": "module",
   "scripts": {
-    "predev": "yarn helius",
+    "predev": "yarn helius & npx prisma generate",
     "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.green.yml",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",

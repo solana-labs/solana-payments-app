@@ -24,40 +24,20 @@ Go to [Helius](https://www.helius.dev/) and create a new account. You can use an
 git clone git@github.com:solana-labs/solana-payments-app.git
 ```
 
-2. install the dependencies at the root
+2. install the dependencies
 
 ```
 (from root)
 yarn
 ```
 
-2. install the app specific dependencies for the serverless apps
-
-```
-(from /apps/backend-serverless/)
-yarn
-```
-
-```
-(from /apps/transaction-request-serverless/)
-yarn
-```
-
-3. configure your aws credentials
-
-```
-aws configure
-[enter your user aws access key id]
-[enter your user aws secret access key]
-```
-
-4. run ngrok to expose your local service to helius for transaction webhooks
+3. run ngrok to expose your local service to helius for transaction webhooks
 
 ```
 ngrok http 4000
 ```
 
-5. create your .env.development files
+4. create your .env.development files
 
 In each app
 
@@ -68,20 +48,16 @@ In each app
 
 You will need to copy the .sample.env.development file and replace the values that need to be changed, these are marked in the sample files.
 
-```
-cp .sample.env.development .env.development
-```
+**Note** Make sure you use the ngrok url from the previous step for the HELIUS_WEBHOOK_URL var.
 
-Make sure you use the ngrok url from the previous step for the HELIUS_WEBHOOK_URL var.
-
-7. generate your database database model
+5. generate your database database model
 
 ```
 (from /apps/backend-serverless/)
 npx prisma generate
 ```
 
-8. migrate your database
+6. migrate your database
 
 Note: To migrate your database, it must be running. If you're using the local database we help stand up through docker-compose, do that now.
 
@@ -93,7 +69,7 @@ docker-compose up // If you're using our assisted local database
 npx prisma migrate dev
 ```
 
-9. stand everything up
+7. stand everything up
 
 If you've done everything correctly to this point, standing up the app should be a single command
 
@@ -101,6 +77,16 @@ If you've done everything correctly to this point, standing up the app should be
 (from root)
 yarn dev
 ```
+
+### Make a Payment
+
+Everything is running! Now let's make a payment. In production, Shopify sends a post request to the backend-serverless apps. Specifically, to our backender-serverless-green service. Click [here]() to read more about why the backend-serverless app is split up into two deployed services. Locally, you have to invoke your own payment. You can do this by visiting https:localhost:4004/payment. This will mock a shopify request, create your payment, and redirect you to your locally hosted payment-ui. It should look like this
+
+PAYMENT UI IMAGE GOES HERE
+
+Now you can pay by connecting your wallet OR you can scan with any mobile Solana wallet that support Solana Pay.
+
+**Note** To pay with a mobile Solana wallet, you must have set the BACKEND_URL env var inside of payment-ui in step 4 of the Set up the Application steps.
 
 ## How to Contribute
 

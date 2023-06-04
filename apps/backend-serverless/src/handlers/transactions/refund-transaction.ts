@@ -56,6 +56,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         const body = JSON.parse(event.body);
+
+        // TODO: Parse this like everything else
         const account = body['account'] as string | null;
 
         if (account == null) {
@@ -76,6 +78,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
+        // TODO: Wrap this in try/catch
         const refundRecord = await refundRecordService.getRefundRecord({
             shopId: refundRequest.refundId,
         });
@@ -84,12 +87,14 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
         }
 
+        // TODO: Wrap this in a try/catch
         const paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
 
         if (paymentRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
+        // TODO: Wrap this in a try/catch
         const merchant = await merchantService.getMerchant({
             id: refundRecord.merchantId,
         });
@@ -114,10 +119,13 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        try {
-            await trmService.screenAddress(account);
-        } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        // We don't need to check with TRM for test transactions
+        if (refundRecord.test == false) {
+            try {
+                await trmService.screenAddress(account);
+            } catch (error) {
+                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            }
         }
 
         try {

@@ -2,6 +2,7 @@
     "name": "transaction-request-serverless",
     "version": "0.0.1",
     "description": "",
+    "private": true,
     "main": "handler.js",
     "workspaces": {
         "nohoist": [
