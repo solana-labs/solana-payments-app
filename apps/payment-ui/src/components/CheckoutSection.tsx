@@ -4,7 +4,6 @@ import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import BuyButton from './BuyButton';
 import PayWithQRCodeSection from './PayWithQRCodeSection';
 import PayWithWalletSection from './PayWithWalletSection';
 import { QRCode } from './QRCode';

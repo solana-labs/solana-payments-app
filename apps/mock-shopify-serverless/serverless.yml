@@ -29,7 +29,7 @@ functions:
     handler: src/handlers/admin.admin
     events:
       - httpApi:
-          path: /admin/api/2023-04/graphql.json
+          path: /admin/api/2022-10/graphql.json
           method: post
   payments-app:
     handler: src/handlers/payment-app.paymentApp

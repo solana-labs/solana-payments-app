@@ -10,6 +10,7 @@ import {
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -53,13 +54,17 @@ export const install = Sentry.AWSLambda.wrapHandler(
             };
         }
 
+        const signedCookie = createSignedShopifyCookie(newNonce);
+        const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
+
         const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
         return {
             statusCode: 302,
-            headers: {
-                Location: redirectUrl,
-                'Content-Type': 'text/html',
+            multiValueHeaders: {
+                'Set-Cookie': [cookieValue],
+                Location: [redirectUrl],
+                'Content-Type': ['text/html'],
             },
             body: JSON.stringify({
                 message: 'Redirecting..',

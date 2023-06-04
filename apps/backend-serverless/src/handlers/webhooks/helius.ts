@@ -22,12 +22,6 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
-function sleep(ms) {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
-
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -64,10 +58,10 @@ export const helius = Sentry.AWSLambda.wrapHandler(
 
                 switch (transactionRecord.type) {
                     case TransactionType.payment:
-                        await processDiscoveredPaymentTransaction(transactionRecord, null, prisma);
+                        await processDiscoveredPaymentTransaction(transactionRecord, heliusTransaction, prisma);
                         break;
                     case TransactionType.refund:
-                        // await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
+                        await processDiscoveredRefundTransaction(transactionRecord, heliusTransaction, prisma);
                         break;
                 }
             } catch (error) {

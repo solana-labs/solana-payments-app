@@ -18,23 +18,14 @@ export const fetchRefundTransaction = async (
     singleUsePayer: string,
     axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
-    var refundAmount = refundRecord.usdcAmount.toPrecision(4).toString();
-
-    const isTestRefund = refundRecord.test;
-    const isTestPayment = associatedPaymentRecord.test;
-    const testUsdcSize = process.env.TEST_USDC_SIZE;
-    const isValidTestUsdcSize = isNaN(parseFloat(testUsdcSize || '')) == false;
-
-    if (isTestRefund && isTestPayment && testUsdcSize != null && isValidTestUsdcSize) {
-        refundAmount = testUsdcSize;
-    }
-
     // We can't refund a payment that doesn't exist
     if (associatedPaymentRecord.transactionSignature == null) {
         throw new Error('Payment transaction not found.');
     }
 
     // Now we have the transaction that the orginal payment was made in
+    // This is also something we could add to a job with sqs to save calls here and then make
+    // it easier to populate on merchant-ui read calls
     const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
 
     const payingCustomerWalletAddress = await findPayingWalletFromTransaction(transaction);
@@ -45,7 +36,7 @@ export const fetchRefundTransaction = async (
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,
-        refundAmount,
+        refundRecord.usdcAmount.toFixed(6), // USDC is 6 decimals
         'size',
         'blockhash',
         'true',
@@ -54,7 +45,7 @@ export const fetchRefundTransaction = async (
         'test-one,test-two' // TODO: Update these with real values
     );
     const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded', // TODO: I think i need to make this json
+        'Content-Type': 'application/json',
     };
 
     const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
@@ -63,17 +54,7 @@ export const fetchRefundTransaction = async (
         throw new Error('Error fetching refund transaction.');
     }
 
-    let transactionRequestResponse: TransactionRequestResponse;
-
-    try {
-        transactionRequestResponse = parseAndValidateTransactionRequestResponse(response.data); // TODO: Can prob clean up or remove the try/catch here
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error('Could not parse transaction response. Unknown Reason.');
-        }
-    }
+    const transactionRequestResponse = parseAndValidateTransactionRequestResponse(response.data);
 
     return transactionRequestResponse;
 };

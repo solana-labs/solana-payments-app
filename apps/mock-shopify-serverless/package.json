@@ -1,6 +1,7 @@
 {
     "name": "mock-shopify-serverless",
     "version": "0.0.1",
+    "private": true,
     "description": "",
     "main": "handler.js",
     "workspaces": {
