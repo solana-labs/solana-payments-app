@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
+import { create } from 'zustand';
 import axios from 'axios';
 
 export enum PaymentStatus {
@@ -10,8 +9,6 @@ export enum PaymentStatus {
     Pending = 'pending',
     Paid = 'paid',
 }
-
-// interface ServerPayment {}
 
 interface Payment {
     // address: string;
@@ -38,46 +35,44 @@ function transformPayment(responseData: any): Payment[] {
 
 const PAGE_SIZE = 7;
 
-export function usePayments(page: number): RE.Result<{
-    payments: Payment[];
-    totalPages: number;
-}> {
-    const [results, setResults] = useState<
-        RE.Result<{
-            payments: Payment[];
-            totalPages: number;
-        }>
-    >(RE.pending());
+type PaymentStore = {
+    payments: RE.Result<{
+        payments: Payment[];
+        totalPages: number;
+    }>;
+    paymentCount: number;
+    getPayments: (page: number) => Promise<void>;
+};
 
-    async function fetchPayments() {
+export const usePaymentStore = create<PaymentStore>(set => ({
+    payments: RE.pending(),
+    paymentCount: 0,
+    getPayments: async (page: number) => {
         const params: any = {
             pageNumber: page + 1,
             pageSize: PAGE_SIZE,
         };
-        setResults(RE.pending());
+
+        set({ payments: RE.pending() });
+
         try {
             const response = await axios.get(API_ENDPOINTS.paymentData, { params });
 
             if (response.status !== 200) {
-                setResults(RE.failed(new Error(response.data.message || 'Failed to fetch payments')));
+                set({ payments: RE.failed(new Error(response.data.message || 'Failed to fetch payments')) });
             } else {
-                const payments = transformPayment(response.data); // assuming you have transformRefund function
-                setResults(
-                    RE.ok({
+                const payments = transformPayment(response.data);
+                set({
+                    payments: RE.ok({
                         payments: payments,
                         totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
-                    })
-                );
+                    }),
+                });
+                set({ paymentCount: response.data.paymentData.total });
             }
         } catch (error) {
             console.log('error: ', error);
-            setResults(RE.failed(new Error('Failed to fetch open payments')));
+            set({ payments: RE.failed(new Error('Failed to fetch payments')) });
         }
-    }
-
-    useEffect(() => {
-        fetchPayments();
-    }, [page]);
-
-    return results;
-}
+    },
+}));

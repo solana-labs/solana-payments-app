@@ -9,7 +9,7 @@ export function ShopifySignIn(props: Props) {
     return (
         <button
             onClick={() => {
-                window.location.href = 'https://localhost:4004/install'
+                window.location.href = 'https://localhost:4000/install';
             }}
             className={twMerge(
                 'border-gray-300',

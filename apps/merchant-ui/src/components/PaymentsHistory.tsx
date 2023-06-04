@@ -6,7 +6,7 @@ import * as RE from '@/lib/Result';
 import { PaginatedTable } from './PaginatedTable';
 import { PaymentsHistoryStatus } from './PaymentsHistoryStatus';
 import * as Tabs from './Tabs';
-import { usePayments } from '@/hooks/usePayments';
+import { usePaymentStore } from '@/stores/paymentStore';
 
 interface Props {
     className?: string;
@@ -15,7 +15,7 @@ interface Props {
 export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
-    const payments = usePayments(page);
+    const payments = usePaymentStore(state => state.payments);
 
     useEffect(() => {
         if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {

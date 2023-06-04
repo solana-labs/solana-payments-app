@@ -1,6 +1,5 @@
+import { PaymentStatus } from '@/stores/paymentStore';
 import { twMerge } from 'tailwind-merge';
-
-import { PaymentStatus } from '@/hooks/usePayments';
 
 function getText(status: PaymentStatus): string {
     switch (status) {
