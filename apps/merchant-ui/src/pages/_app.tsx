@@ -14,16 +14,21 @@ import {
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useMerchantStore } from '@/stores/merchantStore';
-import { useOpenRefundStore } from '@/stores/refundStore';
+import { useClosedRefundStore, useOpenRefundStore } from '@/stores/refundStore';
 import { get } from 'http';
+import { usePaymentStore } from '@/stores/paymentStore';
 
 export default function App({ Component, pageProps }: AppProps) {
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
     const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
+    const getClosedRefunds = useClosedRefundStore(state => state.getClosedRefunds);
+    const getPayments = usePaymentStore(state => state.getPayments);
 
     useEffect(() => {
         getMerchantInfo().catch(console.error); // Fetch merchantInfo when App loads
         getOpenRefunds(0).catch(console.error); // Fetch open refunds when App loads
+        getClosedRefunds(0).catch(console.error); // Fetch open refunds when App loads
+        getPayments(0).catch(console.error); // Fetch open refunds when App loads
     }, [getMerchantInfo]); // Dependency array
 
     return (
