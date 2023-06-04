@@ -10,8 +10,8 @@ import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { PublicKey } from '@solana/web3.js';
 import axios from 'axios';
-import { updateMerchantAddress } from '@/hooks/useMerchant';
 import { set } from 'date-fns';
+import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
 
 interface Props {
     className?: string;
@@ -21,8 +21,18 @@ export function GettingStartedAddWallet(props: Props) {
     const router = useRouter();
 
     const [walletAddress, setWalletAddress] = useState<null | PublicKey>(null);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
     const [pending, setPending] = useState(false);
+
+    async function handleMerchantAddressClick() {
+        setPending(true);
+        await updateMerchantAddress(walletAddress?.toString());
+        await getMerchantInfo();
+        setPending(false);
+
+        router.push('/getting-started');
+    }
 
     return (
         <DefaultLayoutContent className={props.className}>
@@ -65,15 +75,7 @@ export function GettingStartedAddWallet(props: Props) {
                 )}
             >
                 <Button.Secondary onClick={() => router.back()}>Cancel</Button.Secondary>
-                <Button.Primary
-                    onClick={() => {
-                        setPending(true);
-                        updateMerchantAddress(walletAddress?.toString());
-                        router.push('/getting-started');
-                        setPending(false);
-                    }}
-                    pending={pending}
-                >
+                <Button.Primary onClick={handleMerchantAddressClick} pending={pending}>
                     Save
                 </Button.Primary>
             </div>

@@ -2,7 +2,7 @@ import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Provider as TooltipProvider } from '@radix-ui/react-tooltip';
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl } from '@solana/web3.js';
 import {
@@ -13,8 +13,15 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { useMerchantStore } from '@/stores/merchantStore';
 
 export default function App({ Component, pageProps }: AppProps) {
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+
+    useEffect(() => {
+        getMerchantInfo().catch(console.error); // Fetch merchantInfo when App loads
+    }, [getMerchantInfo]); // Dependency array
+
     return (
         <>
             <Head>

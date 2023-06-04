@@ -13,9 +13,9 @@ import { ReceiptLong } from './icons/ReceiptLong';
 import { Flag } from './icons/Flag';
 import { Support } from './icons/Support';
 import { useOpenRefunds } from '@/hooks/useRefunds';
-import { useMerchant } from '@/hooks/useMerchant';
 import { isOk, isPending } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
+import { useMerchantStore } from '@/stores/merchantStore';
 
 interface Props {
     accountIsActive?: boolean;
@@ -24,7 +24,7 @@ interface Props {
 
 export function DefaultLayoutNavigation(props: Props) {
     const { refundCount } = useOpenRefunds();
-    const { merchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     return (
         <NavigationMenu.Root
             className={twMerge(

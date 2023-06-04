@@ -4,11 +4,11 @@ import { useRouter } from 'next/router';
 import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
 import { KYBButton } from './KYBButton';
 import { Primary } from './Button';
-import { updateMerchantTos, useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -41,7 +41,8 @@ interface Props {
 export function FinishAccountSetupPrompt(props: Props) {
     const router = useRouter();
 
-    const { merchantInfo, getMerchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
     const [pendingTos, setPendingTos] = useState(false);
 
@@ -107,7 +108,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                 <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
                 <div className="text-black">Your store now accepts Solana and USDC payments.</div>
                 <Link href="/payments">
-                    <Primary>Go to Portal</Primary>
+                    <Primary onClick={getMerchantInfo}>Go to Portal</Primary>
                 </Link>
             </div>
         );
