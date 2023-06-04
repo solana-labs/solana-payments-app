@@ -67,6 +67,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const body = JSON.parse(event.body);
 
+        // TODO: Parse the body like everything else
         const account = body['account'] as string | null;
 
         if (account == null) {
@@ -87,6 +88,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
+        // TODO: Wrap in try/catch
         let paymentRecord = await paymentRecordService.getPaymentRecord({
             id: paymentRequest.paymentId,
         });
@@ -99,6 +101,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
+        // TODO: Wrap in try/catch
         const merchant = await merchantService.getMerchant({
             id: paymentRecord.merchantId,
         });
@@ -135,50 +138,55 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        try {
-            await trmService.screenAddress(account);
-        } catch (error) {
-            let rejectionReason: PaymentSessionStateRejectedReason = PaymentSessionStateRejectedReason.processingError;
-
-            if (error instanceof RiskyWalletError) {
-                rejectionReason = PaymentSessionStateRejectedReason.risky;
-            }
-
-            const paymentSessionReject = makePaymentSessionReject(axios);
-
-            let paymentSessionData: { redirectUrl: string };
-
+        // We don't need to check with TRM for test transactions
+        if (paymentRecord.test == false) {
+            // TODO: Clean this up
             try {
-                const paymentSessionRejectResponse = await paymentSessionReject(
-                    paymentRecord.shopGid,
-                    rejectionReason,
-                    merchant.shop,
-                    merchant.accessToken
-                );
-
-                paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
-
-                try {
-                    paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
-                        status: PaymentRecordStatus.rejected,
-                        redirectUrl: paymentSessionData.redirectUrl,
-                        completedAt: new Date(),
-                        rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
-                    });
-                } catch (error) {
-                    // TODO: Handle the database update failing here
-                }
+                await trmService.screenAddress(account);
             } catch (error) {
-                try {
-                    await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
-                } catch (error) {
-                    // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
-                    // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
-                    // build in a way to manually intervene here if needed.
-                }
-            }
+                let rejectionReason: PaymentSessionStateRejectedReason =
+                    PaymentSessionStateRejectedReason.processingError;
 
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+                if (error instanceof RiskyWalletError) {
+                    rejectionReason = PaymentSessionStateRejectedReason.risky;
+                }
+
+                const paymentSessionReject = makePaymentSessionReject(axios);
+
+                let paymentSessionData: { redirectUrl: string };
+
+                try {
+                    const paymentSessionRejectResponse = await paymentSessionReject(
+                        paymentRecord.shopGid,
+                        rejectionReason,
+                        merchant.shop,
+                        merchant.accessToken
+                    );
+
+                    paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
+
+                    try {
+                        paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+                            status: PaymentRecordStatus.rejected,
+                            redirectUrl: paymentSessionData.redirectUrl,
+                            completedAt: new Date(),
+                            rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
+                        });
+                    } catch (error) {
+                        // TODO: Handle the database update failing here
+                    }
+                } catch (error) {
+                    try {
+                        await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
+                    } catch (error) {
+                        // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
+                        // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
+                        // build in a way to manually intervene here if needed.
+                    }
+                }
+
+                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            }
         }
 
         try {
@@ -190,6 +198,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         transaction.partialSign(gasKeypair);
         transaction.partialSign(singleUseKeypair);
 
+        // TODO: Idk why this is commented out but we should remove it soon, i think it was a local thing
+        // TODO: DO NOT ACCEPT THIS PR IF THIS IS COMMENTED OUT
         // try {
         //     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
         // } catch (error) {
@@ -225,14 +235,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         return {
             statusCode: 200,
-            body: JSON.stringify(
-                {
-                    transaction: transactionString,
-                    message: `Paying ${merchant.name} ${paymentRecord.usdcAmount.toFixed(2)} USDC`,
-                },
-                null,
-                2
-            ),
+            body: JSON.stringify({
+                transaction: transactionString,
+                message: `Paying ${merchant.name} ${paymentRecord.usdcAmount.toFixed(6)} USDC`,
+            }),
         };
     },
     {
@@ -244,13 +250,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 export const paymentMetadata = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     return {
         statusCode: 200,
-        body: JSON.stringify(
-            {
-                label: 'Solana Payment App',
-                icon: 'https://solana.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FsolanaGradient.cc822962.png&w=3840&q=75',
-            },
-            null,
-            2
-        ),
+        body: JSON.stringify({
+            label: 'Solana Payment App',
+        }),
     };
 };

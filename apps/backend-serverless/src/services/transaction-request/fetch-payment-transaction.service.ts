@@ -20,25 +20,13 @@ export const fetchPaymentTransaction = async (
         throw new Error('Merchant payment address not found.');
     }
 
-    // 6 because USDC is 6 decimal places
-    var paymentAmount = paymentRecord.usdcAmount.toPrecision(6);
-
-    // Allow for testing values
-    if (
-        paymentRecord.test == true &&
-        process.env.TEST_USDC_SIZE != null &&
-        isNaN(parseFloat(process.env.TEST_USDC_SIZE || '')) == false
-    ) {
-        paymentAmount = process.env.TEST_USDC_SIZE;
-    }
-
     const endpoint = buildPaymentTransactionRequestEndpoint(
         merchant.paymentAddress,
         account,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,
-        paymentAmount,
+        paymentRecord.usdcAmount.toFixed(6),
         'size',
         'blockhash',
         'true',
@@ -47,7 +35,7 @@ export const fetchPaymentTransaction = async (
         'test-one,test-two'
     );
     const headers = {
-        'Content-Type': 'application/json', // TODO: I think i need to make this json
+        'Content-Type': 'application/json',
     };
 
     const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
@@ -56,17 +44,7 @@ export const fetchPaymentTransaction = async (
         throw new Error('Error fetching payment transaction.');
     }
 
-    let paymentTransactionResponse: TransactionRequestResponse;
-
-    try {
-        paymentTransactionResponse = parseAndValidateTransactionRequestResponse(response.data);
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error('Could not parse transaction response. Unknown Reason.');
-        }
-    }
+    const paymentTransactionResponse = parseAndValidateTransactionRequestResponse(response.data);
 
     return paymentTransactionResponse;
 };

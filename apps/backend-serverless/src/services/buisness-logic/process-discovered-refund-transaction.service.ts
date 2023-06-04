@@ -12,7 +12,7 @@ import { validateRefundSessionResolved } from '../shopify/validate-refund-sessio
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
     transactionRecord: TransactionRecord,
-    transaction: web3.Transaction,
+    transaction: HeliusEnhancedTransaction,
     prisma: PrismaClient
 ) => {
     // we should probably do some validation here to make sure the transaction
@@ -62,7 +62,8 @@ export const processDiscoveredRefundTransaction = async (
     }
 
     // Verify against the refund record, if we throw in here, we should catch outside of this for logging
-    verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
+    // TODO: Figure out how we want to handle this with helius and normal transactions
+    // verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
 
     // TODO: Try catch this and handle cases where database updates fail
     refundRecordService.updateRefundRecord(refundRecord, {

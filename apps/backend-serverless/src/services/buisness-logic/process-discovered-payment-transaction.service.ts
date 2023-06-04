@@ -4,7 +4,10 @@ import { PaymentRecordService } from '../database/payment-record-service.databas
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
-import { verifyPaymentTransactionWithPaymentRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
+import {
+    verifyPaymentRecordWithHeliusEnhancedTransaction,
+    verifyPaymentTransactionWithPaymentRecord,
+} from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
@@ -12,7 +15,7 @@ import * as Sentry from '@sentry/serverless';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
-    transaction: web3.Transaction | null,
+    transaction: HeliusEnhancedTransaction,
     prisma: PrismaClient
 ) => {
     const paymentRecordService = new PaymentRecordService(prisma);
@@ -81,6 +84,7 @@ export const processDiscoveredPaymentTransaction = async (
 
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
     // verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true); // TODO: Uncomment this
+    // verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
 
     // -- if we get here, we found a match! --
     // we would hope at this point we could update the database to reflect we found it's match

@@ -1,6 +1,9 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidateShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
+import {
+    ShopifyPaymentInitiation,
+    parseAndValidateShopifyPaymentInitiation,
+} from '../../models/shopify/process-payment-request.model.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
@@ -48,7 +51,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
-        let paymentInitiation;
+        let paymentInitiation: ShopifyPaymentInitiation;
 
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
@@ -62,16 +65,25 @@ export const payment = Sentry.AWSLambda.wrapHandler(
 
         if (paymentRecord == null) {
             try {
-                // const usdcSize = await convertAmountAndCurrencyToUsdcSize(
-                //     paymentInitiation.amount,
-                //     paymentInitiation.currency
-                // );
+                let usdcSize: number;
+
+                if (paymentInitiation.test) {
+                    usdcSize = 0.0001;
+                } else {
+                    // TODO: We had a bug here, figure it out and fix it, for now, setting to 0.0001
+                    // usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                    //     paymentInitiation.amount,
+                    //     paymentInitiation.currency
+                    // );
+                    usdcSize = 0.0001;
+                }
+
                 const newPaymentRecordId = await generatePubkeyString();
                 paymentRecord = await paymentRecordService.createPaymentRecord(
                     newPaymentRecordId,
                     paymentInitiation,
                     merchant,
-                    0.001
+                    usdcSize
                 );
             } catch (error) {
                 return requestErrorResponse(error);
