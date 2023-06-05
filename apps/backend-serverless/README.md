@@ -12,19 +12,15 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 
 ### Database setup
 
-Make sure mysql is installed.
+Make sure mysql is installed, and your database is running (run yarn dev in root folder to get dockerized database up)
 
-Create a root user and database, update the DATABASE_URL in your .env.development file. Update the sample data in prisma/data.ts if needed.
+Then, run 
 
-Now, to develop and interface with a local test database, run
+```
+npx prisma db seed
+```
 
-serverless offline --stage dev
-
-Make sure the endpoints.ts file in the merchant-ui points to this endpoint
-
-To deploy and interface with the production database, run
-
-serverless deploy --stage prod
+To reset your database to match the data in prisma/data.js.
 
 ## Where to Find Stuff
 
