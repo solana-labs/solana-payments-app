@@ -46,6 +46,7 @@ functions:
           method: get
   helius:
     handler: src/handlers/webhooks/helius.helius
+    timeout: 60 # Increase the timeout to 60 seconds
     events:
       - httpApi:
           path: /helius

@@ -12,6 +12,11 @@ import { web3 } from '@project-serum/anchor';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 import * as Sentry from '@sentry/serverless';
+import { fetchTransaction } from '../fetch-transaction.service.js';
+
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
@@ -82,9 +87,19 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
+    verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
+
+    let rpcTransaction: web3.Transaction | null = null;
+
+    while (rpcTransaction == null) {
+        try {
+            await delay(3000);
+            rpcTransaction = await fetchTransaction(transactionRecord.signature);
+        } catch (error) {}
+    }
+
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
-    // verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true); // TODO: Uncomment this
-    // verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
+    verifyPaymentTransactionWithPaymentRecord(paymentRecord, rpcTransaction, true); // TODO: Uncomment this
 
     // -- if we get here, we found a match! --
     // we would hope at this point we could update the database to reflect we found it's match
