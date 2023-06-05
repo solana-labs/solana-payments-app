@@ -41,13 +41,11 @@ export const cron = Sentry.AWSLambda.wrapHandler(
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
         for (const transactionRecord of allTransactionRecords) {
-            let transaction: web3.Transaction | null;
+            let transaction: HeliusEnhancedTransaction | null;
 
             try {
-                transaction = await fetchTransaction(transactionRecord.signature);
+                transaction = await fetchEnhancedTransaction(transactionRecord.signature);
             } catch (error) {
-                // this will fail if our fetch transaction fails, it shouldnt throw if the tx isn't on chain though
-                // if the tx isn't on chain, it should return null and we will continue in the next logic block
                 Sentry.captureException(error);
                 continue;
             }
