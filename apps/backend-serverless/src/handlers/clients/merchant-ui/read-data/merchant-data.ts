@@ -4,7 +4,7 @@ import { requestErrorResponse } from '../../../../utilities/responses/request-re
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { PrismaClient } from '@prisma/client';
+import { Merchant, PrismaClient } from '@prisma/client';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
@@ -29,12 +29,19 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
         }
 
-        const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+        } catch (error) {
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
+        // TODO: try/catch this
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
         const onboardingResponse = createOnboardingResponse(merchant);
 

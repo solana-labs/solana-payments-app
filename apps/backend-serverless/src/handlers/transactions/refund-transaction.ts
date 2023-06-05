@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
+import { Merchant, PaymentRecord, PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import {
@@ -78,26 +78,41 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        // TODO: Wrap this in try/catch
-        const refundRecord = await refundRecordService.getRefundRecord({
-            shopId: refundRequest.refundId,
-        });
+        let refundRecord: RefundRecord | null;
+
+        try {
+            refundRecord = await refundRecordService.getRefundRecord({
+                shopId: refundRequest.refundId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (refundRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
         }
 
-        // TODO: Wrap this in a try/catch
-        const paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
+        let paymentRecord: PaymentRecord | null;
+
+        try {
+            paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (paymentRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
-        // TODO: Wrap this in a try/catch
-        const merchant = await merchantService.getMerchant({
-            id: refundRecord.merchantId,
-        });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({
+                id: refundRecord.merchantId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);

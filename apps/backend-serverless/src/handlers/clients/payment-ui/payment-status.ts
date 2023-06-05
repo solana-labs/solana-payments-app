@@ -1,6 +1,12 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { PaymentRecordRejectionReason, PaymentRecordStatus, PrismaClient } from '@prisma/client';
+import {
+    Merchant,
+    PaymentRecord,
+    PaymentRecordRejectionReason,
+    PaymentRecordStatus,
+    PrismaClient,
+} from '@prisma/client';
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
@@ -38,18 +44,30 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
-        const paymentRecord = await paymentRecordService.getPaymentRecord({
-            id: parsedPaymentStatusQuery.paymentId,
-        });
+        let paymentRecord: PaymentRecord | null;
+
+        try {
+            paymentRecord = await paymentRecordService.getPaymentRecord({
+                id: parsedPaymentStatusQuery.paymentId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         // TODO: Make this return as expected and show some kind of boof empty state
         if (paymentRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
-        const merchant = await merchantService.getMerchant({
-            id: paymentRecord.merchantId,
-        });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({
+                id: paymentRecord.merchantId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         // TODO: Make this return as expected and show some kind of boof empty state
         if (merchant == null) {

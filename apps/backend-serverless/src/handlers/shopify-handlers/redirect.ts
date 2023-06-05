@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/serverless';
-import { PrismaClient } from '@prisma/client';
+import { Merchant, PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     AppRedirectQueryParam,
@@ -65,7 +65,13 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             return requestErrorResponse(error);
         }
 
-        let merchant = await merchantService.getMerchant({ shop: shop });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({ shop: shop });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
@@ -93,6 +99,7 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
                 email: adminDataResponse.data.shop.email,
             });
         } catch (error) {
+            // TODO: Handle the error
             return {
                 statusCode: 200,
                 body: JSON.stringify(error),

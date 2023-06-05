@@ -1,13 +1,14 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { fetchEnhancedTransaction } from '../../services/helius.service.js';
-import { PrismaClient, TransactionType } from '@prisma/client';
+import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { web3 } from '@project-serum/anchor';
 import { fetchTransaction } from '../../services/fetch-transaction.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -21,8 +22,22 @@ export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const transactionRecordService = new TransactionRecordService(prisma);
 
-        const paymentTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
-        const refundTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingRefunds();
+        let paymentTransactionRecords: TransactionRecord[];
+
+        try {
+            paymentTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
+
+        let refundTransactionRecords: TransactionRecord[];
+
+        try {
+            refundTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingRefunds();
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
+
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
         for (const transactionRecord of allTransactionRecords) {
