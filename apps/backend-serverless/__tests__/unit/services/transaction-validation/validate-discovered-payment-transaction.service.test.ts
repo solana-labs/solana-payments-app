@@ -3,12 +3,10 @@ import {
     verifyPaymentTransactionWithPaymentRecord,
     verifySingleUseInstruction,
 } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
-import { PaymentRecord, PaymentRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import { web3 } from '@project-serum/anchor';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
 import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
-import { create } from 'lodash';
 import { createMockPaymentRecord } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing validating discovered payment transactions', () => {

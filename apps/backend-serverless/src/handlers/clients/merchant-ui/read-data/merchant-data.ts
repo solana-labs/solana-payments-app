@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';

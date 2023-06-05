@@ -10,10 +10,7 @@ import { requestErrorResponse } from '../../utilities/responses/request-response
 import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
-import {
-    createMechantAuthCookieHeader,
-    decodeSignedCookie,
-} from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import axios from 'axios';
 import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';

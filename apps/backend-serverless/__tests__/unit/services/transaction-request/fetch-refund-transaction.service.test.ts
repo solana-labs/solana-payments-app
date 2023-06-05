@@ -1,12 +1,8 @@
 import { web3 } from '@project-serum/anchor';
-import { fetchRefundTransaction } from '../../../../src/services/transaction-request/fetch-refund-transaction.service.js';
 import {
     createMockPaymentRecord,
     createMockRefundRecord,
-    createMockTransactionRequestResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
 
 describe('fetch refund transaction request testing suite', () => {
     it('should fetch a refund transaction request', async () => {

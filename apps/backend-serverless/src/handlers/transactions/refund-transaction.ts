@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Merchant, PaymentRecord, PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
@@ -16,7 +15,6 @@ import {
 import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -40,7 +38,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
 
         const transactionRecordService = new TransactionRecordService(prisma);
         const refundRecordService = new RefundRecordService(prisma);
-        const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);
 
         const TRM_API_KEY = process.env.TRM_API_KEY;

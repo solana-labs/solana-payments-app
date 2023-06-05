@@ -1,5 +1,4 @@
 import { web3 } from '@project-serum/anchor';
-import * as AWS from 'aws-sdk';
 import pkg from 'aws-sdk';
 const { S3 } = pkg;
 

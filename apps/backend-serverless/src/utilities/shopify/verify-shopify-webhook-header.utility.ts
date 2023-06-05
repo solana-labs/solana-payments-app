@@ -7,8 +7,8 @@ export const verifyShopifyWebhook = (data: string, hmacHeader: string) => {
         throw new Error('Shopify secret is not set');
     }
 
-    let hash = crypto.HmacSHA256(data, shopifySecret);
-    let hmac = crypto.enc.Base64.stringify(hash);
+    const hash = crypto.HmacSHA256(data, shopifySecret);
+    const hmac = crypto.enc.Base64.stringify(hash);
 
     if (hmac !== hmacHeader) {
         throw new Error('HMAC validation failed');

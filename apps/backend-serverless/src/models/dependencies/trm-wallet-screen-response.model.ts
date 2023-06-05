@@ -1,4 +1,4 @@
-import { object, string, number, date, InferType, array } from 'yup';
+import { object, string, number, InferType, array } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 
 const trmAddressRiskIndicatorsSchema = object().shape({

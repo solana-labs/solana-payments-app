@@ -1,5 +1,5 @@
-import { stringifyParams } from '../../../../src/utilities/shopify/stringify-params.utility';
-import { parseAndValidateAppInstallQueryParms } from '../../../../src/models/shopify/install-query-params.model';
+import { stringifyParams } from '../../../../src/utilities/shopify/stringify-params.utility.js';
+import { parseAndValidateAppInstallQueryParms } from '../../../../src/models/shopify/install-query-params.model.js';
 
 describe('stringifyParams', () => {
     it('should return a string', () => {

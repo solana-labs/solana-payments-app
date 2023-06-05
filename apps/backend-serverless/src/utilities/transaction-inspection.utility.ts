@@ -20,7 +20,6 @@ export const findPayingWalletFromTransaction = async (transaction: web3.Transact
     const decodedInstruction = decodeTransferCheckedInstruction(transferInstruction);
 
     const owner = decodedInstruction.keys.owner;
-    const source = decodedInstruction.keys.source;
 
     // Verify this is a pda relationship for usdc ??? maybe not needed ???
 

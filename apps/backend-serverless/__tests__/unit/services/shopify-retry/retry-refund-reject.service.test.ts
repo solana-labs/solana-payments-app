@@ -1,17 +1,11 @@
-import {
-    ShopifyMutationRefundReject,
-    ShopifyMutationRefundResolve,
-} from '../../../../src/models/shopify-mutation-retry.model.js';
+import { ShopifyMutationRefundReject } from '../../../../src/models/shopify-mutation-retry.model.js';
 import { prismaMock } from '../../../../prisma-singleton.js';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import {
     createMockMerchant,
-    createMockPaymentRecord,
     createMockRefundRecord,
-    createMockSuccessPaymentSessionResolveResponse,
     createMockSuccessRefundSessionRejectResponse,
-    createMockSuccessRefundSessionResolveResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 import { retryRefundReject } from '../../../../src/services/shopify-retry/retry-refund-reject.service.js';
 import { RefundSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
@@ -19,7 +13,7 @@ import { RefundSessionStateRejectedReason } from '../../../../src/models/shopify
 describe('Shopify Retry Refund Reject Testing Suite', () => {
     it('should execute successfully', async () => {
         // Mock refund session reject
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockRefundSessionRejectResponse = createMockSuccessRefundSessionRejectResponse();
         mock.onPost().reply(200, mockRefundSessionRejectResponse);
 

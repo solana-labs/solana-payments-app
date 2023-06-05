@@ -1,12 +1,11 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { makePaymentSessionResolve } from '../../../../src/services/shopify/payment-session-resolve.service';
-import { ResolvePaymentResponse } from '../../../../src/models/shopify-graphql-responses/resolve-payment-response.model';
-import { createMockSuccessPaymentSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
+import { makePaymentSessionResolve } from '../../../../src/services/shopify/payment-session-resolve.service.js';
+import { createMockSuccessPaymentSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing payment session resolve', () => {
     it('valid response', async () => {
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentSessionResolveResponse = createMockSuccessPaymentSessionResolveResponse();
         mock.onPost().reply(200, mockPaymentSessionResolveResponse);
         const mockPaymentSessionResolve = makePaymentSessionResolve(axios);
@@ -17,7 +16,7 @@ describe('unit testing payment session resolve', () => {
     });
 
     it('invalid response, missing id', async () => {
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentSessionResolveResponse = createMockSuccessPaymentSessionResolveResponse();
         mock.onPost().reply(200, {
             data: {

@@ -24,7 +24,7 @@ export const paymentAppConfigureResponseSchema = object().shape({
 export type PaymentAppConfigureResponse = InferType<typeof paymentAppConfigureResponseSchema>;
 
 export const parseAndValidatePaymentAppConfigureResponse = (
-    paymentAppConfigureResponeBody: any
+    paymentAppConfigureResponeBody: unknown
 ): PaymentAppConfigureResponse => {
     return parseAndValidate(
         paymentAppConfigureResponeBody,

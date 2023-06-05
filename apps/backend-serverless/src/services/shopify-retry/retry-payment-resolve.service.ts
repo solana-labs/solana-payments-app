@@ -6,12 +6,6 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
-import {
-    PaymentSessionNextActionAction,
-    PaymentSessionStateCode,
-    PaymentSessionStateResolved,
-} from '../../models/shopify-graphql-responses/shared.model.js';
-import { payment } from '../../handlers/shopify-handlers/payment.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 
 export const retryPaymentResolve = async (

@@ -1,5 +1,4 @@
 import pkg from 'aws-sdk';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 const { StepFunctions } = pkg;

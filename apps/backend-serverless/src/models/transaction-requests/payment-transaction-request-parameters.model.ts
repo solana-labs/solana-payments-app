@@ -8,7 +8,7 @@ export const paymentTransactionRequestParametersScheme = object().shape({
 export type PaymentTransactionRequestParameters = InferType<typeof paymentTransactionRequestParametersScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentStatusRequestParameters: any
+    paymentStatusRequestParameters: unknown
 ): PaymentTransactionRequestParameters => {
     return parseAndValidate(
         paymentStatusRequestParameters,

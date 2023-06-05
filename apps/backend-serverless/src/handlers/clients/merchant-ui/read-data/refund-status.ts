@@ -1,24 +1,15 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { Merchant, PaymentRecord, PrismaClient, RefundRecord } from '@prisma/client';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
-import {
-    RefundDataRequestParameters,
-    parseAndValidateRefundDataRequestParameters,
-} from '../../../../models/clients/merchant-ui/refund-data-request.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createRefundResponse } from '../../../../utilities/clients/merchant-ui/create-refund-response.utility.js';
 import {
     parseAndValidateRefundStatusRequest,
     RefundStatusRequest,
 } from '../../../../models/clients/merchant-ui/refund-status-request.model.js';
-import {
-    RefundDataResponse,
-    createRefundDataResponseFromRefundRecord,
-} from '../../../../utilities/clients/merchant-ui/refund-record.utility.js';
+import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/clients/merchant-ui/refund-record.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
 

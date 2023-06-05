@@ -4,7 +4,6 @@ import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
 } from './shopify-graphql-responses/shared.model.js';
-import { RefundSessionStateCode } from './shopify-graphql-responses/shared.model.js';
 export enum ShopifyMutationRetryType {
     paymentResolve = 'payment-resolve',
     paymentReject = 'payment-reject',

@@ -3,8 +3,8 @@ import {
     createMockMerchant,
     createMockPaymentRecord,
     createMockTransactionRequestResponse,
-} from '../../../../src/utilities/testing-helper/create-mock.utility';
-import { fetchPaymentTransaction } from '../../../../src/services/transaction-request/fetch-payment-transaction.service';
+} from '../../../../src/utilities/testing-helper/create-mock.utility.js';
+import { fetchPaymentTransaction } from '../../../../src/services/transaction-request/fetch-payment-transaction.service.js';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 
@@ -18,7 +18,7 @@ describe('fetch payment transaction request testing suite', () => {
         const mockCustomerKeypair = web3.Keypair.generate();
         const mockSingleUseKeypair = web3.Keypair.generate();
 
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockTransactionResponseResponse = await createMockTransactionRequestResponse({
             payer: mockCustomerKeypair.publicKey,
             receiver: mockMerchantKeypair.publicKey,

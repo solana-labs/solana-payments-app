@@ -9,7 +9,7 @@ export const shopifyRequestHeadersScheme = object().shape({
 
 export type ShopifyRequestHeaders = InferType<typeof shopifyRequestHeadersScheme>;
 
-export const parseAndValidateShopifyRequestHeaders = (shopifyRequestHeaders: any): ShopifyRequestHeaders => {
+export const parseAndValidateShopifyRequestHeaders = (shopifyRequestHeaders: unknown): ShopifyRequestHeaders => {
     return parseAndValidate<ShopifyRequestHeaders>(
         shopifyRequestHeaders,
         shopifyRequestHeadersScheme,

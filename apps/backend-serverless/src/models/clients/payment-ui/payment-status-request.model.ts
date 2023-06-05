@@ -8,7 +8,7 @@ export const paymentStatusRequestScheme = object().shape({
 
 export type PaymentStatusRequest = InferType<typeof paymentStatusRequestScheme>;
 
-export const parseAndValidatePaymentStatusRequest = (paymentStatusRequestParameters: any): PaymentStatusRequest => {
+export const parseAndValidatePaymentStatusRequest = (paymentStatusRequestParameters: unknown): PaymentStatusRequest => {
     return parseAndValidate(
         paymentStatusRequestParameters,
         paymentStatusRequestScheme,

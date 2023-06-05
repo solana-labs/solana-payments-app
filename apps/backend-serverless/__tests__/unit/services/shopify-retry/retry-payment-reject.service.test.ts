@@ -13,7 +13,7 @@ import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopif
 describe('Shopify Retry Payment Reject Testing Suite', () => {
     it('should execute successfully', async () => {
         // Mock payment session reject
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentSessionRejectResponse = createMockSuccessPaymentSessionRejectResponse();
         mock.onPost().reply(200, mockPaymentSessionRejectResponse);
 
