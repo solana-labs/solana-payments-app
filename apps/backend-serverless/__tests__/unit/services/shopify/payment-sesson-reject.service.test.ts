@@ -1,13 +1,12 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { makePaymentSessionReject } from '../../../../src/services/shopify/payment-session-reject.service';
-import { RejectPaymentResponse } from '../../../../src/models/shopify-graphql-responses/reject-payment-response.model';
-import { createMockSuccessPaymentSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
-import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model';
+import { makePaymentSessionReject } from '../../../../src/services/shopify/payment-session-reject.service.js';
+import { createMockSuccessPaymentSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
+import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
 
 describe('unit testing payment session reject', () => {
     it('valid response', async () => {
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentSessionRejectResponse = createMockSuccessPaymentSessionRejectResponse();
         mock.onPost().reply(200, mockPaymentSessionRejectResponse);
         const mockPaymentSessionReject = makePaymentSessionReject(axios);
@@ -18,7 +17,7 @@ describe('unit testing payment session reject', () => {
     });
 
     it('invalid response, missing id', async () => {
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         mock.onPost().reply(200, {
             data: {
                 paymentSessionReject: {

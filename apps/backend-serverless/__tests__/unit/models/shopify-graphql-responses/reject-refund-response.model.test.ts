@@ -1,6 +1,5 @@
-import { create } from 'lodash';
-import { parseAndValidateRejectRefundResponse } from '../../../../src/models/shopify-graphql-responses/reject-refund-response.model';
-import { createMockSuccessRefundSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
+import { parseAndValidateRejectRefundResponse } from '../../../../src/models/shopify-graphql-responses/reject-refund-response.model.js';
+import { createMockSuccessRefundSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing reject refund response model', () => {
     it('valid reject refund response', () => {

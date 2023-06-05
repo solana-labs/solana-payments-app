@@ -37,7 +37,7 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Transaction record does not have a payment record id');
     }
 
-    let paymentRecord = await paymentRecordService.getPaymentRecord({
+    const paymentRecord = await paymentRecordService.getPaymentRecord({
         id: transactionRecord.paymentRecordId,
     });
 

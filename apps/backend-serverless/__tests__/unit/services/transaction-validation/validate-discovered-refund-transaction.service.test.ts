@@ -1,13 +1,11 @@
-import { verifyRefundTransactionWithRefundRecord } from '../../../../src/services/transaction-validation/validate-discovered-refund-transaction.service';
+import { verifyRefundTransactionWithRefundRecord } from '../../../../src/services/transaction-validation/validate-discovered-refund-transaction.service.js';
 import { RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import { web3 } from '@project-serum/anchor';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
-import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility';
+import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 
 describe('unit testing validating discovered payment transactions', () => {
-    beforeEach(() => {});
-
     it('valid transaction transfer', async () => {
         // Set up the mock record
         const mockRefundRecord: RefundRecord = {

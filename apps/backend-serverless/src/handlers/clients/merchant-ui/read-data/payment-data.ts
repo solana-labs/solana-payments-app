@@ -1,20 +1,14 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { Merchant, PrismaClient } from '@prisma/client';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { PaymentRecordService } from '../../../../services/database/payment-record-service.database.service.js';
 import {
     PaymentDataRequestParameters,
     parseAndValidatePaymentDataRequestParameters,
 } from '../../../../models/clients/merchant-ui/payment-data-request.model.js';
-import {
-    Pagination,
-    DEFAULT_PAGINATION_SIZE,
-} from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
+import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createPaymentDataResponseFromPaymentRecord } from '../../../../utilities/clients/merchant-ui/payment-record.utility.js';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
 import { createPaymentResponse } from '../../../../utilities/clients/merchant-ui/create-payment-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';

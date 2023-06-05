@@ -1,8 +1,4 @@
-import {
-    AppRedirectQueryParam,
-    appRedirectQueryParmSchema,
-    parseAndValidateAppRedirectQueryParams,
-} from '../../models/shopify/redirect-query-params.model.js';
+import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
 import crypto from 'crypto-js';
 import { stringifyParams } from './stringify-params.utility.js';
 import { PrismaClient } from '@prisma/client';

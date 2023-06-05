@@ -1,4 +1,4 @@
-import { object, string, InferType, array, boolean } from 'yup';
+import { object, string, InferType, array } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 import { shopifyResponseExtensionsSchema } from './shared.model.js';
 
@@ -19,7 +19,7 @@ export const adminDataResponseSchema = object().shape({
 
 export type AdminDataResponse = InferType<typeof adminDataResponseSchema>;
 
-export const parseAndValidateAdminDataResponse = (adminDataResponeBody: any): AdminDataResponse => {
+export const parseAndValidateAdminDataResponse = (adminDataResponeBody: unknown): AdminDataResponse => {
     return parseAndValidate(
         adminDataResponeBody,
         adminDataResponseSchema,

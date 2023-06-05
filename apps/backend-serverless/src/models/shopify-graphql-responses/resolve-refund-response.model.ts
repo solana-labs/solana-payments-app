@@ -1,4 +1,4 @@
-import { object, string, InferType, array } from 'yup';
+import { object, InferType } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 import { sharedRefundResponseRootSchema, shopifyResponseExtensionsSchema } from './shared.model.js';
 
@@ -13,7 +13,7 @@ export const refundSessionResolveResponseSchema = object().shape({
 
 export type ResolveRefundResponse = InferType<typeof refundSessionResolveResponseSchema>;
 
-export const parseAndValidateResolveRefundResponse = (resolveRefundResponeBody: any): ResolveRefundResponse => {
+export const parseAndValidateResolveRefundResponse = (resolveRefundResponeBody: unknown): ResolveRefundResponse => {
     return parseAndValidate<ResolveRefundResponse>(
         resolveRefundResponeBody,
         refundSessionResolveResponseSchema,

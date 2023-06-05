@@ -1,5 +1,5 @@
-import { parseAndValidateResolveRefundResponse } from '../../../../src/models/shopify-graphql-responses/resolve-refund-response.model';
-import { createMockSuccessRefundSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility';
+import { parseAndValidateResolveRefundResponse } from '../../../../src/models/shopify-graphql-responses/resolve-refund-response.model.js';
+import { createMockSuccessRefundSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing resolve refund response model', () => {
     it('valid resolve refund response', () => {

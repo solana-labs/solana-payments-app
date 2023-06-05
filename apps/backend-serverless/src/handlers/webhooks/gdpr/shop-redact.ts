@@ -11,7 +11,7 @@ import {
     ShopRedactRequest,
     parseAndValidateShopRedactRequestBody,
 } from '../../../models/shopify/shop-redact-request.model.js';
-import { Merchant, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
 

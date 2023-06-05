@@ -1,4 +1,4 @@
-import { object, InferType, number, string, boolean } from 'yup';
+import { object, InferType, string, boolean } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
 
 export const merchantUpdateRequestBodySchema = object().shape({

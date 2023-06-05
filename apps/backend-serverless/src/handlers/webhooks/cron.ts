@@ -6,8 +6,6 @@ import { TransactionRecordService } from '../../services/database/transaction-re
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-import { web3 } from '@project-serum/anchor';
-import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();

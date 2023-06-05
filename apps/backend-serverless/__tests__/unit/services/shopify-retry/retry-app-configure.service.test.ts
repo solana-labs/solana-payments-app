@@ -1,7 +1,4 @@
-import {
-    ShopifyMutationAppConfigure,
-    ShopifyMutationPaymentReject,
-} from '../../../../src/models/shopify-mutation-retry.model.js';
+import { ShopifyMutationAppConfigure } from '../../../../src/models/shopify-mutation-retry.model.js';
 import { prismaMock } from '../../../../prisma-singleton.js';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
@@ -15,7 +12,7 @@ import { retryAppConfigure } from '../../../../src/services/shopify-retry/retry-
 describe('Shopify Retry App Configure Testing Suite', () => {
     it('should execute successfully', async () => {
         // Mock payment app configure
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentAppConfigureResponse = createMockPaymentAppConfigureResponse();
         mock.onPost().reply(200, mockPaymentAppConfigureResponse);
 

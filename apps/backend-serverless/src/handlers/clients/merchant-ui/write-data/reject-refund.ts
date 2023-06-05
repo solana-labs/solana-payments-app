@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { Merchant, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import {
     RejectRefundRequest,
     parseAndValidateRejectRefundRequest,

@@ -12,7 +12,7 @@ import { retryPaymentResolve } from '../../../../src/services/shopify-retry/retr
 describe('Shopify Retry Payment Resolve Testing Suite', () => {
     it('should execute successfully', async () => {
         // Mock payment session resolve
-        let mock = new MockAdapter(axios);
+        const mock = new MockAdapter(axios);
         const mockPaymentSessionResolveResponse = createMockSuccessPaymentSessionResolveResponse();
         mock.onPost().reply(200, mockPaymentSessionResolveResponse);
 

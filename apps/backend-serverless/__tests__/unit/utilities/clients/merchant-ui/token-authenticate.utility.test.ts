@@ -1,4 +1,3 @@
-import { parseAndValidateMerchantAuthToken } from '../../../../../src/models/clients/merchant-ui/merchant-auth-token.model.js';
 import jwt from 'jsonwebtoken';
 import { withAuth } from '../../../../../src/utilities/clients/merchant-ui/token-authenticate.utility.js';
 describe('unit testing the token authenticate utility', () => {

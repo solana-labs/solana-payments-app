@@ -7,7 +7,7 @@ import {
     RefundRecordStatus,
 } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
-import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
+import { Pagination } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidTransactionUpdate = {

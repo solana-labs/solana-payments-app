@@ -1,5 +1,4 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
-import { payment } from '../../../handlers/shopify-handlers/payment.js';
 
 export interface RefundDataResponse {
     shopifyOrder: string;

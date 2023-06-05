@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { accessTokenEndpoint } from '../utilities/transaction-request/endpoints.utility.js';
-import { accessTokenResponseSchema, AccessTokenResponse } from '../models/shopify/access-token-response.model.js';
+import {
+    AccessTokenResponse,
+    parseAndValidateAccessTokenResponse,
+} from '../models/shopify/access-token-response.model.js';
 
 export const fetchAccessToken = async (shop: string, authCode: string) => {
     const endpoint = accessTokenEndpoint(shop, authCode);
@@ -18,8 +21,10 @@ export const fetchAccessToken = async (shop: string, authCode: string) => {
         throw new Error('Error requesting access token.');
     }
 
+    let accessTokenResponse: AccessTokenResponse;
+
     try {
-        var accessTokenResponse = accessTokenResponseSchema.cast(response.data) as AccessTokenResponse;
+        accessTokenResponse = parseAndValidateAccessTokenResponse(response.data);
     } catch {
         throw new Error('Could not get access token from Shopify.');
     }

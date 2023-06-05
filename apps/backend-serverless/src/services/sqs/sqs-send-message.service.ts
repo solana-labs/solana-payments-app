@@ -1,6 +1,5 @@
 import pkg from 'aws-sdk';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { PaymentRecord } from '@prisma/client';
 import {
     ShopifyMutationAppConfigure,
     ShopifyMutationPaymentReject,
@@ -12,7 +11,6 @@ import {
 import { nextRetryTimeInterval, retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import {
     PaymentSessionStateRejectedReason,
-    RefundSessionStateCode,
     RefundSessionStateRejectedReason,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 const { SQS } = pkg;
@@ -95,7 +93,7 @@ export const sendRetryMessage = async (
     refundResolve: ShopifyMutationRefundResolve | null,
     refundReject: ShopifyMutationRefundReject | null,
     appConfigure: ShopifyMutationAppConfigure | null,
-    retryStepIndex: number = 0,
+    retryStepIndex = 0,
     sqs: pkg.SQS = new SQS()
 ) => {
     const queueUrl = process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL;

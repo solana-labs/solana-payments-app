@@ -43,7 +43,7 @@ export const exhaustedRetrySteps = (stepIndex: number) => {
     return stepIndex >= retryStepTimes.length;
 };
 
-export const retry = async (fn: () => Promise<any>, maxAttempts: number): Promise<number> => {
+export const retry = async (fn: () => Promise<unknown>, maxAttempts: number): Promise<number> => {
     let attempts = 0;
     while (attempts < maxAttempts) {
         try {

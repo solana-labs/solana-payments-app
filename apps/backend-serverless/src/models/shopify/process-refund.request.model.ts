@@ -14,7 +14,9 @@ export const shopifyRefundInitiationScheme = object().shape({
 
 export type ShopifyRefundInitiation = InferType<typeof shopifyRefundInitiationScheme>;
 
-export const parseAndValidateShopifyRefundInitiation = (shopifyRefundInitiationBody: any): ShopifyRefundInitiation => {
+export const parseAndValidateShopifyRefundInitiation = (
+    shopifyRefundInitiationBody: unknown
+): ShopifyRefundInitiation => {
     return parseAndValidate<ShopifyRefundInitiation>(
         shopifyRefundInitiationBody,
         shopifyRefundInitiationScheme,

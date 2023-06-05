@@ -1,4 +1,4 @@
-import { object, string, number, InferType, boolean, bool } from 'yup';
+import { object, string, number, InferType, bool } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 /*
     SPEC: https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite

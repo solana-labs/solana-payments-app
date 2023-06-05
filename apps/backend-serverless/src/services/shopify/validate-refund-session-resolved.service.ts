@@ -1,7 +1,6 @@
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import {
     RefundSessionStateCode,
-    RefundSessionStateRejectedReason,
     RefundSessionStateResolved,
 } from '../../models/shopify-graphql-responses/shared.model.js';
 

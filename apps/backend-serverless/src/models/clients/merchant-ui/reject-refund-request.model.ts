@@ -1,4 +1,4 @@
-import { object, string, InferType, boolean, number } from 'yup';
+import { object, string, InferType } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
 
 export const rejectRefundRequestBodySchema = object().shape({
@@ -8,7 +8,7 @@ export const rejectRefundRequestBodySchema = object().shape({
 
 export type RejectRefundRequest = InferType<typeof rejectRefundRequestBodySchema>;
 
-export const parseAndValidateRejectRefundRequest = (rejectRefundRequestBody: any): RejectRefundRequest => {
+export const parseAndValidateRejectRefundRequest = (rejectRefundRequestBody: unknown): RejectRefundRequest => {
     return parseAndValidate(
         rejectRefundRequestBody,
         rejectRefundRequestBodySchema,

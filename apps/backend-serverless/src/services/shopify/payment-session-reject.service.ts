@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import {
     RejectPaymentResponse,

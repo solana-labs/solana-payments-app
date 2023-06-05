@@ -1,4 +1,4 @@
-import { parseAndValidatePaymentAppConfigureResponse } from '../../../../src/models/shopify-graphql-responses/payment-app-configure-response.model';
+import { parseAndValidatePaymentAppConfigureResponse } from '../../../../src/models/shopify-graphql-responses/payment-app-configure-response.model.js';
 
 describe('unit testing payment app configure model', () => {
     it('valid payment app configure response', () => {

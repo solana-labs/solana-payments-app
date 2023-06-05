@@ -8,7 +8,7 @@ export const shopRedactRequestScheme = object().shape({
 
 export type ShopRedactRequest = InferType<typeof shopRedactRequestScheme>;
 
-export const parseAndValidateShopRedactRequestBody = (shopRedactRequestBody: any): ShopRedactRequest => {
+export const parseAndValidateShopRedactRequestBody = (shopRedactRequestBody: unknown): ShopRedactRequest => {
     return parseAndValidate<ShopRedactRequest>(
         shopRedactRequestBody,
         shopRedactRequestScheme,

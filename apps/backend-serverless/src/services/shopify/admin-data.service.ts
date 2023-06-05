@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { shopifyAdminGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { parseAndValidatePaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
 import { parseAndValidateAdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
 
 const adminDataRequest = `

@@ -9,7 +9,7 @@ export const transactionRequestResponseScheme = object().shape({
 export type TransactionRequestResponse = InferType<typeof transactionRequestResponseScheme>;
 
 export const parseAndValidateTransactionRequestResponse = (
-    transactionRequestResponseBody: any
+    transactionRequestResponseBody: unknown
 ): TransactionRequestResponse => {
     return parseAndValidate<TransactionRequestResponse>(
         transactionRequestResponseBody,

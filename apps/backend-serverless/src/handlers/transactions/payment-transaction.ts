@@ -21,20 +21,15 @@ import { TransactionRecordService } from '../../services/database/transaction-re
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import * as Sentry from '@sentry/serverless';
-import { verifyPaymentTransactionWithPaymentRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
-import { DependencyError } from '../../errors/dependency.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 const prisma = new PrismaClient();
 

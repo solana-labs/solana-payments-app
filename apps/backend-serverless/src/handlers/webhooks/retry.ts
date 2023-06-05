@@ -6,7 +6,6 @@ import {
     parseAndValidateShopifyMutationRetry,
 } from '../../models/shopify-mutation-retry.model.js';
 import { PrismaClient } from '@prisma/client';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { InvalidInputError } from '../../errors/InvalidInput.error.js';
 import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
 import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service.js';

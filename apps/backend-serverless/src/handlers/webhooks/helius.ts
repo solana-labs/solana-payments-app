@@ -4,15 +4,11 @@ import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { PrismaClient, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { processDiscoveredPaymentTransaction } from '../../services/buisness-logic/process-discovered-payment-transaction.service.js';
 import { processDiscoveredRefundTransaction } from '../../services/buisness-logic/process-discovered-refund-transaction.service.js';
-import { web3 } from '@project-serum/anchor';
-import { fetchTransaction } from '../../services/fetch-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
-import winston from 'winston';
 
 const prisma = new PrismaClient();
 

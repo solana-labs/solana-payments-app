@@ -1,4 +1,4 @@
-import { parseAndValidateAdminDataResponse } from '../../../../src/models/shopify-graphql-responses/admin-data.response.model';
+import { parseAndValidateAdminDataResponse } from '../../../../src/models/shopify-graphql-responses/admin-data.response.model.js';
 import { createMockAdminDataResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing payment app configure model', () => {

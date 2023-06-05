@@ -50,7 +50,3 @@ export const buildRefundTransactionRequestEndpoint = (
 
     return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };
-
-export const buildCoinGeckoUsdcPriceEndpoint = (coinId: string) => {
-    const baseCoinGeckoApiUrl = 'https://api.coingecko.com/api/v3';
-};
