@@ -11,8 +11,8 @@ import { AddressInput } from './AddressInput';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 import { TokenSelect } from './TokenSelect';
 import { PublicKey } from '@solana/web3.js';
-import { updateMerchantAddress, useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
+import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
 
 interface FormData {
     name: string;
@@ -35,7 +35,7 @@ export function MerchantInfo(props: Props) {
     const [isVerified, setIsVerified] = useState(false);
     const [pending, setPending] = useState(false);
 
-    const { merchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
 
     useEffect(() => {
         if (isOk(merchantInfo)) {

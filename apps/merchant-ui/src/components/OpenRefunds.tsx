@@ -2,19 +2,17 @@ import { twMerge } from 'tailwind-merge';
 import { format, set } from 'date-fns';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useRef, useState } from 'react';
-
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import * as Button from './Button';
 import { Close } from './icons/Close';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
-import { RefundStatus, useOpenRefunds } from '@/hooks/useRefunds';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PaginatedTable } from '@/components/PaginatedTable';
+import { RefundStatus, useOpenRefundStore } from '@/stores/refundStore';
 
 interface Props {
     className?: string;
@@ -26,7 +24,9 @@ export function OpenRefunds(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
 
-    const { openRefunds, refundCount, fetchOpenRefunds } = useOpenRefunds(page);
+    const openRefunds = useOpenRefundStore(state => state.openRefunds);
+    const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
+
     const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
@@ -57,7 +57,7 @@ export function OpenRefunds(props: Props) {
                 await connect();
             }
         } catch (error) {
-            console.log('connect error[', error);
+            console.log('connect error', error);
         }
 
         try {
@@ -85,7 +85,7 @@ export function OpenRefunds(props: Props) {
         }
 
         if (approvePendingRef.current) {
-            fetchOpenRefunds();
+            await getOpenRefunds(page);
             setOpenApprove(null);
             setApprovePending(false);
         }
@@ -113,7 +113,7 @@ export function OpenRefunds(props: Props) {
         }
 
         if (denyPendingRef.current) {
-            fetchOpenRefunds();
+            await getOpenRefunds(page);
             setDenyPending(false);
         }
     }

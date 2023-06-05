@@ -3,16 +3,16 @@ import { twMerge } from 'tailwind-merge';
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { FinishAccountSetupPrompt, RemainingSetupItem } from './FinishAccountSetupPrompt';
-import { useMerchant } from '@/hooks/useMerchant';
 import { isOk } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
+import { useMerchantStore } from '@/stores/merchantStore';
 
 interface Props {
     className?: string;
 }
 
 export function GettingStarted(props: Props) {
-    const { merchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
 
     if (!isOk(merchantInfo)) {
         return (

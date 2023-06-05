@@ -3,9 +3,9 @@ import { format } from 'date-fns';
 
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
-import { RefundStatus, useCloseRefunds } from '@/hooks/useRefunds';
 import { useEffect, useState } from 'react';
 import { PaginatedTable } from '@/components/PaginatedTable';
+import { RefundStatus, useClosedRefundStore } from '@/stores/refundStore';
 
 interface Props {
     className?: string;
@@ -15,7 +15,7 @@ export function ClosedRefunds(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
 
-    const { closedRefunds } = useCloseRefunds(page);
+    const closedRefunds = useClosedRefundStore(state => state.closedRefunds);
 
     useEffect(() => {
         if (RE.isOk(closedRefunds)) {

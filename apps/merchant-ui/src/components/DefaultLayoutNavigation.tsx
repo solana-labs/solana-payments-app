@@ -12,10 +12,10 @@ import { Store } from './icons/Store';
 import { ReceiptLong } from './icons/ReceiptLong';
 import { Flag } from './icons/Flag';
 import { Support } from './icons/Support';
-import { useOpenRefunds } from '@/hooks/useRefunds';
-import { useMerchant } from '@/hooks/useMerchant';
 import { isOk, isPending } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
+import { useMerchantStore } from '@/stores/merchantStore';
+import { useOpenRefundStore } from '@/stores/refundStore';
 
 interface Props {
     accountIsActive?: boolean;
@@ -23,8 +23,8 @@ interface Props {
 }
 
 export function DefaultLayoutNavigation(props: Props) {
-    const { refundCount } = useOpenRefunds();
-    const { merchantInfo } = useMerchant();
+    const refundCount = useOpenRefundStore(state => state.refundCount);
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     return (
         <NavigationMenu.Root
             className={twMerge(

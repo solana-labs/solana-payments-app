@@ -1,8 +1,7 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { PublicKey } from '@solana/web3.js';
+import { create } from 'zustand';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 
 interface MerchantInfo {
     shop: string;
@@ -13,31 +12,34 @@ interface MerchantInfo {
     completed: boolean;
 }
 
-export function useMerchant(): { merchantInfo: RE.Result<MerchantInfo>; getMerchantInfo: () => Promise<void> } {
-    const [merchantInfo, setMerchantInfo] = useState<RE.Result<MerchantInfo>>(RE.pending());
+type MerchantStore = {
+    merchantInfo: RE.Result<MerchantInfo>;
+    getMerchantInfo: () => Promise<void>;
+};
 
-    const getMerchantInfo = async () => {
-        const merchantInfoResponse = await fetch(API_ENDPOINTS.merchantData);
-        const merchantJson = await merchantInfoResponse.json();
+export const useMerchantStore = create<MerchantStore>(set => ({
+    merchantInfo: RE.pending(),
 
-        setMerchantInfo(
-            RE.ok({
-                shop: merchantJson.merchantData.shop,
-                name: merchantJson.merchantData.name,
-                paymentAddress: merchantJson.merchantData.paymentAddress,
-                acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
-                dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
-                completed: merchantJson.merchantData.onboarding.completed,
-            })
-        );
-    };
+    getMerchantInfo: async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.merchantData);
+            const merchantJson = await response.json();
 
-    useEffect(() => {
-        getMerchantInfo().catch(console.error);
-    }, []);
-
-    return { merchantInfo, getMerchantInfo };
-}
+            set({
+                merchantInfo: RE.ok({
+                    shop: merchantJson.merchantData.shop,
+                    name: merchantJson.merchantData.name,
+                    paymentAddress: merchantJson.merchantData.paymentAddress,
+                    acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
+                    dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
+                    completed: merchantJson.merchantData.onboarding.completed,
+                }),
+            });
+        } catch (error) {
+            set({ merchantInfo: RE.failed(new Error('Failed to fetch merchant info')) });
+        }
+    },
+}));
 
 export async function updateMerchantAddress(walletAddress: string | null | undefined) {
     if (!walletAddress) {
