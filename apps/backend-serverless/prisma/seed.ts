@@ -34,6 +34,10 @@ function stringToRefundRecordStatus(status: string): RefundRecordStatus {
 }
 
 async function main() {
+    await prisma.$executeRaw`DELETE from Merchant;`;
+    await prisma.$executeRaw`DELETE from PaymentRecord `;
+    await prisma.$executeRaw`DELETE from RefundRecord `;
+
     const merchantInfo = await prisma.merchant.createMany({
         data: SEED_DATA.merchant.map(merchant => ({
             ...merchant,
