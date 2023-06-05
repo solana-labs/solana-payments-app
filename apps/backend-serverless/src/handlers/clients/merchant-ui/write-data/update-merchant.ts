@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
-import { PrismaClient } from '@prisma/client';
+import { Merchant, PrismaClient } from '@prisma/client';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
@@ -53,7 +53,13 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
-        let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
@@ -83,6 +89,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
+        // TODO: try/catch this
         const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
         const onboardingResponse = createOnboardingResponse(merchant);
 

@@ -7,6 +7,7 @@ export enum ErrorType {
 }
 
 export enum ErrorMessage {
+    databaseAccessError = 'Database access error.',
     internalServerError = 'Internal server error.',
     missingBody = 'Missing body from request.',
     missingEnv = 'Missing internal configuration.',

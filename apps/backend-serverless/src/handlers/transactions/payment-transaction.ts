@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
+    Merchant,
     PaymentRecord,
     PaymentRecordRejectionReason,
     PaymentRecordStatus,
@@ -88,10 +89,15 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        // TODO: Wrap in try/catch
-        let paymentRecord = await paymentRecordService.getPaymentRecord({
-            id: paymentRequest.paymentId,
-        });
+        let paymentRecord: PaymentRecord | null;
+
+        try {
+            paymentRecord = await paymentRecordService.getPaymentRecord({
+                id: paymentRequest.paymentId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (paymentRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
@@ -101,10 +107,15 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
-        // TODO: Wrap in try/catch
-        const merchant = await merchantService.getMerchant({
-            id: paymentRecord.merchantId,
-        });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({
+                id: paymentRecord.merchantId,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             // Not sure if this should be 500 or 404, will do 404 for now

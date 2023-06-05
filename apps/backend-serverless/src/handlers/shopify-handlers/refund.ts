@@ -36,7 +36,13 @@ export const refund = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
         }
 
-        let merchant = await merchantService.getMerchant({ shop: shop });
+        let merchant: Merchant | null;
+
+        try {
+            merchant = await merchantService.getMerchant({ shop: shop });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
@@ -49,12 +55,18 @@ export const refund = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
-        let refundRecord = await refundRecordService.getRefundRecord({
-            shopId: refundInitiation.id,
-        });
+        let refundRecord: RefundRecord | null;
 
-        if (refundRecord == null) {
-            try {
+        try {
+            refundRecord = await refundRecordService.getRefundRecord({
+                shopId: refundInitiation.id,
+            });
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+        }
+
+        try {
+            if (refundRecord == null) {
                 let usdcSize: number;
 
                 if (refundInitiation.test) {
@@ -75,9 +87,9 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                     merchant,
                     usdcSize
                 );
-            } catch (error) {
-                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
             }
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         // We return 201 status code here per shopify's documentation: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
