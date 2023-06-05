@@ -26,7 +26,7 @@ export const verifyPaymentRecordWithHeliusEnhancedTransaction = (
     if (weShouldHaveSigned) {
         verifyAppCreatedTheHeliusEnhancedTransaction(transaction);
     }
-    verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
+    // verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
     verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction(transaction, paymentRecord);
 };
 
