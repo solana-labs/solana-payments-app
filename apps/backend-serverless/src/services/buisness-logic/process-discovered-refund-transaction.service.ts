@@ -4,10 +4,15 @@ import { RefundRecordService } from '../database/refund-record-service.database.
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 import axios from 'axios';
-import { verifyRefundTransactionWithRefundRecord } from '../transaction-validation/validate-discovered-refund-transaction.service.js';
+import {
+    verifyRefundRecordWithHeliusEnhancedTransaction,
+    verifyRefundTransactionWithRefundRecord,
+} from '../transaction-validation/validate-discovered-refund-transaction.service.js';
 import { web3 } from '@project-serum/anchor';
 import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
+import { delay } from '../../utilities/delay.utility.js';
+import { fetchTransaction } from '../fetch-transaction.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
@@ -61,9 +66,19 @@ export const processDiscoveredRefundTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
+    verifyRefundRecordWithHeliusEnhancedTransaction(refundRecord, transaction, true);
+
+    let rpcTransaction: web3.Transaction | null = null;
+
+    while (rpcTransaction == null) {
+        try {
+            await delay(3000);
+            rpcTransaction = await fetchTransaction(transactionRecord.signature);
+        } catch (error) {}
+    }
+
     // Verify against the refund record, if we throw in here, we should catch outside of this for logging
-    // TODO: Figure out how we want to handle this with helius and normal transactions
-    // verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
+    verifyRefundTransactionWithRefundRecord(refundRecord, rpcTransaction, true);
 
     // TODO: Try catch this and handle cases where database updates fail
     refundRecordService.updateRefundRecord(refundRecord, {

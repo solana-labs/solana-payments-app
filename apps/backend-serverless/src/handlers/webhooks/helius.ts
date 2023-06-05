@@ -54,8 +54,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                     throw new Error('Transaction record not found');
                 }
 
-                // const transaction = await fetchTransaction(transactionRecord.signature);
-
                 switch (transactionRecord.type) {
                     case TransactionType.payment:
                         await processDiscoveredPaymentTransaction(transactionRecord, heliusTransaction, prisma);

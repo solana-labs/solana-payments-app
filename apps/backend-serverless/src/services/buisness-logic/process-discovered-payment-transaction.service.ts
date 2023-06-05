@@ -13,10 +13,7 @@ import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 import * as Sentry from '@sentry/serverless';
 import { fetchTransaction } from '../fetch-transaction.service.js';
-
-function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+import { delay } from '../../utilities/delay.utility.js';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
