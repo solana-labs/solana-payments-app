@@ -44,7 +44,6 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
-    "ts-node": "^10.9.1",
     "yup": "1.2.0"
   },
   "devDependencies": {
