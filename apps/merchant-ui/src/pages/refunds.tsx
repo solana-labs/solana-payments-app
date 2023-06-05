@@ -1,9 +1,15 @@
 import Head from 'next/head';
-
+import Router from 'next/router';
+import { useMerchantStore } from '@/stores/merchantStore';
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { Refunds } from '@/components/Refunds';
+import { isOk } from '@/lib/Result';
 
 export default function RefundsPage() {
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    if (isOk(merchantInfo) && !merchantInfo.data.completed) {
+        Router.push('/getting-started');
+    }
     return (
         <>
             <Head>
