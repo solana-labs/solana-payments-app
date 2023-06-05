@@ -176,7 +176,7 @@ export class PaymentTransactionBuilder {
             indexIxs = await createIndexingIx(this.feePayer, this.indexInputs);
         }
 
-        transaction = transaction.add(...swapIxs, ...transferIxs, ...createIxs, ...indexIxs);
+        transaction = transaction.add(...createIxs, ...swapIxs, ...transferIxs, ...indexIxs);
 
         return transaction;
     }

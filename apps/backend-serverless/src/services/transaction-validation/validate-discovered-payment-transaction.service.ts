@@ -26,9 +26,7 @@ export const verifyPaymentRecordWithHeliusEnhancedTransaction = (
     if (weShouldHaveSigned) {
         verifyAppCreatedTheHeliusEnhancedTransaction(transaction);
     }
-
     verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
-
     verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction(transaction, paymentRecord);
 };
 
@@ -75,7 +73,7 @@ export const verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction = (
     const transferInstruction = instructions[instructions.length - 2];
 
     if (transferInstruction.programId != TOKEN_PROGRAM_ID.toBase58()) {
-        throw new Error('The token transfer instruction was not in the correct position.');
+        throw new Error(transferInstruction.programId);
     }
 
     // TODO: Figure out how to go from HeliusEnhancedTransaction to TransactionInstruction
@@ -105,10 +103,7 @@ export const verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction = (
         throw new Error('The token transfer instruction was not for USDC');
     }
 
-    const paymentRecordUsdcSize = paymentRecord.usdcAmount;
-    const paymentRecordUsdcQuantity = paymentRecordUsdcSize * 10 ** 6;
-
-    if (transfer.tokenAmount != paymentRecordUsdcQuantity) {
+    if (transfer.tokenAmount != paymentRecord.usdcAmount) {
         throw new Error('The token transfer instruction was not for the correct amount of USDC');
     }
 };

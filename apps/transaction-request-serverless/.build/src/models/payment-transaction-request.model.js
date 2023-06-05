@@ -191,7 +191,7 @@ var PaymentTransactionBuilder = /** @class */ (function () {
                         indexIxs = _a.sent();
                         _a.label = 9;
                     case 9:
-                        transaction = transaction.add.apply(transaction, __spreadArray(__spreadArray(__spreadArray(__spreadArray([], swapIxs, false), transferIxs, false), createIxs, false), indexIxs, false));
+                        transaction = transaction.add.apply(transaction, __spreadArray(__spreadArray(__spreadArray(__spreadArray([], createIxs, false), swapIxs, false), transferIxs, false), indexIxs, false));
                         return [2 /*return*/, transaction];
                 }
             });

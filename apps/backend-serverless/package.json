@@ -17,6 +17,7 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
+    "test:tx": "jest integration",
     "helius": "node scripts/helius.cjs"
   },
   "keywords": [],
