@@ -10,6 +10,18 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 4. populate the .env with your values
 5. from solana-payments-app/apps/serverless-backed from 'serverless deploy'
 
+### Database setup
+
+Make sure mysql is installed, and your database is running (run yarn dev in root folder to get dockerized database up)
+
+Then, run 
+
+```
+npx prisma db seed
+```
+
+To reset your database to match the data in prisma/data.js.
+
 ## Where to Find Stuff
 
 -   The endpoints are all defined in serverless.yml and the handlers are in serverless-backed/src/handlers/

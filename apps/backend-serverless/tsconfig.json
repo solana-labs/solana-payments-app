@@ -11,6 +11,7 @@
         "lib": ["es2015"],
         "rootDir": "./",
         "esModuleInterop": true,
+        "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true
     },
     "include": ["src/**/*.ts", "src"],
