@@ -10,6 +10,9 @@
     ]
   },
   "type": "module",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "predev": "yarn helius & npx prisma generate",
     "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.green.yml",
@@ -41,6 +44,7 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "prisma": "4.13.0",
+    "ts-node": "^10.9.1",
     "yup": "1.2.0"
   },
   "devDependencies": {
@@ -68,6 +72,7 @@
     "serverless-prune-plugin": "^2.0.2",
     "serverless-step-functions": "^3.13.1",
     "ts-jest": "^29.1.0",
+    "tsx": "^3.12.7",
     "typescript": "^4.7.4",
     "winston": "^3.9.0"
   }
