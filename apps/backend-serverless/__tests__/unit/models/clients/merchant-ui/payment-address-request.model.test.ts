@@ -1,38 +1,31 @@
 import { parseAndValidatePaymentAddressRequestBody } from '../../../../../src/models/clients/merchant-ui/payment-address-request.model.js';
 
 describe('unit testing payment address request model', () => {
-    it('valid merchant auth token body parsing', () => {
-        const requestParams = {
-            paymentAddress: 'some-address',
-            name: 'some-name',
-            acceptedTermsAndConditions: true,
-            dismissCompleted: true,
-        };
+    const validRequestParams = {
+        paymentAddress: 'some-address',
+        name: 'some-name',
+        acceptedTermsAndConditions: true,
+        dismissCompleted: true,
+    };
 
-        expect(() => {
-            parseAndValidatePaymentAddressRequestBody(requestParams);
-        }).not.toThrow();
+    it('valid merchant auth token body parsing', () => {
+        const result = parseAndValidatePaymentAddressRequestBody(validRequestParams);
+        expect(result).toEqual(validRequestParams);
     });
 
-    // it('invalid merchant auth token, missing id', () => {
-    //     const requestParams = {
-    //         iat: 'some-date',
-    //         exp: 'some-date',
-    //     };
+    it('missing optional field', () => {
+        const params = { ...validRequestParams };
+        // @ts-ignore
+        delete params.dismissCompleted;
+        const result = parseAndValidatePaymentAddressRequestBody(params);
+        expect(result).toEqual(params);
+    });
 
-    //     expect(() => {
-    //         parseAndValidatePaymentAddressRequestBody(requestParams);
-    //     }).toThrow();
-    // });
-
-    // it('invalid merchant auth token, missing iat', () => {
-    //     const requestParams = {
-    //         id: 'some-id',
-    //         exp: 'some-date',
-    //     };
-
-    //     expect(() => {
-    //         parseAndValidatePaymentAddressRequestBody(requestParams);
-    //     }).toThrow();
-    // });
+    it('invalid field type', () => {
+        const params = { ...validRequestParams, paymentAddress: 12345 }; // Invalid type
+        console.log('params', params);
+        expect(() => {
+            parseAndValidatePaymentAddressRequestBody(params);
+        }).toThrow();
+    });
 });
