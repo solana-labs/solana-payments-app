@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 
 import { KYBButton } from './KYBButton';
-import { useMerchant } from '../hooks/useMerchant';
+import { useMerchantStore } from '@/stores/merchantStore';
 import * as RE from '@/lib/Result';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function MerchantInfoAccountSetup(props: Props) {
-    const { merchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const kybState = RE.isOk(merchantInfo) ? merchantInfo.data.kybState : null;
 
     return (
