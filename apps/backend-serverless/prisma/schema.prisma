@@ -38,6 +38,12 @@ enum RefundRecordStatus {
   rejected
 }
 
+enum KybState {
+  pending
+  failed
+  finished
+}
+
 model Merchant {
   id             String          @id // Internal ID
   shop           String          @unique
@@ -50,7 +56,7 @@ model Merchant {
   refundRecords  RefundRecord[]
   paymentAddress String?
   kybInquiry     String?
-  kybState       String?
+  kybState       KybState?
 
   acceptedTermsAndConditions Boolean @default(false)
   dismissCompleted           Boolean @default(false)
