@@ -23,6 +23,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
         const transactionRecordService = new TransactionRecordService(prisma);
 
+        console.log('in helius');
+
         if (event.body == null) {
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
@@ -38,6 +40,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
+        console.log('parsed helius');
+
         for (const heliusTransaction of heliusEnhancedTransactions) {
             try {
                 const transactionRecord = await transactionRecordService.getTransactionRecord({
@@ -50,8 +54,11 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                     throw new Error('Transaction record not found');
                 }
 
+                console.log('got transaction record');
+
                 switch (transactionRecord.type) {
                     case TransactionType.payment:
+                        console.log('its a payment');
                         await processDiscoveredPaymentTransaction(transactionRecord, heliusTransaction, prisma);
                         break;
                     case TransactionType.refund:

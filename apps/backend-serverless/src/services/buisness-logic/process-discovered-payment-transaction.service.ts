@@ -50,6 +50,8 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Payment record not found.');
     }
 
+    console.log('got the payment record');
+
     if (paymentRecord.merchantId == null) {
         // Another case that shouldn't happen. This could mean that a payment record got updated to remove
         // a merchant id or that we created a transaction record without a merchant id.
@@ -76,6 +78,8 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Merchant not found with merchant id.');
     }
 
+    console.log('got the merchant');
+
     if (merchant.accessToken == null) {
         // This isn't likely as we shouldn't be gettings calls to create payments for merchants without
         // access tokens. A more likely situation is that the access token is invalid. This could mean
@@ -86,6 +90,8 @@ export const processDiscoveredPaymentTransaction = async (
 
     verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
 
+    console.log('verified with helius');
+
     let rpcTransaction: web3.Transaction | null = null;
 
     while (rpcTransaction == null) {
@@ -95,8 +101,12 @@ export const processDiscoveredPaymentTransaction = async (
         } catch (error) {}
     }
 
+    console.log('got the transaction');
+
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
     verifyPaymentTransactionWithPaymentRecord(paymentRecord, rpcTransaction, true); // TODO: Uncomment this
+
+    console.log('transaction is real');
 
     // -- if we get here, we found a match! --
     // we would hope at this point we could update the database to reflect we found it's match
@@ -108,6 +118,8 @@ export const processDiscoveredPaymentTransaction = async (
         status: PaymentRecordStatus.paid,
         transactionSignature: transactionRecord.signature,
     });
+
+    console.log('updated to paid');
 
     try {
         const paymentSessionResolve = makePaymentSessionResolve(axios);

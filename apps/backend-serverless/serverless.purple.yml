@@ -27,6 +27,7 @@ provider:
     AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
+    LOCAL_GAS: ${env:LOCAL_GAS}
 package:
   excludeDevDependencies: true
   patterns:

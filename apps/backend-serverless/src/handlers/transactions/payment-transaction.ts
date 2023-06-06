@@ -30,6 +30,7 @@ import { makePaymentSessionReject } from '../../services/shopify/payment-session
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 
 const prisma = new PrismaClient();
 
@@ -123,12 +124,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
 
-        // try {
-        //     await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
-        // } catch (error) {
-        //     // TODO: Log this error in sentry
-        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        // }
+        try {
+            await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
+        } catch (error) {
+            // TODO: Log this error in sentry
+            // TODO: Prob dont crash here, fail ez, nbd
+        }
 
         try {
             paymentTransaction = await fetchPaymentTransaction(
