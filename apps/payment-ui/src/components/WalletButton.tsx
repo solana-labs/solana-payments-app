@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPayerAccount } from '@/features/pay-tab/paySlice';
 import { WalletDisconnectButton } from './WalletDisconnectButton';
 import { WalletCopyButton } from './WalletCopyButton';
+import Image from 'next/image';
+
 
 const WalletButton = () => {
     const { publicKey, sendTransaction } = useWallet();
@@ -21,18 +23,35 @@ const WalletButton = () => {
 
     return (
         <div className="w-full">
-            <label tabIndex={0} className="btn btn-outline w-full justify-start text-black" htmlFor="wallet_modal">
-                {walletDisplayString(publicKey)}
+            <label tabIndex={0} className="btn bg-white w-full justify-start text-black hover:bg-white" htmlFor="wallet_modal">
+                <div className='flex flex-row items-center justify-between w-full'>
+                    <div className='flex flex-row items-center justify-between'>
+                        <Image className='mr-2' src="/electric_bolt.svg" alt="Electric Bolt" width={15} height={15} />
+                        <div className='normal-case text-black text-md'>
+                            {walletDisplayString(publicKey)}
+                        </div>
+                    </div>
+                    <Image className='mr-2' src="/expand.svg" alt="Electric Bolt" width={15} height={15} />
+                </div>
             </label>
             <input type="checkbox" id="wallet_modal" className="modal-toggle" />
             <div id="wallet_modal" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box bg-white h-80">
-                    <div className='z-0 flex flex-row items-end justify-end h-full'>
-                        <div className='w-1/2 pr-2'>
-                            <WalletDisconnectButton />
+                <div className="modal-box bg-white h-96">
+                    <div className='flex flex-col h-full relative z-0'>
+                        <div className='z-0 flex flex-row items-end justify-center h-full relative'>
+                            <div className='flex flex-col items-center justify-center h-full'>
+                                <Image className='' src="/connected-icon.svg" alt="Wallet Connected Icon" width={56} height={56} />
+                                <div className='pt-5 text-black text-3xl font-medium'>{walletDisplayString(publicKey)}</div>
+                                <div className='pt-2 text-gray-700 text-md font-normal'>{'24.48 USDC'}</div>
+                            </div>
                         </div>
-                        <div className='w-1/2 pl-4'>
-                            <WalletCopyButton />
+                        <div className='z-10 flex flex-row items-end justify-end h-full relative'>
+                            <div className='w-1/2 pr-2'>
+                                <WalletDisconnectButton />
+                            </div>
+                            <div className='w-1/2 pl-4'>
+                                <WalletCopyButton />
+                            </div>
                         </div>
                     </div>
                 </div>
