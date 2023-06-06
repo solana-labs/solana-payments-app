@@ -27,6 +27,16 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
 
+        const requiredAuthorizationHeader = process.env.HELIUS_AUTHORIZATION;
+
+        if (requiredAuthorizationHeader != null) {
+            const authorizationHeader = event.headers['authorization'];
+
+            if (authorizationHeader !== requiredAuthorizationHeader) {
+                return errorResponse(ErrorType.unauthorized, ErrorMessage.missingHeader);
+            }
+        }
+
         try {
             heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(JSON.parse(event.body));
         } catch (error) {
