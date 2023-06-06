@@ -7,6 +7,8 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { clusterApiUrl } from '@solana/web3.js';
 import WalletButton from './WalletButton';
 import BuyButton from './BuyButton';
+import Image from 'next/image';
+
 
 const WalletSection = () => {
 
@@ -19,7 +21,10 @@ const WalletSection = () => {
             { !wallet && !base58 ? 
                 (
                     <WalletMultiButton style={{ backgroundColor: 'black', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        Connect wallet
+                        <div className='flex flex-row items-center justify-center'>
+                            <Image className='pr-1' src="/electric_bolt_white.svg" alt="Solana Pay Logo" width={15} height={15} />
+                            <div className='pl-1'>Connect wallet</div>
+                        </div>
                     </ WalletMultiButton>
                 ) 
                 : 
