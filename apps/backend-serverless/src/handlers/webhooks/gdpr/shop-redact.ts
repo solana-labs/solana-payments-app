@@ -11,9 +11,10 @@ import {
     ShopRedactRequest,
     parseAndValidateShopRedactRequestBody,
 } from '../../../models/shopify/shop-redact-request.model.js';
-import { PrismaClient } from '@prisma/client';
+import { GDPR, PrismaClient } from '@prisma/client';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { GDPRService } from '../../../services/database/gdpr-service.database.service.js';
 
 const prisma = new PrismaClient();
 
@@ -27,6 +28,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         let webhookHeaders: ShopifyWebhookHeaders;
         const merchantService = new MerchantService(prisma);
+        const gdprService = new GDPRService(prisma);
 
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
@@ -64,8 +66,17 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
-        // At this point we would have the merchant record we need and we would
-        // either save this into a queue or just perform the delete now
+        let gdpr: GDPR;
+
+        try {
+            gdpr = await gdprService.createGDPRRequest(merchant.id);
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        }
+
+        if (gdpr == null) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        }
 
         return {
             statusCode: 200,

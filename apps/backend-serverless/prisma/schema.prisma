@@ -107,3 +107,9 @@ model TransactionRecord {
   refundRecordId  String?
   createdAt       DateTime        @default(now())
 }
+
+model GDPR {
+  id         Int     @id @default(autoincrement())
+  merchantId String
+  completed  Boolean
+}
