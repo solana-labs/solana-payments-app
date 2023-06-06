@@ -177,4 +177,4 @@ export const verifySingleUseInstructionWithHeliusEnhancedTransaction = (transact
 };
 
 // TODO: Is there a better way to do this?
-export const historicalFeePays = ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'];
+export const historicalFeePays = ['3Rpu9bLp3rwZdBF7kF378Grp95V5sv3dEDR2T1p7ziwY'];
