@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/lib/endpoints';
 import { twMerge } from 'tailwind-merge';
 
 interface Props {
@@ -9,7 +10,7 @@ export function ShopifySignIn(props: Props) {
     return (
         <button
             onClick={() => {
-                window.location.href = 'https://localhost:4000/install';
+                window.location.href = API_ENDPOINTS.install;
             }}
             className={twMerge(
                 'border-gray-300',
