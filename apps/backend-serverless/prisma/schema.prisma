@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum TransactionType {
@@ -105,4 +106,10 @@ model TransactionRecord {
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
   createdAt       DateTime        @default(now())
+}
+
+model GDPR {
+  id         Int     @id @default(autoincrement())
+  merchantId String
+  completed  Boolean
 }
