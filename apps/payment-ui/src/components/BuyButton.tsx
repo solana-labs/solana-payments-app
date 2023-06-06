@@ -41,7 +41,7 @@ const BuyButton = () => {
             onClick={async () => {
                 await fetchAndSendTransaction();
             }}
-            className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center"
+            className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >
             Buy Now
         </button>
