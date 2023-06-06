@@ -5,8 +5,8 @@ import dynamic from 'next/dynamic';
 
 import { Primary } from './Button';
 import { CheckmarkCircle } from './icons/CheckmarkCircle';
-import { useMerchant, updateMerchantKybInquiry } from '../hooks/useMerchant';
 import * as RE from '@/lib/Result';
+import { useMerchantStore, updateMerchantKybInquiry } from '@/stores/merchantStore';
 
 const Inquiry = dynamic(() => import('persona').then(m => m.Inquiry), {
     loading: () => <div />,
@@ -23,7 +23,8 @@ interface Props {
 
 export function KYBButton(props: Props) {
     const [open, setOpen] = useState(false);
-    const { merchantInfo, getMerchantInfo } = useMerchant();
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
     const kybState = RE.isOk(merchantInfo) ? merchantInfo.data.kybState : null;
 
     return kybState === 'finished' ? (

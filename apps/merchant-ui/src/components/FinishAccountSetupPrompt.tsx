@@ -130,7 +130,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                     title={getItemTitle(step)}
                     renderTrigger={
                         step === RemainingSetupItem.VerifyBusiness
-                            ? () => <div />
+                            ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
                             ? () => (
                                   <Primary onClick={updateMerchantTosClick} pending={pendingTos}>
