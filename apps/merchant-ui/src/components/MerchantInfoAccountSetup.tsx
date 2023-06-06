@@ -1,23 +1,27 @@
 import { twMerge } from 'tailwind-merge';
 
 import { KYBButton } from './KYBButton';
+import { useMerchantStore } from '@/stores/merchantStore';
+import * as RE from '@/lib/Result';
 
 interface Props {
     className?: string;
-    isVerified?: boolean;
     onVerified?(): void;
 }
 
 export function MerchantInfoAccountSetup(props: Props) {
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const kybState = RE.isOk(merchantInfo) ? merchantInfo.data.kybState : null;
+
     return (
         <div className={props.className}>
             <div className="text-sm font-medium text-black">Account Setup</div>
             <div className="grid grid-cols-[1fr,max-content] items-center mt-5">
                 <div>
                     <div className="text-black">Verify your business</div>
-                    {!props.isVerified && <div className="text-sm text-neutral-600">Required • Takes ~5m</div>}
+                    {!kybState && <div className="text-sm text-neutral-600">Required • Takes ~5m</div>}
                 </div>
-                <KYBButton isVerified={props.isVerified} onVerified={props.onVerified} />
+                <KYBButton onVerified={props.onVerified} />
             </div>
         </div>
     );

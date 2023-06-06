@@ -9,6 +9,7 @@ import { LoadingDots } from '@/components/LoadingDots';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import * as RE from '@/lib/Result';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -52,6 +53,8 @@ export function FinishAccountSetupPrompt(props: Props) {
         RemainingSetupItem.VerifyBusiness,
     ]);
 
+    const kybState = RE.isOk(merchantInfo) ? merchantInfo.data.kybState : null;
+
     useEffect(() => {
         if (!isOk(merchantInfo)) {
             return;
@@ -71,7 +74,7 @@ export function FinishAccountSetupPrompt(props: Props) {
             case RemainingSetupItem.AddWallet:
                 return merchantInfo.data.paymentAddress !== null;
             case RemainingSetupItem.VerifyBusiness:
-                return true;
+                return merchantInfo.data.kybState === 'finished';
         }
     }
 
@@ -119,7 +122,7 @@ export function FinishAccountSetupPrompt(props: Props) {
             <div className="text-black font-semibold text-lg">Finish setting up your account:</div>
             {STEPS.map((step, i) => (
                 <FinishAccountSetupPromptListItem
-                    additionalText={step === RemainingSetupItem.VerifyBusiness ? '• Takes ~5m' : undefined}
+                    additionalText={step === RemainingSetupItem.VerifyBusiness && !kybState ? '• Takes ~5m' : undefined}
                     className={twMerge('py-5', i > 0 && 'border-t border-slate-200')}
                     completed={isStepCompleted(step)}
                     img=""
@@ -127,7 +130,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                     title={getItemTitle(step)}
                     renderTrigger={
                         step === RemainingSetupItem.VerifyBusiness
-                            ? () => <div />
+                            ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
                             ? () => (
                                   <Primary onClick={updateMerchantTosClick} pending={pendingTos}>

@@ -6,6 +6,7 @@ export const merchantUpdateRequestBodySchema = object().shape({
     name: string().optional(),
     acceptedTermsAndConditions: boolean().optional(),
     dismissCompleted: boolean().optional(),
+    kybInquiry: string().optional(),
 });
 
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;

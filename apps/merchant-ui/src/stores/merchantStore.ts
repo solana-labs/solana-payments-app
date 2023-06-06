@@ -10,6 +10,8 @@ interface MerchantInfo {
     acceptedTermsAndConditions: boolean;
     dismissCompleted: boolean;
     completed: boolean;
+    kybState?: 'pending' | 'failed' | 'finished';
+    kybInquiry?: string;
 }
 
 type MerchantStore = {
@@ -33,6 +35,8 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
                     dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
                     completed: merchantJson.merchantData.onboarding.completed,
+                    kybInquiry: merchantJson.merchantData.onboarding.kybInquiry,
+                    kybState: merchantJson.merchantData.onboarding.kybState,
                 }),
             });
         } catch (error) {
@@ -59,7 +63,7 @@ export async function updateMerchantAddress(walletAddress: string | null | undef
             { headers: headers }
         );
     } catch (error) {
-        console.log('update wallet error', error);
+        console.log('update merchant address error', error);
     }
 }
 
@@ -77,6 +81,22 @@ export async function updateMerchantTos() {
             { headers: headers }
         );
     } catch (error) {
-        console.log('update tos error', error);
+        console.log('update merchant tos error', error);
+    }
+}
+
+export async function updateMerchantKybInquiry(kybInquiry: string) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+            headers,
+            method: 'PUT',
+            body: JSON.stringify({ kybInquiry }),
+        });
+    } catch (error) {
+        console.log('update merchant kyb inquiry error', error);
     }
 }

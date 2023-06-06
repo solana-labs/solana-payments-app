@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 
 import { Primary } from './Button';
 import { CheckmarkCircle } from './icons/CheckmarkCircle';
+import * as RE from '@/lib/Result';
+import { useMerchantStore, updateMerchantKybInquiry } from '@/stores/merchantStore';
 
 const Inquiry = dynamic(() => import('persona').then(m => m.Inquiry), {
     loading: () => <div />,
@@ -16,17 +18,23 @@ const PERSONA_WIDTH = 600;
 
 interface Props {
     className?: string;
-    isVerified?: boolean;
     onVerified?(): void;
 }
 
 export function KYBButton(props: Props) {
     const [open, setOpen] = useState(false);
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+    const kybState = RE.isOk(merchantInfo) ? merchantInfo.data.kybState : null;
 
-    return props.isVerified ? (
+    return kybState === 'finished' ? (
         <div className="flex items-center">
-            <div className="text-black text-sm font-semibold mr-2">Approved</div>
-            <CheckmarkCircle className="h-5 fill-green-600 w-5" />
+            <div className="text-emerald-700 text-sm font-semibold mr-2">Approved</div>
+            <CheckmarkCircle className="h-5 fill-emerald-700 w-5" />
+        </div>
+    ) : !!kybState ? (
+        <div className="flex items-center bg-indigo-100 px-4 py-2.5 rounded-lg">
+            <div className="text-indigo-700 text-sm font-semibold mr-2">Pending verification</div>
         </div>
     ) : (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -52,11 +60,13 @@ export function KYBButton(props: Props) {
                         style={{ width: PERSONA_WIDTH, height: PERSONA_HEIGHT }}
                     >
                         <Inquiry
-                            templateId="itmpl_V3pKBU4ZkWXrrC3699domudP"
+                            templateId="itmpl_r9DWaWkBDNJb2KTd1c83i5Xg"
                             environmentId="env_zgfWXWXgfPoDANKtnLraWC1V"
                             frameWidth={PERSONA_WIDTH}
                             frameHeight={PERSONA_HEIGHT}
-                            onComplete={({ inquiryId, status, fields }) => {
+                            onComplete={async ({ inquiryId, status, fields }) => {
+                                await updateMerchantKybInquiry(inquiryId);
+                                await getMerchantInfo();
                                 props.onVerified?.();
                                 setOpen(false);
                             }}
