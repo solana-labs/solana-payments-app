@@ -3,11 +3,5 @@ export const shopifyGraphQLEndpoint = (shopDomain: string) => {
 };
 
 export const shopifyAdminGraphQLEndpoint = (shopDomain: string) => {
-    const shopName = shopDomain.split('.')[0];
-
-    if (shopName == null || shopName == undefined || shopName == '') {
-        throw new Error('Invalid shop domain.');
-    }
-
-    return `https://${shopName}/admin/api/2022-10/graphql.json`;
+    return `https://${shopDomain}/admin/api/2022-10/graphql.json`;
 };

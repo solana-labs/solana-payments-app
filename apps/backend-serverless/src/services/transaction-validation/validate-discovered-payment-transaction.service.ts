@@ -1,6 +1,6 @@
 import { PaymentRecord } from '@prisma/client';
 import { USDC_MINT } from '../../configs/tokens.config.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 

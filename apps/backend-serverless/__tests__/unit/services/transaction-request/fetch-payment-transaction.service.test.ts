@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import {
     createMockMerchant,
     createMockPaymentRecord,
@@ -10,6 +10,8 @@ import axios from 'axios';
 
 describe('fetch payment transaction request testing suite', () => {
     it('should fetch a payment transaction request', async () => {
+        process.env.TRANSACTION_REQUEST_SERVER_URL = 'https://transaction-request-server.com';
+
         const mockMerchantKeypair = web3.Keypair.generate();
         const mockMerchant = createMockMerchant({ paymentAddress: mockMerchantKeypair.publicKey.toBase58() });
         const mockPaymentRecord = createMockPaymentRecord({ merchantId: mockMerchant.id });

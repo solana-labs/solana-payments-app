@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 
 export const createIndexPubkey = async (input: string): Promise<web3.PublicKey> => {
     // TODO: There is some max length on what our input string can be, figure it out and validate

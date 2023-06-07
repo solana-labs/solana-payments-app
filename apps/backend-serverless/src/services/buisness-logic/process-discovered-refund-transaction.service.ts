@@ -8,7 +8,7 @@ import {
     verifyRefundRecordWithHeliusEnhancedTransaction,
     verifyRefundTransactionWithRefundRecord,
 } from '../transaction-validation/validate-discovered-refund-transaction.service.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
 import { delay } from '../../utilities/delay.utility.js';

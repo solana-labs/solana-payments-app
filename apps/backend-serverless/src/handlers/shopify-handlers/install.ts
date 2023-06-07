@@ -11,23 +11,33 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import { stat } from 'fs';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
-Sentry.AWSLambda.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
-    integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
-});
+// Sentry.AWSLambda.init({
+//     dsn: process.env.SENTRY_DSN,
+//     tracesSampleRate: 1.0,
+//     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
+// });
 
 export const install = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        const prisma = new PrismaClient();
+
         let parsedAppInstallQuery: AppInstallQueryParam;
 
         try {
             parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
         } catch (error) {
-            return requestErrorResponse(error);
+            // return requestErrorResponse(error);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    up: 'down',
+                    e: error.message,
+                }),
+            };
         }
 
         const merchantService = new MerchantService(prisma);
@@ -40,7 +50,13 @@ export const install = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ shop: shop });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            // return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    hello: 'world',
+                }),
+            };
         }
 
         try {
@@ -53,20 +69,30 @@ export const install = Sentry.AWSLambda.wrapHandler(
                 });
             }
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
+            // return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    red: 'blue',
+                }),
+            };
         }
 
-        const signedCookie = createSignedShopifyCookie(newNonce);
-        const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
+        // const signedCookie = createSignedShopifyCookie(newNonce);
+        // const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
 
         const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
         return {
             statusCode: 302,
-            multiValueHeaders: {
-                'Set-Cookie': [cookieValue],
-                Location: [redirectUrl],
-                'Content-Type': ['text/html'],
+            // multiValueHeaders: {
+            //     // 'Set-Cookie': [cookieValue],
+            //     Location: [redirectUrl],
+            //     'Content-Type': ['text/html'],
+            // },
+            headers: {
+                Location: redirectUrl,
+                'Content-Type': 'text/html',
             },
             body: JSON.stringify({
                 message: 'Redirecting..',

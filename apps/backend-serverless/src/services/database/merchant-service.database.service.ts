@@ -2,6 +2,13 @@ import { PrismaClient, Merchant, KybState } from '@prisma/client';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
+export enum KybState {
+    Pending = 'pending',
+    Failed = 'failed',
+    Finished = 'finished',
+}
+
+
 export type ShopQuery = {
     shop: string;
 };
@@ -56,7 +63,7 @@ export class MerchantService {
 
     async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
         return prismaErrorHandler(
-            this.prisma.merchant.findUnique({
+            this.prisma.merchant.findFirst({
                 where: query,
             })
         );

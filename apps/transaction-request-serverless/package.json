@@ -22,7 +22,7 @@
     "author": "@tj_littlejohn",
     "license": "ISC",
     "dependencies": {
-        "@project-serum/anchor": "^0.26.0",
+        "@solana/web3.js": "^1.74.0",
         "@solana/spl-token": "^0.3.7",
         "@types/node": "18.15.3",
         "aws-lambda": "^1.0.7",

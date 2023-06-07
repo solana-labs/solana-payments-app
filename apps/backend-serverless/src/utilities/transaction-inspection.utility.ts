@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 
 /**

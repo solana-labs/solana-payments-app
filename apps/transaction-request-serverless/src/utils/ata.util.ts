@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID } from '../configs/pubkeys.config.js';
 

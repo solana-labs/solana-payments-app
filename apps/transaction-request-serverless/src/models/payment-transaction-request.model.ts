@@ -1,6 +1,6 @@
 import { object, string, InferType, boolean, number } from 'yup';
 import { parseAndValidate } from '../utils/yup.util.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { TokenInformation } from '../configs/token-list.config.js';
 import { createSwapIx } from '../services/swaps/create-swap-ix.service.js';
 import { createTransferIx } from '../services/builders/transfer-ix.builder.js';

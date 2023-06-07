@@ -32,6 +32,7 @@
     "@sentry/serverless": "^7.51.2",
     "@sentry/tracing": "^7.51.2",
     "@solana/spl-token": "^0.3.7",
+    "@solana/web3.js": "^1.77.3",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "18.15.3",
     "aws-lambda": "^1.0.7",

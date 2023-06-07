@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 
 const NO_RPC_URL_ERROR_MESSAGE = 'Could not make a valid RPC connection.';
 
