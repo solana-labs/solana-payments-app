@@ -10,24 +10,27 @@ export const config = {
     matcher: '/',
 };
 
-const isBlockedGeo = (request: NextRequest): boolean => {
-    const BLOCKED_COUNTRY = 'US';
+const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
+const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
 
+const isBlockedGeo = (request: NextRequest): boolean => {
     const geo = request.geo;
 
+    if (geo == null) {
+        return true;
+    }
+
+    const country = geo.country;
+
+    if (country == null) {
+        return true;
+    }
+
+    if (hardBlockCountries.includes(country)) {
+        return true;
+    }
+
     return false;
-
-    // if (geo == null || geo.country == null) {
-    //     return true;
-    // }
-
-    // if (geo.country === 'CN') {
-    //     return true;
-    // } else if (geo.country === 'US' && geo.region === 'NY') {
-    //     return true;
-    // }
-
-    // return false;
 };
 
 export function middleware(request: NextRequest) {
