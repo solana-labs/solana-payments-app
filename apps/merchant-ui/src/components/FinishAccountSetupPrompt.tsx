@@ -10,6 +10,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
 import * as RE from '@/lib/Result';
+import Store from '@carbon/icons-react/lib/Store';
+import Wallet from '@carbon/icons-react/lib/Wallet';
+import Policy from '@carbon/icons-react/lib/Policy';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -31,6 +34,17 @@ function getItemTitle(item: RemainingSetupItem) {
             return 'Add a wallet';
         case RemainingSetupItem.VerifyBusiness:
             return 'Verify your business';
+    }
+}
+
+function getItemImage(item: RemainingSetupItem) {
+    switch (item) {
+        case RemainingSetupItem.AcceptTerms:
+            return <Policy />;
+        case RemainingSetupItem.AddWallet:
+            return <Wallet />;
+        case RemainingSetupItem.VerifyBusiness:
+            return <Store />;
     }
 }
 
@@ -125,7 +139,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                     additionalText={step === RemainingSetupItem.VerifyBusiness && !kybState ? '• Takes ~5m' : undefined}
                     className={twMerge('py-5', i > 0 && 'border-t border-slate-200')}
                     completed={isStepCompleted(step)}
-                    img=""
+                    icon={getItemImage(step)}
                     key={i}
                     title={getItemTitle(step)}
                     renderTrigger={
