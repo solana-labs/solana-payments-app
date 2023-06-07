@@ -68,14 +68,14 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                 let usdcSize: number;
 
                 if (refundInitiation.test) {
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 } else {
                     // TODO: There was a bug here, commenting out and setting to 0.0001 for now
                     // usdcSize = await convertAmountAndCurrencyToUsdcSize(
                     //     refundInitiation.amount,
                     //     refundInitiation.currency
                     // );
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 }
 
                 const newRefundRecordId = await generatePubkeyString();

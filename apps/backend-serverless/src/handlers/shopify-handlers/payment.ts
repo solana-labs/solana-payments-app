@@ -75,14 +75,14 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 let usdcSize: number;
 
                 if (paymentInitiation.test) {
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 } else {
                     // TODO: We had a bug here, figure it out and fix it, for now, setting to 0.0001
                     // usdcSize = await convertAmountAndCurrencyToUsdcSize(
                     //     paymentInitiation.amount,
                     //     paymentInitiation.currency
                     // );
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 }
 
                 const newPaymentRecordId = await generatePubkeyString();
