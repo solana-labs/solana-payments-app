@@ -181,6 +181,7 @@ export function OpenRefunds(props: Props) {
                         className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'space-x-3')}
                     >
                         <Dialog.Root open={denyApprove === refund.orderId} onOpenChange={() => setDenyApprove(null)}>
+                            <WalletModalButton>Wallet Button</WalletModalButton>
                             <Button.Secondary onClick={() => setDenyApprove(refund.orderId)}>Deny</Button.Secondary>
                             <Dialog.Portal>
                                 <Dialog.Overlay
