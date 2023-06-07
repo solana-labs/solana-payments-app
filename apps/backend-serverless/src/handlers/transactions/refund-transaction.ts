@@ -61,11 +61,15 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
+        console.log('body');
+
         try {
             refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
         } catch (error) {
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
+
+        console.log('here');
 
         let gasKeypair: web3.Keypair;
 
@@ -74,6 +78,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
+
+        console.log('there');
 
         let refundRecord: RefundRecord | null;
 
@@ -85,11 +91,15 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
         }
 
+        console.log('where');
+
         if (refundRecord == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
         }
 
         let paymentRecord: PaymentRecord | null;
+
+        console.log('oh');
 
         try {
             paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
@@ -101,6 +111,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
+        console.log('yep');
+
         let merchant: Merchant | null;
 
         try {
@@ -111,12 +123,15 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
         }
 
+        console.log('haaa');
+
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         const singleUseKeypair = await generateSingleUseKeypairFromRefundRecord(refundRecord);
 
+        console.log('nah');
         try {
             refundTransaction = await fetchRefundTransaction(
                 refundRecord,
@@ -128,8 +143,12 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 axios
             );
         } catch (error) {
+            console.log(error);
+            console.log(error.message);
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
+
+        console.log('ripp');
 
         // We don't need to check with TRM for test transactions
         if (refundRecord.test == false) {
