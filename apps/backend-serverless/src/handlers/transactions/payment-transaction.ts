@@ -68,12 +68,14 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const account = body['account'] as string | null;
 
         if (account == null) {
+            console.log('account is null');
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
         }
 
         try {
             paymentRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
         } catch (error) {
+            console.log('error parsing payment request');
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
@@ -82,6 +84,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
+            console.log('error fetching gas keypair', error, error.message);
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
@@ -92,14 +95,17 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 id: paymentRequest.paymentId,
             });
         } catch (error) {
+            console.log('error fetching payment record');
             return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
         }
 
         if (paymentRecord == null) {
+            console.log('payment record is null');
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
         }
 
         if (paymentRecord.shopGid == null) {
+            console.log('shop gid is null');
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
@@ -110,15 +116,18 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 id: paymentRecord.merchantId,
             });
         } catch (error) {
+            console.log('error fetching merchant');
             return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
         }
 
         if (merchant == null) {
             // Not sure if this should be 500 or 404, will do 404 for now
+            console.log('merchant is null');
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
         }
 
         if (merchant.accessToken == null) {
+            console.log('merchant access token is null');
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
@@ -142,6 +151,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 axios
             );
         } catch (error) {
+            console.log('error fetching payment transaction', error.message);
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
@@ -199,6 +209,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             transaction = encodeTransaction(paymentTransaction.transaction);
         } catch (error) {
+            console.log('error encoding transaction');
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
@@ -216,6 +227,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const transactionSignature = transaction.signature;
 
         if (transactionSignature == null) {
+            console.log('transaction signature is null');
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
@@ -231,6 +243,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 null
             );
         } catch (error) {
+            console.log('error creating transaction record');
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 

@@ -50,7 +50,6 @@ export const install = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ shop: shop });
         } catch (error) {
-            // return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
             return {
                 statusCode: 200,
                 body: JSON.stringify({

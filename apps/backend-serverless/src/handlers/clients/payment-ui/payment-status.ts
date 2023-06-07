@@ -108,10 +108,10 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 200,
             body: JSON.stringify(responseBodyData),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            },
+            // headers: {
+            //     'Access-Control-Allow-Origin': '*',
+            //     'Access-Control-Allow-Credentials': true,
+            // },
         };
     }
 );
