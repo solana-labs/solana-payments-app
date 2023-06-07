@@ -27,12 +27,13 @@ export function OpenRefunds(props: Props) {
     const openRefunds = useOpenRefundStore(state => state.openRefunds);
     const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
 
-    const { publicKey, sendTransaction, signTransaction, connect, connected, wallets, select } = useWallet();
+    const { publicKey, sendTransaction, connect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
     const [denyPending, setDenyPending] = useState(false);
     const [openApprove, setOpenApprove] = useState<string | null>(null);
     const [denyApprove, setDenyApprove] = useState<string | null>(null);
+    const [refundIdToProcess, setRefundIdToProcess] = useState<string | null>(null);
 
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
@@ -47,24 +48,21 @@ export function OpenRefunds(props: Props) {
         }
     }, [openRefunds]);
 
-    async function getRefundTransaction(refundId: string) {
-        setApprovePending(true);
-        approvePendingRef.current = true;
-
-        try {
-            if (!connected) {
-                await select(wallets[0].adapter.name);
-                await connect();
-            }
-        } catch (error) {
-            console.log('connect error', error);
+    useEffect(() => {
+        if (publicKey && refundIdToProcess) {
+            processRefundTransaction();
         }
+    }, [publicKey, refundIdToProcess]);
 
+    async function processRefundTransaction() {
+        if (!publicKey || !refundIdToProcess) {
+            return;
+        }
         try {
             const response = await axios.post(
-                API_ENDPOINTS.refundTransaction + '?refundId=' + refundId,
+                API_ENDPOINTS.refundTransaction + '?refundId=' + refundIdToProcess,
                 {
-                    account: publicKey ? publicKey.toBase58() : '',
+                    account: publicKey.toBase58(),
                 },
                 { headers: headers }
             );
@@ -72,7 +70,7 @@ export function OpenRefunds(props: Props) {
             const transaction = Transaction.from(buffer);
             await sendTransaction(transaction, connection);
             while (approvePendingRef.current) {
-                const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundId, {
+                const status = await axios.get(API_ENDPOINTS.refundStatus + '?shopId=' + refundIdToProcess, {
                     headers: headers,
                 });
                 await new Promise(resolve => setTimeout(resolve, 500));
@@ -89,6 +87,22 @@ export function OpenRefunds(props: Props) {
             setOpenApprove(null);
             setApprovePending(false);
         }
+    }
+
+    async function getRefundTransaction(refundId: string) {
+        setApprovePending(true);
+        approvePendingRef.current = true;
+
+        try {
+            if (!connected) {
+                await select(wallets[0].adapter.name);
+                await connect();
+            }
+        } catch (error) {
+            console.log('Connect error', error);
+        }
+
+        setRefundIdToProcess(refundId);
     }
 
     async function rejectRefund(refundId: string) {
