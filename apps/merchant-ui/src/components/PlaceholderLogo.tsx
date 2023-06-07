@@ -1,5 +1,4 @@
 import { twMerge } from 'tailwind-merge';
-
 import { CoffeeMaker } from './icons/CoffeeMaker';
 
 interface Props {

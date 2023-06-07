@@ -1,7 +1,6 @@
-import { twMerge } from 'tailwind-merge';
-import { useDropzone } from 'react-dropzone';
 import { useCallback } from 'react';
-
+import { useDropzone } from 'react-dropzone';
+import { twMerge } from 'tailwind-merge';
 import { Cloud } from './icons/Cloud';
 
 interface Props {

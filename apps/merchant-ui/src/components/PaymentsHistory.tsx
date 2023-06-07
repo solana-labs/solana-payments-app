@@ -1,12 +1,12 @@
-import { twMerge } from 'tailwind-merge';
+import * as RE from '@/lib/Result';
+import { formatPrice } from '@/lib/formatPrice';
+import { usePaymentStore } from '@/stores/paymentStore';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { formatPrice } from '@/lib/formatPrice';
-import * as RE from '@/lib/Result';
+import { twMerge } from 'tailwind-merge';
 import { PaginatedTable } from './PaginatedTable';
 import { PaymentsHistoryStatus } from './PaymentsHistoryStatus';
 import * as Tabs from './Tabs';
-import { usePaymentStore } from '@/stores/paymentStore';
 
 interface Props {
     className?: string;

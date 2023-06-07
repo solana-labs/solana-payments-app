@@ -1,18 +1,17 @@
-import { twMerge } from 'tailwind-merge';
-import { useRouter } from 'next/router';
-
-import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
-import { KYBButton } from './KYBButton';
-import { Primary } from './Button';
-import { isOk } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
 import * as RE from '@/lib/Result';
+import { isOk } from '@/lib/Result';
+import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import Policy from '@carbon/icons-react/lib/Policy';
 import Store from '@carbon/icons-react/lib/Store';
 import Wallet from '@carbon/icons-react/lib/Wallet';
-import Policy from '@carbon/icons-react/lib/Policy';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { Primary } from './Button';
+import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
+import { KYBButton } from './KYBButton';
 
 export enum RemainingSetupItem {
     VerifyBusiness,

@@ -1,7 +1,6 @@
-import Head from 'next/head';
-
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { SupportFaq } from '@/components/SupportFaq';
+import Head from 'next/head';
 
 export default function Support() {
     return (

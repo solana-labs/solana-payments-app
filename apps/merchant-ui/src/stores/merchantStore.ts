@@ -1,7 +1,7 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { create } from 'zustand';
 import axios from 'axios';
+import { create } from 'zustand';
 
 interface MerchantInfo {
     shop: string;

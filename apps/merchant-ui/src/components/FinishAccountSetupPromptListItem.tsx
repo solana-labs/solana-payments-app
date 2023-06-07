@@ -1,8 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
-import { CheckmarkCircle } from './icons/CheckmarkCircle';
-import * as Button from './Button';
 import { cloneElement } from 'react';
+import { twMerge } from 'tailwind-merge';
+import * as Button from './Button';
+import { CheckmarkCircle } from './icons/CheckmarkCircle';
 
 interface Props {
     additionalText?: string;

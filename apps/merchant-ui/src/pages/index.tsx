@@ -1,8 +1,7 @@
+import { Welcome } from '@/components/Welcome';
+import { WelcomeHero } from '@/components/WelcomeHero';
 import Head from 'next/head';
 import { twMerge } from 'tailwind-merge';
-
-import { WelcomeHero } from '@/components/WelcomeHero';
-import { Welcome } from '@/components/Welcome';
 
 export default function Home() {
     return (

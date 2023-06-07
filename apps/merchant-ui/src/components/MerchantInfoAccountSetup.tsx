@@ -1,8 +1,6 @@
-import { twMerge } from 'tailwind-merge';
-
-import { KYBButton } from './KYBButton';
-import { useMerchantStore } from '@/stores/merchantStore';
 import * as RE from '@/lib/Result';
+import { useMerchantStore } from '@/stores/merchantStore';
+import { KYBButton } from './KYBButton';
 
 interface Props {
     className?: string;

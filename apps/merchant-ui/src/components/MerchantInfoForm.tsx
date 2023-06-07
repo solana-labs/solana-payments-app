@@ -1,11 +1,8 @@
-import { twMerge } from 'tailwind-merge';
 import { produce } from 'immer';
-
-import { Input } from './Input';
-import { PlaceholderLogo } from './PlaceholderLogo';
-import { ImageUpload } from './ImageUpload';
+import { twMerge } from 'tailwind-merge';
 import { AddressInput } from './AddressInput';
-import { TokenSelect, Token } from './TokenSelect';
+import { Input } from './Input';
+import { Token, TokenSelect } from './TokenSelect';
 
 export interface Data {
     name: string;

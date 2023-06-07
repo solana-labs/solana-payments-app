@@ -1,12 +1,11 @@
-import { twMerge } from 'tailwind-merge';
+import * as RE from '@/lib/Result';
+import { updateMerchantKybInquiry, useMerchantStore } from '@/stores/merchantStore';
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
 import dynamic from 'next/dynamic';
-
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { Primary } from './Button';
 import { CheckmarkCircle } from './icons/CheckmarkCircle';
-import * as RE from '@/lib/Result';
-import { useMerchantStore, updateMerchantKybInquiry } from '@/stores/merchantStore';
 
 const Inquiry = dynamic(() => import('persona').then(m => m.Inquiry), {
     loading: () => <div />,

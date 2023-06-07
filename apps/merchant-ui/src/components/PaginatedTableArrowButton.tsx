@@ -1,5 +1,4 @@
 import { twMerge } from 'tailwind-merge';
-
 import { ArrowBack } from './icons/ArrowBack';
 import { ArrowForward } from './icons/ArrowForward';
 

@@ -1,9 +1,9 @@
-import Head from 'next/head';
-import Router from 'next/router';
-import { useMerchantStore } from '@/stores/merchantStore';
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { Payments as PaymentsScreen } from '@/components/Payments';
 import { isOk } from '@/lib/Result';
+import { useMerchantStore } from '@/stores/merchantStore';
+import Head from 'next/head';
+import Router from 'next/router';
 
 export default function Payments() {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);

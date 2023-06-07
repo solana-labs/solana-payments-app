@@ -1,7 +1,6 @@
-import { twMerge } from 'tailwind-merge';
-import { useEffect, useState } from 'react';
-
 import * as RE from '@/lib/Result';
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { PaginatedTableArrowButton } from './PaginatedTableArrowButton';
 import { PaginatedTablePageIndicator } from './PaginatedTablePageIndicator';
 

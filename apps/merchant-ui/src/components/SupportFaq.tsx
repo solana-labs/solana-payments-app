@@ -1,9 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
-import { DefaultLayoutContent } from './DefaultLayoutContent';
-import { FAQ } from './FAQ';
 import { Primary } from './Button';
+import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { FAQ } from './FAQ';
 
 interface Props {
     className?: string;

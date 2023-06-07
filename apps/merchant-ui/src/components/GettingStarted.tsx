@@ -1,11 +1,9 @@
-import { twMerge } from 'tailwind-merge';
-
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
-import { DefaultLayoutContent } from './DefaultLayoutContent';
-import { FinishAccountSetupPrompt, RemainingSetupItem } from './FinishAccountSetupPrompt';
-import { isOk } from '@/lib/Result';
 import { LoadingDots } from '@/components/LoadingDots';
+import { isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
+import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { FinishAccountSetupPrompt } from './FinishAccountSetupPrompt';
 
 interface Props {
     className?: string;

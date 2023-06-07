@@ -1,7 +1,6 @@
-import Head from 'next/head';
-
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { GettingStarted } from '@/components/GettingStarted';
+import Head from 'next/head';
 
 export default function GetStartedPage() {
     return (
