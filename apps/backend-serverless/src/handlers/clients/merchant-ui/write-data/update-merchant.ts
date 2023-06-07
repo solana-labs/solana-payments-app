@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { Merchant, PrismaClient } from '@prisma/client';
-import { MerchantService, MerchantUpdate, KybState } from '../../../../services/database/merchant-service.database.service.js';
+import { KybState, Merchant, PrismaClient } from '@prisma/client';
+import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
 import { requestErrorResponse } from '../../../../utilities/responses/request-response.utility.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
@@ -95,7 +95,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        if (merchant.kybInquiry && merchant.kybState !== KybState.Finished && merchant.kybState !== KybState.Failed) {
+        if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
             try {
                 merchant = await syncKybState(merchant);
             } catch (error) {

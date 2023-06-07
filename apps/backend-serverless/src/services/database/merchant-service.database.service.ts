@@ -1,4 +1,4 @@
-import { PrismaClient, Merchant } from '@prisma/client';
+import { PrismaClient, Merchant, KybState } from '@prisma/client';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
@@ -7,6 +7,7 @@ export enum KybState {
     Failed = 'failed',
     Finished = 'finished',
 }
+
 
 export type ShopQuery = {
     shop: string;
