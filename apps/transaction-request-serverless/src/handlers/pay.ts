@@ -6,7 +6,7 @@ import {
 } from '../models/payment-transaction-request.model.js';
 import { decode } from '../utils/strings.util.js';
 import { createConnection } from '../utils/connection.util.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 
 export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let paymentTransactionRequest: PaymentTransactionRequest;

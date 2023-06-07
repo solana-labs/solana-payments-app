@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { getPaymentId } from '@/features/pay-tab/paySlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 

@@ -1,6 +1,6 @@
 import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utils/jupiter.util.js';
 import axios from 'axios';
-import * as anchor from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { SwapIxConfig } from './create-swap-ix.service.js';
 
 const NO_QUOTE_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for your swap.';
@@ -9,7 +9,7 @@ const NO_SWAP_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for you
 
 const JUPITER_SWAP_REQUEST_URL = `${JUPITER_URL}/swap`;
 
-export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<anchor.web3.TransactionInstruction[]> => {
+export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<web3.TransactionInstruction[]> => {
     var { data } = await axios.get(createJupiterQuoteRequestUrl(config.quantity, config.fromMint, config.toMint));
 
     if (data == null || data == undefined || data.data == null || data.data == undefined) {
@@ -40,7 +40,7 @@ export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<anchor.
 
     const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
 
-    const swapTransactionIxs = anchor.web3.Transaction.from(swapTransactionBuf).instructions;
+    const swapTransactionIxs = web3.Transaction.from(swapTransactionBuf).instructions;
 
     return swapTransactionIxs;
 };

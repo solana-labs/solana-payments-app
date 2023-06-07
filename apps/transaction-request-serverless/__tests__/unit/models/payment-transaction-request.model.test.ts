@@ -3,7 +3,7 @@ import {
     TransactionType,
     parseAndValidatePaymentTransactionRequest,
 } from '../../../src/models/payment-transaction-request.model.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 
 describe('unit testing the payment transaction request model', () => {
     it('valid transaction request model', () => {

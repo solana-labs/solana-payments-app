@@ -35,6 +35,7 @@ export const install = Sentry.AWSLambda.wrapHandler(
                 statusCode: 200,
                 body: JSON.stringify({
                     up: 'down',
+                    e: error.message,
                 }),
             };
         }
@@ -42,62 +43,59 @@ export const install = Sentry.AWSLambda.wrapHandler(
         const merchantService = new MerchantService(prisma);
 
         const shop = parsedAppInstallQuery.shop;
-        // const newNonce = await generatePubkeyString();
+        const newNonce = await generatePubkeyString();
 
-        // let merchant: Merchant | null;
+        let merchant: Merchant | null;
 
-        // try {
-        //     merchant = await merchantService.getMerchant({ shop: shop });
-        // } catch (error) {
-        //     // return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
-        //     return {
-        //         statusCode: 200,
-        //         body: JSON.stringify({
-        //             hello: 'world',
-        //         }),
-        //     };
-        // }
+        try {
+            merchant = await merchantService.getMerchant({ shop: shop });
+        } catch (error) {
+            // return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    hello: 'world',
+                }),
+            };
+        }
 
-        // try {
-        //     if (merchant == null) {
-        //         const newMerchantId = await generatePubkeyString();
-        //         merchant = await merchantService.createMerchant(newMerchantId, shop, newNonce);
-        //     } else {
-        //         merchant = await merchantService.updateMerchant(merchant, {
-        //             lastNonce: newNonce,
-        //         });
-        //     }
-        // } catch (error) {
-        //     // return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
-        //     return {
-        //         statusCode: 200,
-        //         body: JSON.stringify({
-        //             red: 'blue',
-        //         }),
-        //     };
-        // }
+        try {
+            if (merchant == null) {
+                const newMerchantId = await generatePubkeyString();
+                merchant = await merchantService.createMerchant(newMerchantId, shop, newNonce);
+            } else {
+                merchant = await merchantService.updateMerchant(merchant, {
+                    lastNonce: newNonce,
+                });
+            }
+        } catch (error) {
+            // return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    red: 'blue',
+                }),
+            };
+        }
 
-        // // const signedCookie = createSignedShopifyCookie(newNonce);
-        // // const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
+        // const signedCookie = createSignedShopifyCookie(newNonce);
+        // const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
 
-        // const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
-
-        // return {
-        //     statusCode: 302,
-        //     multiValueHeaders: {
-        //         // 'Set-Cookie': [cookieValue],
-        //         Location: [redirectUrl],
-        //         'Content-Type': ['text/html'],
-        //     },
-        //     body: JSON.stringify({
-        //         message: 'Redirecting..',
-        //     }),
-        // };
+        const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
         return {
-            statusCode: 200,
+            statusCode: 302,
+            // multiValueHeaders: {
+            //     // 'Set-Cookie': [cookieValue],
+            //     Location: [redirectUrl],
+            //     'Content-Type': ['text/html'],
+            // },
+            headers: {
+                Location: redirectUrl,
+                'Content-Type': 'text/html',
+            },
             body: JSON.stringify({
-                bro: 'how',
+                message: 'Redirecting..',
             }),
         };
     },

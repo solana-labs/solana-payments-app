@@ -3,9 +3,9 @@ import { filterUndefinedFields } from '../../utilities/database/filter-underfine
 import { prismaErrorHandler } from './shared.database.service.js';
 
 export enum KybState {
-  Pending = 'pending',
-  Failed = 'failed',
-  Finished = 'finished',
+    Pending = 'pending',
+    Failed = 'failed',
+    Finished = 'finished',
 }
 
 export type ShopQuery = {
@@ -62,7 +62,7 @@ export class MerchantService {
 
     async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
         return prismaErrorHandler(
-            this.prisma.merchant.findUnique({
+            this.prisma.merchant.findFirst({
                 where: query,
             })
         );

@@ -15,7 +15,7 @@
   },
   "scripts": {
     "predev": "yarn helius & npx prisma generate",
-    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage stage --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage stage --config serverless.green.yml",
+    "dev": "NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.purple.yml & NODE_EXTRA_CA_CERTS=dev-certs/cert.pem serverless offline start --stage dev --config serverless.green.yml",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

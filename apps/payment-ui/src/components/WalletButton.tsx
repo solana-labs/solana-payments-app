@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { AppDispatch } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPayerAccount } from '@/features/pay-tab/paySlice';
