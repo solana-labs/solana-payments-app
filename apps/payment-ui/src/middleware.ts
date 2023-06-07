@@ -7,7 +7,7 @@ const BLOCKED_COUNTRY = 'US';
 
 // Trigger this middleware to run on the `/secret-page` route
 export const config = {
-    matcher: '/secret-page',
+    matcher: '/',
 };
 
 const isBlockedGeo = (request: NextRequest): boolean => {
@@ -32,7 +32,7 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 
 export function middleware(request: NextRequest) {
     if (isBlockedGeo(request)) {
-        request.nextUrl.pathname = '/login';
+        request.nextUrl.pathname = '/geo-blocked';
     }
 
     // Rewrite to URL

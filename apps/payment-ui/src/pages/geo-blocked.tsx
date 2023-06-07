@@ -21,7 +21,6 @@ export default function GeoBlocked() {
 
         window.addEventListener('resize', handleResize);
 
-        // Cleanup function
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -30,7 +29,7 @@ export default function GeoBlocked() {
     return (
         <>
             <Head>
-                <title>My App</title>
+                <title>Solana Pay</title>
             </Head>
             <div className="min-h-screen bg-black flex flex-col justify-between items-center">
                 <div className="w-full flex-grow flex items-end">
