@@ -121,6 +121,12 @@ functions:
       - httpApi:
           path: /update-merchant
           method: put
+  login:
+    handler: src/handlers/testing/login.login
+    events:
+      - httpApi:
+          path: /login
+          method: get
   sqs-message-receive:
     handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
     environment:
@@ -157,19 +163,19 @@ functions:
 stepFunctions:
   stateMachines:
     retry:
-        name: retry
-        definition:
-          StartAt: wait_using_seconds
-          States: 
-            wait_using_seconds: 
-              Type: Wait
-              SecondsPath: "$.retrySeconds"
-              Next: process_retry
-            process_retry: 
-              Type: Task
-              Resource:
-                Fn::GetAtt: [retry-request, Arn]
-              End: true
+      name: retry
+      definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+            Type: Wait
+            SecondsPath: '$.retrySeconds'
+            Next: process_retry
+          process_retry:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [retry-request, Arn]
+            End: true
 
 resources:
   Outputs:
