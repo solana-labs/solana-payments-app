@@ -17,7 +17,7 @@ export default function Home() {
                 <div className="flex justify-center py-9 px-24 md:justify-end">
                     <Welcome className="pt-14" />
                 </div>
-                <div className={twMerge('h-full', 'hidden', 'justify-end', 'overflow-hidden', 'md:flex')}>
+                <div className={twMerge('border', 'hidden', 'justify-end', 'overflow-hidden', 'md:flex')}>
                     <WelcomeHero className="h-full w-full" />
                 </div>
             </div>
