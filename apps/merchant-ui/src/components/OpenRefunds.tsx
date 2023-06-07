@@ -1,3 +1,4 @@
+import ErrorToast from '@/components/ErrorToast';
 import { PaginatedTable } from '@/components/PaginatedTable';
 import * as RE from '@/lib/Result';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
@@ -36,6 +37,8 @@ export function OpenRefunds(props: Props) {
     const [denyApprove, setDenyApprove] = useState<string | null>(null);
 
     const [walletModalActive, setWalletModalActive] = useState(false);
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
@@ -346,6 +349,7 @@ export function OpenRefunds(props: Props) {
                                 </Dialog.Overlay>
                             </Dialog.Portal>
                         </Dialog.Root>
+                        <ErrorToast errorMessage={errorMessage} />
                     </div>
                 ),
             }}
