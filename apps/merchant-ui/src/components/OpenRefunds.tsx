@@ -6,6 +6,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import { RefundStatus, useOpenRefundStore } from '@/stores/refundStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { WalletModalButton } from '@solana/wallet-adapter-react-ui';
 import { Transaction } from '@solana/web3.js';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -193,6 +194,7 @@ export function OpenRefunds(props: Props) {
                         className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'space-x-3')}
                     >
                         <Dialog.Root open={denyApprove === refund.orderId} onOpenChange={() => setDenyApprove(null)}>
+                            <WalletModalButton>Wallet Button</WalletModalButton>
                             <Button.Secondary onClick={() => setDenyApprove(refund.orderId)}>Deny</Button.Secondary>
                             <Dialog.Portal>
                                 <Dialog.Overlay
