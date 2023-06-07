@@ -1,5 +1,5 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 
 export const generateSingleUseKeypairFromPaymentRecord = async (paymentRecord: PaymentRecord) => {
     const shopifyStrings = ['shopify', paymentRecord.shopId];

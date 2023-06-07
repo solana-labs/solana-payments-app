@@ -1,7 +1,7 @@
 import { verifyRefundTransactionWithRefundRecord } from '../../../../src/services/transaction-validation/validate-discovered-refund-transaction.service.js';
 import { RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
 import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 

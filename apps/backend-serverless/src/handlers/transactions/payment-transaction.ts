@@ -15,7 +15,7 @@ import {
 } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
 import { encodeBufferToBase58 } from '../../utilities/transaction-request/encode-transaction.utility.js';
 import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';

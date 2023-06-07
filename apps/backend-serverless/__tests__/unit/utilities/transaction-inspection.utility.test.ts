@@ -1,4 +1,4 @@
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { findPayingWalletFromTransaction } from '../../../src/utilities/transaction-inspection.utility.js';
 import { createMockTransaction } from '../../../src/utilities/testing-helper/create-mock.utility.js';
 

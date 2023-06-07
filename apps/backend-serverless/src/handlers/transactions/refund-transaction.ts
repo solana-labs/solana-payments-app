@@ -6,7 +6,7 @@ import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
 } from '../../models/transaction-requests/refund-transaction-request.model.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import {
     encodeBufferToBase58,

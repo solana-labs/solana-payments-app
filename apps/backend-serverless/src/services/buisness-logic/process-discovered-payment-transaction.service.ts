@@ -8,7 +8,7 @@ import {
     verifyPaymentRecordWithHeliusEnhancedTransaction,
     verifyPaymentTransactionWithPaymentRecord,
 } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 import * as Sentry from '@sentry/serverless';

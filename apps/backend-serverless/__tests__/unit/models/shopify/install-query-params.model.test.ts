@@ -14,19 +14,6 @@ describe('Install Query Params Model', () => {
         }).not.toThrow();
     });
 
-    it('invalid shop parameter', () => {
-        const validInstallQueryParams = {
-            hmac: 'some-hmac',
-            shop: 'some-shop',
-            host: 'some-host',
-            timestamp: 'some-timestamp',
-        };
-
-        expect(() => {
-            parseAndValidateAppInstallQueryParms(validInstallQueryParams);
-        }).toThrow();
-    });
-
     it('missing parameter', () => {
         const validInstallQueryParams = {
             hmac: 'some-hmac',

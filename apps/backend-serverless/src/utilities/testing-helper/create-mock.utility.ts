@@ -5,7 +5,7 @@ import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/re
 import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
@@ -35,6 +35,8 @@ export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Mercha
         name: merchantData.name ?? 'Some Merchant',
         acceptedTermsAndConditions: merchantData.acceptedTermsAndConditions ?? false,
         dismissCompleted: merchantData.dismissCompleted ?? false,
+        kybInquiry: merchantData.kybInquiry ?? null,
+        kybState: merchantData.kybState ?? null,
     };
 };
 

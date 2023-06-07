@@ -4,7 +4,7 @@ import {
     verifySingleUseInstruction,
 } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
 import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 import { createMockPaymentRecord } from '../../../../src/utilities/testing-helper/create-mock.utility.js';

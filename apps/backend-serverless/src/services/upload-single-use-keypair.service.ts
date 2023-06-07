@@ -1,5 +1,5 @@
 import { PaymentRecord } from '@prisma/client';
-import { web3 } from '@project-serum/anchor';
+import * as web3 from '@solana/web3.js';
 import pkg from 'aws-sdk';
 const { S3 } = pkg;
 
