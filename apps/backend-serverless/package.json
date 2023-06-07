@@ -21,7 +21,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
     "test:tx": "jest integration",
-    "helius": "node scripts/helius.cjs"
+    "helius": "node scripts/helius.cjs",
+    "deploy:prod:green": "serverless deploy --stage prod --config serverless.green.yml",
+    "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

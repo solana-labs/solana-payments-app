@@ -1,17 +1,27 @@
+import { cloneElement } from 'react';
 import { twMerge } from 'tailwind-merge';
-
-import { CheckmarkCircle } from './icons/CheckmarkCircle';
 import * as Button from './Button';
+import { CheckmarkCircle } from './icons/CheckmarkCircle';
 
 interface Props {
     additionalText?: string;
     className?: string;
     completed?: boolean;
-    img: string;
+    icon: JSX.Element;
     title: string;
     renderTrigger: (props: Omit<Props, 'renderTrigger'>) => JSX.Element;
     onStart?(): void;
 }
+
+interface IconProps {
+    icon: JSX.Element;
+    size: number | string; // Accept the size you want to pass to the icon
+    color: string;
+}
+
+const IconWrapper: React.FC<IconProps> = ({ icon, size, color }) => {
+    return cloneElement(icon, { size, fill: color }); // clone the icon and set its size
+};
 
 export function FinishAccountSetupPromptListItem(props: Props) {
     return (
@@ -24,7 +34,10 @@ export function FinishAccountSetupPromptListItem(props: Props) {
                 props.className
             )}
         >
-            <img src={props.img} className="bg-slate-200 h-10 overflow-hidden w-10 rounded-full" />
+            {/* <img src={props.img} > */}
+            <div className="bg-indigo-100 h-10 overflow-hidden w-10 rounded-full flex items-center justify-center">
+                <IconWrapper icon={props.icon} size={24} color="#4F46E5" />
+            </div>
             <div className="text-black">{props.title}</div>
             <div className="flex items-center space-x-6">
                 {props.completed ? (

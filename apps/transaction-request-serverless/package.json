@@ -16,7 +16,8 @@
         "lint:fix": "eslint --fix .",
         "test": "jest",
         "test:integration": "jest integration",
-        "offline": "NODE_ENV=development serverless offline start --stage dev"
+        "offline": "NODE_ENV=development serverless offline start --stage dev",
+        "deploy:prod": "serverless deploy --stage prod --config serverless.yml"
     },
     "keywords": [],
     "author": "@tj_littlejohn",

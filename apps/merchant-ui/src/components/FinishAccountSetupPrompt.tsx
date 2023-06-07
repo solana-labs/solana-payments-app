@@ -1,15 +1,17 @@
-import { twMerge } from 'tailwind-merge';
+import { LoadingDots } from '@/components/LoadingDots';
+import * as RE from '@/lib/Result';
+import { isOk } from '@/lib/Result';
+import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import Policy from '@carbon/icons-react/lib/Policy';
+import Store from '@carbon/icons-react/lib/Store';
+import Wallet from '@carbon/icons-react/lib/Wallet';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { Primary } from './Button';
 import { FinishAccountSetupPromptListItem } from './FinishAccountSetupPromptListItem';
 import { KYBButton } from './KYBButton';
-import { Primary } from './Button';
-import { isOk } from '@/lib/Result';
-import { LoadingDots } from '@/components/LoadingDots';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
-import * as RE from '@/lib/Result';
 
 export enum RemainingSetupItem {
     VerifyBusiness,
@@ -31,6 +33,17 @@ function getItemTitle(item: RemainingSetupItem) {
             return 'Add a wallet';
         case RemainingSetupItem.VerifyBusiness:
             return 'Verify your business';
+    }
+}
+
+function getItemImage(item: RemainingSetupItem) {
+    switch (item) {
+        case RemainingSetupItem.AcceptTerms:
+            return <Policy />;
+        case RemainingSetupItem.AddWallet:
+            return <Wallet />;
+        case RemainingSetupItem.VerifyBusiness:
+            return <Store />;
     }
 }
 
@@ -125,7 +138,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                     additionalText={step === RemainingSetupItem.VerifyBusiness && !kybState ? '• Takes ~5m' : undefined}
                     className={twMerge('py-5', i > 0 && 'border-t border-slate-200')}
                     completed={isStepCompleted(step)}
-                    img=""
+                    icon={getItemImage(step)}
                     key={i}
                     title={getItemTitle(step)}
                     renderTrigger={

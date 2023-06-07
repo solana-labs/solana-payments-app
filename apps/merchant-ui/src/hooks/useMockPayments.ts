@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-
 import * as RE from '@/lib/Result';
+import { useEffect, useState } from 'react';
 
 enum PaymentStatus {
     Chargeback,

@@ -1,8 +1,7 @@
-import { twMerge } from 'tailwind-merge';
 import * as Select from '@radix-ui/react-select';
-
-import { ChevronDown } from './icons/ChevronDown';
+import { twMerge } from 'tailwind-merge';
 import { Check } from './icons/Check';
+import { ChevronDown } from './icons/ChevronDown';
 
 export enum Token {
     Sol,

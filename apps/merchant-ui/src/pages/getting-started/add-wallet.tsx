@@ -1,7 +1,6 @@
-import Head from 'next/head';
-
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { GettingStartedAddWallet } from '@/components/GettingStartedAddWallet';
+import Head from 'next/head';
 
 export default function AddWallet() {
     return (

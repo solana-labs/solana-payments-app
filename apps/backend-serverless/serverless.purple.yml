@@ -4,6 +4,8 @@ useDotenv: true
 provider:
   name: aws
   runtime: nodejs18.x
+  httpApi:
+    cors: true
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
@@ -14,7 +16,7 @@ provider:
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
     TRM_API_KEY: ${env:TRM_API_KEY}
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
-    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     AWS_BUCKET_OBJECT_NAME: ${env:AWS_BUCKET_OBJECT_NAME}
     AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
     AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}

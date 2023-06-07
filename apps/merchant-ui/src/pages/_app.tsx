@@ -1,22 +1,21 @@
+import { useMerchantStore } from '@/stores/merchantStore';
+import { usePaymentStore } from '@/stores/paymentStore';
+import { useClosedRefundStore, useOpenRefundStore } from '@/stores/refundStore';
 import '@/styles/globals.css';
-import type { AppProps } from 'next/app';
-import Head from 'next/head';
 import { Provider as TooltipProvider } from '@radix-ui/react-tooltip';
-import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { clusterApiUrl } from '@solana/web3.js';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
     BackpackWalletAdapter,
     GlowWalletAdapter,
     PhantomWalletAdapter,
     SlopeWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { useMerchantStore } from '@/stores/merchantStore';
-import { useClosedRefundStore, useOpenRefundStore } from '@/stores/refundStore';
-import { get } from 'http';
-import { usePaymentStore } from '@/stores/paymentStore';
+import { clusterApiUrl } from '@solana/web3.js';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { FC, ReactNode, useEffect, useMemo } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);

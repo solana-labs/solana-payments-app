@@ -1,5 +1,3 @@
-import { twMerge } from 'tailwind-merge';
-
 import { ShopifySignIn } from './ShopifySignIn';
 import { SolanaPayMark } from './SolanaPayMark';
 

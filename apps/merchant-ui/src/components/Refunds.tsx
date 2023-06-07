@@ -1,12 +1,10 @@
-import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
-
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { ClosedRefunds } from './ClosedRefunds';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { OpenRefunds } from './OpenRefunds';
 import * as Tabs from './Tabs';
 import { Info } from './icons/Info';
-import { OpenRefunds } from './OpenRefunds';
-import { ClosedRefunds } from './ClosedRefunds';
 
 interface Props {
     className?: string;

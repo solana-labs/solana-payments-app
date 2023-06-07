@@ -1,18 +1,16 @@
-import { twMerge } from 'tailwind-merge';
-import { useEffect, useState } from 'react';
-
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
-import { DefaultLayoutContent } from './DefaultLayoutContent';
-import { DefaultLayoutHeader } from './DefaultLayoutHeader';
-import { Token } from './TokenSelect';
-import * as Button from './Button';
-import { Input } from './Input';
-import { AddressInput } from './AddressInput';
-import { WalletAddressSuggestion } from './WalletAddressSuggestion';
-import { TokenSelect } from './TokenSelect';
-import { PublicKey } from '@solana/web3.js';
 import { isOk } from '@/lib/Result';
 import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { AddressInput } from './AddressInput';
+import * as Button from './Button';
+import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { DefaultLayoutHeader } from './DefaultLayoutHeader';
+import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { Input } from './Input';
+import { Token, TokenSelect } from './TokenSelect';
+import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 
 interface FormData {
     name: string;

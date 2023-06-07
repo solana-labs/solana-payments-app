@@ -1,17 +1,13 @@
-import { twMerge } from 'tailwind-merge';
-import { useRouter } from 'next/router';
-
-import { DefaultLayoutContent } from './DefaultLayoutContent';
-import { BackButton } from './BackButton';
-import { AddressInput } from './AddressInput';
-import { WalletAddressSuggestion } from './WalletAddressSuggestion';
-import * as Button from './Button';
-import { useEffect, useState } from 'react';
-import { API_ENDPOINTS } from '@/lib/endpoints';
-import { PublicKey } from '@solana/web3.js';
-import axios from 'axios';
-import { set } from 'date-fns';
 import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
+import { PublicKey } from '@solana/web3.js';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { AddressInput } from './AddressInput';
+import { BackButton } from './BackButton';
+import * as Button from './Button';
+import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 
 interface Props {
     className?: string;

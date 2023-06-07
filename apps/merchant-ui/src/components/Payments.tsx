@@ -1,5 +1,5 @@
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
+import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { PaymentsHistory } from './PaymentsHistory';
 
 interface Props {
