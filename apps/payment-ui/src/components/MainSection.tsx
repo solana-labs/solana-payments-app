@@ -29,7 +29,7 @@ const MainSection = (props: BlockedProps) => {
     return (
         <div className="flex flex-col h-[100vh] w-full max-w-2xl mx-auto">
             <DisplaySection />
-            <CheckoutSection isBlocked={props.isBlocked} />
+            <CheckoutSection isBlocked={props.isBlocked} country={props.country} />
         </div>
     );
 };

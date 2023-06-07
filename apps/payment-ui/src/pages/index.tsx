@@ -1,6 +1,9 @@
 import Head from 'next/head';
 import MainSection from '../components/MainSection';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import { useRouter } from 'next/router';
+import DisplaySection from '@/components/DisplaySection';
+import CheckoutSection from '@/components/CheckoutSection';
 
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -13,21 +16,23 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
 
 export type BlockedProps = {
     isBlocked: string;
+    country: string;
 };
   
 
 export default function Home({
-    isBlocked
+    isBlocked,
+    country
   }: BlockedProps) {
 
     return (
         <div>
             <Head>
-                <title>{'Solana Pay'}</title>
+                <title>{country}</title>
             </Head>
             <div className="min-h-screen bg-black flex flex-col justify-between items-center">
                 <div className="w-full flex-grow flex items-end">
-                    <MainSection isBlocked={isBlocked} />
+                    <MainSection isBlocked={isBlocked} country={country} />
                 </div>
             </div>
         </div>

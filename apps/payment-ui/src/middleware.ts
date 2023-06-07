@@ -15,9 +15,11 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 
     const geo = request.geo;
 
-    if (geo == null || geo.country == null) {
-        return true;
-    }
+    return false;
+
+    // if (geo == null || geo.country == null) {
+    //     return true;
+    // }
 
     // if (geo.country === 'CN') {
     //     return true;
@@ -25,13 +27,19 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     //     return true;
     // }
 
-    return false;
+    // return false;
 };
 
 export function middleware(request: NextRequest) {
     const { nextUrl: url } = request;
 
     const isBlocked = isBlockedGeo(request);
+
+    const geo = request.geo;
+
+    if (geo) {
+        url.searchParams.set('country', geo.country ?? 'unknown');
+    }
 
     url.searchParams.set('isBlocked', isBlocked.toString());
 
