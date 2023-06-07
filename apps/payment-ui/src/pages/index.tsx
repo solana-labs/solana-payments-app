@@ -1,36 +1,35 @@
 import Head from 'next/head';
 import MainSection from '../components/MainSection';
-import { useEffect } from 'react';
-import { setIsMobile } from '@/features/is-mobile/viewPortSlice';
-import { AppDispatch } from '@/store';
-import { useDispatch } from 'react-redux';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 
-export default function Home() {
 
-    const dispatch = useDispatch<AppDispatch>();
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+    const { query } = context;
 
-    useEffect(() => {
-        const handleResize = () => {
-            dispatch(setIsMobile(window.innerWidth < 640));
-        };
+    return {
+        props: query,
+    }
+}
 
-        window.addEventListener('resize', handleResize);
+export type BlockedProps = {
+    isBlocked: string;
+};
+  
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [dispatch]);
+export default function Home({
+    isBlocked
+  }: BlockedProps) {
 
     return (
-        <>
+        <div>
             <Head>
-                <title>Solana Pay</title>
+                <title>{'Solana Pay'}</title>
             </Head>
             <div className="min-h-screen bg-black flex flex-col justify-between items-center">
                 <div className="w-full flex-grow flex items-end">
-                    <MainSection />
+                    <MainSection isBlocked={isBlocked} />
                 </div>
             </div>
-        </>
+        </div>
     );
 }

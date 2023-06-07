@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { AppDispatch } from '../../store';
 import { timerTick } from '@/features/pay-tab/paySlice';
 
 const TimerHandler: React.FC = () => {

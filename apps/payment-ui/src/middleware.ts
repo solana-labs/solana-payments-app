@@ -19,22 +19,21 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
-    if (geo.country === 'CN') {
-        return true;
-    } else if (geo.country === 'US' && geo.region === 'NY') {
-        return true;
-    }
-
-    return true;
+    // if (geo.country === 'CN') {
+    //     return true;
+    // } else if (geo.country === 'US' && geo.region === 'NY') {
+    //     return true;
+    // }
 
     return false;
 };
 
 export function middleware(request: NextRequest) {
-    if (isBlockedGeo(request)) {
-        request.nextUrl.pathname = '/geo-blocked';
-    }
+    const { nextUrl: url } = request;
 
-    // Rewrite to URL
-    return NextResponse.rewrite(request.nextUrl);
+    const isBlocked = isBlockedGeo(request);
+
+    url.searchParams.set('isBlocked', isBlocked.toString());
+
+    return NextResponse.rewrite(url);
 }

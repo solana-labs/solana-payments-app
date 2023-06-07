@@ -6,8 +6,10 @@ import { AppDispatch } from '../store';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getPaymentId, setPaymentId } from '@/features/pay-tab/paySlice';
+import { BlockedProps } from '@/pages';
 
-const MainSection = () => {
+
+const MainSection = (props: BlockedProps) => {
     const router = useRouter();
 
     if (!router.isReady) {
@@ -27,7 +29,7 @@ const MainSection = () => {
     return (
         <div className="flex flex-col h-[100vh] w-full max-w-2xl mx-auto">
             <DisplaySection />
-            <CheckoutSection />
+            <CheckoutSection isBlocked={props.isBlocked} />
         </div>
     );
 };
