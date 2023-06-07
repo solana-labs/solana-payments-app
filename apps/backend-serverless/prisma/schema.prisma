@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
@@ -9,6 +6,71 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id                         String    @id
+  shop                       String    @unique
+  name                       String?
+  email                      String?
+  accessToken                String?
+  scopes                     String?
+  lastNonce                  String
+  paymentAddress             String?
+  kybInquiry                 String?
+  kybState                   KybState?
+  acceptedTermsAndConditions Boolean   @default(false)
+  dismissCompleted           Boolean   @default(false)
+}
+
+model PaymentRecord {
+  id                   String                        @id
+  status               PaymentRecordStatus
+  shopId               String                        @unique
+  shopGid              String?
+  shopGroup            String
+  test                 Boolean
+  amount               Float
+  currency             String
+  usdcAmount           Float
+  cancelURL            String
+  merchantId           String
+  transactionSignature String?
+  redirectUrl          String?
+  requestedAt          DateTime                      @default(now())
+  completedAt          DateTime?
+  rejectionReason      PaymentRecordRejectionReason?
+}
+
+model RefundRecord {
+  id                   String             @id
+  status               RefundRecordStatus
+  amount               Float
+  currency             String
+  usdcAmount           Float
+  shopId               String
+  shopGid              String
+  shopPaymentId        String
+  test                 Boolean
+  merchantId           String
+  transactionSignature String?
+  requestedAt          DateTime           @default(now())
+  completedAt          DateTime?
+}
+
+model TransactionRecord {
+  id              Int             @id @default(autoincrement())
+  signature       String
+  type            TransactionType
+  paymentRecordId String?
+  refundRecordId  String?
+  createdAt       DateTime        @default(now())
+}
+
+model GDPR {
+  id         Int     @id @default(autoincrement())
+  merchantId String
+  completed  Boolean
 }
 
 enum TransactionType {
@@ -41,82 +103,4 @@ enum KybState {
   pending
   failed
   finished
-}
-
-model Merchant {
-  id             String          @id // Internal ID
-  shop           String          @unique
-  name           String?
-  email          String?
-  accessToken    String?
-  scopes         String?
-  lastNonce      String
-  paymentRecords PaymentRecord[]
-  refundRecords  RefundRecord[]
-  paymentAddress String?
-  kybInquiry     String?
-  kybState       KybState?
-
-  acceptedTermsAndConditions Boolean @default(false)
-  dismissCompleted           Boolean @default(false)
-}
-
-model PaymentRecord {
-  id                   String                        @id // Internal ID
-  status               PaymentRecordStatus
-  shopId               String                        @unique
-  shopGid              String?
-  shopGroup            String
-  test                 Boolean
-  amount               Float
-  currency             String
-  usdcAmount           Float
-  cancelURL            String
-  transactions         TransactionRecord[]
-  merchant             Merchant                      @relation(fields: [merchantId], references: [id])
-  merchantId           String
-  transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
-  redirectUrl          String?
-  requestedAt          DateTime                      @default(now())
-  completedAt          DateTime?
-  refundRecord         RefundRecord[]
-  rejectionReason      PaymentRecordRejectionReason?
-}
-
-model RefundRecord {
-  id                   String             @id // Internal ID
-  status               RefundRecordStatus
-  amount               Float
-  currency             String
-  usdcAmount           Float
-  shopId               String // Given Id from Shopify
-  shopGid              String // Given Gid from Shopify
-  shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
-  paymentRecord        PaymentRecord      @relation(fields: [shopPaymentId], references: [shopId])
-  test                 Boolean
-  merchant             Merchant           @relation(fields: [merchantId], references: [id])
-  merchantId           String
-  transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
-
-  TransactionRecord TransactionRecord[]
-
-  requestedAt DateTime  @default(now())
-  completedAt DateTime?
-}
-
-model TransactionRecord {
-  id              Int             @id @default(autoincrement())
-  signature       String
-  type            TransactionType
-  paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
-  paymentRecordId String?
-  refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
-  refundRecordId  String?
-  createdAt       DateTime        @default(now())
-}
-
-model GDPR {
-  id         Int     @id @default(autoincrement())
-  merchantId String
-  completed  Boolean
 }
