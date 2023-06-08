@@ -40,6 +40,7 @@
         "zustand": "^4.3.8"
     },
     "devDependencies": {
+        "@types/jest": "^29.5.2",
         "@types/carbon__icons-react": "^11.20.0",
         "@types/node": "^18.16.1",
         "@types/react": "^18.2.6",
