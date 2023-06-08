@@ -84,8 +84,12 @@ export function OpenRefunds(props: Props) {
                 }
             }
         } catch (error) {
-            showToast && showToast(error.message);
-            console.log('approving refund error: ', error);
+            if (error instanceof Error) {
+                showToast && showToast(error.message);
+                console.log('Approving refund error: ', error);
+            } else {
+                console.log('Unexpected error', error);
+            }
         }
 
         if (approvePendingRef.current) {
@@ -113,8 +117,12 @@ export function OpenRefunds(props: Props) {
                 }
             }
         } catch (error) {
-            showToast && showToast(error.message);
-            console.log('reject error: ', error);
+            if (error instanceof Error) {
+                showToast && showToast(error.message);
+                console.log('Rejecting refund error: ', error);
+            } else {
+                console.log('Unexpected error', error);
+            }
         }
 
         if (denyPendingRef.current) {
