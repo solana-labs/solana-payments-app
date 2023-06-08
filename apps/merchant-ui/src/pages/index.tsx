@@ -14,11 +14,11 @@ export default function Home() {
                 />
             </Head>
             <div className={twMerge('grid', 'h-screen', 'w-screen', 'md:grid-cols-2')}>
-                <div className="flex justify-center py-9 px-24 md:justify-end">
-                    <Welcome className="pt-14" />
+                <div className="flex flex-col justify-center items-center px-6 md:px-24">
+                    <Welcome className="pt-14 md:pt-0 md:mb-56 w-full max-w-md" />
                 </div>
-                <div className={twMerge('h-full', 'hidden', 'justify-end', 'overflow-hidden', 'md:flex')}>
-                    <WelcomeHero className="h-full w-full" />
+                <div className={twMerge('relative', 'h-full')}>
+                    <WelcomeHero className={twMerge('absolute', 'inset-0', 'w-full', 'h-full', 'object-cover')} />
                 </div>
             </div>
         </>

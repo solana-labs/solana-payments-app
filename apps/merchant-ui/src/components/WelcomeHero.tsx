@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 interface Props {
     className?: string;
@@ -8,7 +8,7 @@ interface Props {
 export function WelcomeHero(props: Props) {
     return (
         <Image
-            className={twMerge('bg-neutral-50', props.className)}
+            className={twMerge(props.className)}
             src="/solana_pay_hero.png"
             alt="Welcome to Solana Pay"
             width={400}
