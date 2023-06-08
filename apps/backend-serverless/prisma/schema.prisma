@@ -82,6 +82,8 @@ model PaymentRecord {
   completedAt          DateTime?
   refundRecord         RefundRecord[]
   rejectionReason      PaymentRecordRejectionReason?
+
+  @@index(merchantId)
 }
 
 model RefundRecord {
@@ -103,6 +105,9 @@ model RefundRecord {
 
   requestedAt DateTime  @default(now())
   completedAt DateTime?
+
+  @@index(merchantId)
+  @@index(shopPaymentId)
 }
 
 model TransactionRecord {
@@ -114,6 +119,9 @@ model TransactionRecord {
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
   createdAt       DateTime        @default(now())
+
+  @@index(paymentRecordId)
+  @@index(refundRecordId)
 }
 
 model GDPR {
