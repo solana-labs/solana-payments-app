@@ -83,6 +83,9 @@ export function OpenRefunds(props: Props) {
                     break;
                 }
             }
+            toast({
+                title: 'Successfully Approved Refund!',
+            });
         } catch (error) {
             if (error instanceof Error) {
                 toast({
@@ -120,6 +123,9 @@ export function OpenRefunds(props: Props) {
                     break;
                 }
             }
+            toast({
+                title: 'Successfully Rejected Refund!',
+            });
         } catch (error) {
             if (error instanceof Error) {
                 toast({
