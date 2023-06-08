@@ -17,6 +17,7 @@
         "@radix-ui/react-navigation-menu": "^1.1.2",
         "@radix-ui/react-select": "^1.2.1",
         "@radix-ui/react-tabs": "^1.0.3",
+        "@radix-ui/react-toast": "^1.1.4",
         "@radix-ui/react-tooltip": "^1.0.5",
         "@solana/wallet-adapter-base": "^0.9.22",
         "@solana/wallet-adapter-react": "^0.15.32",
