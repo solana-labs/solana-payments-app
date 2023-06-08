@@ -108,22 +108,6 @@ export function OpenRefunds(props: Props) {
         }
     }
 
-    async function getRefundTransaction(refundId: string) {
-        setApprovePending(true);
-        approvePendingRef.current = true;
-
-        try {
-            if (!connected) {
-                await select(wallets[0].adapter.name);
-                await connect();
-            }
-        } catch (error) {
-            console.log('Connect error', error);
-        }
-
-        setRefundIdToProcess(refundId);
-    }
-
     async function rejectRefund(refundId: string) {
         setDenyPending(true);
         denyPendingRef.current = true;
