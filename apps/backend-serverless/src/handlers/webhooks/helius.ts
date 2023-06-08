@@ -4,7 +4,11 @@ import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-import { PrismaClient, WebsocketSession } from '@prisma/client';
+
+import { PrismaClient, TransactionType, WebsocketSession } from '@prisma/client';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { processDiscoveredPaymentTransaction } from '../../services/business-logic/process-discovered-payment-transaction.service.js';
+import { processDiscoveredRefundTransaction } from '../../services/business-logic/process-discovered-refund-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';

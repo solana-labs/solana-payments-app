@@ -35,9 +35,17 @@ export function MerchantInfo(props: Props) {
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+<<<<<<< HEAD
 
     useEffect(() => {
         if (RE.isOk(merchantInfo)) {
+=======
+
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (isOk(merchantInfo)) {
+>>>>>>> e9c2b24 (merging in recent changes to demo (#244))
             setFormState({
                 name: merchantInfo.data.name,
                 logoSrc: 'a',
@@ -148,7 +156,15 @@ export function MerchantInfo(props: Props) {
                         setPending(true);
                         await updateMerchantAddress(formState.walletAddress?.toString());
                         await getMerchantInfo();
+<<<<<<< HEAD
                         setAddressChanged(true);
+=======
+
+                        toast({
+                            title: 'Updated Merchant Address',
+                            variant: 'constructive',
+                        });
+>>>>>>> e9c2b24 (merging in recent changes to demo (#244))
                         setPending(false);
                     }}
                     pending={pending}
