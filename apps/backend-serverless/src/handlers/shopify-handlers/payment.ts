@@ -10,6 +10,7 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 
 const prisma = new PrismaClient();
 
@@ -75,14 +76,12 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 let usdcSize: number;
 
                 if (paymentInitiation.test) {
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 } else {
-                    // TODO: We had a bug here, figure it out and fix it, for now, setting to 0.0001
-                    // usdcSize = await convertAmountAndCurrencyToUsdcSize(
-                    //     paymentInitiation.amount,
-                    //     paymentInitiation.currency
-                    // );
-                    usdcSize = 0.0001;
+                    usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                        paymentInitiation.amount,
+                        paymentInitiation.currency
+                    );
                 }
 
                 const newPaymentRecordId = await generatePubkeyString();

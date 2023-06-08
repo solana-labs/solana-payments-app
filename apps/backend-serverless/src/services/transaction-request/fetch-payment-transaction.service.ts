@@ -20,9 +20,16 @@ export const fetchPaymentTransaction = async (
         throw new Error('Merchant payment address not found.');
     }
 
+    const sender = account;
+    let receiver = merchant.paymentAddress;
+
+    if (paymentRecord.test) {
+        receiver = account;
+    }
+
     const endpoint = buildPaymentTransactionRequestEndpoint(
-        merchant.paymentAddress,
-        account,
+        receiver,
+        sender,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,

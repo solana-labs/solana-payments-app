@@ -23,7 +23,10 @@
     "test:tx": "jest integration",
     "helius": "node scripts/helius.cjs",
     "deploy:prod:green": "serverless deploy --stage prod --config serverless.green.yml",
-    "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml"
+    "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml",
+    "prisma:push:dev": "dotenv -e .env.dev -- npx prisma db push",
+    "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
+    "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push"
   },
   "keywords": [],
   "author": "@tj_littlejohn",
@@ -58,6 +61,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "axios-mock-adapter": "^1.21.4",
+    "dotenv-cli": "^7.2.1",
     "esbuild": "^0.17.18",
     "eslint": "^8.39.0",
     "eslint-plugin-require-extensions": "^0.1.3",

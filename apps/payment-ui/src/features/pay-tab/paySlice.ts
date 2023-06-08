@@ -13,13 +13,13 @@ interface PayState {
     payingToken: PayingToken;
 }
 
-interface PayError {
+export interface PayError {
     errorTitle: string;
     errorDetail: string;
     errorRedirect: string;
 }
 
-interface PaymentDetails {
+export interface PaymentDetails {
     merchantDisplayName: string;
     totalAmountUSDCDisplay: string;
     totalAmountFiatDisplay: string;

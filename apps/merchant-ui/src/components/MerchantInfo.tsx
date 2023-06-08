@@ -1,3 +1,4 @@
+import { useToast } from '@/components/ui/use-toast';
 import { isOk } from '@/lib/Result';
 import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
@@ -30,14 +31,15 @@ export function MerchantInfo(props: Props) {
         walletAddress: null,
         token: Token.USDC,
     });
-    const [isVerified, setIsVerified] = useState(false);
     const [pending, setPending] = useState(false);
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+
+    const { toast } = useToast();
 
     useEffect(() => {
         if (isOk(merchantInfo)) {
-            console.log('merchantInfo', merchantInfo);
             setFormState({
                 name: merchantInfo.data.name,
                 logoSrc: 'a',
@@ -129,9 +131,15 @@ export function MerchantInfo(props: Props) {
             <footer className="flex items-center justify-end space-x-3 pt-4">
                 <Button.Secondary>Cancel</Button.Secondary>
                 <Button.Primary
-                    onClick={() => {
+                    onClick={async () => {
                         setPending(true);
-                        updateMerchantAddress(formState.walletAddress?.toString());
+                        await updateMerchantAddress(formState.walletAddress?.toString());
+                        await getMerchantInfo();
+
+                        toast({
+                            title: 'Updated Merchant Address',
+                            variant: 'constructive',
+                        });
                         setPending(false);
                     }}
                     pending={pending}
