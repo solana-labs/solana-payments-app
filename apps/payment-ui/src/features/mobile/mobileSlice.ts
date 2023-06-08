@@ -1,7 +1,8 @@
+import { RootState } from '@/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const viewportSlice = createSlice({
-    name: 'viewport',
+const mobileSlice = createSlice({
+    name: 'mobile',
     initialState: {
         isMobile: false, // 640 is the breakpoint for sm in tailwind by default
     },
@@ -12,6 +13,8 @@ const viewportSlice = createSlice({
     },
 });
 
-export const { setIsMobile } = viewportSlice.actions;
+export const { setIsMobile } = mobileSlice.actions;
 
-export default viewportSlice.reducer;
+export default mobileSlice.reducer;
+
+export const getIsMobile = (state: RootState): boolean => state.mobile.isMobile;
