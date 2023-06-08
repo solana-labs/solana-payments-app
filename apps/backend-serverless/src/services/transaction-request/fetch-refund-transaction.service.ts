@@ -8,6 +8,8 @@ import {
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
+import { ref } from 'yup';
+import { send } from 'process';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,
@@ -27,13 +29,18 @@ export const fetchRefundTransaction = async (
     // This is also something we could add to a job with sqs to save calls here and then make
     // it easier to populate on merchant-ui read calls
     const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
-
     const payingCustomerWalletAddress = await findPayingWalletFromTransaction(transaction);
 
-    const payingCustomer = payingCustomerWalletAddress.toBase58();
+    const sender = account;
+    let receiver = payingCustomerWalletAddress.toBase58();
+
+    if (refundRecord.test) {
+        receiver = account;
+    }
+
     const endpoint = buildRefundTransactionRequestEndpoint(
-        payingCustomer, // this needs to be the customer
-        account, // this needs to be passed in from the request but the payment will be the merchant
+        receiver,
+        sender,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,

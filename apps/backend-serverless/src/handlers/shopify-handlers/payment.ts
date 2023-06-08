@@ -76,7 +76,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 let usdcSize: number;
 
                 if (paymentInitiation.test) {
-                    usdcSize = 0.0001;
+                    usdcSize = 0.000001;
                 } else {
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         paymentInitiation.amount,
