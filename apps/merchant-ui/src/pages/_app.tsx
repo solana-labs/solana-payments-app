@@ -1,3 +1,4 @@
+import { CustomToastProvider } from '@/components/ToastProvider';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useClosedRefundStore, useOpenRefundStore } from '@/stores/refundStore';
@@ -31,11 +32,13 @@ export default function App({ Component, pageProps }: AppProps) {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <TooltipProvider>
-                <Context>
-                    <Component {...pageProps} />
-                </Context>
-            </TooltipProvider>
+            <CustomToastProvider>
+                <TooltipProvider>
+                    <Context>
+                        <Component {...pageProps} />
+                    </Context>
+                </TooltipProvider>
+            </CustomToastProvider>
         </>
     );
 }

@@ -1,5 +1,5 @@
-import ErrorToast from '@/components/ErrorToast';
 import { PaginatedTable } from '@/components/PaginatedTable';
+import { useToast } from '@/components/ToastProvider';
 import * as RE from '@/lib/Result';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
 import { API_ENDPOINTS } from '@/lib/endpoints';
@@ -38,10 +38,10 @@ export function OpenRefunds(props: Props) {
 
     const [walletModalActive, setWalletModalActive] = useState(false);
 
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
+
+    const showToast = useToast();
 
     const headers = {
         'Content-Type': 'application/json',
@@ -54,9 +54,7 @@ export function OpenRefunds(props: Props) {
     }, [openRefunds]);
 
     useEffect(() => {
-        if (walletModalActive) {
-            setWalletModalActive(false);
-        }
+        setWalletModalActive(false);
     }, [wallet]);
 
     async function getRefundTransaction(refundIdToProcess: string) {
@@ -86,7 +84,9 @@ export function OpenRefunds(props: Props) {
                 }
             }
         } catch (error) {
-            console.log('error: ', error);
+            showToast && showToast(error);
+            // console.log('error: ', error);
+            console.log('approving pending ref', approvePendingRef.current);
         }
 
         if (approvePendingRef.current) {
@@ -248,7 +248,14 @@ export function OpenRefunds(props: Props) {
                             open={openApprove === refund.orderId && !walletModalActive}
                             onOpenChange={() => setOpenApprove(null)}
                         >
-                            <Button.Primary onClick={() => setOpenApprove(refund.orderId)}>Approve</Button.Primary>
+                            <Button.Primary
+                                onClick={() => {
+                                    setOpenApprove(refund.orderId);
+                                    setWalletModalActive(false);
+                                }}
+                            >
+                                Approve
+                            </Button.Primary>
                             <Dialog.Portal>
                                 <Dialog.Overlay
                                     className={twMerge(
@@ -349,7 +356,6 @@ export function OpenRefunds(props: Props) {
                                 </Dialog.Overlay>
                             </Dialog.Portal>
                         </Dialog.Root>
-                        <ErrorToast errorMessage={errorMessage} />
                     </div>
                 ),
             }}
