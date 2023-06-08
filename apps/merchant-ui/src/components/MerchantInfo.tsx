@@ -1,3 +1,4 @@
+import { useToast } from '@/components/ui/use-toast';
 import { isOk } from '@/lib/Result';
 import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
@@ -34,6 +35,8 @@ export function MerchantInfo(props: Props) {
     const [pending, setPending] = useState(false);
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
+
+    const { toast } = useToast();
 
     useEffect(() => {
         if (isOk(merchantInfo)) {
@@ -132,6 +135,9 @@ export function MerchantInfo(props: Props) {
                     onClick={() => {
                         setPending(true);
                         updateMerchantAddress(formState.walletAddress?.toString());
+                        toast({
+                            title: 'Updated Merchant Address',
+                        });
                         setPending(false);
                     }}
                     pending={pending}
