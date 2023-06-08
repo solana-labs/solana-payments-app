@@ -1,5 +1,5 @@
 import { PaginatedTable } from '@/components/PaginatedTable';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
 import { API_ENDPOINTS } from '@/lib/endpoints';
@@ -41,7 +41,7 @@ export function OpenRefunds(props: Props) {
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
 
-    const showToast = useToast();
+    const { toast } = useToast();
 
     const headers = {
         'Content-Type': 'application/json',
@@ -83,9 +83,17 @@ export function OpenRefunds(props: Props) {
                     break;
                 }
             }
+            toast({
+                title: 'Successfully Approved Refund!',
+                variant: 'constructive',
+            });
         } catch (error) {
             if (error instanceof Error) {
-                showToast && showToast(error.message);
+                toast({
+                    title: 'Error Approving Refund',
+                    description: error.message,
+                    variant: 'destructive',
+                });
                 console.log('Approving refund error: ', error);
             } else {
                 console.log('Unexpected error', error);
@@ -116,9 +124,17 @@ export function OpenRefunds(props: Props) {
                     break;
                 }
             }
+            toast({
+                title: 'Successfully Rejected Refund!',
+                variant: 'constructive',
+            });
         } catch (error) {
             if (error instanceof Error) {
-                showToast && showToast(error.message);
+                toast({
+                    title: 'Error Rejecting Refund',
+                    description: error.message,
+                    variant: 'destructive',
+                });
                 console.log('Rejecting refund error: ', error);
             } else {
                 console.log('Unexpected error', error);
