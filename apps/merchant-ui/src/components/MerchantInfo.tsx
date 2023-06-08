@@ -137,6 +137,7 @@ export function MerchantInfo(props: Props) {
                         updateMerchantAddress(formState.walletAddress?.toString());
                         toast({
                             title: 'Updated Merchant Address',
+                            variant: 'constructive',
                         });
                         setPending(false);
                     }}

@@ -8,6 +8,10 @@ module.exports = {
                     DEFAULT: 'hsl(var(--destructive))',
                     foreground: 'hsl(var(--destructive-foreground))',
                 },
+                constructive: {
+                    DEFAULT: 'hsl(var(--constructive))',
+                    foreground: 'hsl(var(--constructive-foreground))',
+                },
             },
         },
     },

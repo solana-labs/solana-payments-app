@@ -60,7 +60,10 @@ a {
         --accent-foreground: 222.2 47.4% 11.2%;
 
         --destructive: 0 100% 50%;
-        --destructive-foreground: 210 40% 98%;
+        --destructive-foreground: 120 40% 98%;
+
+        --constructive: 110 100% 50%;
+        --constructive-foreground: 0 40% 98%;
 
         --ring: 215 20.2% 65.1%;
 
@@ -94,6 +97,9 @@ a {
 
         --destructive: 0 63% 31%;
         --destructive-foreground: 210 40% 98%;
+
+        --constructive: 210 63% 31%;
+        --constructive-foreground: 210 40% 98%;
 
         --ring: 216 34% 17%;
 
