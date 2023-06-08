@@ -35,6 +35,7 @@ export function OpenRefunds(props: Props) {
     const [denyPending, setDenyPending] = useState(false);
     const [openApprove, setOpenApprove] = useState<string | null>(null);
     const [denyApprove, setDenyApprove] = useState<string | null>(null);
+    const [refundIdToProcess, setRefundIdToProcess] = useState<string | null>(null);
 
     const [walletModalActive, setWalletModalActive] = useState(false);
 
@@ -105,6 +106,22 @@ export function OpenRefunds(props: Props) {
             setOpenApprove(null);
             setApprovePending(false);
         }
+    }
+
+    async function getRefundTransaction(refundId: string) {
+        setApprovePending(true);
+        approvePendingRef.current = true;
+
+        try {
+            if (!connected) {
+                await select(wallets[0].adapter.name);
+                await connect();
+            }
+        } catch (error) {
+            console.log('Connect error', error);
+        }
+
+        setRefundIdToProcess(refundId);
     }
 
     async function rejectRefund(refundId: string) {
