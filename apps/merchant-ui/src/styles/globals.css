@@ -3,24 +3,32 @@
 @tailwind utilities;
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 a {
-  color: inherit;
-  cursor: pointer;
-  text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .persona-widget__iframe {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
+}
+
+.wallet-adapter-button-trigger {
+    background-color: black;
+}
+
+.wallet-adapter-button-trigger {
+    background-color: black;
 }

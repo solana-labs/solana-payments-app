@@ -6,6 +6,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import { RefundStatus, useOpenRefundStore } from '@/stores/refundStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Transaction } from '@solana/web3.js';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -27,13 +28,14 @@ export function OpenRefunds(props: Props) {
     const openRefunds = useOpenRefundStore(state => state.openRefunds);
     const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
 
-    const { publicKey, sendTransaction, connect, connected, wallets, select } = useWallet();
+    const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const [approvePending, setApprovePending] = useState(false);
     const [denyPending, setDenyPending] = useState(false);
     const [openApprove, setOpenApprove] = useState<string | null>(null);
     const [denyApprove, setDenyApprove] = useState<string | null>(null);
-    const [refundIdToProcess, setRefundIdToProcess] = useState<string | null>(null);
+
+    const [walletModalActive, setWalletModalActive] = useState(false);
 
     const approvePendingRef = useRef(approvePending);
     const denyPendingRef = useRef(denyPending);
@@ -49,13 +51,15 @@ export function OpenRefunds(props: Props) {
     }, [openRefunds]);
 
     useEffect(() => {
-        if (publicKey && refundIdToProcess) {
-            processRefundTransaction();
+        if (walletModalActive) {
+            setWalletModalActive(false);
         }
-    }, [publicKey, refundIdToProcess]);
+    }, [wallet]);
 
-    async function processRefundTransaction() {
-        if (!publicKey || !refundIdToProcess) {
+    async function getRefundTransaction(refundIdToProcess: string) {
+        setApprovePending(true);
+        approvePendingRef.current = true;
+        if (!publicKey) {
             return;
         }
         try {
@@ -87,22 +91,6 @@ export function OpenRefunds(props: Props) {
             setOpenApprove(null);
             setApprovePending(false);
         }
-    }
-
-    async function getRefundTransaction(refundId: string) {
-        setApprovePending(true);
-        approvePendingRef.current = true;
-
-        try {
-            if (!connected) {
-                await select(wallets[0].adapter.name);
-                await connect();
-            }
-        } catch (error) {
-            console.log('Connect error', error);
-        }
-
-        setRefundIdToProcess(refundId);
     }
 
     async function rejectRefund(refundId: string) {
@@ -253,7 +241,10 @@ export function OpenRefunds(props: Props) {
                                 </Dialog.Overlay>
                             </Dialog.Portal>
                         </Dialog.Root>
-                        <Dialog.Root open={openApprove === refund.orderId} onOpenChange={() => setOpenApprove(null)}>
+                        <Dialog.Root
+                            open={openApprove === refund.orderId && !walletModalActive}
+                            onOpenChange={() => setOpenApprove(null)}
+                        >
                             <Button.Primary onClick={() => setOpenApprove(refund.orderId)}>Approve</Button.Primary>
                             <Dialog.Portal>
                                 <Dialog.Overlay
@@ -319,12 +310,37 @@ export function OpenRefunds(props: Props) {
                                             </div>
                                         </div>
                                         <div className="bg-slate-50 p-4 flex justify-end">
-                                            <Button.Primary
-                                                onClick={() => getRefundTransaction(refund.orderId)}
-                                                pending={approvePending}
-                                            >
-                                                Approve with Wallet
-                                            </Button.Primary>
+                                            {!connected ? (
+                                                <WalletMultiButton
+                                                    onClick={() => {
+                                                        setWalletModalActive(true);
+                                                    }}
+                                                    style={{
+                                                        backgroundColor: 'black',
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        zIndex: 1000,
+                                                    }}
+                                                >
+                                                    <div className="flex flex-row items-center justify-center">
+                                                        <div className="pl-1">Connect wallet</div>
+                                                    </div>
+                                                </WalletMultiButton>
+                                            ) : (
+                                                <div className="flex flex-row space-x-2">
+                                                    <Button.Secondary onClick={disconnect}>
+                                                        Disconnect Wallet
+                                                    </Button.Secondary>
+                                                    <Button.Primary
+                                                        onClick={() => getRefundTransaction(refund.orderId)}
+                                                        pending={approvePending}
+                                                    >
+                                                        Approve
+                                                    </Button.Primary>
+                                                </div>
+                                            )}
                                         </div>
                                     </Dialog.Content>
                                 </Dialog.Overlay>
