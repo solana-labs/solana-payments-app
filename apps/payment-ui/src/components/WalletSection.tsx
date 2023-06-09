@@ -43,7 +43,6 @@ const WalletSection = () => {
                             <BuyButton /> 
                         </div>
                     </div>
-                    
                 )
                 
             }
