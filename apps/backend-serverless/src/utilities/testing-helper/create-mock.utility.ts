@@ -1,4 +1,4 @@
-import { Merchant, PaymentRecord, PaymentRecordStatus, RefundRecord } from '@prisma/client';
+import { KybState, Merchant, PaymentRecord, PaymentRecordStatus, RefundRecord } from '@prisma/client';
 import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
 import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
@@ -36,7 +36,8 @@ export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Mercha
         acceptedTermsAndConditions: merchantData.acceptedTermsAndConditions ?? false,
         dismissCompleted: merchantData.dismissCompleted ?? false,
         kybInquiry: merchantData.kybInquiry ?? null,
-        kybState: merchantData.kybState ?? null,
+        kybState: merchantData.kybState ?? KybState.pending,
+        active: merchantData.active ?? false,
     };
 };
 

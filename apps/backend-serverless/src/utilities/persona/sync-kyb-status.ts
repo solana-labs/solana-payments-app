@@ -1,37 +1,25 @@
-import { PrismaClient, Merchant } from '@prisma/client';
-
+import { PrismaClient, Merchant, KybState } from '@prisma/client';
+import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { getKybState } from './get-kyb-state.js';
+import { DependencyError } from '../../errors/dependency.error.js';
 
-const getMerchantFromId = async (merchantId: string) => {
-    const prisma = new PrismaClient();
+export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);
 
-    const merchant = await merchantService.getMerchant({ id: merchantId });
-
-    if (merchant == null) {
-        throw new Error(`Merchant not found: ${merchantId}`);
-    }
-
-    return merchant;
-};
-
-export async function syncKybState(merchant: Merchant): Promise<Merchant>;
-export async function syncKybState(merchantId: string): Promise<Merchant>;
-export async function syncKybState(merchantOrId: Merchant | string): Promise<Merchant> {
-    const prisma = new PrismaClient();
-    const merchantService = new MerchantService(prisma);
-
-    const merchant = typeof merchantOrId === 'string' ? await getMerchantFromId(merchantOrId) : merchantOrId;
-
-    if (!merchant.kybInquiry) {
+    if (merchant.kybInquiry == null) {
         throw new Error(`Merchant has no KYB inquiry: ${merchant.id}`);
     }
 
-    const kybState = await getKybState(merchant.kybInquiry).catch(e => {
-        console.error(`Could not determine kyb status: ${e}`);
-        return null;
-    });
+    let kybState: KybState;
 
-    return merchantService.updateMerchant(merchant, { kybState });
-}
+    try {
+        kybState = await getKybState(merchant.kybInquiry);
+    } catch (error) {
+        throw new DependencyError(`Could not determine kyb status: ${error}`);
+    }
+
+    merchant = await merchantService.updateMerchant(merchant, { kybState });
+
+    return merchant;
+};

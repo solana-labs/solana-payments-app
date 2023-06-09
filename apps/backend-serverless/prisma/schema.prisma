@@ -56,7 +56,8 @@ model Merchant {
   refundRecords  RefundRecord[]
   paymentAddress String?
   kybInquiry     String?
-  kybState       KybState?
+  kybState       KybState        @default(pending)
+  active         Boolean         @default(false)
 
   acceptedTermsAndConditions Boolean @default(false)
   dismissCompleted           Boolean @default(false)

@@ -44,8 +44,11 @@ export type MerchantUpdate = {
     scopes: string;
     lastNonce: string;
     kybInquiry: string;
-    kybState: null | KybState;
+    kybState: KybState;
+    active: boolean;
 };
+
+export type FooBarMerchantUpdate = MerchantUpdate;
 
 export class MerchantService {
     private prisma: PrismaClient;
@@ -56,7 +59,7 @@ export class MerchantService {
 
     async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
         return prismaErrorHandler(
-            this.prisma.merchant.findFirst({
+            this.prisma.merchant.findUnique({
                 where: query,
             })
         );

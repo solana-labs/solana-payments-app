@@ -1,10 +1,13 @@
 import { KybState } from '@prisma/client';
 import fetch from 'node-fetch';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { DependencyError } from '../../errors/dependency.error.js';
 
-export async function getKybState(inquiryId: string) {
-    if (!process.env.PERSONA_API_KEY) {
-        console.error('Missing Persona API key');
-        return null;
+export const getKybState = async (inquiryId: string): Promise<KybState> => {
+    const personaApiKey = process.env.PERSONA_API_KEY;
+
+    if (personaApiKey == null) {
+        throw new MissingEnvError('persona api key');
     }
 
     const rawResp = await fetch(`https://withpersona.com/api/v1/inquiries/${inquiryId}`, {
@@ -14,8 +17,15 @@ export async function getKybState(inquiryId: string) {
         },
     });
 
-    const resp = await rawResp.json();
-    const status = resp.data.attributes.status;
+    const resp = (await rawResp.json()) as any;
+
+    let status: string;
+
+    try {
+        status = resp.data.attributes.status;
+    } catch (error) {
+        throw new DependencyError('persona couldnt find status');
+    }
 
     if (status === 'completed') {
         return KybState.finished;
@@ -35,5 +45,5 @@ export async function getKybState(inquiryId: string) {
         return KybState.pending;
     }
 
-    return null;
-}
+    throw new DependencyError('persona unknown state');
+};
