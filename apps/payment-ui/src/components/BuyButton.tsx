@@ -1,39 +1,82 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
 import { getPaymentId } from '@/features/pay-tab/paySlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
+import { AppDispatch } from '@/store';
+import { setError } from '@/features/error/errorSlice';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
     const { publicKey, sendTransaction, signTransaction } = useWallet();
+    const dispatch = useDispatch<AppDispatch>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const fetchAndSendTransaction = async () => {
         const headers = {
             'Content-Type': 'application/json',
         };
+        
+        if ( paymentId == null ) {
+            dispatch(setError('There is no payment.'));
+            return;
+        }
 
-        // TODO: FIX THIS AND MAKE IT NICER AND CLEANER
-        if (paymentId != null) {
+        if (publicKey == null) {
+            dispatch(setError('There is no wallet connected.'));
+            return;
+        }
+
+        const transactionRequestEndpoint = buildPaymentTransactionRequestEndpoint(paymentId)
+
+        let transactionString: string
+
+        setLoading(true);
+
+        try {
+
             const response = await axios.post(
-                buildPaymentTransactionRequestEndpoint(paymentId),
-                { account: publicKey ? publicKey.toBase58() : '' },
+                transactionRequestEndpoint,
+                { account: publicKey },
                 { headers: headers }
             );
 
-            const buffer = Buffer.from(response.data.transaction, 'base64');
+            transactionString = response.data.transaction;
+        } catch (error) {
+            setLoading(false);
+            dispatch(setError('There was an issue fetching your transaction. Please try again.'));
+            return;
+        }
 
-            const transaction = web3.Transaction.from(buffer);
+        let transaction: web3.Transaction;
+
+        try {
+            
+            const buffer = Buffer.from(transactionString, 'base64');
+            transaction = web3.Transaction.from(buffer);
+
+        } catch (error) {
+            setLoading(false);
+            dispatch(setError('There was issue with your transaction. Please try again.'));
+            return
+        }
+
+        try {
             // TODO: Use default RPC from wallet adapter
             const connection = new web3.Connection(
                 'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
             );
             await sendTransaction(transaction, connection);
-        } else {
-            console.log('NULL BOI LIL BOI');
+        } catch (error) {
+            setLoading(false);
+            dispatch(setError('There was an issue sending your transaction. Please try again.'));
+            return;
         }
+
+        setLoading(false);
+
     };
 
     return (
@@ -43,7 +86,10 @@ const BuyButton = () => {
             }}
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >
-            Buy Now
+            <div className='flex flex-row items-center justify-center'>
+               { loading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div /> }             
+                <div className='ml-1'>Buy now</div>
+            </div>
         </button>
     );
 };

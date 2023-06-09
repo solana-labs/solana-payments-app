@@ -152,7 +152,7 @@ export const getPaymentMethod = (state: any): PaymentMethod => state.pay.payment
 
 export const getPayingToken = (state: any): PayingToken => state.pay.payingToken;
 
-export const getPaymentId = (state: any): PayingToken => state.pay.paymentId;
+export const getPaymentId = (state: RootState): string | null => state.pay.paymentId;
 
 export const getRedirectUrl = (state: any): string | null => state.pay.redirectUrl;
 

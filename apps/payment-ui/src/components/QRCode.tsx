@@ -10,6 +10,7 @@ export const QRCode: FC = () => {
         typeof window === 'undefined' ? 400 : Math.min(window.screen.availWidth - 48, 400)
     );
     const paymentId = useSelector(getPaymentId);
+
     useEffect(() => {
         const listener = () => setSize(Math.min(window.screen.availWidth - 48, 400));
 
@@ -19,7 +20,8 @@ export const QRCode: FC = () => {
 
     const payingToken = useSelector(getPayingToken);
 
-    const endpoint = buildPaymentTransactionRequestEndpoint(paymentId);
+    // TODO: make sure there is a payment id and if not show a different image than QR Code
+    const endpoint = buildPaymentTransactionRequestEndpoint(paymentId ?? '');
     const url = `solana:${encodeURIComponent(endpoint)}`;
     const options = useMemo(() => createQROptions(url, size, 'transparent', 'black'), [url, size]);
 

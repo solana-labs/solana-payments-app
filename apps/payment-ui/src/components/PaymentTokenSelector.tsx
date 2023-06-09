@@ -22,11 +22,11 @@ const PaymentTokenSelector = () => {
                     data-theme="mytheme"
                     className="select select-bordered w-fit max-w-xs"
                 >
-                    <option disabled selected>
+                    <option disabled>
                         Currency
                     </option>
                     {Object.values(PayingToken).map(token => {
-                        return <option>{token}</option>;
+                        return <option key={token}>{token}</option>;
                     })}
                 </select>
             </div>
