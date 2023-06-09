@@ -24,7 +24,7 @@ describe('Shopify Retry Refund Resolve Testing Suite', () => {
 
         // Mock database calls
         const mockMerchant = createMockMerchant({ accessToken: 'example-access-token' });
-        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
+        prismaMock.merchant.findFirst.mockResolvedValue(mockMerchant);
         const mockRefundRecord = createMockRefundRecord();
         prismaMock.refundRecord.findFirst.mockResolvedValue(mockRefundRecord);
         prismaMock.refundRecord.update.mockResolvedValue(mockRefundRecord);

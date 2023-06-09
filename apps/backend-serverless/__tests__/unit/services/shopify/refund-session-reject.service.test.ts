@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { makeRefundSessionReject } from '../../../../../src/services/shopify/refund-session-reject.service.js';
-import { createMockSuccessRefundSessionRejectResponse } from '../../../../../src/utilities/testing-helper/create-mock.utility.js';
+import { makeRefundSessionReject } from '../../../../src/services/shopify/refund-session-reject.service.js';
+import { createMockSuccessRefundSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing refund session reject', () => {
     it('valid response', async () => {

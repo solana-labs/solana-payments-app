@@ -38,7 +38,7 @@ export const retryAppConfigure = async (
 
         validatePaymentAppConfigured(configureAppResponse);
 
-        // TODO: Update the merchant record to reflect that we configured the app, this will come after we implement KYB
+        await merchantService.updateMerchant(merchant, { active: appConfigureInfo.state });
     } catch (error) {
         // Throw an error specifically about the database, might be able to handle this differently
         // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database

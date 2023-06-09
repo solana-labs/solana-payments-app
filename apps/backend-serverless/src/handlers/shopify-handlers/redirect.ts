@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/serverless';
-import { Merchant, PrismaClient } from '@prisma/client';
+import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     AppRedirectQueryParam,
@@ -105,27 +105,28 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             // TODO: Figure out failure strategy
         }
 
-        // TODO: Set value to true after KYB, this will change once we implement KYB
-        // TODO: Update merchant record to reflect status
         const paymentAppConfigure = makePaymentAppConfigure(axios);
 
-        // TODO: Make this dynamic
-        const isReady = true;
+        const addedWallet = merchant.paymentAddress != null;
+        const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
+        const kybIsFinished = merchant.kybState === KybState.finished;
+
+        const canBeActive = addedWallet && acceptedTermsAndConditions && kybIsFinished;
 
         try {
             const appConfigureResponse = await paymentAppConfigure(
                 merchant.id,
-                isReady,
+                canBeActive,
                 shop,
                 accessTokenResponse.access_token
             );
 
             validatePaymentAppConfigured(appConfigureResponse);
 
-            // TODO: Update merchant record to reflect status
+            merchant = await merchantService.updateMerchant(merchant, { active: canBeActive });
         } catch (error) {
             try {
-                await sendAppConfigureRetryMessage(merchant.id, isReady);
+                await sendAppConfigureRetryMessage(merchant.id, canBeActive);
             } catch (error) {
                 // If this fails we should log a critical error but it's not the end of the world, it just means that we have an issue sending retry messages
                 // We should eventually have some kind of redundant system here but for now we can just send the user back to the merchant ui

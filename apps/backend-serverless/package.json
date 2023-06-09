@@ -26,7 +26,9 @@
     "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml",
     "prisma:push:dev": "dotenv -e .env.dev -- npx prisma db push",
     "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
-    "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push"
+    "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push",
+    "prisma:studio:dev": "dotenv -e .env.dev -- npx prisma studio",
+    "prisma:studio:prod": "dotenv -e .env.prod -- npx prisma studio"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

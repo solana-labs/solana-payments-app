@@ -43,7 +43,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return errorResponse(ErrorType.notFound, merchantAuthToken.id);
         }
 
         try {

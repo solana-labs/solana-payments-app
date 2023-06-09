@@ -13,6 +13,8 @@ import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
+import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -97,9 +99,21 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
 
         if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
             try {
-                merchant = await syncKybState(merchant);
+                merchant = await syncKybState(merchant, prisma);
             } catch (error) {
-                return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+                // Maybe we don't wana throw in this state though
+                // TODO: decide if we want to throw here
+                // TODO: Log this
+            }
+
+            if (merchant.kybState === KybState.finished) {
+                try {
+                    merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
+                } catch (error) {
+                    // Maybe we don't wana throw in this state though
+                    // TODO: decide if we want to throw here
+                    // TODO: Log this
+                }
             }
         }
 
