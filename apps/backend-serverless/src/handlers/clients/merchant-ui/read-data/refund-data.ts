@@ -21,6 +21,26 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
+/**
+ * @openapi
+ * /refund-data:
+ *   get:
+ *     description: Fetches refunds data for the authorized merchant
+ *     responses:
+ *       200:
+ *        description: Success
+ *       401:
+ *        description: No cookie provided. Please provide a valid signed cookie to access the resource.
+ *       403:
+ *        description: Invalid cookie. Your cookie may have expired or is not valid.
+ *       404:
+ *        description: Merchant is not found
+ *       409:
+ *        description: Database access error
+ *       500:
+ *        description: Internal server error
+ *
+ */
 export const refundData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);

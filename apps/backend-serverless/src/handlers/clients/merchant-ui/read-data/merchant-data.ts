@@ -6,8 +6,14 @@ import { MerchantService } from '../../../../services/database/merchant-service.
 import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    errorResponse,
+    errorResponseForError,
+} from '../../../../utilities/responses/error-response.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
+import { NotFoundError } from '../../../../errors/not-found.error.js';
 
 const prisma = new PrismaClient();
 
@@ -17,6 +23,26 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
+/**
+ * @openapi
+ * /merchant-data:
+ *   get:
+ *     description: Fetches merchant data
+ *     responses:
+ *       200:
+ *        description: Success
+ *       401:
+ *        description: No cookie provided. Please provide a valid signed cookie to access the resource.
+ *       403:
+ *        description: Invalid cookie. Your cookie may have expired or is not valid.
+ *       404:
+ *        description: Merchant is not found
+ *       409:
+ *        description: Database access error
+ *       500:
+ *        description: Internal server error
+ *
+ */
 export const merchantData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);
@@ -26,7 +52,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            return errorResponseForError(error);
         }
 
         let merchant: Merchant | null;
@@ -34,11 +60,11 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.databaseAccessError);
+            return errorResponseForError(new NotFoundError('merchant'));
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return errorResponseForError(new NotFoundError('merchant'));
         }
 
         if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
