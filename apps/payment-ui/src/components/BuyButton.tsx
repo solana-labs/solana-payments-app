@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -12,6 +12,7 @@ const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
     const { publicKey, sendTransaction, signTransaction } = useWallet();
     const dispatch = useDispatch<AppDispatch>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const fetchAndSendTransaction = async () => {
         const headers = {
@@ -32,7 +33,10 @@ const BuyButton = () => {
 
         let transactionString: string
 
+        setLoading(true);
+
         try {
+
             const response = await axios.post(
                 transactionRequestEndpoint,
                 { account: publicKey },
@@ -41,6 +45,7 @@ const BuyButton = () => {
 
             transactionString = response.data.transaction;
         } catch (error) {
+            setLoading(false);
             dispatch(setError('There was an issue fetching your transaction. Please try again.'));
             return;
         }
@@ -53,6 +58,7 @@ const BuyButton = () => {
             transaction = web3.Transaction.from(buffer);
 
         } catch (error) {
+            setLoading(false);
             dispatch(setError('There was issue with your transaction. Please try again.'));
             return
         }
@@ -64,9 +70,12 @@ const BuyButton = () => {
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
+            setLoading(false);
             dispatch(setError('There was an issue sending your transaction. Please try again.'));
             return;
         }
+
+        setLoading(false);
 
     };
 
@@ -77,7 +86,10 @@ const BuyButton = () => {
             }}
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >
-            Buy Now
+            <div className='flex flex-row items-center justify-center'>
+               { loading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div /> }             
+                <div className='ml-1'>Buy now</div>
+            </div>
         </button>
     );
 };
