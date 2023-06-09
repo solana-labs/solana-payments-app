@@ -19,31 +19,55 @@ const BuyButton = () => {
         };
         
         if ( paymentId == null ) {
-            // Send out an error toast
+            dispatch(setError('There is no payment.'));
             return;
         }
 
         if (publicKey == null) {
-            // Send out an error toast
+            dispatch(setError('There is no wallet connected.'));
             return;
         }
 
         const transactionRequestEndpoint = buildPaymentTransactionRequestEndpoint(paymentId)
 
-        const response = await axios.post(
-            transactionRequestEndpoint,
-            { account: publicKey },
-            { headers: headers }
-        );
+        let transactionString: string
 
-        const buffer = Buffer.from(response.data.transaction, 'base64');
+        try {
+            const response = await axios.post(
+                transactionRequestEndpoint,
+                { account: publicKey },
+                { headers: headers }
+            );
 
-        const transaction = web3.Transaction.from(buffer);
-        // TODO: Use default RPC from wallet adapter
-        const connection = new web3.Connection(
-            'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
-        );
-        await sendTransaction(transaction, connection);
+            transactionString = response.data.transaction;
+        } catch (error) {
+            dispatch(setError('There was an issue fetching your transaction. Please try again.'));
+            return;
+        }
+
+        let transaction: web3.Transaction;
+
+        try {
+            
+            const buffer = Buffer.from(transactionString, 'base64');
+            transaction = web3.Transaction.from(buffer);
+
+        } catch (error) {
+            dispatch(setError('There was issue with your transaction. Please try again.'));
+            return
+        }
+
+        try {
+            // TODO: Use default RPC from wallet adapter
+            const connection = new web3.Connection(
+                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
+            );
+            await sendTransaction(transaction, connection);
+        } catch (error) {
+            dispatch(setError('There was an issue sending your transaction. Please try again.'));
+            return;
+        }
+
     };
 
     return (
