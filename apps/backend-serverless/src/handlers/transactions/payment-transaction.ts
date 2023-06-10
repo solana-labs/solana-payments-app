@@ -31,6 +31,8 @@ import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-messa
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
+import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
 
 const prisma = new PrismaClient();
 
@@ -49,6 +51,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);
+        const websocketSessionService = new WebsocketSessionService(prisma);
 
         const TRM_API_KEY = process.env.TRM_API_KEY;
 
@@ -81,13 +84,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         let gasKeypair: web3.Keypair;
 
-        try {
-            gasKeypair = await fetchGasKeypair();
-        } catch (error) {
-            console.log('error fetching gas keypair', error, error.message);
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        }
-
         let paymentRecord: PaymentRecord | null;
 
         try {
@@ -107,6 +103,25 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         if (paymentRecord.shopGid == null) {
             console.log('shop gid is null');
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
+        }
+
+        const websocketSession = await websocketSessionService.getWebsocketSession({
+            paymentRecordId: paymentRecord.id,
+        });
+
+        if (websocketSession == null) {
+            return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
+        }
+
+        await sendWebsocketMessage(websocketSession.connectionId, {
+            messageType: 'transactionRequest:started',
+        });
+
+        try {
+            gasKeypair = await fetchGasKeypair();
+        } catch (error) {
+            console.log('error fetching gas keypair', error, error.message);
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         let merchant: Merchant | null;

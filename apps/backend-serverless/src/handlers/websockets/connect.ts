@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
 import { PrismaClient } from '@prisma/client';
 import pkg from 'aws-sdk';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 const { ApiGatewayManagementApi } = pkg;
 
 const prisma = new PrismaClient();
@@ -14,47 +16,20 @@ Sentry.AWSLambda.init({
 
 export const connect = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyWebsocketEventV2): Promise<APIGatewayProxyResultV2> => {
-        const apigwManagementApi = new ApiGatewayManagementApi({
-            endpoint: 'http://localhost:4009',
-        });
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log('CONNECTED');
-        console.log(event);
+        const websocketSessionService = new WebsocketSessionService(prisma);
+        const paymentRecordService = new PaymentRecordService(prisma);
 
-        const postParams = {
-            Data: JSON.stringify({
-                messageType: 'paymentDetails',
-                paymentDetails: {
-                    merchantDisplayName: 'Test Merchant',
-                    totalAmountUSDCDisplay: '10 USDC',
-                    totalAmountFiatDisplay: '$10.00',
-                    cancelUrl: 'https://example.com/cancel',
-                    completed: false,
-                    redirectUrl: null,
-                },
-            }),
-            ConnectionId: event.requestContext.connectionId,
-        };
+        const paymentId = (event as any).queryStringParameters.paymentId;
+        const connectionId = event.requestContext.connectionId;
 
-        // try {
-        //     const connection = await apigwManagementApi.postToConnection(postParams).promise();
-        //     console.log(connection);
-        // } catch (err) {
-        //     if (err.statusCode === 410) {
-        //         console.log(err);
-        //         console.log('Found stale connection, deleting ' + event.requestContext.connectionId);
-        //     } else {
-        //         console.error('Failed to post. Error: ' + JSON.stringify(err));
-        //     }
-        // }
+        const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentId });
+
+        if (paymentRecord == null) {
+            // need a payment record or we dont care about you
+            throw new Error('Payment record not found');
+        }
+
+        await websocketSessionService.createWebsocketSession(paymentRecord.id, connectionId);
 
         return {
             statusCode: 200,

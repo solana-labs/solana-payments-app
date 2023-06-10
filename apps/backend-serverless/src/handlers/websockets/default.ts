@@ -19,6 +19,14 @@ export const defaultHandler = Sentry.AWSLambda.wrapHandler(
             event.requestContext.connectionId,
             JSON.stringify({
                 messageType: 'paymentDetails',
+                paymentDetails: {
+                    merchantDisplayName: 'Test Merchant',
+                    totalAmountUSDCDisplay: '10 USDC',
+                    totalAmountFiatDisplay: '$10.00',
+                    cancelUrl: 'https://example.com/cancel',
+                    completed: false,
+                    redirectUrl: null,
+                },
             })
         );
 

@@ -83,6 +83,7 @@ model PaymentRecord {
   completedAt          DateTime?
   refundRecord         RefundRecord[]
   rejectionReason      PaymentRecordRejectionReason?
+  WebsocketSession     WebsocketSession[]
 
   @@index(merchantId)
 }
@@ -129,4 +130,13 @@ model GDPR {
   id         Int     @id @default(autoincrement())
   merchantId String
   completed  Boolean
+}
+
+model WebsocketSession {
+  id              Int            @id @default(autoincrement())
+  connectionId    String         @unique
+  paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+  paymentRecordId String
+
+  @@index(paymentRecordId)
 }

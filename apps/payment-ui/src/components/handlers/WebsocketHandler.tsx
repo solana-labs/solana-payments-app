@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getSessionState, SessionState, setPaymentDetails, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId, getSessionState, SessionState, setPaymentDetails, socketConnected } from '@/features/payment-session/paymentSessionSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const sessionState = useSelector(getSessionState)
+    const paymentId = useSelector(getPaymentId)
 
     let socket = useRef<WebSocket | null>(null);
 
@@ -19,7 +20,7 @@ const WebsocketHandler: React.FC = () => {
             //     socket.current.close();
             // }
 
-            socket.current = new WebSocket('ws://localhost:4009');
+            socket.current = new WebSocket('ws://localhost:4009/?paymentId=' + paymentId);
 
             socket.current.onopen = () => {
                 console.log('WebSocket Client Connected');

@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
-import { getPaymentId } from '@/features/pay-tab/paySlice';
+import { getPaymentId } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { setError } from '@/features/error/errorSlice';
@@ -21,11 +21,13 @@ const BuyButton = () => {
         };
         
         if ( paymentId == null ) {
+            console.log('There is no payment.')
             dispatch(setError('There is no payment.'));
             return;
         }
 
         if (publicKey == null) {
+            console.log('There is no wallet connected.')
             dispatch(setError('There is no wallet connected.'));
             return;
         }
@@ -83,8 +85,8 @@ const BuyButton = () => {
     return (
         <button
             onClick={async () => {
-                // await fetchAndSendTransaction();
-                dispatch(sendMessage())
+                await fetchAndSendTransaction();
+                // dispatch(sendMessage())
             }}
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >

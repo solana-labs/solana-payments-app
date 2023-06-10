@@ -126,3 +126,4 @@ export default paymentSessionSlice.reducer;
 
 export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.paymentSession.paymentDetails;
+export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;

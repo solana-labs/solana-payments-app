@@ -1,25 +1,27 @@
 import pkg from 'aws-sdk';
 const { ApiGatewayManagementApi } = pkg;
 
-export const sendWebsocketMessage = async (connectionId: string, message: string): Promise<void> => {
+export const sendWebsocketMessage = async (connectionId: string, payload: unknown): Promise<void> => {
     const apigwManagementApi = new ApiGatewayManagementApi({
         endpoint: 'http://localhost:4009',
     });
 
     const postParams = {
-        Data: JSON.stringify({
-            messageType: 'paymentDetails',
-            paymentDetails: {
-                merchantDisplayName: 'Test Merchant',
-                totalAmountUSDCDisplay: '10 USDC',
-                totalAmountFiatDisplay: '$10.00',
-                cancelUrl: 'https://example.com/cancel',
-                completed: false,
-                redirectUrl: null,
-            },
-        }),
+        Data: JSON.stringify(payload),
         ConnectionId: connectionId,
     };
+
+    // {
+    //     messageType: 'paymentDetails',
+    //     paymentDetails: {
+    //         merchantDisplayName: 'Test Merchant',
+    //         totalAmountUSDCDisplay: '10 USDC',
+    //         totalAmountFiatDisplay: '$10.00',
+    //         cancelUrl: 'https://example.com/cancel',
+    //         completed: false,
+    //         redirectUrl: null,
+    //     },
+    // }
 
     try {
         const connection = await apigwManagementApi.postToConnection(postParams).promise();
