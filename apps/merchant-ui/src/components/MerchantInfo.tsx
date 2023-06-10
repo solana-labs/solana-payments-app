@@ -32,6 +32,7 @@ export function MerchantInfo(props: Props) {
         token: Token.USDC,
     });
     const [pending, setPending] = useState(false);
+    const [addressChanged, setAddressChanged] = useState(false);
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
@@ -106,6 +107,8 @@ export function MerchantInfo(props: Props) {
                             }))
                         }
                         defaultValue={formState.walletAddress}
+                        addressChanged={addressChanged}
+                        setAddressChanged={setAddressChanged}
                     />
                 </div>
                 <div className="my-6 border-b border-gray-200 col-span-2" />
@@ -135,11 +138,7 @@ export function MerchantInfo(props: Props) {
                         setPending(true);
                         await updateMerchantAddress(formState.walletAddress?.toString());
                         await getMerchantInfo();
-
-                        toast({
-                            title: 'Updated Merchant Address',
-                            variant: 'constructive',
-                        });
+                        setAddressChanged(true);
                         setPending(false);
                     }}
                     pending={pending}
