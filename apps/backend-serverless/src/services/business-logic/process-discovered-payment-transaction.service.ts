@@ -14,6 +14,8 @@ import { validatePaymentSessionResolved } from '../shopify/validate-payment-sess
 import * as Sentry from '@sentry/serverless';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { delay } from '../../utilities/delay.utility.js';
+import { sendWebsocketMessage } from '../websocket/send-websocket-message.service.js';
+import { WebsocketSessionService } from '../database/websocket.database.service.js';
 
 export const processDiscoveredPaymentTransaction = async (
     transactionRecord: TransactionRecord,
@@ -22,6 +24,7 @@ export const processDiscoveredPaymentTransaction = async (
 ) => {
     const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
+    const websocketSessionService = new WebsocketSessionService(prisma);
 
     if (transactionRecord.type != TransactionType.payment) {
         // This would be a silly error to hit but it guards against incorrect usage
@@ -65,6 +68,19 @@ export const processDiscoveredPaymentTransaction = async (
         Sentry.captureException(new Error('Shop gid not found on payment record'));
         throw new Error('Shop gid not found on payment record.');
     }
+
+    const websocketSession = await websocketSessionService.getWebsocketSession({
+        paymentRecordId: paymentRecord.id,
+    });
+
+    // TODO: Fix this
+    if (websocketSession == null) {
+        return;
+    }
+
+    sendWebsocketMessage(websocketSession.connectionId, {
+        messageType: 'processingTransaction',
+    });
 
     const merchant = await merchantService.getMerchant({
         id: paymentRecord.merchantId,
@@ -136,6 +152,13 @@ export const processDiscoveredPaymentTransaction = async (
             status: PaymentRecordStatus.completed,
             redirectUrl: resolvePaymentData.redirectUrl,
             completedAt: new Date(),
+        });
+
+        await sendWebsocketMessage(websocketSession.connectionId, {
+            messageType: 'completedPayment',
+            completedDetails: {
+                redirectUrl: resolvePaymentData.redirectUrl,
+            },
         });
     } catch (error) {
         // TODO: Log the error with Sentry, generally could be a normal situation to arise but it's still good to try why it happened

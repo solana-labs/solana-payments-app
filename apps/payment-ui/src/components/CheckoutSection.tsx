@@ -2,7 +2,7 @@ import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
 import { getPaymentMethod, setPaymentMethod, getPaymentErrors, PayError, PaymentDetails } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
-import React, { useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PayWithQRCodeSection from './PayWithQRCodeSection';
 import PayWithWalletSection from './PayWithWalletSection';
@@ -17,6 +17,8 @@ import { PaymentView } from './PaymentView';
 import { ErrorGoBack } from './ErrorGoBack';
 import { BlockedProps } from '@/pages';
 import { GeoBlockedView } from './GeoBlockedView';
+import { PaymentLoadingView } from './PaymentLoadingView';
+import { getIsCompleted, getPaymentDetails, getProcessingTransaction } from '@/features/payment-session/paymentSessionSlice';
 
 const PaymentErrorView = ( props: { payError: PayError } ) => {
     return <ErrorGoBack top={props.payError.errorTitle} bottom={props.payError.errorDetail} redirect={props.payError.errorRedirect} />
@@ -36,16 +38,20 @@ const BlockedOrNotRootView = ( props: { payError: PayError | null, payDetail: Pa
 
 const CheckoutSection = (props: BlockedProps) => {
 
-    // const paymentDetails = useSelector(getPaymentDetails);
-    // const paymentErrors = useSelector(getPaymentErrors);
+    const paymentDetails = useSelector(getPaymentDetails);
+    const isProcessing = useSelector(getProcessingTransaction);
+    const isCompleted = useSelector(getIsCompleted)
 
-    return (
-        <div className="w-full mx-auto rounded-t-xl bg-white  sm:h-[95vh] h-[90vh] sm:px-16 px-4">
-            {/* <BlockedOrNotRootView payError={paymentErrors} payDetail={paymentDetails} isBlocked={props.isBlocked} /> */}
-            <PaymentView />
-            {/* <GeoBlockedView /> */}
-        </div>
-    );
-};
+    if ( props.isBlocked == 'true' ) {
+        return <GeoBlockedView />
+    } else if ( isProcessing ) {
+        return <PaymentLoadingView />
+    } else if ( isCompleted ) {
+        return <ThankYouView />
+    } else {
+        return <PaymentView />
+    }
+
+}
 
 export default CheckoutSection;

@@ -12,18 +12,22 @@ export enum SessionState {
     readyToConnect,
     connected,
     sendMessage,
+    processing,
+    completed,
 }
 
 interface PaymentSessionState {
     paymentId: string | null;
     sessionState: SessionState;
     paymentDetails: PaymentDetails | null;
+    redirectUrl: string | null;
 }
 
 const initalState: PaymentSessionState = {
     paymentId: null,
     sessionState: SessionState.start,
     paymentDetails: null,
+    redirectUrl: null,
 };
 
 interface PaymentDetails {
@@ -33,6 +37,10 @@ interface PaymentDetails {
     cancelUrl: string | null;
     completed: boolean;
     redirectUrl: string | null;
+}
+
+interface CompletedDetails {
+    redirectUrl: string;
 }
 
 type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
@@ -96,6 +104,13 @@ const paymentSessionSlice = createSlice({
         sendMessage: state => {
             state.sessionState = SessionState.sendMessage;
         },
+        setProcessing: state => {
+            state.sessionState = SessionState.processing;
+        },
+        setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
+            state.sessionState = SessionState.completed;
+            state.redirectUrl = action.payload.redirectUrl;
+        },
     },
     extraReducers(builder) {
         builder
@@ -120,10 +135,15 @@ const paymentSessionSlice = createSlice({
             );
     },
 });
-export const { setPaymentId, setPaymentDetails, sendMessage } = paymentSessionSlice.actions;
+export const { setPaymentId, setPaymentDetails, sendMessage, setProcessing, setCompleted } =
+    paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
 
 export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.paymentSession.paymentDetails;
 export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;
+export const getProcessingTransaction = (state: RootState): boolean =>
+    state.paymentSession.sessionState === SessionState.processing;
+export const getIsCompleted = (state: RootState): boolean => state.paymentSession.redirectUrl != null;
+export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
