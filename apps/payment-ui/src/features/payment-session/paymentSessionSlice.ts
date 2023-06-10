@@ -26,6 +26,14 @@ export enum SolanaPayState {
     solanaPayCompleted,
 }
 
+export enum ConnectWalletState {
+    start,
+    loading,
+    sentTransaction,
+    processing,
+    completed,
+}
+
 export interface ErrorDetails {
     errorTitle: string;
     errorDetail: string;
@@ -39,6 +47,7 @@ interface PaymentSessionState {
     redirectUrl: string | null;
     errorDetails: ErrorDetails | null;
     solanaPayState: SolanaPayState;
+    connectWalletState: ConnectWalletState;
 }
 
 const initalState: PaymentSessionState = {
@@ -48,6 +57,7 @@ const initalState: PaymentSessionState = {
     redirectUrl: null,
     errorDetails: null,
     solanaPayState: SolanaPayState.start,
+    connectWalletState: ConnectWalletState.start,
 };
 
 interface PaymentDetails {
@@ -141,6 +151,15 @@ const paymentSessionSlice = createSlice({
         setSolanaPayCompleted: state => {
             state.solanaPayState = SolanaPayState.solanaPayCompleted;
         },
+        setConnectWalletLoading: state => {
+            state.connectWalletState = ConnectWalletState.loading;
+        },
+        setConnectWalletSentTransaction: state => {
+            state.connectWalletState = ConnectWalletState.sentTransaction;
+        },
+        setConnectWalletStart: state => {
+            state.connectWalletState = ConnectWalletState.start;
+        },
     },
     extraReducers(builder) {
         builder
@@ -167,6 +186,9 @@ export const {
     setTransactionRequestStarted,
     setTransactionDelivered,
     setSolanaPayCompleted,
+    setConnectWalletLoading,
+    setConnectWalletSentTransaction,
+    setConnectWalletStart,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
@@ -178,6 +200,7 @@ export const getSessionState = (state: RootState): SessionState => state.payment
 export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;
 export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
 export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
+export const getConnectWalletState = (state: RootState): ConnectWalletState => state.paymentSession.connectWalletState;
 
 export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;
