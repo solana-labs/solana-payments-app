@@ -1,5 +1,5 @@
 import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { getPaymentMethod, setPaymentMethod, getPaymentErrors, PayError, PaymentDetails } from '@/features/pay-tab/paySlice';
+import { PayError, PaymentDetails } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
 import React, { ReactNode, useEffect, useRef } from 'react';

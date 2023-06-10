@@ -3,6 +3,7 @@ import payReducer from './features/pay-tab/paySlice';
 import mobileReducer from './features/mobile/mobileSlice';
 import errorReducer from './features/error/errorSlice';
 import paymentSessionReducer from './features/payment-session/paymentSessionSlice';
+import paymentOptionsSlice from './features/payment-options/paymentOptionsSlice';
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         mobile: mobileReducer,
         error: errorReducer,
         paymentSession: paymentSessionReducer,
+        paymentOptions: paymentOptionsSlice,
     },
 });
 

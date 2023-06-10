@@ -4,7 +4,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import { AppDispatch } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPayerAccount } from '@/features/pay-tab/paySlice';
 import { WalletDisconnectButton } from './WalletDisconnectButton';
 import { WalletCopyButton } from './WalletCopyButton';
 import Image from 'next/image';

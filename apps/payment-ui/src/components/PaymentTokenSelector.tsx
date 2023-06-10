@@ -1,4 +1,5 @@
-import { getPayingToken, getPaymentMethod, PayingToken, setPayingToken } from '@/features/pay-tab/paySlice';
+import { PayingToken } from '@/features/pay-tab/paySlice';
+import { getPayingToken, setPayingToken } from '@/features/payment-options/paymentOptionsSlice';
 import { AppDispatch } from '@/store';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
