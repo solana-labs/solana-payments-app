@@ -105,18 +105,20 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
-        const websocketSession = await websocketSessionService.getWebsocketSession({
+        const websocketSessions = await websocketSessionService.getWebsocketSessions({
             paymentRecordId: paymentRecord.id,
         });
 
-        if (websocketSession == null) {
-            return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
+        for (const websocketSession of websocketSessions) {
+            try {
+                await sendWebsocketMessage(websocketSession.connectionId, {
+                    messageType: 'transactionRequestStarted',
+                });
+            } catch (error) {
+                // nbd if it fails
+                continue;
+            }
         }
-
-        // If this fails, it's concerning but not the end of the world, TODO
-        await sendWebsocketMessage(websocketSession.connectionId, {
-            messageType: 'transactionRequest:started',
-        });
 
         try {
             gasKeypair = await fetchGasKeypair();
@@ -220,15 +222,22 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
                 // TODO: What to do if this fails? If it fail's they're likely gonna go into the
                 // reconnect flow and we will let them know there.
-                sendWebsocketMessage(websocketSession.connectionId, {
-                    messageType: 'errorDetails',
-                    errorDetails: {
-                        errorTitle: 'Could not process payment.',
-                        errorDetail:
-                            'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
-                        errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
-                    },
-                });
+                for (const websocketSession of websocketSessions) {
+                    try {
+                        sendWebsocketMessage(websocketSession.connectionId, {
+                            messageType: 'errorDetails',
+                            errorDetails: {
+                                errorTitle: 'Could not process payment.',
+                                errorDetail:
+                                    'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                                errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+                            },
+                        });
+                    } catch (error) {
+                        // TODO: if it fails it not great but its not the end of the world
+                        continue;
+                    }
+                }
 
                 // TODO: Better error response
                 return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);

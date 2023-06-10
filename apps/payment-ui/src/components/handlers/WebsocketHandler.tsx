@@ -40,6 +40,8 @@ const WebsocketHandler: React.FC = () => {
 
                 const data = JSON.parse(event.data);
 
+                console.log(data.messageType)
+
                 if ( data.messageType == 'paymentDetails' ) {
                     dispatch(setPaymentDetails(data.paymentDetails))
                 } else if ( data.messageType == 'completedDetails' ) {

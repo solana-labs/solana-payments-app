@@ -1,4 +1,4 @@
-import { PrismaClient, RefundRecordStatus, TransactionRecord, TransactionType } from '@prisma/client';
+import { PrismaClient, RefundRecord, RefundRecordStatus, TransactionRecord, TransactionType } from '@prisma/client';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
@@ -16,7 +16,7 @@ import { fetchTransaction } from '../fetch-transaction.service.js';
 
 // I'm not sure I love adding prisma into this but it should work for how we're handling testing now
 export const processDiscoveredRefundTransaction = async (
-    transactionRecord: TransactionRecord,
+    refundRecord: RefundRecord,
     transaction: HeliusEnhancedTransaction,
     prisma: PrismaClient
 ) => {
@@ -26,33 +26,6 @@ export const processDiscoveredRefundTransaction = async (
 
     const refundRecordService = new RefundRecordService(prisma);
     const merchantService = new MerchantService(prisma);
-
-    // Verify the transaction is a refund
-    if (transactionRecord.type != TransactionType.refund) {
-        throw new Error('Transaction record is not a refund');
-    }
-
-    // catching this error here and throwing will just give it back to /helius but then at least
-    // that consolidates weird errors for logging into one place
-    if (transactionRecord.refundRecordId == null) {
-        throw new Error('Payment record not found on transaction record.');
-    }
-
-    const refundRecord = await refundRecordService.getRefundRecord({
-        id: transactionRecord.refundRecordId,
-    });
-
-    if (refundRecord == null) {
-        throw new Error('Refund record not found.');
-    }
-
-    if (refundRecord.shopGid == null) {
-        throw new Error('Shop gid not found on refund record.');
-    }
-
-    if (refundRecord.merchantId == null) {
-        throw new Error('Merchant ID not found on refund record.');
-    }
 
     const merchant = await merchantService.getMerchant({
         id: refundRecord.merchantId,
@@ -73,7 +46,7 @@ export const processDiscoveredRefundTransaction = async (
     while (rpcTransaction == null) {
         try {
             await delay(3000);
-            rpcTransaction = await fetchTransaction(transactionRecord.signature);
+            rpcTransaction = await fetchTransaction(transaction.signature);
         } catch (error) {}
     }
 
@@ -83,7 +56,7 @@ export const processDiscoveredRefundTransaction = async (
     // TODO: Try catch this and handle cases where database updates fail
     refundRecordService.updateRefundRecord(refundRecord, {
         status: RefundRecordStatus.paid,
-        transactionSignature: transactionRecord.signature,
+        transactionSignature: transaction.signature,
     });
 
     try {
@@ -99,7 +72,7 @@ export const processDiscoveredRefundTransaction = async (
 
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: RefundRecordStatus.completed,
-            transactionSignature: transactionRecord.signature,
+            transactionSignature: transaction.signature,
             completedAt: new Date(),
         });
     } catch (error) {

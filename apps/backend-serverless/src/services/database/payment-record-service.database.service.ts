@@ -4,6 +4,7 @@ import {
     Merchant,
     PaymentRecordStatus,
     PaymentRecordRejectionReason,
+    WebsocketSession,
 } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
@@ -84,6 +85,32 @@ export class PaymentRecordService {
                 skip: calculatePaginationSkip(pagination),
             })
         );
+    }
+
+    async getPaymentRecordAndWebsocketServiceForTransactionSignature(
+        transactionSignature: string
+    ): Promise<{ paymentRecord: PaymentRecord | null; websocketSessions: WebsocketSession[] }> {
+        const transactionRecord = await prismaErrorHandler(
+            this.prisma.transactionRecord.findUnique({
+                where: { signature: transactionSignature },
+                include: {
+                    paymentRecord: {
+                        include: {
+                            websocketSessions: true,
+                        },
+                    },
+                },
+            })
+        );
+
+        if (transactionRecord && transactionRecord.paymentRecord) {
+            return {
+                paymentRecord: transactionRecord.paymentRecord,
+                websocketSessions: transactionRecord.paymentRecord.websocketSessions || [],
+            };
+        }
+
+        return { paymentRecord: null, websocketSessions: [] };
     }
 
     async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {

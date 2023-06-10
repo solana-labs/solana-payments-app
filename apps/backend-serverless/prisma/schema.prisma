@@ -83,7 +83,7 @@ model PaymentRecord {
   completedAt          DateTime?
   refundRecord         RefundRecord[]
   rejectionReason      PaymentRecordRejectionReason?
-  WebsocketSession     WebsocketSession[]
+  websocketSessions    WebsocketSession[]
 
   @@index(merchantId)
 }
@@ -114,7 +114,7 @@ model RefundRecord {
 
 model TransactionRecord {
   id              Int             @id @default(autoincrement())
-  signature       String
+  signature       String          @unique
   type            TransactionType
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId String?

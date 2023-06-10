@@ -1,6 +1,11 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
+import {
+    APIGatewayProxyResultV2,
+    APIGatewayProxyWebsocketEventV2,
+    APIGatewayProxyWebsocketHandlerV2,
+} from 'aws-lambda';
 import { PrismaClient } from '@prisma/client';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 
 const prisma = new PrismaClient();
 
@@ -11,17 +16,15 @@ Sentry.AWSLambda.init({
 });
 
 export const disconnect = Sentry.AWSLambda.wrapHandler(
-    async (event: unknown): Promise<APIGatewayProxyResultV2> => {
+    async (event: APIGatewayProxyWebsocketEventV2): Promise<APIGatewayProxyResultV2> => {
         console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
-        console.log('GOODBYE WEBSOCKET');
+
+        const websocketSessionService = new WebsocketSessionService(prisma);
+
+        await websocketSessionService.deleteWebsocketSession({
+            connectionId: event.requestContext.connectionId,
+        });
+
         return {
             statusCode: 200,
             body: JSON.stringify({}),
