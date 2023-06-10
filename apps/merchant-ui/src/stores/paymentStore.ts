@@ -1,6 +1,5 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import axios from 'axios';
 import { create } from 'zustand';
 
 export enum PaymentStatus {
@@ -56,19 +55,22 @@ export const usePaymentStore = create<PaymentStore>(set => ({
         set({ payments: RE.pending() });
 
         try {
-            const response = await axios.get(API_ENDPOINTS.paymentData, { params });
+            // const response = await axios.get(API_ENDPOINTS.paymentData, { params });
+            const response = await fetch(`${API_ENDPOINTS.paymentData}?${new URLSearchParams(params)}`);
+
+            const data = await response.json();
 
             if (response.status !== 200) {
-                set({ payments: RE.failed(new Error(response.data.message || 'Failed to fetch payments')) });
+                set({ payments: RE.failed(new Error(data.message || 'Failed to fetch payments')) });
             } else {
-                const payments = transformPayment(response.data);
+                const payments = transformPayment(data);
                 set({
                     payments: RE.ok({
                         payments: payments,
-                        totalPages: Math.floor(response.data.paymentData.total / PAGE_SIZE) + 1,
+                        totalPages: Math.floor(data.paymentData.total / PAGE_SIZE) + 1,
                     }),
                 });
-                set({ paymentCount: response.data.paymentData.total });
+                set({ paymentCount: data.paymentData.total });
             }
         } catch (error) {
             console.log('error: ', error);
