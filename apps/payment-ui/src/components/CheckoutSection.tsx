@@ -1,5 +1,3 @@
-import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
 import React, { ReactNode, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

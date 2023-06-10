@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentId, getSessionState, SessionState, setCompleted, setPaymentDetails, setProcessing, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId, getSessionState, SessionState, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, socketConnected } from '@/features/payment-session/paymentSessionSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -45,7 +45,7 @@ const WebsocketHandler: React.FC = () => {
                 } else if ( data.messageType == 'completedDetails' ) {
                     dispatch(setCompleted(data.completedDetails)) 
                 } else if ( data.messageType == 'errorDetails' ) {
-                    dispatch(setCompleted(data.errorDetails)) 
+                    dispatch(setErrorDetails(data.errorDetails)) 
                 } else if ( data.messageType == 'processingTransaction' ) {
                     dispatch(setProcessing())
                 }

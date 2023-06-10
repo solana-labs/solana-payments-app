@@ -1,10 +1,10 @@
-import { getPaymentId } from '../features/pay-tab/paySlice';
 import QRCodeStyling from '@solana/qr-code-styling';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createQROptions } from './SolanaPayQRCode';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { getPayingToken } from '@/features/payment-options/paymentOptionsSlice';
+import { getPaymentId } from '@/features/payment-session/paymentSessionSlice';
 
 export const QRCode: FC = () => {
     const [size, setSize] = useState(() =>

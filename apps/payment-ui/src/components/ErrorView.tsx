@@ -13,19 +13,19 @@ export const ErrorView = () => {
     return (
         <div className="flex flex-col">
             <ErrorDisplay top={errorDetails?.errorTitle ?? DEFAULT_ERROR_TITLE} bottom={errorDetails?.errorDetail ?? DEFAULT_ERROR_DETAIL} />
-            <GoBackButton redirect={errorDetails?.errorTitle ?? null} />
+            <GoBackButton redirect={errorDetails?.errorRedirect ?? null} />
         </div>
     )
 }
 
 const ErrorDisplay = ( props: { top: string, bottom: string } ) => {
     return (
-        <div className='rounded-lg outline outline-1 mt-16 h-16 outline-orange-600 bg-orange-100 flex flex-row items-start'>
-            <div className='flex flex-col h-full justify-center'>
+        <div className='rounded-lg outline outline-1 mt-16 outline-orange-600 bg-orange-100 flex flex-row items-start'>
+            <div className='flex flex-col h-full justify-center mt-2.5'>
                 <ImWarning className='text-orange-600 ml-4 mr-3 text-md' />
                 <div className="text-md text-orange-100 font-light">{'.'}</div>
             </div>
-            <div className='flex flex-col h-full justify-center'>
+            <div className='flex flex-col h-full justify-center mb-2 mt-2'>
                 <div className="text-sm text-orange-800 font-semibold">{props.top}</div>
                 <div className="text-sm text-orange-800 font-light">{props.bottom}</div>
             </div>

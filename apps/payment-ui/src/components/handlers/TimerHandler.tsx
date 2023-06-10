@@ -1,26 +1,25 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
-import { timerTick } from '@/features/pay-tab/paySlice';
+// import { useEffect } from 'react';
+// import { useDispatch } from 'react-redux';
+// import { AppDispatch } from '../../store';
 
-const TimerHandler: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
+// const TimerHandler: React.FC = () => {
+//     const dispatch = useDispatch<AppDispatch>();
 
-    console.log('TIMER')
+//     console.log('TIMER')
 
-    useEffect(() => {
-        const interval = 2000; // 2 seconds
+//     useEffect(() => {
+//         const interval = 2000; // 2 seconds
 
-        const timer = setInterval(() => {
-            dispatch(timerTick());
-        }, interval);
+//         const timer = setInterval(() => {
+//             dispatch(timerTick());
+//         }, interval);
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, [dispatch]);
+//         return () => {
+//             clearInterval(timer);
+//         };
+//     }, [dispatch]);
 
-    return null;
-};
+//     return null;
+// };
 
-export default TimerHandler;
+// export default TimerHandler;

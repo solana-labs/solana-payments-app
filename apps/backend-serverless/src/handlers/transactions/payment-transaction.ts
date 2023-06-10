@@ -235,6 +235,18 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             }
         }
 
+        sendWebsocketMessage(websocketSession.connectionId, {
+            messageType: 'errorDetails',
+            errorDetails: {
+                errorTitle: 'Could not process payment.',
+                errorDetail:
+                    'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+            },
+        });
+
+        return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+
         try {
             transaction = encodeTransaction(paymentTransaction.transaction);
         } catch (error) {
