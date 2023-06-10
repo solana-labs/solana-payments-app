@@ -36,12 +36,14 @@ const BlockedOrNotRootView = ( props: { payError: PayError | null, payDetail: Pa
 
 const CheckoutSection = (props: BlockedProps) => {
 
-    const paymentDetails = useSelector(getPaymentDetails);
-    const paymentErrors = useSelector(getPaymentErrors);
+    // const paymentDetails = useSelector(getPaymentDetails);
+    // const paymentErrors = useSelector(getPaymentErrors);
 
     return (
         <div className="w-full mx-auto rounded-t-xl bg-white  sm:h-[95vh] h-[90vh] sm:px-16 px-4">
-            <BlockedOrNotRootView payError={paymentErrors} payDetail={paymentDetails} isBlocked={props.isBlocked} />
+            {/* <BlockedOrNotRootView payError={paymentErrors} payDetail={paymentDetails} isBlocked={props.isBlocked} /> */}
+            <PaymentView />
+            {/* <GeoBlockedView /> */}
         </div>
     );
 };

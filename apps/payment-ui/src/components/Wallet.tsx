@@ -12,9 +12,9 @@ import WalletSection from './WalletSection';
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
 
-export const Wallet: FC = () => {
+const Wallet: FC = () => {
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-    const network = WalletAdapterNetwork.Devnet;
+    const network = WalletAdapterNetwork.Mainnet;
 
     // You can also provide a custom RPC endpoint.
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -34,7 +34,7 @@ export const Wallet: FC = () => {
              * instantiate its legacy wallet adapter here. Common legacy adapters can be found
              * in the npm package `@solana/wallet-adapter-wallets`.
              */
-            new UnsafeBurnerWalletAdapter(),
+            // new UnsafeBurnerWalletAdapter(),
         ],
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [network]
@@ -48,12 +48,11 @@ export const Wallet: FC = () => {
                         <div className="py-2">
                             <WalletSection />
                         </div>
-                        {/* <div className="py-2">
-                            <WalletDisconnectButton />
-                        </div> */}
                     </div>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
     );
 };
+
+export default Wallet;

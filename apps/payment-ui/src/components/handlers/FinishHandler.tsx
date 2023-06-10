@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentDetails } from '@/features/pay-tab/paySlice';
+import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
 
 const FinishHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

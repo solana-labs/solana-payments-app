@@ -17,7 +17,7 @@ const WalletSection = () => {
 
     const { publicKey, wallet, disconnect } = useWallet();
     const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
-    const error = useSelector(getError)
+    // const error = useSelector(getError)
 
     return (
         <div>
@@ -34,7 +34,7 @@ const WalletSection = () => {
                 (
                     <div className=''>
                         <div className='pb-4'>
-                            { error ? <ErrorView /> : <div></div> }
+                            {/* { error ? <ErrorView /> : <div></div> } */}
                         </div>
                         <div className='pb-2'>
                             <WalletButton />

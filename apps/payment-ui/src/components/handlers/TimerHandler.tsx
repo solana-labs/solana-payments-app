@@ -6,6 +6,8 @@ import { timerTick } from '@/features/pay-tab/paySlice';
 const TimerHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
 
+    console.log('TIMER')
+
     useEffect(() => {
         const interval = 2000; // 2 seconds
 

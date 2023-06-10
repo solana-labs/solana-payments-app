@@ -7,7 +7,7 @@ import PayWithQRCodeSection from "./PayWithQRCodeSection";
 
 export const PaymentView = () => {
 
-    const paymentMethod = useSelector(getPaymentMethod);
+    // const paymentMethod = useSelector(getPaymentMethod);
 
     return (
         <div className='flex flex-col justify-between h-full'>
@@ -20,7 +20,8 @@ export const PaymentView = () => {
                 </div>
             </div>
             <div className="relative flex flex-col h-full">
-                {paymentMethod == 'connect-wallet' ? <PayWithWalletSection /> : <PayWithQRCodeSection />}
+                {/* {paymentMethod == 'connect-wallet' ? <PayWithWalletSection /> : <PayWithQRCodeSection />} */}
+                <PayWithWalletSection />
             </div>
         </div>
     )

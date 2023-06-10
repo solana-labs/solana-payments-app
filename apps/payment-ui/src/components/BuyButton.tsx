@@ -7,6 +7,7 @@ import { getPaymentId } from '@/features/pay-tab/paySlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { setError } from '@/features/error/errorSlice';
+import { sendMessage } from '@/features/payment-session/paymentSessionSlice';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
@@ -82,7 +83,8 @@ const BuyButton = () => {
     return (
         <button
             onClick={async () => {
-                await fetchAndSendTransaction();
+                // await fetchAndSendTransaction();
+                dispatch(sendMessage())
             }}
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >

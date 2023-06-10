@@ -158,6 +158,6 @@ export const getRedirectUrl = (state: any): string | null => state.pay.redirectU
 
 export const getPayerAccount = (state: any): string => state.pay.payerAccount;
 
-export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.pay.paymentDetails;
+// export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.pay.paymentDetails;
 
 export const getPaymentErrors = (state: RootState): PayError | null => state.pay.paymentError;

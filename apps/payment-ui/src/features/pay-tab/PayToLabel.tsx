@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, setPaymentMethod } from './paySlice';
+import { getPayingToken, getPaymentMethod, PaymentMethod, setPaymentMethod } from './paySlice';
+import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
