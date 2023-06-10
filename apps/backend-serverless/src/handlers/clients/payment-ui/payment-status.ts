@@ -75,12 +75,12 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
         }
 
         const paymentStatusResponse = {
-            merchantDisplayName: merchant.shop,
+            merchantDisplayName: merchant.name ?? merchant.shop.split('.')[0],
             totalAmountFiatDisplay: paymentRecord.amount.toLocaleString(parsedPaymentStatusQuery.language, {
                 style: 'currency',
                 currency: paymentRecord.currency,
             }),
-            totalAmountUSDCDisplay: `${paymentRecord.usdcAmount} USDC`,
+            totalAmountUSDCDisplay: `${paymentRecord.usdcAmount.toFixed(2)} USDC`,
             cancelUrl: paymentRecord.cancelURL,
             redirectUrl: paymentRecord.redirectUrl,
             completed: paymentRecord.redirectUrl ? true : false,

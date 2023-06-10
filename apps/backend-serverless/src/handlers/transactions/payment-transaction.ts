@@ -321,6 +321,7 @@ export const paymentMetadata = async (event: APIGatewayProxyEvent): Promise<APIG
         statusCode: 200,
         body: JSON.stringify({
             label: 'Solana Payment App',
+            icon: 'https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png',
         }),
     };
 };

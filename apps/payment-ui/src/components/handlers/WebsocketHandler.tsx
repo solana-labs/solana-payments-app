@@ -73,7 +73,7 @@ const WebsocketHandler: React.FC = () => {
         };
     }, [dispatch, sessionState]);
 
-    return <div>Hello</div>;
+    return null;
 };
 
 export default WebsocketHandler;
