@@ -1,4 +1,6 @@
+import { UsdcIconCircle } from '@/components/icons/UsdcIconCircle';
 import * as Select from '@radix-ui/react-select';
+import { cloneElement } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Check } from './icons/Check';
 import { ChevronDown } from './icons/ChevronDown';
@@ -10,6 +12,8 @@ export enum Token {
 
 function getTokenIcon(token: Token): JSX.Element {
     switch (token) {
+        case Token.USDC:
+            return <UsdcIconCircle />;
         default:
             return <div className="h-6 w-6 rounded-full bg-gray-300" />;
     }
@@ -78,7 +82,9 @@ export function TokenSelect(props: Props) {
                 <Select.Value asChild>
                     <div className="flex items-center">
                         <div className="grid items-center pr-2.5 mr-2.5 border-r h-11 border-gray-300">
-                            {getTokenIcon(props.token)}
+                            {cloneElement(getTokenIcon(props.token), {
+                                className: 'w-6',
+                            })}
                         </div>
                         <div className="text-slate-600">{getTokenSymbol(props.token)}</div>
                     </div>
