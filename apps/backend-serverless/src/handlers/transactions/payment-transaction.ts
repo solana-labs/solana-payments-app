@@ -113,6 +113,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
+        // If this fails, it's concerning but not the end of the world, TODO
         await sendWebsocketMessage(websocketSession.connectionId, {
             messageType: 'transactionRequest:started',
         });
@@ -217,6 +218,19 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                     }
                 }
 
+                // TODO: What to do if this fails? If it fail's they're likely gonna go into the
+                // reconnect flow and we will let them know there.
+                sendWebsocketMessage(websocketSession.connectionId, {
+                    messageType: 'errorDetails',
+                    errorDetails: {
+                        errorTitle: 'Could not process payment.',
+                        errorDetail:
+                            'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                        errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+                    },
+                });
+
+                // TODO: Better error response
                 return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
             }
         }
@@ -232,7 +246,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         transaction.partialSign(singleUseKeypair);
 
         // TODO: Idk why this is commented out but we should remove it soon, i think it was a local thing
-        // TODO: DO NOT ACCEPT THIS PR IF THIS IS COMMENTED OUT
+        // TODO: FIX THIS
         // try {
         //     verifyPaymentTransactionWithPaymentRecord(paymentRecord, transaction, true);
         // } catch (error) {

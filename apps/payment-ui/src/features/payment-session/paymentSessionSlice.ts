@@ -102,11 +102,11 @@ const paymentSessionSlice = createSlice({
             state.paymentDetails = action.payload;
         },
         setProcessing: state => {
-            // state.sessionState = SessionState.processing;
+            state.sessionState = SessionState.processing;
         },
         setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
-            // state.sessionState = SessionState.completed;
-            // state.redirectUrl = action.payload.redirectUrl;
+            state.sessionState = SessionState.completed;
+            state.redirectUrl = action.payload.redirectUrl;
         },
         setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
             state.errorDetails = action.payload;

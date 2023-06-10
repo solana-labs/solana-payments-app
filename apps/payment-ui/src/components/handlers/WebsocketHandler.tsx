@@ -42,10 +42,12 @@ const WebsocketHandler: React.FC = () => {
 
                 if ( data.messageType == 'paymentDetails' ) {
                     dispatch(setPaymentDetails(data.paymentDetails))
+                } else if ( data.messageType == 'completedDetails' ) {
+                    dispatch(setCompleted(data.completedDetails)) 
+                } else if ( data.messageType == 'errorDetails' ) {
+                    dispatch(setCompleted(data.errorDetails)) 
                 } else if ( data.messageType == 'processingTransaction' ) {
                     dispatch(setProcessing())
-                } else if ( data.messageType == 'completedPayment' ) {
-                    dispatch(setCompleted(data.completedDetails)) 
                 }
 
             };
