@@ -60,12 +60,8 @@ const WebsocketHandler: React.FC = () => {
 
         }
 
-        if ( sessionState == SessionState.sendMessage ) {
-            socket.current?.send('Hello from the client!')
-            // console.log(socket.current)
-        }
-
         return () => {
+            // TODO: Uncomment?
             // if ( socket ) {
             //     socket.close();
             // }

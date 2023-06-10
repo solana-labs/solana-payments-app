@@ -11,9 +11,15 @@ export enum SessionState {
     start,
     readyToConnect,
     connected,
-    sendMessage,
     processing,
     completed,
+    error,
+}
+
+export interface ErrorDetails {
+    errorTitle: string;
+    errorDetail: string;
+    errorRedirect: string;
 }
 
 interface PaymentSessionState {
@@ -21,6 +27,7 @@ interface PaymentSessionState {
     sessionState: SessionState;
     paymentDetails: PaymentDetails | null;
     redirectUrl: string | null;
+    errorDetails: ErrorDetails | null;
 }
 
 const initalState: PaymentSessionState = {
@@ -28,6 +35,7 @@ const initalState: PaymentSessionState = {
     sessionState: SessionState.start,
     paymentDetails: null,
     redirectUrl: null,
+    errorDetails: null,
 };
 
 interface PaymentDetails {
@@ -43,7 +51,7 @@ interface CompletedDetails {
     redirectUrl: string;
 }
 
-type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
+type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: ErrorDetails | null };
 type PaymentDetailsSocketMessageResponse = { error: unknown | null };
 type PaymentDetailsSocketMessageInfo = { paymentDetails: PaymentDetails };
 type SocketMessageResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
@@ -59,14 +67,14 @@ export const socketConnected = createAsyncThunk<SocketConnectedResponse>(
         if (paymentId == null) {
             return {
                 paymentDetails: null,
-                error: new SocketConnectedWithoutPaymentIdError(),
+                error: null,
             };
         }
 
         if (backendUrl == null) {
             return {
                 paymentDetails: null,
-                error: new Error('NEXT_PUBLIC_BACKEND_URL is not set'),
+                error: null,
             };
         }
 
@@ -77,18 +85,10 @@ export const socketConnected = createAsyncThunk<SocketConnectedResponse>(
 
         return {
             paymentDetails: paymentStatusResponse,
-            error: null,
+            error: errorResponse,
         };
     }
 );
-
-// export const socketMessage = createAsyncThunk<SocketMessageResponse, SocketMessage>(
-//     'paymentSession/socketMessage',
-//     async (socketMessage: SocketMessage, { getState }): Promise<SocketMessageResponse> => {
-//         const state = getState() as RootState;
-//         return socketMessage;
-//     }
-// );
 
 const paymentSessionSlice = createSlice({
     name: 'paymentSession',
@@ -101,15 +101,15 @@ const paymentSessionSlice = createSlice({
         setPaymentDetails: (state, action: PayloadAction<PaymentDetails>) => {
             state.paymentDetails = action.payload;
         },
-        sendMessage: state => {
-            state.sessionState = SessionState.sendMessage;
-        },
         setProcessing: state => {
-            state.sessionState = SessionState.processing;
+            // state.sessionState = SessionState.processing;
         },
         setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
-            state.sessionState = SessionState.completed;
-            state.redirectUrl = action.payload.redirectUrl;
+            // state.sessionState = SessionState.completed;
+            // state.redirectUrl = action.payload.redirectUrl;
+        },
+        setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
+            state.errorDetails = action.payload;
         },
     },
     extraReducers(builder) {
@@ -119,31 +119,26 @@ const paymentSessionSlice = createSlice({
             .addCase(
                 socketConnected.fulfilled,
                 (state: PaymentSessionState, action: PayloadAction<SocketConnectedResponse>) => {
-                    // const error = action.payload.error;
-
-                    // if (error != null && error instanceof SocketConnectedWithoutPaymentIdError) {
-                    //     // set state that would force looking for the payment id or something
-                    // } else if (error != null && error instanceof SocketMessageWithNoTypeError) {
-                    //     // set state
-                    // }
-
-                    console.log(action.payload.paymentDetails);
-
+                    state.errorDetails = action.payload.error;
                     state.paymentDetails = action.payload.paymentDetails;
                     state.sessionState = SessionState.connected;
                 }
             );
     },
 });
-export const { setPaymentId, setPaymentDetails, sendMessage, setProcessing, setCompleted } =
+export const { setPaymentId, setPaymentDetails, setProcessing, setCompleted, setErrorDetails } =
     paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
 
-export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.paymentSession.paymentDetails;
+export const getErrorDetails = (state: RootState): ErrorDetails | null => state.paymentSession.errorDetails;
+
+export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;
-export const getProcessingTransaction = (state: RootState): boolean =>
+export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
+
+export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;
 export const getIsCompleted = (state: RootState): boolean => state.paymentSession.redirectUrl != null;
-export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
+export const getIsError = (state: RootState): boolean => state.paymentSession.errorDetails != null;

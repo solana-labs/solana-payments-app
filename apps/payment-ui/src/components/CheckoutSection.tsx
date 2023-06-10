@@ -1,5 +1,4 @@
 import { PaymentMethodTab } from '@/features/pay-tab/PaymentMethodTab';
-import { PayError, PaymentDetails } from '@/features/pay-tab/paySlice';
 import { PayToLabel } from '@/features/pay-tab/PayToLabel';
 import { AppDispatch, RootState } from '@/store';
 import React, { ReactNode, useEffect, useRef } from 'react';
@@ -18,29 +17,14 @@ import { ErrorGoBack } from './ErrorGoBack';
 import { BlockedProps } from '@/pages';
 import { GeoBlockedView } from './GeoBlockedView';
 import { PaymentLoadingView } from './PaymentLoadingView';
-import { getIsCompleted, getPaymentDetails, getProcessingTransaction } from '@/features/payment-session/paymentSessionSlice';
-
-const PaymentErrorView = ( props: { payError: PayError } ) => {
-    return <ErrorGoBack top={props.payError.errorTitle} bottom={props.payError.errorDetail} redirect={props.payError.errorRedirect} />
-}
-
-const PaymentDeatilView = ( props: { paymentDetails: PaymentDetails | null } ) => {
-    return ( props.paymentDetails?.redirectUrl != null ? <ThankYouView /> : <PaymentView /> )
-}
-
-const PaymentRootView = ( props: { payError: PayError | null, payDetail: PaymentDetails | null } ) => {
-    return ( props.payError != null ? <PaymentErrorView payError={props.payError} /> : <PaymentDeatilView paymentDetails={props.payDetail} /> )
-}
-
-const BlockedOrNotRootView = ( props: { payError: PayError | null, payDetail: PaymentDetails | null, isBlocked: string } ) => {
-    return ( props.isBlocked == 'true' ? <GeoBlockedView /> : <PaymentRootView payError={props.payError} payDetail={props.payDetail} /> )
-}
+import { getIsCompleted, getPaymentDetails, getIsProcessing, getIsError } from '@/features/payment-session/paymentSessionSlice';
+import { ErrorView } from './ErrorView';
 
 const CheckoutSection = (props: BlockedProps) => {
 
-    const paymentDetails = useSelector(getPaymentDetails);
-    const isProcessing = useSelector(getProcessingTransaction);
+    const isProcessing = useSelector(getIsProcessing);
     const isCompleted = useSelector(getIsCompleted)
+    const isError = useSelector(getIsError)
 
     if ( props.isBlocked == 'true' ) {
         return <GeoBlockedView />
@@ -48,6 +32,8 @@ const CheckoutSection = (props: BlockedProps) => {
         return <PaymentLoadingView />
     } else if ( isCompleted ) {
         return <ThankYouView />
+    } else if ( isError ) {
+        return <ErrorView />
     } else {
         return <PaymentView />
     }

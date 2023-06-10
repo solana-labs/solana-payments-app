@@ -6,8 +6,7 @@ import * as web3 from '@solana/web3.js';
 import { getPaymentId } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
-import { setError } from '@/features/error/errorSlice';
-import { sendMessage } from '@/features/payment-session/paymentSessionSlice';
+import { Notification, setNotification } from '@/features/notification/notificationSlice';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
@@ -21,14 +20,12 @@ const BuyButton = () => {
         };
         
         if ( paymentId == null ) {
-            console.log('There is no payment.')
-            dispatch(setError('There is no payment.'));
+            dispatch(setNotification(Notification.noPayment));
             return;
         }
 
         if (publicKey == null) {
-            console.log('There is no wallet connected.')
-            dispatch(setError('There is no wallet connected.'));
+            dispatch(setNotification(Notification.noWallet));
             return;
         }
 
@@ -36,7 +33,7 @@ const BuyButton = () => {
 
         let transactionString: string
 
-        setLoading(true);
+        setLoading(true)
 
         try {
 
@@ -46,10 +43,17 @@ const BuyButton = () => {
                 { headers: headers }
             );
 
-            transactionString = response.data.transaction;
+            transactionString = response.data.transaction
         } catch (error) {
             setLoading(false);
-            dispatch(setError('There was an issue fetching your transaction. Please try again.'));
+            // TODO: Handle error and give more specific reason
+            dispatch(setNotification(Notification.transactionRequestFailed));
+            return;
+        }
+
+        if ( transactionString == null ) {
+            setLoading(false);
+            dispatch(setNotification(Notification.transactionRequestFailed));
             return;
         }
 
@@ -62,7 +66,7 @@ const BuyButton = () => {
 
         } catch (error) {
             setLoading(false);
-            dispatch(setError('There was issue with your transaction. Please try again.'));
+            dispatch(setNotification(Notification.transactionRequestFailed));
             return
         }
 
@@ -74,7 +78,21 @@ const BuyButton = () => {
             await sendTransaction(transaction, connection);
         } catch (error) {
             setLoading(false);
-            dispatch(setError('There was an issue sending your transaction. Please try again.'));
+
+            const declined = ( error instanceof Error && error.message.toLowerCase().includes('user rejected') )
+            const duplicatePayment = ( error instanceof Error && error.message.toLowerCase().includes('0x0') && error.message.toLowerCase().includes('instruction 0'))
+            const insufficientFunds = ( error instanceof Error && error.message.toLowerCase().includes('0x1') && error.message.toLowerCase().includes('instruction 1'))
+
+            if (declined) {
+                dispatch(setNotification(Notification.declined));
+            } else if (duplicatePayment) {
+                dispatch(setNotification(Notification.duplicatePayment));
+            } else if (insufficientFunds) {
+                dispatch(setNotification(Notification.insufficentFunds));
+            } else {
+                dispatch(setNotification(Notification.simulatingIssue));
+            }
+
             return;
         }
 
@@ -86,7 +104,6 @@ const BuyButton = () => {
         <button
             onClick={async () => {
                 await fetchAndSendTransaction();
-                // dispatch(sendMessage())
             }}
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case"
         >
