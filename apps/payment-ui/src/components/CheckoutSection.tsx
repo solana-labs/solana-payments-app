@@ -15,20 +15,25 @@ import { ErrorGoBack } from './ErrorGoBack';
 import { BlockedProps } from '@/pages';
 import { GeoBlockedView } from './GeoBlockedView';
 import { PaymentLoadingView } from './PaymentLoadingView';
-import { getIsCompleted, getPaymentDetails, getIsProcessing, getIsError } from '@/features/payment-session/paymentSessionSlice';
+import { getIsCompleted, getPaymentDetails, getIsProcessing, getIsError, getIsSolanaPayCompleted } from '@/features/payment-session/paymentSessionSlice';
 import { ErrorView } from './ErrorView';
+import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 
 const CheckoutSection = (props: BlockedProps) => {
 
     const isProcessing = useSelector(getIsProcessing);
     const isCompleted = useSelector(getIsCompleted)
+    const isSolanaPayCompleted = useSelector(getIsSolanaPayCompleted)
     const isError = useSelector(getIsError)
+    const paymentMethod = useSelector(getPaymentMethod)
+
+    let paymentMethodCompleted = paymentMethod == 'connect-wallet' ? isCompleted : isSolanaPayCompleted;
 
     if ( props.isBlocked == 'true' ) {
         return <GeoBlockedView />
-    } else if ( isProcessing ) {
+    } else if ( isProcessing && paymentMethod == 'connect-wallet' ) {
         return <PaymentLoadingView />
-    } else if ( isCompleted ) {
+    } else if ( paymentMethodCompleted ) {
         return <ThankYouView />
     } else if ( isError ) {
         return <ErrorView />

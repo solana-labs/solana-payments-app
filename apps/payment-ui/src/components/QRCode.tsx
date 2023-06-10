@@ -24,7 +24,7 @@ export const QRCode: FC = () => {
     // TODO: make sure there is a payment id and if not show a different image than QR Code
     const endpoint = buildPaymentTransactionRequestEndpoint(paymentId ?? '');
     const url = `solana:${encodeURIComponent(endpoint)}`;
-    const options = useMemo(() => createQROptions(url, size, 'transparent', 'black'), [url, size]);
+    const options = useMemo(() => createQROptions(url, 300, 'transparent', 'black'), [url, size]);
 
     const qr = useMemo(() => new QRCodeStyling(), []);
     useEffect(() => qr.update(options), [qr, options]);

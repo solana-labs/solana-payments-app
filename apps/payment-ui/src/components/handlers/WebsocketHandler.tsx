@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentId, getSessionState, SessionState, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -9,16 +9,14 @@ const WebsocketHandler: React.FC = () => {
     const paymentId = useSelector(getPaymentId)
 
     let socket = useRef<WebSocket | null>(null);
-
+    let timer = useRef<any | null>(null);
     useEffect(() => {
 
         if ( sessionState == SessionState.readyToConnect ) {
 
-            console.log('WERE READY TO CONNECT')
-
-            // if (socket !== null) {
-            //     socket.current.close();
-            // }
+            if (socket.current !== null) {
+                socket.current.close();
+            }
 
             socket.current = new WebSocket('ws://localhost:4009/?paymentId=' + paymentId);
 
@@ -29,18 +27,8 @@ const WebsocketHandler: React.FC = () => {
               
             socket.current.onmessage = (event) => {
 
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-                console.log('MESSAGE')
-
                 const data = JSON.parse(event.data);
-
-                console.log(data.messageType)
+                console.log('Message: ' + data.messageType)
 
                 if ( data.messageType == 'paymentDetails' ) {
                     dispatch(setPaymentDetails(data.paymentDetails))
@@ -50,18 +38,31 @@ const WebsocketHandler: React.FC = () => {
                     dispatch(setErrorDetails(data.errorDetails)) 
                 } else if ( data.messageType == 'processingTransaction' ) {
                     dispatch(setProcessing())
+                } else if ( data.messageType == 'transactionRequestStarted' ) {
+                    dispatch(setTransactionRequestStarted())
+                } else if ( data.messageType == 'transactionDelivered' ) {
+                    dispatch(setTransactionDelivered())
                 }
 
             };
               
             socket.current.onclose = () => {
                 console.log('WebSocket is closed now.');
+                dispatch(setClosed())
             };
               
             socket.current.onerror = (error) => {
                 console.log('WebSocket encountered error: ', error);
             };
 
+        } else if ( sessionState == SessionState.closed ) {
+            const interval = 5000; // 5 seconds
+
+            timer.current = setInterval(() => {
+                console.log('BANG')
+                clearInterval(timer.current);
+                dispatch(setReadyToConnect())
+            }, interval);
         }
 
         return () => {

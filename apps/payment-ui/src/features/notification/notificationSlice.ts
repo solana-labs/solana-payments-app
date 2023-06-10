@@ -8,6 +8,7 @@ const notificationTypeForNotification = (notification: Notification): Notificati
         case Notification.declined:
         case Notification.duplicatePayment:
         case Notification.insufficentFunds:
+        case Notification.simulatingIssue:
             return NotificationType.info;
         case Notification.transactionRequestFailed:
             return NotificationType.error;

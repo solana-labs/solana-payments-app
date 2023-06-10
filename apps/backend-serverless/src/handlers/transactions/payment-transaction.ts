@@ -273,6 +273,17 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const signatureString = encodeBufferToBase58(signatureBuffer);
 
+        for (const websocketSession of websocketSessions) {
+            try {
+                await sendWebsocketMessage(websocketSession.connectionId, {
+                    messageType: 'transactionDelivered',
+                });
+            } catch (error) {
+                // nbd if it fails
+                continue;
+            }
+        }
+
         try {
             await transactionRecordService.createTransactionRecord(
                 signatureString,

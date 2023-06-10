@@ -10,10 +10,20 @@ import { SocketMessageWithNoTypeError } from '@/errors/socket-message-with-no-ty
 export enum SessionState {
     start,
     readyToConnect,
+    closed,
     connected,
     processing,
     completed,
     error,
+}
+
+export enum SolanaPayState {
+    start,
+    transactionRequestStarted,
+    transactionDelivered,
+    processing,
+    completed,
+    solanaPayCompleted,
 }
 
 export interface ErrorDetails {
@@ -28,6 +38,7 @@ interface PaymentSessionState {
     paymentDetails: PaymentDetails | null;
     redirectUrl: string | null;
     errorDetails: ErrorDetails | null;
+    solanaPayState: SolanaPayState;
 }
 
 const initalState: PaymentSessionState = {
@@ -36,6 +47,7 @@ const initalState: PaymentSessionState = {
     paymentDetails: null,
     redirectUrl: null,
     errorDetails: null,
+    solanaPayState: SolanaPayState.start,
 };
 
 interface PaymentDetails {
@@ -103,13 +115,31 @@ const paymentSessionSlice = createSlice({
         },
         setProcessing: state => {
             state.sessionState = SessionState.processing;
+            state.solanaPayState = SolanaPayState.processing;
+        },
+        setTransactionRequestStarted: state => {
+            state.solanaPayState = SolanaPayState.transactionRequestStarted;
         },
         setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
             state.sessionState = SessionState.completed;
             state.redirectUrl = action.payload.redirectUrl;
+            state.solanaPayState = SolanaPayState.completed;
         },
         setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
             state.errorDetails = action.payload;
+        },
+        setClosed: state => {
+            // there's a chance we could want to do a short timer here.
+            state.sessionState = SessionState.closed;
+        },
+        setReadyToConnect: state => {
+            state.sessionState = SessionState.readyToConnect;
+        },
+        setTransactionDelivered: state => {
+            state.solanaPayState = SolanaPayState.transactionDelivered;
+        },
+        setSolanaPayCompleted: state => {
+            state.solanaPayState = SolanaPayState.solanaPayCompleted;
         },
     },
     extraReducers(builder) {
@@ -126,8 +156,18 @@ const paymentSessionSlice = createSlice({
             );
     },
 });
-export const { setPaymentId, setPaymentDetails, setProcessing, setCompleted, setErrorDetails } =
-    paymentSessionSlice.actions;
+export const {
+    setPaymentId,
+    setPaymentDetails,
+    setProcessing,
+    setCompleted,
+    setErrorDetails,
+    setClosed,
+    setReadyToConnect,
+    setTransactionRequestStarted,
+    setTransactionDelivered,
+    setSolanaPayCompleted,
+} = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
 
@@ -137,8 +177,11 @@ export const getErrorDetails = (state: RootState): ErrorDetails | null => state.
 export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;
 export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
+export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
 
 export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;
 export const getIsCompleted = (state: RootState): boolean => state.paymentSession.redirectUrl != null;
+export const getIsSolanaPayCompleted = (state: RootState): boolean =>
+    state.paymentSession.solanaPayState === SolanaPayState.solanaPayCompleted;
 export const getIsError = (state: RootState): boolean => state.paymentSession.errorDetails != null;
