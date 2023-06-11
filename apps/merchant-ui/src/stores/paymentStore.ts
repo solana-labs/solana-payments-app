@@ -55,9 +55,7 @@ export const usePaymentStore = create<PaymentStore>(set => ({
         set({ payments: RE.pending() });
 
         try {
-            // const response = await axios.get(API_ENDPOINTS.paymentData, { params });
             const response = await fetch(`${API_ENDPOINTS.paymentData}?${new URLSearchParams(params)}`);
-
             const data = await response.json();
 
             if (response.status !== 200) {
