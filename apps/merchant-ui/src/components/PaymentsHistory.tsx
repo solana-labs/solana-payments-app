@@ -16,6 +16,7 @@ export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
     const payments = usePaymentStore(state => state.payments);
+    const getPayments = usePaymentStore(state => state.getPayments);
 
     useEffect(() => {
         if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {
@@ -59,7 +60,10 @@ export function PaymentsHistory(props: Props) {
                         numPages={totalNumPages}
                         rowHeight="h-20"
                         rowsPerPage={7}
-                        onPageChange={setPage}
+                        onPageChange={e => {
+                            setPage(e);
+                            getPayments(e);
+                        }}
                     >
                         {{
                             amount: amount => (

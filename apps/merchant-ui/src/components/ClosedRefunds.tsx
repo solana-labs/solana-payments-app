@@ -16,6 +16,7 @@ export function ClosedRefunds(props: Props) {
     const [totalNumPages, setTotalNumPages] = useState(0);
 
     const closedRefunds = useClosedRefundStore(state => state.closedRefunds);
+    const getClosedRefunds = useClosedRefundStore(state => state.getClosedRefunds);
 
     useEffect(() => {
         if (RE.isOk(closedRefunds)) {
@@ -51,7 +52,10 @@ export function ClosedRefunds(props: Props) {
             numPages={totalNumPages}
             rowHeight={'h-20'}
             rowsPerPage={5}
-            onPageChange={setPage}
+            onPageChange={e => {
+                setPage(e);
+                getClosedRefunds(e);
+            }}
         >
             {{
                 orderId: orderId => (

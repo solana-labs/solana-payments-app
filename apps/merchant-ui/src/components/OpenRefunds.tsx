@@ -196,7 +196,10 @@ export function OpenRefunds(props: Props) {
             numPages={totalNumPages}
             rowHeight={'h-20'}
             rowsPerPage={5}
-            onPageChange={setPage}
+            onPageChange={e => {
+                setPage(e);
+                getOpenRefunds(e);
+            }}
         >
             {{
                 orderId: orderId => (
