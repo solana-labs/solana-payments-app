@@ -10,8 +10,8 @@ interface Props {
     className?: string;
     defaultValue?: null | PublicKey;
     onChange?(value: null | PublicKey): void;
-    addressChanged: boolean;
-    setAddressChanged(value: boolean): void;
+    addressChanged?: boolean;
+    setAddressChanged?(value: boolean): void;
 }
 
 export function AddressInput(props: Props) {
@@ -92,18 +92,18 @@ export function AddressInput(props: Props) {
                     className={twMerge('border-b-0', 'border-l', 'border-r-0', 'border-t-0', 'rounded-none', 'w-full')}
                     value={addressText}
                     onClick={() => {
-                        props.setAddressChanged(false);
+                        props.setAddressChanged && props.setAddressChanged(false);
                     }}
                     onBlur={() => {
                         try {
                             if (addressText) {
                                 const address = new PublicKey(addressText);
                                 setAddressIsInvalid(false);
-                                props.setAddressChanged(false);
+                                props.setAddressChanged && props.setAddressChanged(false);
                                 props.onChange?.(address);
                             } else {
                                 setAddressIsInvalid(false);
-                                props.setAddressChanged(false);
+                                props.setAddressChanged && props.setAddressChanged(false);
                                 props.onChange?.(null);
                             }
                         } catch {
