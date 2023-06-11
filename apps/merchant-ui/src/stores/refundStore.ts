@@ -66,7 +66,6 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
             } else {
                 const refunds = transformRefund<OpenRefund>(data); // assuming you have transformRefund function
-                console.log('fetching total', data.refundData.total);
                 set({
                     openRefunds: RE.ok({
                         refunds: refunds,
@@ -108,6 +107,11 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
             );
             const dataPaid = await responsePaid.json();
 
+            const responseCompleted = await fetch(
+                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=completed`
+            );
+            const dataCompleted = await responseCompleted.json();
+
             if (responseRejected.status !== 200 || responsePaid.status !== 200) {
                 let errorMsg = 'Failed to fetch closed refunds';
                 if (responseRejected.status !== 200) {
@@ -120,12 +124,17 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
             } else {
                 const refundsRejected = transformRefund<ClosedRefund>(dataRejected);
                 const refundsPaid = transformRefund<ClosedRefund>(dataPaid);
-                const refunds = [...refundsRejected, ...refundsPaid];
+                const refundsCompleted = transformRefund<ClosedRefund>(dataCompleted);
+                const refunds = [...refundsRejected, ...refundsPaid, ...refundsCompleted];
                 set({
                     closedRefunds: RE.ok({
                         refunds: refunds,
                         totalPages: Math.floor(
-                            (dataRejected.refundData.total + dataPaid.refundData.total + 1) / PAGE_SIZE
+                            (dataRejected.refundData.total +
+                                dataPaid.refundData.total +
+                                dataCompleted.refundData.total +
+                                1) /
+                                PAGE_SIZE
                         ),
                     }),
                 });
@@ -133,6 +142,7 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
             }
         } catch (error) {
             console.log('error: ', error);
+            // TODO handle this failure better
             set({ closedRefunds: RE.failed(new Error('Failed to fetch closed refunds')) });
         }
     },
