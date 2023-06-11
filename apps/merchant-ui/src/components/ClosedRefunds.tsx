@@ -1,11 +1,11 @@
-import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
+import { twMerge } from 'tailwind-merge';
 
+import { PaginatedTable } from '@/components/PaginatedTable';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
-import { useEffect, useState } from 'react';
-import { PaginatedTable } from '@/components/PaginatedTable';
 import { RefundStatus, useClosedRefundStore } from '@/stores/refundStore';
+import { useEffect, useState } from 'react';
 
 interface Props {
     className?: string;
@@ -22,6 +22,19 @@ export function ClosedRefunds(props: Props) {
             setTotalNumPages(closedRefunds.data.totalPages);
         }
     }, [closedRefunds]);
+
+    if (RE.isOk(closedRefunds) && closedRefunds.data.refunds.length === 0) {
+        return (
+            <div className={props.className}>
+                <div>
+                    <div className="text-lg font-semibold md:px-7">Closed Refunds</div>
+                    <div className="mt-8 text-center">
+                        <div className="text-sm font-medium text-neutral-600">No Closed Refunds!</div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <PaginatedTable

@@ -23,7 +23,7 @@ export function PaymentsHistory(props: Props) {
         }
     }, [payments]);
 
-    if (RE.isOk(payments) && payments.data.totalPages === 0) {
+    if (RE.isOk(payments) && payments.data.payments.length === 0) {
         return (
             <div className={props.className}>
                 <div>

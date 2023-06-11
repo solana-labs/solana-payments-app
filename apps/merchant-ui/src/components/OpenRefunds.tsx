@@ -149,6 +149,19 @@ export function OpenRefunds(props: Props) {
         }
     }
 
+    if (RE.isOk(openRefunds) && openRefunds.data.refunds.length === 0) {
+        return (
+            <div className={props.className}>
+                <div>
+                    <div className="text-lg font-semibold md:px-7">Open Refunds</div>
+                    <div className="mt-8 text-center">
+                        <div className="text-sm font-medium text-neutral-600">No Pending Refunds!</div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <PaginatedTable
             className={twMerge(props.className, 'mt-8')}
