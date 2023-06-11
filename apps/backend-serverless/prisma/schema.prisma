@@ -67,7 +67,7 @@ model PaymentRecord {
   id                   String                        @id // Internal ID
   status               PaymentRecordStatus
   shopId               String                        @unique
-  shopGid              String?
+  shopGid              String
   shopGroup            String
   test                 Boolean
   amount               Float

@@ -13,7 +13,6 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
-import { refund } from '../shopify-handlers/refund.js';
 
 const prisma = new PrismaClient();
 
@@ -52,7 +51,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             // Returning an error will get Helius to retry but it might not fix it. We should log as a critical error
             // TODO: Log this, actually might not be critical but we might want to put more logic around seeing if it's critical
-            // In theory, this is an open endpoint, we might actually be able to lock it down somehow, might be a good idea so we can flag
 
             Sentry.captureException(error);
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);

@@ -1,5 +1,19 @@
+import { PrismaClient, WebsocketSession } from '@prisma/client';
 import pkg from 'aws-sdk';
+import { WebsocketSessionService } from '../database/websocket.database.service.js';
 const { ApiGatewayManagementApi } = pkg;
+
+export class WebSocketService {
+    private websocketSessionService: WebsocketSessionService;
+
+    constructor(private prisma: PrismaClient, private apiGatewayManagementApi: typeof ApiGatewayManagementApi) {
+        this.websocketSessionService = new WebsocketSessionService(prisma);
+    }
+
+    private getWebsocketSessionsForPaymentRecordId = async (paymentRecordId: string): Promise<WebsocketSession[]> => {
+        return await this.websocketSessionService.getWebsocketSessions({ paymentRecordId: paymentRecordId });
+    };
+}
 
 export const sendWebsocketMessage = async (connectionId: string, payload: unknown): Promise<void> => {
     const apigwManagementApi = new ApiGatewayManagementApi({
@@ -10,18 +24,6 @@ export const sendWebsocketMessage = async (connectionId: string, payload: unknow
         Data: JSON.stringify(payload),
         ConnectionId: connectionId,
     };
-
-    // {
-    //     messageType: 'paymentDetails',
-    //     paymentDetails: {
-    //         merchantDisplayName: 'Test Merchant',
-    //         totalAmountUSDCDisplay: '10 USDC',
-    //         totalAmountFiatDisplay: '$10.00',
-    //         cancelUrl: 'https://example.com/cancel',
-    //         completed: false,
-    //         redirectUrl: null,
-    //     },
-    // }
 
     try {
         const connection = await apigwManagementApi.postToConnection(postParams).promise();
