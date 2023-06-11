@@ -1,7 +1,7 @@
-import { twMerge } from 'tailwind-merge';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useRef, useState } from 'react';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import { twMerge } from 'tailwind-merge';
 
 import { Input } from './Input';
 import { AccountBalanceWallet } from './icons/AccountBalanceWallet';
@@ -10,11 +10,14 @@ interface Props {
     className?: string;
     defaultValue?: null | PublicKey;
     onChange?(value: null | PublicKey): void;
+    addressChanged?: boolean;
+    setAddressChanged?(value: boolean): void;
 }
 
 export function AddressInput(props: Props) {
     const [addressText, setAddressText] = useState(props.defaultValue?.toBase58() || '');
     const [addressIsInvalid, setAddressIsInvalid] = useState(false);
+
     const [copied, setCopied] = useState(false);
     const copyRef = useRef<number | null>(null);
 
@@ -88,14 +91,19 @@ export function AddressInput(props: Props) {
                 <Input
                     className={twMerge('border-b-0', 'border-l', 'border-r-0', 'border-t-0', 'rounded-none', 'w-full')}
                     value={addressText}
+                    onClick={() => {
+                        props.setAddressChanged && props.setAddressChanged(false);
+                    }}
                     onBlur={() => {
                         try {
                             if (addressText) {
                                 const address = new PublicKey(addressText);
                                 setAddressIsInvalid(false);
+                                props.setAddressChanged && props.setAddressChanged(false);
                                 props.onChange?.(address);
                             } else {
                                 setAddressIsInvalid(false);
+                                props.setAddressChanged && props.setAddressChanged(false);
                                 props.onChange?.(null);
                             }
                         } catch {
@@ -110,6 +118,9 @@ export function AddressInput(props: Props) {
                 />
             </div>
             {addressIsInvalid && <div className="mt-2 text-xs text-red-500">Not a valid wallet address.</div>}
+            {props.addressChanged && !addressIsInvalid && (
+                <p className="text-emerald-700 text-xs">Wallet updated successfully</p>
+            )}
         </div>
     );
 }

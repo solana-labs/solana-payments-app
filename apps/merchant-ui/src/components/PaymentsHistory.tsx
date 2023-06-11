@@ -43,7 +43,7 @@ export function PaymentsHistory(props: Props) {
         <div className={props.className}>
             <Tabs.Root defaultValue="all-payments">
                 <Tabs.List>
-                    <Tabs.Trigger value="all-payments">Open requests</Tabs.Trigger>
+                    <Tabs.Trigger value="all-payments">All Payments</Tabs.Trigger>
                 </Tabs.List>
                 <Tabs.Content value="all-payments">
                     <PaginatedTable
