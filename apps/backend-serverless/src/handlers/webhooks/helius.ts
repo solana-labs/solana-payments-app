@@ -13,6 +13,7 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
+import { parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
 
 const prisma = new PrismaClient();
 
