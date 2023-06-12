@@ -1,5 +1,4 @@
-import { useToast } from '@/components/ui/use-toast';
-import { isOk } from '@/lib/Result';
+import * as RE from '@/lib/Result';
 import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
@@ -37,10 +36,8 @@ export function MerchantInfo(props: Props) {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
-    const { toast } = useToast();
-
     useEffect(() => {
-        if (isOk(merchantInfo)) {
+        if (RE.isOk(merchantInfo)) {
             setFormState({
                 name: merchantInfo.data.name,
                 logoSrc: 'a',
@@ -54,7 +51,7 @@ export function MerchantInfo(props: Props) {
 
     function shouldDisable() {
         const { walletAddress } = formState;
-        let paymentAddress = isOk(merchantInfo) && merchantInfo.data.paymentAddress;
+        let paymentAddress = RE.isOk(merchantInfo) && merchantInfo.data.paymentAddress;
 
         if (!walletAddress || walletAddress.toString() === paymentAddress) {
             return true;
@@ -67,6 +64,19 @@ export function MerchantInfo(props: Props) {
         }
 
         return false;
+    }
+
+    if (RE.isFailed(merchantInfo)) {
+        return (
+            <DefaultLayoutContent className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
+                        <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
+                    </div>
+                </div>
+            </DefaultLayoutContent>
+        );
     }
 
     return (
