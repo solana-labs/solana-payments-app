@@ -230,7 +230,6 @@ export function OpenRefunds(props: Props) {
             rowHeight={'h-20'}
             rowsPerPage={5}
             onPageChange={e => {
-                console.log('new page', e);
                 setPage(e);
                 getOpenRefunds(e);
             }}
