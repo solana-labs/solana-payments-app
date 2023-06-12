@@ -16,12 +16,25 @@ export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
     const payments = usePaymentStore(state => state.payments);
+    const getPayments = usePaymentStore(state => state.getPayments);
 
     useEffect(() => {
         if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {
             setTotalNumPages(payments.data.totalPages);
         }
     }, [payments]);
+
+    useEffect(() => {
+        getPayments(page);
+
+        const intervalId = setInterval(() => {
+            getPayments(page);
+        }, 5000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
 
     if (RE.isOk(payments) && payments.data.payments.length === 0) {
         return (
@@ -59,7 +72,10 @@ export function PaymentsHistory(props: Props) {
                         numPages={totalNumPages}
                         rowHeight="h-20"
                         rowsPerPage={7}
-                        onPageChange={setPage}
+                        onPageChange={e => {
+                            setPage(e);
+                            getPayments(e);
+                        }}
                     >
                         {{
                             amount: amount => (

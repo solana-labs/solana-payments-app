@@ -1,6 +1,5 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import axios from 'axios';
 import { create } from 'zustand';
 
 export enum RefundStatus {
@@ -60,21 +59,21 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
         };
 
         try {
-            const response = await axios.get(API_ENDPOINTS.refundData, { params });
+            const response = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`);
 
+            const data = await response.json();
             if (response.status !== 200) {
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
-            } else {
-                const refunds = transformRefund<OpenRefund>(response.data); // assuming you have transformRefund function
-                console.log('fetching total', response.data.refundData.total);
-                set({
-                    openRefunds: RE.ok({
-                        refunds: refunds,
-                        totalPages: Math.floor((response.data.refundData.total + 1) / PAGE_SIZE),
-                    }),
-                });
-                set({ refundCount: response.data.refundData.total });
             }
+            const refunds = transformRefund<OpenRefund>(data); // assuming you have transformRefund function
+
+            set({
+                openRefunds: RE.ok({
+                    refunds: refunds,
+                    totalPages: Math.floor((data.refundData.total + 1) / PAGE_SIZE),
+                }),
+            });
+            set({ refundCount: data.refundData.total });
         } catch (error) {
             console.log('error: ', error);
             set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
@@ -98,39 +97,52 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
         };
 
         try {
-            const responseRejected = await axios.get(API_ENDPOINTS.refundData, {
-                params: { ...params, refundStatus: 'rejected' },
-            });
-            const responsePaid = await axios.get(API_ENDPOINTS.refundData, {
-                params: { ...params, refundStatus: 'paid' },
-            });
+            const responseRejected = await fetch(
+                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=rejected`
+            );
+            const dataRejected = await responseRejected.json();
+
+            const responsePaid = await fetch(
+                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=paid`
+            );
+            const dataPaid = await responsePaid.json();
+
+            const responseCompleted = await fetch(
+                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=completed`
+            );
+            const dataCompleted = await responseCompleted.json();
 
             if (responseRejected.status !== 200 || responsePaid.status !== 200) {
                 let errorMsg = 'Failed to fetch closed refunds';
                 if (responseRejected.status !== 200) {
-                    errorMsg = responseRejected.data.message || errorMsg;
+                    errorMsg = dataRejected.message || errorMsg;
                 }
                 if (responsePaid.status !== 200) {
-                    errorMsg = responsePaid.data.message || errorMsg;
+                    errorMsg = dataPaid.message || errorMsg;
                 }
                 set({ closedRefunds: RE.failed(new Error(errorMsg)) });
             } else {
-                const refundsRejected = transformRefund<ClosedRefund>(responseRejected.data);
-                const refundsPaid = transformRefund<ClosedRefund>(responsePaid.data);
-                const refunds = [...refundsRejected, ...refundsPaid];
+                const refundsRejected = transformRefund<ClosedRefund>(dataRejected);
+                const refundsPaid = transformRefund<ClosedRefund>(dataPaid);
+                const refundsCompleted = transformRefund<ClosedRefund>(dataCompleted);
+                const refunds = [...refundsRejected, ...refundsPaid, ...refundsCompleted];
                 set({
                     closedRefunds: RE.ok({
                         refunds: refunds,
                         totalPages: Math.floor(
-                            (responseRejected.data.refundData.total + responsePaid.data.refundData.total + 1) /
+                            (dataRejected.refundData.total +
+                                dataPaid.refundData.total +
+                                dataCompleted.refundData.total +
+                                1) /
                                 PAGE_SIZE
                         ),
                     }),
                 });
-                set({ refundCount: responseRejected.data.refundData.total + responsePaid.data.refundData.total });
+                set({ refundCount: dataRejected.refundData.total + dataPaid.refundData.total });
             }
         } catch (error) {
             console.log('error: ', error);
+            // TODO handle this failure better
             set({ closedRefunds: RE.failed(new Error('Failed to fetch closed refunds')) });
         }
     },

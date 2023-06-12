@@ -1,6 +1,5 @@
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import axios from 'axios';
 import { create } from 'zustand';
 
 interface MerchantInfo {
@@ -55,13 +54,13 @@ export async function updateMerchantAddress(walletAddress: string | null | undef
     };
 
     try {
-        const response = await axios.put(
-            API_ENDPOINTS.updateMerchant,
-            {
+        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({
                 paymentAddress: walletAddress,
-            },
-            { headers: headers }
-        );
+            }),
+        });
     } catch (error) {
         console.log('update merchant address error', error);
     }
@@ -72,14 +71,15 @@ export async function updateMerchantTos() {
         'Content-Type': 'application/json',
     };
 
+    const response = await fetch(API_ENDPOINTS.updateMerchant, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({
+            acceptedTermsAndConditions: 'true',
+        }),
+    });
+
     try {
-        const response = await axios.put(
-            API_ENDPOINTS.updateMerchant,
-            {
-                acceptedTermsAndConditions: 'true',
-            },
-            { headers: headers }
-        );
     } catch (error) {
         console.log('update merchant tos error', error);
     }
