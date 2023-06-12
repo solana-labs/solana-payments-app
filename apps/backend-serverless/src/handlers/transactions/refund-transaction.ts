@@ -18,7 +18,6 @@ import { RefundRecordService } from '../../services/database/refund-record-servi
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { verifyRefundTransactionWithRefundRecord } from '../../services/transaction-validation/validate-discovered-refund-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
 
@@ -40,13 +39,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         const refundRecordService = new RefundRecordService(prisma);
         const merchantService = new MerchantService(prisma);
 
-        const TRM_API_KEY = process.env.TRM_API_KEY;
-
-        if (TRM_API_KEY == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
-        }
-
-        const trmService = new TrmService(TRM_API_KEY);
+        const trmService = new TrmService();
 
         if (event.body == null) {
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
@@ -174,11 +167,11 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        try {
-            verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
-        } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        }
+        // try {
+        //     verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
+        // } catch (error) {
+        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        // }
 
         const signatureBuffer = transactionSignature;
 

@@ -28,9 +28,12 @@ export const install = Sentry.AWSLambda.wrapHandler(
         let parsedAppInstallQuery: AppInstallQueryParam;
 
         try {
+            console.log('parsing');
             parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
         } catch (error) {
             // return requestErrorResponse(error);
+            console.log(error);
+            console.log('down bad');
             return {
                 statusCode: 200,
                 body: JSON.stringify({
@@ -50,6 +53,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ shop: shop });
         } catch (error) {
+            console.log(error);
+            console.log('no merchant db availible');
             return {
                 statusCode: 200,
                 body: JSON.stringify({
@@ -61,6 +66,7 @@ export const install = Sentry.AWSLambda.wrapHandler(
         try {
             if (merchant == null) {
                 const newMerchantId = await generatePubkeyString();
+                console.log('creating new merchant');
                 merchant = await merchantService.createMerchant(newMerchantId, shop, newNonce);
             } else {
                 merchant = await merchantService.updateMerchant(merchant, {
@@ -69,6 +75,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
             }
         } catch (error) {
             // return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
+            console.log(error);
+            console.log('failed to create new merchant');
             return {
                 statusCode: 200,
                 body: JSON.stringify({
@@ -81,6 +89,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
         // const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
 
         const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
+        console.log('made new redirect url');
+        console.log(redirectUrl);
 
         return {
             statusCode: 302,
