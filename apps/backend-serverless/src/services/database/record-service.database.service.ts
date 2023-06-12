@@ -13,6 +13,14 @@ export type PaymentResolveResponse = {
 export type RefundResolveResponse = {};
 export type ShopifyResolveResponse = PaymentResolveResponse | RefundResolveResponse;
 
+export type TransactionRecordRecordQuery = {
+    transactionRecord: TransactionRecord;
+};
+export type RecordIdRecordQuery = {
+    recordId: string;
+};
+export type RecordQuery = TransactionRecordRecordQuery | RecordIdRecordQuery;
+
 export interface RecordService<RecordType, ResolveResponse> {
     getRecord: (transactionRecord: TransactionRecord) => Promise<RecordType | null>;
     updateRecordToPaid: (recordId: string, transactionSignature: string) => Promise<RecordType>;
