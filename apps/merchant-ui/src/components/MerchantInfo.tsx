@@ -11,18 +11,15 @@ import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { Input } from './Input';
 import { Token, TokenSelect } from './TokenSelect';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
-
 interface FormData {
     name: string;
     logoSrc?: string;
     walletAddress?: null | PublicKey;
     token: Token;
 }
-
 interface Props {
     className?: string;
 }
-
 export function MerchantInfo(props: Props) {
     const [formState, setFormState] = useState<FormData>({
         name: '',
@@ -32,10 +29,8 @@ export function MerchantInfo(props: Props) {
     });
     const [pending, setPending] = useState(false);
     const [addressChanged, setAddressChanged] = useState(false);
-
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
-
     useEffect(() => {
         if (RE.isOk(merchantInfo)) {
             setFormState({
@@ -48,24 +43,19 @@ export function MerchantInfo(props: Props) {
             });
         }
     }, [merchantInfo]);
-
     function shouldDisable() {
         const { walletAddress } = formState;
         let paymentAddress = RE.isOk(merchantInfo) && merchantInfo.data.paymentAddress;
-
         if (!walletAddress || walletAddress.toString() === paymentAddress) {
             return true;
         }
-
         try {
             new PublicKey(walletAddress);
         } catch {
             return true;
         }
-
         return false;
     }
-
     if (RE.isFailed(merchantInfo)) {
         return (
             <DefaultLayoutContent className={props.className}>
@@ -78,7 +68,6 @@ export function MerchantInfo(props: Props) {
             </DefaultLayoutContent>
         );
     }
-
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle>Merchant Info</DefaultLayoutScreenTitle>
@@ -148,15 +137,7 @@ export function MerchantInfo(props: Props) {
                         setPending(true);
                         await updateMerchantAddress(formState.walletAddress?.toString());
                         await getMerchantInfo();
-<<<<<<< HEAD
                         setAddressChanged(true);
-=======
-
-                        toast({
-                            title: 'Updated Merchant Address',
-                            variant: 'constructive',
-                        });
->>>>>>> e9c2b24 (merging in recent changes to demo (#244))
                         setPending(false);
                     }}
                     pending={pending}
