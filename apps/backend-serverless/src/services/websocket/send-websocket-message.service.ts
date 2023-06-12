@@ -1,6 +1,7 @@
 import { PrismaClient, WebsocketSession } from '@prisma/client';
 import pkg from 'aws-sdk';
 import { WebsocketSessionService } from '../database/websocket.database.service.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 const { ApiGatewayManagementApi } = pkg;
 
 export class WebSocketService {
@@ -16,8 +17,14 @@ export class WebSocketService {
 }
 
 export const sendWebsocketMessage = async (connectionId: string, payload: unknown): Promise<void> => {
+    const websocketUrl = process.env.WEBSOCKET_URL;
+
+    if (websocketUrl == null) {
+        throw new MissingEnvError('websocket url');
+    }
+
     const apigwManagementApi = new ApiGatewayManagementApi({
-        endpoint: 'http://localhost:4009',
+        endpoint: websocketUrl,
     });
 
     const postParams = {
