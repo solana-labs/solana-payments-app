@@ -26,6 +26,12 @@ export enum SolanaPayState {
     solanaPayCompleted,
 }
 
+export enum TransactionRequestState {
+    started,
+    delivered,
+    failed,
+}
+
 export enum ConnectWalletState {
     start,
     loading,
@@ -48,6 +54,7 @@ interface PaymentSessionState {
     errorDetails: ErrorDetails | null;
     solanaPayState: SolanaPayState;
     connectWalletState: ConnectWalletState;
+    transactionRequestState: TransactionRequestState;
 }
 
 const initalState: PaymentSessionState = {
@@ -58,6 +65,7 @@ const initalState: PaymentSessionState = {
     errorDetails: null,
     solanaPayState: SolanaPayState.start,
     connectWalletState: ConnectWalletState.start,
+    transactionRequestState: TransactionRequestState.started,
 };
 
 interface PaymentDetails {
@@ -127,8 +135,20 @@ const paymentSessionSlice = createSlice({
             state.sessionState = SessionState.processing;
             state.solanaPayState = SolanaPayState.processing;
         },
+        setFailedProcessing: state => {
+            // What state gets us out of failed processing?
+            // It'll likely be a timer that will set us back to readyToConnect
+            // We should also show some kind of a message
+        },
         setTransactionRequestStarted: state => {
             state.solanaPayState = SolanaPayState.transactionRequestStarted;
+        },
+        setTransactionRequestFailed: state => {
+            state.transactionRequestState = TransactionRequestState.failed;
+        },
+        setTransactionDelivered: state => {
+            state.solanaPayState = SolanaPayState.transactionDelivered;
+            state.transactionRequestState = TransactionRequestState.delivered;
         },
         setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
             state.sessionState = SessionState.completed;
@@ -144,9 +164,6 @@ const paymentSessionSlice = createSlice({
         },
         setReadyToConnect: state => {
             state.sessionState = SessionState.readyToConnect;
-        },
-        setTransactionDelivered: state => {
-            state.solanaPayState = SolanaPayState.transactionDelivered;
         },
         setSolanaPayCompleted: state => {
             state.solanaPayState = SolanaPayState.solanaPayCompleted;
@@ -179,6 +196,7 @@ export const {
     setPaymentId,
     setPaymentDetails,
     setProcessing,
+    setFailedProcessing,
     setCompleted,
     setErrorDetails,
     setClosed,
@@ -189,6 +207,7 @@ export const {
     setConnectWalletLoading,
     setConnectWalletSentTransaction,
     setConnectWalletStart,
+    setTransactionRequestFailed,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;

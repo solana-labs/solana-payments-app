@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestFailed, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -42,6 +42,10 @@ const WebsocketHandler: React.FC = () => {
                     dispatch(setTransactionRequestStarted())
                 } else if ( data.messageType == 'transactionDelivered' ) {
                     dispatch(setTransactionDelivered())
+                } else if ( data.messageType == 'failedProcessingTransaction' ) {
+                    
+                } else if ( data.messageType == 'transactionRequestFailed') {
+                    dispatch(setTransactionRequestFailed())
                 }
 
             };

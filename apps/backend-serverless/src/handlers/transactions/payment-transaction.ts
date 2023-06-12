@@ -53,14 +53,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         const merchantService = new MerchantService(prisma);
         const websocketSessionService = new WebsocketSessionService(prisma);
 
-        const TRM_API_KEY = process.env.TRM_API_KEY;
-
-        if (TRM_API_KEY == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
-        }
-
-        const trmService = new TrmService(TRM_API_KEY);
-
         if (event.body == null) {
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
@@ -173,9 +165,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        // We don't need to check with TRM for test transactions
+        // TODO: Clean this up
         if (paymentRecord.test == false) {
-            // TODO: Clean this up
+            const trmService = new TrmService();
+
             try {
                 await trmService.screenAddress(account);
             } catch (error) {

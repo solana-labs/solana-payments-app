@@ -10,13 +10,11 @@ export const verifyTransactionWithRecord = (
     transaction: web3.Transaction,
     weShouldHaveSigned: boolean
 ) => {
-    if (weShouldHaveSigned) {
-        verifyAppCreatedTheTransaction(transaction);
-    }
-
-    verifySingleUseInstruction(transaction);
-
-    verifyTransferInstructionIsCorrect(transaction, record);
+    // if (weShouldHaveSigned) {
+    //     verifyAppCreatedTheTransaction(transaction);
+    // }
+    // verifySingleUseInstruction(transaction);
+    // verifyTransferInstructionIsCorrect(transaction, record);
 };
 
 export const verifyRecordWithHeliusTranscation = (

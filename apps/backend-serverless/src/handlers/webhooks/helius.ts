@@ -32,6 +32,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
         }
 
+        console.log(event.body);
+
         const requiredAuthorizationHeader = process.env.HELIUS_AUTHORIZATION;
 
         if (requiredAuthorizationHeader == null) {
@@ -39,7 +41,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
-            heliusHeaders = parseAndValidateHeliusHeader(event.headers);
+            heliusHeaders = parseAndValidateHeliusHeader({ authorization: event.headers['authorization'] });
         } catch (error) {
             Sentry.captureException(error);
             return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
