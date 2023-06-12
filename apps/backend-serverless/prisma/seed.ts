@@ -62,6 +62,9 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
 
     for (let i = 0; i < merchant; i++) {
         for (let j = 0; j < count; j++) {
+            const date = new Date();
+            date.setDate(date.getDate() + j); // adding 'j' days to the current date
+
             const record = {
                 id: `payment-1${j}`,
                 status: 'pending',
@@ -69,18 +72,23 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 shopGid: `gid://shopify/PaymentSession/r_1${j}_shopid`,
                 shopGroup: `shop_group_1${j}`,
                 test: 1,
-                amount: i,
+                amount: j + 1,
                 currency: 'USD',
-                usdcAmount: i,
+                usdcAmount: j + 1,
                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
                 merchantId: `merchant-${i}`,
-                requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
+                requestedAt: date.toISOString(), // setting requestedAt to the generated date
                 completedAt: null,
             };
 
             records.push(record);
         }
         for (let j = 0; j < count; j++) {
+            const requestedAt = new Date();
+            requestedAt.setDate(requestedAt.getDate() + j); // adding 'j' days to the current date
+            const completedAt = new Date(requestedAt.getTime());
+            completedAt.setDate(completedAt.getDate() + 1); // completedAt is one day after requestedAt
+
             const record = {
                 id: `payment-2${j}`,
                 status: 'completed',
@@ -88,13 +96,13 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
                 shopGroup: `shop_group_2${j}`,
                 test: 1,
-                amount: i,
+                amount: i + 1,
                 currency: 'USD',
-                usdcAmount: i,
+                usdcAmount: i + 1,
                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
                 merchantId: `merchant-${i}`,
-                requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
-                completedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+                requestedAt: requestedAt.toISOString(),
+                completedAt: completedAt.toISOString(),
             };
 
             records.push(record);
@@ -103,29 +111,128 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
     return records;
 }
 
+// function generatePaymentRecords(merchant = 1, count = 1): any[] {
+//     const records = [];
+
+//     for (let i = 0; i < merchant; i++) {
+//         for (let j = 0; j < count; j++) {
+//             const record = {
+//                 id: `payment-1${j}`,
+//                 status: 'pending',
+//                 shopId: `r_1${j}_shopid`,
+//                 shopGid: `gid://shopify/PaymentSession/r_1${j}_shopid`,
+//                 shopGroup: `shop_group_1${j}`,
+//                 test: 1,
+//                 amount: j + 1,
+//                 currency: 'USD',
+//                 usdcAmount: j + 1,
+//                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
+//                 merchantId: `merchant-${i}`,
+//                 requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
+//                 completedAt: null,
+//             };
+
+//             records.push(record);
+//         }
+//         for (let j = 0; j < count; j++) {
+//             const record = {
+//                 id: `payment-2${j}`,
+//                 status: 'completed',
+//                 shopId: `r_2${j}_shopid`,
+//                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
+//                 shopGroup: `shop_group_2${j}`,
+//                 test: 1,
+//                 amount: i + 1,
+//                 currency: 'USD',
+//                 usdcAmount: i + 1,
+//                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
+//                 merchantId: `merchant-${i}`,
+//                 requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
+//                 completedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+//             };
+
+//             records.push(record);
+//         }
+//     }
+//     return records;
+// }
+
+// function generateRefundRecords(merchant = 1, count = 1): any[] {
+//     const records = [];
+
+//     for (let i = 0; i < merchant; i++) {
+//         for (let j = 0; j < count; j++) {
+//             const record = {
+//                 id: `refund-1${j}`,
+//                 status: 'pending',
+//                 amount: j,
+//                 currency: 'USD',
+//                 usdcAmount: j,
+//                 shopId: `r_1${j}_shopid`,
+//                 shopGid: `gid://shopify/PaymentSession/rwy_shopid_1${j}`,
+//                 shopPaymentId: `r_1${j}_shopid`,
+//                 test: 1,
+//                 merchantId: `merchant-${i}`,
+//                 requestedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+//                 completedAt: null,
+//             };
+
+//             records.push(record);
+//         }
+//         for (let j = 0; j < count; j++) {
+//             const record = {
+//                 id: `refund-2${j}`,
+//                 status: 'completed',
+//                 amount: i,
+//                 currency: 'USD',
+//                 usdcAmount: i,
+//                 shopId: `r_2${j}_shopid`,
+//                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
+//                 shopPaymentId: `r_2${j}_shopid`,
+//                 test: 1,
+//                 merchantId: `merchant-${i}`,
+//                 transactionSignature: `signature-${j}`,
+//                 requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
+//                 completedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+//             };
+
+//             records.push(record);
+//         }
+//     }
+//     return records;
+// }
+
 function generateRefundRecords(merchant = 1, count = 1): any[] {
     const records = [];
 
     for (let i = 0; i < merchant; i++) {
         for (let j = 0; j < count; j++) {
+            const date = new Date();
+            date.setDate(date.getDate() + j); // adding 'j' days to the current date
+
             const record = {
                 id: `refund-1${j}`,
                 status: 'pending',
-                amount: i,
+                amount: j,
                 currency: 'USD',
-                usdcAmount: i,
+                usdcAmount: j,
                 shopId: `r_1${j}_shopid`,
                 shopGid: `gid://shopify/PaymentSession/rwy_shopid_1${j}`,
                 shopPaymentId: `r_1${j}_shopid`,
                 test: 1,
                 merchantId: `merchant-${i}`,
-                requestedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+                requestedAt: date.toISOString(), // setting requestedAt to the generated date
                 completedAt: null,
             };
 
             records.push(record);
         }
         for (let j = 0; j < count; j++) {
+            const requestedAt = new Date();
+            requestedAt.setDate(requestedAt.getDate() + j); // adding 'j' days to the current date
+            const completedAt = new Date(requestedAt.getTime());
+            completedAt.setDate(completedAt.getDate() + 1); // completedAt is one day after requestedAt
+
             const record = {
                 id: `refund-2${j}`,
                 status: 'completed',
@@ -138,8 +245,8 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
                 test: 1,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `signature-${j}`,
-                requestedAt: `2023-06-0${j + 1}T20:3${j}:09.090Z`,
-                completedAt: `2023-06-1${j + 1}T20:3${j}:09.090Z`,
+                requestedAt: requestedAt.toISOString(),
+                completedAt: completedAt.toISOString(),
             };
 
             records.push(record);
@@ -180,7 +287,7 @@ async function insertGeneratedData() {
     });
 
     const paymentRecords = await prisma.paymentRecord.createMany({
-        data: generatePaymentRecords(1, 9).map(record => ({
+        data: generatePaymentRecords(1, 30).map(record => ({
             ...record,
             status: stringToPaymentRecordStatus(record.status),
             test: Boolean(record.test),
@@ -188,7 +295,7 @@ async function insertGeneratedData() {
     });
 
     const refundRecords = await prisma.refundRecord.createMany({
-        data: generateRefundRecords(1, 9).map(record => ({
+        data: generateRefundRecords(1, 30).map(record => ({
             ...record,
             status: stringToRefundRecordStatus(record.status),
             test: Boolean(record.test),
