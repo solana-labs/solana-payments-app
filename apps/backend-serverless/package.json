@@ -23,6 +23,7 @@
     "test:tx": "jest integration",
     "helius": "node scripts/helius.cjs",
     "deploy:prod:green": "serverless deploy --stage prod --config serverless.green.yml",
+    "deploy:stage:green": "serverless deploy --stage stage --config serverless.green.yml",
     "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml",
     "prisma:push:dev": "dotenv -e .env.dev -- npx prisma db push",
     "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
