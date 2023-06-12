@@ -18,7 +18,7 @@ const WebsocketHandler: React.FC = () => {
                 socket.current.close();
             }
 
-            socket.current = new WebSocket('ws://localhost:4009/?paymentId=' + paymentId);
+            socket.current = new WebSocket( process.env.NEXT_PUBLIC_WEBSOCKET_URL + '?paymentId=' + paymentId);
 
             socket.current.onopen = () => {
                 console.log('WebSocket Client Connected');
