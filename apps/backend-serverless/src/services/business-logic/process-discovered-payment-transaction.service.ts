@@ -12,8 +12,8 @@ import { MerchantService } from '../database/merchant-service.database.service.j
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
 import {
-    verifyPaymentRecordWithHeliusEnhancedTransaction,
-    verifyPaymentTransactionWithPaymentRecord,
+    verifyRecordWithHeliusTranscation,
+    verifyTransactionWithRecord,
 } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import * as web3 from '@solana/web3.js';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
@@ -55,7 +55,7 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
-    verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
+    verifyRecordWithHeliusTranscation(paymentRecord, transaction, true);
 
     console.log('verified with helius');
 
@@ -71,7 +71,7 @@ export const processDiscoveredPaymentTransaction = async (
     console.log('got the transaction');
 
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
-    verifyPaymentTransactionWithPaymentRecord(paymentRecord, rpcTransaction, true); // TODO: Uncomment this
+    verifyTransactionWithRecord(paymentRecord, rpcTransaction, true);
 
     console.log('transaction is real');
 

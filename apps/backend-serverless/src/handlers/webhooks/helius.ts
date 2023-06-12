@@ -14,6 +14,7 @@ import { WebsocketSessionService } from '../../services/database/websocket.datab
 import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
+import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 
 const prisma = new PrismaClient();
 
@@ -69,7 +70,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                     heliusTransaction.signature
                 );
 
-            paymentRecord = paymentRecordAndWebsocketService.paymentRecord;
             websocketSessions = paymentRecordAndWebsocketService.websocketSessions;
 
             for (const websocketSession of websocketSessions) {
@@ -84,66 +84,68 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             }
 
             try {
-                const transactionRecord = await transactionRecordService.getTransactionRecord({
-                    signature: heliusTransaction.signature,
-                });
+                await processTransaction(heliusTransaction, prisma, websocketSessions);
 
-                if (transactionRecord == null) {
-                    // TODO: Log this with Sentry, not critical at all, total pheasble this could happen, still can throw and it will be caught and logged
-                    Sentry.captureException(new Error('Transaction record not found'));
-                    throw new Error('Transaction record not found');
-                }
+                // const transactionRecord = await transactionRecordService.getTransactionRecord({
+                //     signature: heliusTransaction.signature,
+                // });
 
-                console.log('got transaction record');
+                // if (transactionRecord == null) {
+                //     // TODO: Log this with Sentry, not critical at all, total pheasble this could happen, still can throw and it will be caught and logged
+                //     Sentry.captureException(new Error('Transaction record not found'));
+                //     throw new Error('Transaction record not found');
+                // }
 
-                // Ok lets focus on payments for now
+                // console.log('got transaction record');
 
-                if (transactionRecord.paymentRecordId != null) {
-                    paymentRecord = await paymentRecordService.getPaymentRecord({
-                        id: transactionRecord.paymentRecordId,
-                    });
+                // // Ok lets focus on payments for now
 
-                    if (paymentRecord == null) {
-                        throw new Error('Payment record not found');
-                    }
+                // if (transactionRecord.paymentRecordId != null) {
+                //     paymentRecord = await paymentRecordService.getPaymentRecord({
+                //         id: transactionRecord.paymentRecordId,
+                //     });
 
-                    // TODO: Use real error
-                    if (paymentRecord.merchantId == null) {
-                        throw new Error('Merchant ID not found on payment record');
-                    }
+                //     if (paymentRecord == null) {
+                //         throw new Error('Payment record not found');
+                //     }
 
-                    // TODO: Use real error
-                    if (paymentRecord.shopGid == null) {
-                        throw new Error('Shop gid not found on payment record');
-                    }
+                //     // TODO: Use real error
+                //     if (paymentRecord.merchantId == null) {
+                //         throw new Error('Merchant ID not found on payment record');
+                //     }
 
-                    await processDiscoveredPaymentTransaction(
-                        paymentRecord,
-                        heliusTransaction,
-                        prisma,
-                        websocketSessions
-                    );
-                } else if (transactionRecord.refundRecordId != null) {
-                    refundRecord = await refundRecordService.getRefundRecord({
-                        id: transactionRecord.refundRecordId,
-                    });
+                //     // TODO: Use real error
+                //     if (paymentRecord.shopGid == null) {
+                //         throw new Error('Shop gid not found on payment record');
+                //     }
 
-                    if (refundRecord == null) {
-                        throw new Error('Refund record not found');
-                    }
+                //     await processDiscoveredPaymentTransaction(
+                //         paymentRecord,
+                //         heliusTransaction,
+                //         prisma,
+                //         websocketSessions
+                //     );
+                // } else if (transactionRecord.refundRecordId != null) {
+                //     refundRecord = await refundRecordService.getRefundRecord({
+                //         id: transactionRecord.refundRecordId,
+                //     });
 
-                    // TODO: Use real error
-                    if (refundRecord.merchantId == null) {
-                        throw new Error('Merchant ID not found on refund record');
-                    }
+                //     if (refundRecord == null) {
+                //         throw new Error('Refund record not found');
+                //     }
 
-                    // TODO: Use real error
-                    if (refundRecord.shopGid == null) {
-                        throw new Error('Shop gid not found on refund record');
-                    }
+                //     // TODO: Use real error
+                //     if (refundRecord.merchantId == null) {
+                //         throw new Error('Merchant ID not found on refund record');
+                //     }
 
-                    await processDiscoveredRefundTransaction(refundRecord, heliusTransaction, prisma);
-                }
+                //     // TODO: Use real error
+                //     if (refundRecord.shopGid == null) {
+                //         throw new Error('Shop gid not found on refund record');
+                //     }
+
+                //     await processDiscoveredRefundTransaction(refundRecord, heliusTransaction, prisma);
+                // }
             } catch (error) {
                 // We will catch here on odd throws, valuable catches should happen elsewhere
                 // TODO: Add logging around these odd throws with Sentry
@@ -164,9 +166,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             }
         }
 
-        // This call is from Helius, for now our return value doesn't matter but
-        // I wonder if we return bad status codes if that could get them to retry themselves later??
-        // How do I tag mert from github
         return {
             statusCode: 200,
             body: JSON.stringify({}, null, 2),

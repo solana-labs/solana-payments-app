@@ -5,10 +5,12 @@ import {
     PaymentRecord,
     PaymentRecordStatus,
     RefundRecordStatus,
+    TransactionRecord,
 } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
+import { RecordService } from './record-service.database.service.js';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -56,11 +58,53 @@ export type RefundRecordQuery =
     | MerchantAndStatusQuery
     | RefundIdMerchantIdQuery;
 
-export class RefundRecordService {
+export class RefundRecordService implements RecordService<RefundRecord> {
     private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
         this.prisma = prismaClient;
+    }
+
+    async getRecord(transactionRecord: TransactionRecord): Promise<RefundRecord | null> {
+        if (transactionRecord.refundRecordId == null) {
+            throw new Error('Transaction record does not have a refund record id');
+        }
+
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findFirst({
+                where: {
+                    id: transactionRecord.refundRecordId,
+                },
+            })
+        );
+    }
+
+    async updateRecordToPaid(recordId: string, transactionSignature: string): Promise<RefundRecord> {
+        return await prismaErrorHandler(
+            this.prisma.refundRecord.update({
+                where: {
+                    id: recordId,
+                },
+                data: {
+                    status: PaymentRecordStatus.paid,
+                    transactionSignature: transactionSignature,
+                },
+            })
+        );
+    }
+
+    async updateRecordToCompleted(recordId: string, redirectUrl: string): Promise<RefundRecord> {
+        return await prismaErrorHandler(
+            this.prisma.refundRecord.update({
+                where: {
+                    id: recordId,
+                },
+                data: {
+                    status: RefundRecordStatus.completed,
+                    completedAt: new Date(),
+                },
+            })
+        );
     }
 
     async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord | null> {

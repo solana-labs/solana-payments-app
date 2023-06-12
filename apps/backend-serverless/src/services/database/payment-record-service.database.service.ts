@@ -5,10 +5,12 @@ import {
     PaymentRecordStatus,
     PaymentRecordRejectionReason,
     WebsocketSession,
+    TransactionRecord,
 } from '@prisma/client';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
+import { RecordService } from './record-service.database.service.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -59,11 +61,54 @@ export type MerchantIdQuery = {
 
 export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
 
-export class PaymentRecordService {
+export class PaymentRecordService implements RecordService<PaymentRecord> {
     private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
         this.prisma = prismaClient;
+    }
+
+    async getRecord(transactionRecord: TransactionRecord): Promise<PaymentRecord | null> {
+        if (transactionRecord.paymentRecordId == null) {
+            throw new Error('Transaction record does not have a payment record id');
+        }
+
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.findFirst({
+                where: {
+                    id: transactionRecord.paymentRecordId,
+                },
+            })
+        );
+    }
+
+    async updateRecordToPaid(recordId: string, transactionSignature: string): Promise<PaymentRecord> {
+        return await prismaErrorHandler(
+            this.prisma.paymentRecord.update({
+                where: {
+                    id: recordId,
+                },
+                data: {
+                    status: PaymentRecordStatus.paid,
+                    transactionSignature: transactionSignature,
+                },
+            })
+        );
+    }
+
+    async updateRecordToCompleted(recordId: string, redirectUrl: string): Promise<PaymentRecord> {
+        return await prismaErrorHandler(
+            this.prisma.paymentRecord.update({
+                where: {
+                    id: recordId,
+                },
+                data: {
+                    status: PaymentRecordStatus.completed,
+                    redirectUrl: redirectUrl,
+                    completedAt: new Date(),
+                },
+            })
+        );
     }
 
     async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {
@@ -89,7 +134,8 @@ export class PaymentRecordService {
 
     async getPaymentRecordAndWebsocketServiceForTransactionSignature(
         transactionSignature: string
-    ): Promise<{ paymentRecord: PaymentRecord | null; websocketSessions: WebsocketSession[] }> {
+        // ): Promise<{ paymentRecord: PaymentRecord | null; websocketSessions: WebsocketSession[] }> {
+    ): Promise<{ websocketSessions: WebsocketSession[] }> {
         const transactionRecord = await prismaErrorHandler(
             this.prisma.transactionRecord.findUnique({
                 where: { signature: transactionSignature },
@@ -105,12 +151,13 @@ export class PaymentRecordService {
 
         if (transactionRecord && transactionRecord.paymentRecord) {
             return {
-                paymentRecord: transactionRecord.paymentRecord,
+                // paymentRecord: transactionRecord.paymentRecord,
                 websocketSessions: transactionRecord.paymentRecord.websocketSessions || [],
             };
         }
 
-        return { paymentRecord: null, websocketSessions: [] };
+        // return { paymentRecord: null, websocketSessions: [] };
+        return { websocketSessions: [] };
     }
 
     async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {
