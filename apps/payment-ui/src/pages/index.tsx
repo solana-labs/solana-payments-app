@@ -2,8 +2,7 @@ import Head from 'next/head';
 import MainSection from '../components/MainSection';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router';
-import DisplaySection from '@/components/DisplaySection';
-import CheckoutSection from '@/components/CheckoutSection';
+import React from 'react' 
 
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -26,15 +25,17 @@ export default function Home({
   }: BlockedProps) {
 
     return (
-        <div>
-            <Head>
-                <title>{country}</title>
-            </Head>
-            <div className="min-h-screen bg-black flex flex-col justify-between items-center">
-                <div className="w-full flex-grow flex items-end">
-                    <MainSection isBlocked={isBlocked} country={country} />
+        <React.Fragment>
+            <div>
+                <Head>
+                    <title>{country}</title>
+                </Head>
+                <div className="min-h-screen bg-black flex flex-col justify-between items-center">
+                    <div className="w-full flex-grow flex items-end">
+                        <MainSection isBlocked={isBlocked} country={country} />
+                    </div>
                 </div>
             </div>
-        </div>
+        </React.Fragment>
     );
 }

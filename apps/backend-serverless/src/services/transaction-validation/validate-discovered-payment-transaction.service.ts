@@ -1,25 +1,24 @@
-import { PaymentRecord } from '@prisma/client';
+import { PaymentRecord, RefundRecord } from '@prisma/client';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 
-export const verifyPaymentTransactionWithPaymentRecord = (
-    paymentRecord: PaymentRecord,
+export const verifyTransactionWithRecord = (
+    record: PaymentRecord | RefundRecord,
     transaction: web3.Transaction,
     weShouldHaveSigned: boolean
 ) => {
-    if (weShouldHaveSigned) {
-        verifyAppCreatedTheTransaction(transaction);
-    }
-
-    verifySingleUseInstruction(transaction);
-
-    verifyTransferInstructionIsCorrect(transaction, paymentRecord);
+    // if (weShouldHaveSigned) {
+    //     verifyAppCreatedTheTransaction(transaction);
+    // }
+    // verifySingleUseInstruction(transaction);
+    // verifyTransferInstructionIsCorrect(transaction, record);
 };
 
-export const verifyPaymentRecordWithHeliusEnhancedTransaction = (
-    paymentRecord: PaymentRecord,
+export const verifyRecordWithHeliusTranscation = (
+    record: PaymentRecord | RefundRecord,
     transaction: HeliusEnhancedTransaction,
     weShouldHaveSigned: boolean
 ) => {
@@ -27,44 +26,13 @@ export const verifyPaymentRecordWithHeliusEnhancedTransaction = (
         verifyAppCreatedTheHeliusEnhancedTransaction(transaction);
     }
     // verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
-    verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction(transaction, paymentRecord);
+    verifyTransferInstructionIsCorrectWithHeliusTransaction(transaction, record);
 };
 
-export const verifyTransferInstructionIsCorrect = (transaction: web3.Transaction, paymentRecord: PaymentRecord) => {
-    // The token transfer is the second to last instruction included. We should check it's spot and that the
-    // amount is correct.
-
-    const instructions = transaction.instructions;
-    const transferInstruction = instructions[instructions.length - 2];
-
-    if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
-        throw new Error('The token transfer instruction was not in the correct position.');
-    }
-
-    const decodedTransferCheckedInstruction = decodeTransferCheckedInstruction(transferInstruction, TOKEN_PROGRAM_ID);
-    const mint = decodedTransferCheckedInstruction.keys.mint.pubkey;
-
-    if (mint.toBase58() != USDC_MINT.toBase58()) {
-        throw new Error('The token transfer instruction was not for USDC');
-    }
-
-    if (decodedTransferCheckedInstruction.data.decimals != 6) {
-        throw new Error('The token transfer instruction was not for USDC');
-    }
-
-    const decodedTransferQuantity = decodedTransferCheckedInstruction.data.amount;
-
-    const paymentRecordUsdcSize = paymentRecord.usdcAmount;
-    const paymentRecordUsdcQuantity = paymentRecordUsdcSize * 10 ** 6;
-
-    if (Number(decodedTransferQuantity) !== paymentRecordUsdcQuantity) {
-        throw new Error('The token transfer instruction was not for the correct amount of USDC');
-    }
-};
-
-export const verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction = (
+// KEEP
+export const verifyTransferInstructionIsCorrectWithHeliusTransaction = (
     transaction: HeliusEnhancedTransaction,
-    paymentRecord: PaymentRecord
+    record: PaymentRecord | RefundRecord
 ) => {
     // The token transfer is the second to last instruction included. We should check it's spot and that the
     // amount is correct.
@@ -103,11 +71,48 @@ export const verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction = (
         throw new Error('The token transfer instruction was not for USDC');
     }
 
-    if (transfer.tokenAmount != paymentRecord.usdcAmount) {
+    if (transfer.tokenAmount != record.usdcAmount) {
         throw new Error('The token transfer instruction was not for the correct amount of USDC');
     }
 };
 
+// KEEP
+export const verifyTransferInstructionIsCorrect = (
+    transaction: web3.Transaction,
+    record: PaymentRecord | RefundRecord
+) => {
+    // The token transfer is the second to last instruction included. We should check it's spot and that the
+    // amount is correct.
+
+    const instructions = transaction.instructions;
+    const transferInstruction = instructions[instructions.length - 2];
+
+    if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
+        throw new Error('The token transfer instruction was not in the correct position.');
+    }
+
+    const decodedTransferCheckedInstruction = decodeTransferCheckedInstruction(transferInstruction, TOKEN_PROGRAM_ID);
+    const mint = decodedTransferCheckedInstruction.keys.mint.pubkey;
+
+    if (mint.toBase58() != USDC_MINT.toBase58()) {
+        throw new Error('The token transfer instruction was not for USDC');
+    }
+
+    if (decodedTransferCheckedInstruction.data.decimals != 6) {
+        throw new Error('The token transfer instruction was not for USDC');
+    }
+
+    const decodedTransferQuantity = decodedTransferCheckedInstruction.data.amount;
+
+    const paymentRecordUsdcSize = record.usdcAmount;
+    const paymentRecordUsdcQuantity = paymentRecordUsdcSize * 10 ** 6;
+
+    if (Number(decodedTransferQuantity) !== paymentRecordUsdcQuantity) {
+        throw new Error('The token transfer instruction was not for the correct amount of USDC');
+    }
+};
+
+// KEEP
 export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
     // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
 
@@ -117,11 +122,14 @@ export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) =>
         throw new Error('The transaction did not have a fee payer');
     }
 
-    if (!historicalFeePays.includes(feePayer.toBase58())) {
+    const feePayers = historicalFeePayers();
+
+    if (!feePayers.includes(feePayer.toBase58())) {
         throw new Error('The transaction was not created by the app');
     }
 };
 
+// KEEP
 export const verifyAppCreatedTheHeliusEnhancedTransaction = (transaction: HeliusEnhancedTransaction) => {
     // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
     const feePayer = transaction.feePayer;
@@ -130,11 +138,15 @@ export const verifyAppCreatedTheHeliusEnhancedTransaction = (transaction: Helius
         throw new Error('The transaction did not have a fee payer');
     }
 
-    if (!historicalFeePays.includes(feePayer)) {
+    console.log('TesING FOIR FEE PATYER');
+    const feePayers = historicalFeePayers();
+
+    if (!feePayers.includes(feePayer)) {
         throw new Error('The transaction was not created by the app');
     }
 };
 
+// KEEP
 export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
     const instructions = transaction.instructions;
     const singleUseInstruction = instructions[0];
@@ -152,6 +164,7 @@ export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
     }
 };
 
+// KEEP
 export const verifySingleUseInstructionWithHeliusEnhancedTransaction = (transaction: HeliusEnhancedTransaction) => {
     const instructions = transaction.instructions;
     const singleUseInstruction = instructions[0];
@@ -176,5 +189,15 @@ export const verifySingleUseInstructionWithHeliusEnhancedTransaction = (transact
     // }
 };
 
-// TODO: Is there a better way to do this?
-export const historicalFeePays = ['3Rpu9bLp3rwZdBF7kF378Grp95V5sv3dEDR2T1p7ziwY'];
+// TODO: Make this return a sting of pubkeys
+export const historicalFeePayers = (): string[] => {
+    const historicalFeePayersString = process.env.HISTORICAL_FEE_PAYERS;
+
+    console.log(historicalFeePayersString);
+
+    if (historicalFeePayersString == null) {
+        throw new MissingEnvError('historical fee payers');
+    }
+
+    return historicalFeePayersString.split(',');
+};

@@ -1,12 +1,19 @@
-import { PaymentRecordStatus, PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import {
+    PaymentRecord,
+    PaymentRecordStatus,
+    PrismaClient,
+    TransactionRecord,
+    TransactionType,
+    WebsocketSession,
+} from '@prisma/client';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
 import axios from 'axios';
 import {
-    verifyPaymentRecordWithHeliusEnhancedTransaction,
-    verifyPaymentTransactionWithPaymentRecord,
+    verifyRecordWithHeliusTranscation,
+    verifyTransactionWithRecord,
 } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import * as web3 from '@solana/web3.js';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
@@ -14,57 +21,17 @@ import { validatePaymentSessionResolved } from '../shopify/validate-payment-sess
 import * as Sentry from '@sentry/serverless';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { delay } from '../../utilities/delay.utility.js';
+import { sendWebsocketMessage } from '../websocket/send-websocket-message.service.js';
+import { WebsocketSessionService } from '../database/websocket.database.service.js';
 
 export const processDiscoveredPaymentTransaction = async (
-    transactionRecord: TransactionRecord,
+    paymentRecord: PaymentRecord,
     transaction: HeliusEnhancedTransaction,
-    prisma: PrismaClient
+    prisma: PrismaClient,
+    websocketSessions: WebsocketSession[]
 ) => {
     const paymentRecordService = new PaymentRecordService(prisma);
     const merchantService = new MerchantService(prisma);
-
-    if (transactionRecord.type != TransactionType.payment) {
-        // This would be a silly error to hit but it guards against incorrect usage
-        // All calls of this method should check it is a payment before calling
-        Sentry.captureException(new Error('Transaction record is not a payment'));
-        throw new Error('Transaction record is not a payment');
-    }
-
-    if (transactionRecord.paymentRecordId == null) {
-        // This would another silly error to hit but would reveal a greater problem
-        // All transaction records with a type of payment should have a payment record id
-        Sentry.captureException(new Error('Transaction record is not a payment'));
-        throw new Error('Transaction record does not have a payment record id');
-    }
-
-    const paymentRecord = await paymentRecordService.getPaymentRecord({
-        id: transactionRecord.paymentRecordId,
-    });
-
-    if (paymentRecord == null) {
-        // This case shouldn't come up because right now we don't have a strategy for pruning
-        // records from the database. So if the transaction record refrences a payment record
-        // but we can't find that payment record, then we have a problem with our database or
-        // how we created this transaction record.\
-        Sentry.captureException(new Error('Payment record not found'));
-        throw new Error('Payment record not found.');
-    }
-
-    console.log('got the payment record');
-
-    if (paymentRecord.merchantId == null) {
-        // Another case that shouldn't happen. This could mean that a payment record got updated to remove
-        // a merchant id or that we created a transaction record without a merchant id.
-        Sentry.captureException(new Error('Merchant ID not found on payment record'));
-        throw new Error('Merchant ID not found on payment record.');
-    }
-
-    if (paymentRecord.shopGid == null) {
-        // Another case that shouldn't happen. This could mean that a payment record got updated to remove
-        // a shop gid or that we created a transaction record without a shop gid.
-        Sentry.captureException(new Error('Shop gid not found on payment record'));
-        throw new Error('Shop gid not found on payment record.');
-    }
 
     const merchant = await merchantService.getMerchant({
         id: paymentRecord.merchantId,
@@ -88,7 +55,7 @@ export const processDiscoveredPaymentTransaction = async (
         throw new Error('Access token not found on merchant.');
     }
 
-    verifyPaymentRecordWithHeliusEnhancedTransaction(paymentRecord, transaction, true); // TODO: Uncomment this
+    verifyRecordWithHeliusTranscation(paymentRecord, transaction, true);
 
     console.log('verified with helius');
 
@@ -97,16 +64,22 @@ export const processDiscoveredPaymentTransaction = async (
     while (rpcTransaction == null) {
         try {
             await delay(3000);
-            rpcTransaction = await fetchTransaction(transactionRecord.signature);
+            rpcTransaction = await fetchTransaction(transaction.signature);
         } catch (error) {}
     }
 
     console.log('got the transaction');
 
     // Verify against the payment record, if we throw in here, we should catch outside of this for logging
-    verifyPaymentTransactionWithPaymentRecord(paymentRecord, rpcTransaction, true); // TODO: Uncomment this
+    verifyTransactionWithRecord(paymentRecord, rpcTransaction, true);
 
     console.log('transaction is real');
+
+    // let's say it goes bad here, what would we do? at least we know when it will go bad.
+    // anywher we throw, it "goes bad"
+    // we should def send a message to the frontend to let them know it's bad
+    // ok so i probably dont want to check everywhere, i should prob do it outside of this
+    // but outside of this i dont have the payment record, fuggggg, maybe i should pass it in then
 
     // -- if we get here, we found a match! --
     // we would hope at this point we could update the database to reflect we found it's match
@@ -116,10 +89,15 @@ export const processDiscoveredPaymentTransaction = async (
     // TODO, update can fail so add try/catch here
     await paymentRecordService.updatePaymentRecord(paymentRecord, {
         status: PaymentRecordStatus.paid,
-        transactionSignature: transactionRecord.signature,
+        transactionSignature: transaction.signature,
     });
 
     console.log('updated to paid');
+
+    // TODO: This is temporary until i make a more powerful query that gets everything
+    if (paymentRecord.shopGid == null) {
+        throw new Error('Shop gid not found on payment record');
+    }
 
     try {
         const paymentSessionResolve = makePaymentSessionResolve(axios);
@@ -137,6 +115,20 @@ export const processDiscoveredPaymentTransaction = async (
             redirectUrl: resolvePaymentData.redirectUrl,
             completedAt: new Date(),
         });
+
+        for (const websocketSession of websocketSessions) {
+            try {
+                await sendWebsocketMessage(websocketSession.connectionId, {
+                    messageType: 'completedDetails',
+                    completedDetails: {
+                        redirectUrl: resolvePaymentData.redirectUrl,
+                    },
+                });
+            } catch (error) {
+                // prob just closed and orphaned
+                continue;
+            }
+        }
     } catch (error) {
         // TODO: Log the error with Sentry, generally could be a normal situation to arise but it's still good to try why it happened
         Sentry.captureException(error);

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentMethod, PaymentMethod, setPaymentMethod, setPaymentId } from './paySlice';
 import { useRouter } from 'next/router';
+import { PaymentMethod, getPaymentMethod, setPaymentMethod } from '../payment-options/paymentOptionsSlice';
 
 export const PaymentMethodTab = () => {
     const dispatch = useDispatch<AppDispatch>();

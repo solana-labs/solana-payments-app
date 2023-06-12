@@ -23,6 +23,7 @@ export const fetchPaymentTransaction = async (
     const sender = account;
     let receiver = merchant.paymentAddress;
 
+    // TODO: Uncomment this
     if (paymentRecord.test) {
         receiver = account;
     }

@@ -1,30 +1,47 @@
-import { AppDispatch } from "@/store";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getError, removeError } from "@/features/error/errorSlice";
+import { VscArrowLeft } from 'react-icons/vsc'
+import { ImWarning } from 'react-icons/im'
+import { getErrorDetails } from '@/features/payment-session/paymentSessionSlice'
+import { useSelector } from 'react-redux'
 
 export const ErrorView = () => {
+    
+    const errorDetails = useSelector(getErrorDetails)
 
-    const dispatch = useDispatch<AppDispatch>();
-    const error = useSelector(getError);
-
-    useEffect(() => {
-        const interval = 3000; // 3 seconds
-
-        const timer = setInterval(() => {
-            dispatch(removeError());
-        }, interval);
-
-        return () => {
-            clearInterval(timer);
-        };
-    }, [dispatch]);
-
-
+    const DEFAULT_ERROR_TITLE = 'Unknown Error'
+    const DEFAULT_ERROR_DETAIL = 'Something went wrong. Please try again.'
+    
     return (
-        <div className="alert alert-error">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span>{`Error: ${error}`}</span>
+        <div className="flex flex-col">
+            <ErrorDisplay top={errorDetails?.errorTitle ?? DEFAULT_ERROR_TITLE} bottom={errorDetails?.errorDetail ?? DEFAULT_ERROR_DETAIL} />
+            <GoBackButton redirect={errorDetails?.errorRedirect ?? null} />
         </div>
+    )
+}
+
+const ErrorDisplay = ( props: { top: string, bottom: string } ) => {
+    return (
+        <div className='rounded-lg outline outline-1 mt-16 outline-orange-600 bg-orange-100 flex flex-row items-start'>
+            <div className='flex flex-col h-full justify-center mt-2.5'>
+                <ImWarning className='text-orange-600 ml-4 mr-3 text-md' />
+                <div className="text-md text-orange-100 font-light">{'.'}</div>
+            </div>
+            <div className='flex flex-col h-full justify-center mb-2 mt-2'>
+                <div className="text-sm text-orange-800 font-semibold">{props.top}</div>
+                <div className="text-sm text-orange-800 font-light">{props.bottom}</div>
+            </div>
+        </div>
+    )
+}
+
+const GoBackButton = ( props: { redirect: string | null } ) => {
+    return (
+        <button className='btn btn-ghost outline outline-offset-0 text-black normal-case outline-2 mt-4' onClick={() => {
+            if ( props.redirect != null ) {
+                window.location.href = props.redirect;
+            }
+        }}>
+            <VscArrowLeft className='w-6 h-6 pr-1' />
+            <div className='pl-1 text-md'>Go back</div>
+        </button>
     )
 }

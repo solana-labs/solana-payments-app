@@ -1,13 +1,15 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import payReducer from './features/pay-tab/paySlice';
 import mobileReducer from './features/mobile/mobileSlice';
-import errorReducer from './features/error/errorSlice';
+import notificationReducer from './features/notification/notificationSlice';
+import paymentSessionReducer from './features/payment-session/paymentSessionSlice';
+import paymentOptionsSlice from './features/payment-options/paymentOptionsSlice';
 
 export const store = configureStore({
     reducer: {
-        pay: payReducer,
         mobile: mobileReducer,
-        error: errorReducer,
+        notification: notificationReducer,
+        paymentSession: paymentSessionReducer,
+        paymentOptions: paymentOptionsSlice,
     },
 });
 

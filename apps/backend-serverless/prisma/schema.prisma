@@ -67,7 +67,7 @@ model PaymentRecord {
   id                   String                        @id // Internal ID
   status               PaymentRecordStatus
   shopId               String                        @unique
-  shopGid              String?
+  shopGid              String
   shopGroup            String
   test                 Boolean
   amount               Float
@@ -83,6 +83,7 @@ model PaymentRecord {
   completedAt          DateTime?
   refundRecord         RefundRecord[]
   rejectionReason      PaymentRecordRejectionReason?
+  websocketSessions    WebsocketSession[]
 
   @@index(merchantId)
 }
@@ -113,7 +114,7 @@ model RefundRecord {
 
 model TransactionRecord {
   id              Int             @id @default(autoincrement())
-  signature       String
+  signature       String          @unique
   type            TransactionType
   paymentRecord   PaymentRecord?  @relation(fields: [paymentRecordId], references: [id])
   paymentRecordId String?
@@ -129,4 +130,13 @@ model GDPR {
   id         Int     @id @default(autoincrement())
   merchantId String
   completed  Boolean
+}
+
+model WebsocketSession {
+  id              Int            @id @default(autoincrement())
+  connectionId    String         @unique
+  paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+  paymentRecordId String
+
+  @@index(paymentRecordId)
 }

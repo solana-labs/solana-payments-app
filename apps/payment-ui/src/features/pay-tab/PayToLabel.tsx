@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPayingToken, getPaymentDetails, getPaymentMethod, PaymentMethod, setPaymentMethod } from './paySlice';
+import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
 import { convertToDollarString } from '@/utility';
@@ -9,6 +9,7 @@ import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDis
 import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayAmountTokensDisplay';
+import { PaymentMethod, getPayingToken, getPaymentMethod, setPaymentMethod } from '../payment-options/paymentOptionsSlice';
 
 export const PayToLabel = () => {
 

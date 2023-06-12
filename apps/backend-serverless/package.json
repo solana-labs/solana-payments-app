@@ -28,7 +28,11 @@
     "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
     "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push",
     "prisma:studio:dev": "dotenv -e .env.dev -- npx prisma studio",
-    "prisma:studio:prod": "dotenv -e .env.prod -- npx prisma studio"
+    "prisma:studio:stage": "dotenv -e .env.stage -- npx prisma studio",
+    "prisma:studio:prod": "dotenv -e .env.prod -- npx prisma studio",
+    "prisma:generate:dev": "dotenv -e .env.dev -- npx prisma generate",
+    "prisma:generate:stage": "dotenv -e .env.stage -- npx prisma generate",
+    "prisma:generate:prod": "dotenv -e .env.prod -- npx prisma generate"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

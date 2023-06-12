@@ -7,18 +7,22 @@ import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../conf
 import { retry } from '../utilities/shopify-retry/shopify-retry.utility.js';
 import { DependencyError } from '../errors/dependency.error.js';
 import { RiskyWalletError } from '../errors/risky-wallet.error.js';
+import { errorResponse } from '../utilities/responses/error-response.utility.js';
+import { MissingEnvError } from '../errors/missing-env.error.js';
 
 export class TrmService {
-    private apiKey: string;
-
-    constructor(apiKey: string) {
-        this.apiKey = apiKey;
-    }
+    constructor() {}
 
     async screenAddress(address: string) {
+        const TRM_API_KEY = process.env.TRM_API_KEY;
+
+        if (TRM_API_KEY == null) {
+            throw new MissingEnvError('trm api key');
+        }
+
         const headers = {
             'Content-Type': 'application/json',
-            Authorization: 'Basic ' + Buffer.from(`${this.apiKey}:${this.apiKey}`).toString('base64'),
+            Authorization: 'Basic ' + Buffer.from(`${TRM_API_KEY}:${TRM_API_KEY}`).toString('base64'),
         };
 
         const body = [

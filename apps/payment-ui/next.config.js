@@ -1,6 +1,6 @@
 // next.config.js
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   exportPathMap: function () {
     return {
       '/': { page: '/' },

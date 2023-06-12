@@ -27,7 +27,7 @@ describe('unit testing shopify install request utilities', () => {
 
         const mockMerchant = createMockMerchant({ shop: 'https://some-shop.myshopify.com', lastNonce: 'some-state' });
 
-        prismaMock.merchant.findFirst.mockResolvedValue(mockMerchant);
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
         // expect(() => {
         //     verifyRedirectParams(params, prismaMock);

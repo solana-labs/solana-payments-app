@@ -1,9 +1,9 @@
 import { PayToLabel } from "@/features/pay-tab/PayToLabel";
 import { PaymentMethodTab } from "@/features/pay-tab/PaymentMethodTab";
-import { getPaymentMethod } from "@/features/pay-tab/paySlice";
 import { useSelector } from "react-redux";
 import PayWithWalletSection from "./PayWithWalletSection";
 import PayWithQRCodeSection from "./PayWithQRCodeSection";
+import { getPaymentMethod } from "@/features/payment-options/paymentOptionsSlice";
 
 export const PaymentView = () => {
 

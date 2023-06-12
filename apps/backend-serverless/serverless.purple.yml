@@ -31,6 +31,8 @@ provider:
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     # LOCAL_GAS: ${env:LOCAL_GAS}
     HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
+    HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
+
 package:
   excludeDevDependencies: true
   patterns:
@@ -138,10 +140,8 @@ functions:
         Action:
           - sqs:ReceiveMessage
         Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
-
   retry-request:
     handler: src/handlers/webhooks/retry.retry
-
   queue:
     handler: src/handlers/testing/queue.queue
     events:
@@ -153,6 +153,24 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+  connectHandler:
+    handler: src/handlers/websockets/connect.connect
+    events:
+      - websocket: $connect     
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: "*"
+  disconnectHandler:
+    handler: src/handlers/websockets/disconnect.disconnect
+    events:
+      - websocket: $disconnect
+  defaultHandler:
+    handler: src/handlers/websockets/default.defaultHandler
+    events:
+      - websocket: $default
+
 
 stepFunctions:
   stateMachines:
@@ -191,3 +209,4 @@ custom:
   serverless-offline:
     httpPort: 4000
     lambdaPort: 4001
+    websocketPort: 4009
