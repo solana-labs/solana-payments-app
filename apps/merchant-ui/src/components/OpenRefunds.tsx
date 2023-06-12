@@ -136,11 +136,7 @@ export function OpenRefunds(props: Props) {
         }
     }
 
-<<<<<<< HEAD
     async function rejectRefund(refundId: string, refundReason: string) {
-=======
-    async function rejectRefund(refundId: string) {
->>>>>>> e9c2b24 (merging in recent changes to demo (#244))
         setDenyPending(true);
         denyPendingRef.current = true;
         try {
