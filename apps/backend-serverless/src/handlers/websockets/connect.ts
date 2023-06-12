@@ -19,6 +19,8 @@ export const connect = Sentry.AWSLambda.wrapHandler(
         const websocketSessionService = new WebsocketSessionService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
 
+        console.log(event);
+
         const paymentId = (event as any).queryStringParameters.paymentId;
         const connectionId = event.requestContext.connectionId;
 
