@@ -10,7 +10,12 @@ import {
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
-import { RecordService } from './record-service.database.service.js';
+import { PaymentResolveResponse, RecordService } from './record-service.database.service.js';
+import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
+import axios from 'axios';
+import { MerchantService } from './merchant-service.database.service.js';
+import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
+import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -61,11 +66,13 @@ export type MerchantIdQuery = {
 
 export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
 
-export class PaymentRecordService implements RecordService<PaymentRecord> {
+export class PaymentRecordService implements RecordService<PaymentRecord, PaymentResolveResponse> {
     private prisma: PrismaClient;
+    private merchantService: MerchantService;
 
     constructor(prismaClient: PrismaClient) {
         this.prisma = prismaClient;
+        this.merchantService = new MerchantService(prismaClient);
     }
 
     async getRecord(transactionRecord: TransactionRecord): Promise<PaymentRecord | null> {
@@ -96,7 +103,7 @@ export class PaymentRecordService implements RecordService<PaymentRecord> {
         );
     }
 
-    async updateRecordToCompleted(recordId: string, redirectUrl: string): Promise<PaymentRecord> {
+    async updateRecordToCompleted(recordId: string, resolveResponse: PaymentResolveResponse): Promise<PaymentRecord> {
         return await prismaErrorHandler(
             this.prisma.paymentRecord.update({
                 where: {
@@ -104,11 +111,37 @@ export class PaymentRecordService implements RecordService<PaymentRecord> {
                 },
                 data: {
                     status: PaymentRecordStatus.completed,
-                    redirectUrl: redirectUrl,
+                    redirectUrl: resolveResponse.redirectUrl,
                     completedAt: new Date(),
                 },
             })
         );
+    }
+
+    async resolveSession(record: PaymentRecord, axiosInstance: typeof axios): Promise<PaymentResolveResponse> {
+        const merchant = await this.merchantService.getMerchant({ id: record.merchantId });
+
+        if (merchant == null) {
+            throw new Error('Merchant not found');
+        }
+
+        if (merchant.accessToken == null) {
+            throw new Error('Merchant access token not found');
+        }
+
+        const paymentSessionResolve = makePaymentSessionResolve(axiosInstance);
+
+        const resolvePaymentResponse = await paymentSessionResolve(record.shopGid, merchant.shop, merchant.accessToken);
+
+        const resolvePaymentData = validatePaymentSessionResolved(resolvePaymentResponse);
+
+        return {
+            redirectUrl: resolvePaymentData.redirectUrl,
+        };
+    }
+
+    async sendResolveRetry(record: PaymentRecord) {
+        await sendPaymentResolveRetryMessage(record.id);
     }
 
     async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {

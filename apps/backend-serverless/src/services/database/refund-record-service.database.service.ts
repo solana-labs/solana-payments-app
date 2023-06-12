@@ -10,7 +10,12 @@ import {
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
-import { RecordService } from './record-service.database.service.js';
+import { RecordService, RefundResolveResponse } from './record-service.database.service.js';
+import axios from 'axios';
+import { MerchantService } from './merchant-service.database.service.js';
+import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
+import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -58,11 +63,13 @@ export type RefundRecordQuery =
     | MerchantAndStatusQuery
     | RefundIdMerchantIdQuery;
 
-export class RefundRecordService implements RecordService<RefundRecord> {
+export class RefundRecordService implements RecordService<RefundRecord, RefundResolveResponse> {
     private prisma: PrismaClient;
+    private merchantService: MerchantService;
 
     constructor(prismaClient: PrismaClient) {
         this.prisma = prismaClient;
+        this.merchantService = new MerchantService(prismaClient);
     }
 
     async getRecord(transactionRecord: TransactionRecord): Promise<RefundRecord | null> {
@@ -105,6 +112,30 @@ export class RefundRecordService implements RecordService<RefundRecord> {
                 },
             })
         );
+    }
+
+    async resolveSession(record: RefundRecord, axiosInstance: typeof axios): Promise<RefundResolveResponse> {
+        const merchant = await this.merchantService.getMerchant({ id: record.merchantId });
+
+        if (merchant == null) {
+            throw new Error('Merchant not found');
+        }
+
+        if (merchant.accessToken == null) {
+            throw new Error('Merchant access token not found');
+        }
+
+        const refundSessionResolve = makeRefundSessionResolve(axiosInstance);
+
+        const resolveRefundResponse = await refundSessionResolve(record.shopGid, merchant.shop, merchant.accessToken);
+
+        validateRefundSessionResolved(resolveRefundResponse);
+
+        return {};
+    }
+
+    async sendResolveRetry(record: RefundRecord) {
+        await sendRefundResolveRetryMessage(record.id);
     }
 
     async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord | null> {

@@ -1,6 +1,6 @@
 import { PrismaClient, WebsocketSession } from '@prisma/client';
 import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
-import { getRecordServiceForTransaction } from '../database/record-service.database.service.js';
+import { ShopifyResolveResponse, getRecordServiceForTransaction } from '../database/record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import {
     verifyRecordWithHeliusTranscation,
@@ -11,14 +11,15 @@ import * as web3 from '@solana/web3.js';
 import { delay } from '../../utilities/delay.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { sendWebsocketMessage } from '../websocket/send-websocket-message.service.js';
+import axios from 'axios';
 
 export const processTransaction = async (
     heliusTransaction: HeliusEnhancedTransaction,
     prisma: PrismaClient,
-    websocketSessions: WebsocketSession[]
+    websocketSessions: WebsocketSession[],
+    axiosInstance: typeof axios
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
-    const merchantService = new MerchantService(prisma);
 
     const transactionRecord = await transactionRecordService.getTransactionRecord({
         signature: heliusTransaction.signature,
@@ -36,16 +37,6 @@ export const processTransaction = async (
         throw new Error('Record not found');
     }
 
-    const merchant = await merchantService.getMerchant({ id: record.merchantId });
-
-    if (merchant == null) {
-        throw new Error('Merchant not found');
-    }
-
-    if (merchant.accessToken == null) {
-        throw new Error('Merchant access token not found');
-    }
-
     verifyRecordWithHeliusTranscation(record, heliusTransaction, true);
 
     let rpcTransaction: web3.Transaction | null = null;
@@ -61,9 +52,16 @@ export const processTransaction = async (
 
     await recordService.updateRecordToPaid(record.id, heliusTransaction.signature);
 
-    // now i need to make the update to shopify
+    let resolveResponse: ShopifyResolveResponse;
 
-    await recordService.updateRecordToCompleted(record.id, 'https://www.google.com');
+    try {
+        resolveResponse = await recordService.resolveSession(record, axiosInstance);
+    } catch (error) {
+        await recordService.sendResolveRetry(record);
+        throw error;
+    }
+
+    await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
     for (const websocketSession of websocketSessions) {
         try {
