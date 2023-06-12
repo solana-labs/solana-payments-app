@@ -24,6 +24,18 @@ export function PaymentsHistory(props: Props) {
         }
     }, [payments]);
 
+    useEffect(() => {
+        getPayments(page);
+
+        const intervalId = setInterval(() => {
+            getPayments(page);
+        }, 5000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
+
     if (RE.isOk(payments) && payments.data.payments.length === 0) {
         return (
             <div className={props.className}>

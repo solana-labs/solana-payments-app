@@ -52,8 +52,6 @@ export const usePaymentStore = create<PaymentStore>(set => ({
             pageSize: PAGE_SIZE,
         };
 
-        set({ payments: RE.pending() });
-
         try {
             const response = await fetch(`${API_ENDPOINTS.paymentData}?${new URLSearchParams(params)}`);
             const data = await response.json();

@@ -64,16 +64,16 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
             const data = await response.json();
             if (response.status !== 200) {
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
-            } else {
-                const refunds = transformRefund<OpenRefund>(data); // assuming you have transformRefund function
-                set({
-                    openRefunds: RE.ok({
-                        refunds: refunds,
-                        totalPages: Math.floor((data.refundData.total + 1) / PAGE_SIZE),
-                    }),
-                });
-                set({ refundCount: data.refundData.total });
             }
+            const refunds = transformRefund<OpenRefund>(data); // assuming you have transformRefund function
+
+            set({
+                openRefunds: RE.ok({
+                    refunds: refunds,
+                    totalPages: Math.floor((data.refundData.total + 1) / PAGE_SIZE),
+                }),
+            });
+            set({ refundCount: data.refundData.total });
         } catch (error) {
             console.log('error: ', error);
             set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });

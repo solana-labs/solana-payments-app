@@ -54,6 +54,18 @@ export function OpenRefunds(props: Props) {
     }, [openRefunds]);
 
     useEffect(() => {
+        getOpenRefunds(page);
+
+        const intervalId = setInterval(() => {
+            getOpenRefunds(page);
+        }, 5000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
+
+    useEffect(() => {
         setWalletModalActive(false);
     }, [wallet]);
 
