@@ -19,7 +19,6 @@ const CompletedStep = ({ label }) => (
                 <Checkmark />
             </span>
         </Circle>
-        {/* <p className="text-center">{label}</p> */}
     </div>
 );
 
@@ -28,18 +27,19 @@ const PendingStep = ({ label }) => (
         <Circle color="bg-black p-2">
             <span className="loading loading-spinner p-2"></span>
         </Circle>
-        {/* <p className="text-center">{label}</p> */}
     </div>
 );
 
 const WaitingStep = ({ label }) => (
     <div>
         <Circle color="bg-white border border-4" />
-        {/* <p className="text-center">{label}</p> */}
     </div>
 );
 
-const StepComponent = ({ status, label }) => {
+const stepLabels = ['Submitting', 'Approving', 'Processing', 'Completing'];
+const stepLabelsPast = ['Submitted', 'Approved', 'Processed', 'Completed'];
+
+const StepComponent = ({ status, label, currentStep, index }) => {
     let Step;
     if (status === 'completed') {
         Step = CompletedStep;
@@ -55,9 +55,6 @@ const StepComponent = ({ status, label }) => {
         </div>
     );
 };
-
-const stepLabels = ['Submitting', 'Approving', 'Processing', 'Completing'];
-const stepLabelsPast = ['Submitted', 'Approved', 'Processed', 'Completed'];
 
 const getStepStatus = (index, currentStep) => {
     if (index < currentStep) {
@@ -80,7 +77,7 @@ export const PaymentLoadingView = () => {
                     const status = getStepStatus(index, currentStep);
                     return (
                         <React.Fragment key={label}>
-                            <StepComponent status={status} label={label} />
+                            <StepComponent status={status} label={label} currentStep={currentStep} index={index} />
                             {index < stepLabels.length - 1 && <StepBar completed={currentStep > index} />}
                         </React.Fragment>
                     );
@@ -88,7 +85,7 @@ export const PaymentLoadingView = () => {
             </div>
             <div className="flex flex-row justify-between text-sm w-80 mt-3">
                 {stepLabels.map((label, index) => (
-                    <p className={currentStep === index ? 'text-black' : 'text-gray-400'}>
+                    <p className={currentStep >= index ? 'text-black' : 'text-gray-400'}>
                         {currentStep > index ? stepLabelsPast[index] : label}
                     </p>
                 ))}
