@@ -10,7 +10,7 @@ describe('Merchant Testing Suite', () => {
 
     it('find a merchant with shop', async () => {
         const mockMerchant = createMockMerchant({ shop: 'test-shop.myshopify.com' });
-        prismaMock.merchant.findFirst.mockResolvedValue(mockMerchant);
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
         const merchant = await merchantService.getMerchant({
             shop: 'test-shop.myshopify.com',
@@ -22,7 +22,7 @@ describe('Merchant Testing Suite', () => {
     it('find a merchant with id', async () => {
         const mockMerchant = createMockMerchant({ id: 'abcd' });
 
-        prismaMock.merchant.findFirst.mockResolvedValue(mockMerchant);
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
 
         const merchant = await merchantService.getMerchant({ id: 'abcd' });
 

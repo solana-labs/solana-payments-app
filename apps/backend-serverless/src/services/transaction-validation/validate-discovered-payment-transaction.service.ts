@@ -19,18 +19,6 @@ export const verifyTransactionWithRecord = (
     verifyTransferInstructionIsCorrect(transaction, record);
 };
 
-// export const verifyPaymentRecordWithHeliusEnhancedTransaction = (
-//     paymentRecord: PaymentRecord,
-//     transaction: HeliusEnhancedTransaction,
-//     weShouldHaveSigned: boolean
-// ) => {
-//     if (weShouldHaveSigned) {
-//         verifyAppCreatedTheHeliusEnhancedTransaction(transaction);
-//     }
-//     // verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
-//     verifyTransferInstructionIsCorrectWithHeliusEnhancedTransaction(transaction, paymentRecord);
-// };
-
 export const verifyRecordWithHeliusTranscation = (
     record: PaymentRecord | RefundRecord,
     transaction: HeliusEnhancedTransaction,
@@ -43,6 +31,7 @@ export const verifyRecordWithHeliusTranscation = (
     verifyTransferInstructionIsCorrectWithHeliusTransaction(transaction, record);
 };
 
+// KEEP
 export const verifyTransferInstructionIsCorrectWithHeliusTransaction = (
     transaction: HeliusEnhancedTransaction,
     record: PaymentRecord | RefundRecord
@@ -89,6 +78,7 @@ export const verifyTransferInstructionIsCorrectWithHeliusTransaction = (
     }
 };
 
+// KEEP
 export const verifyTransferInstructionIsCorrect = (
     transaction: web3.Transaction,
     record: PaymentRecord | RefundRecord
@@ -124,6 +114,7 @@ export const verifyTransferInstructionIsCorrect = (
     }
 };
 
+// KEEP
 export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) => {
     // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
 
@@ -140,6 +131,7 @@ export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) =>
     }
 };
 
+// KEEP
 export const verifyAppCreatedTheHeliusEnhancedTransaction = (transaction: HeliusEnhancedTransaction) => {
     // Right now were' going to verify we created the transaction by checking against our list of historical fee pays
     const feePayer = transaction.feePayer;
@@ -156,6 +148,7 @@ export const verifyAppCreatedTheHeliusEnhancedTransaction = (transaction: Helius
     }
 };
 
+// KEEP
 export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
     const instructions = transaction.instructions;
     const singleUseInstruction = instructions[0];
@@ -173,6 +166,7 @@ export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
     }
 };
 
+// KEEP
 export const verifySingleUseInstructionWithHeliusEnhancedTransaction = (transaction: HeliusEnhancedTransaction) => {
     const instructions = transaction.instructions;
     const singleUseInstruction = instructions[0];

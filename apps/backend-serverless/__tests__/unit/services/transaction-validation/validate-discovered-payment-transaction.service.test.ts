@@ -1,6 +1,6 @@
 import {
     verifyTransferInstructionIsCorrect,
-    verifyPaymentTransactionWithPaymentRecord,
+    verifyTransactionWithRecord,
     verifySingleUseInstruction,
 } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
@@ -150,7 +150,7 @@ describe('unit testing validating discovered payment transactions', () => {
 
         // Verify the transaction
         expect(() => {
-            verifyPaymentTransactionWithPaymentRecord(mockPaymentRecord, mockTransaction, false);
+            verifyTransactionWithRecord(mockPaymentRecord, mockTransaction, false);
         }).not.toThrow();
     });
 });

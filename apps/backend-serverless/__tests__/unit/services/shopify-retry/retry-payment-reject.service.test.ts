@@ -19,7 +19,7 @@ describe('Shopify Retry Payment Reject Testing Suite', () => {
 
         // Mock database calls
         const mockMerchant = createMockMerchant({ accessToken: 'example-access-token' });
-        prismaMock.merchant.findFirst.mockResolvedValue(mockMerchant);
+        prismaMock.merchant.findUnique.mockResolvedValue(mockMerchant);
         const mockPaymentRecord = createMockPaymentRecord();
         prismaMock.paymentRecord.findFirst.mockResolvedValue(mockPaymentRecord);
         prismaMock.paymentRecord.update.mockResolvedValue(mockPaymentRecord);
