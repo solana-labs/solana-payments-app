@@ -26,7 +26,6 @@
     "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml",
     "prisma:push:dev": "dotenv -e .env.dev -- npx prisma db push",
     "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
-<<<<<<< HEAD
     "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push",
     "prisma:studio:dev": "dotenv -e .env.dev -- npx prisma studio",
     "prisma:studio:stage": "dotenv -e .env.stage -- npx prisma studio",
@@ -34,9 +33,6 @@
     "prisma:generate:dev": "dotenv -e .env.dev -- npx prisma generate",
     "prisma:generate:stage": "dotenv -e .env.stage -- npx prisma generate",
     "prisma:generate:prod": "dotenv -e .env.prod -- npx prisma generate"
-=======
-    "prisma:push:prod": "dotenv -e .env.prod -- npx prisma db push"
->>>>>>> e9c2b24 (merging in recent changes to demo (#244))
   },
   "keywords": [],
   "author": "@tj_littlejohn",
