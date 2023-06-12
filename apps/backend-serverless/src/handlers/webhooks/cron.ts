@@ -60,22 +60,6 @@ export const cron = Sentry.AWSLambda.wrapHandler(
                 Sentry.captureException(error);
                 continue;
             }
-
-            // try {
-            //     switch (transactionRecord.type) {
-            //         case TransactionType.payment:
-            //             await processDiscoveredPaymentTransaction(transactionRecord, transaction, prisma);
-            //             break;
-            //         case TransactionType.refund:
-            //             await processDiscoveredRefundTransaction(transactionRecord, transaction, prisma);
-            //             break;
-            //     }
-            // } catch (error) {
-            //     // If we're catching here, it means we failed to get to the end of a processDiscoveredTransaction function
-            //     // This should only happen in odd situations that require investigation
-            //     Sentry.captureException(error);
-            //     continue;
-            // }
         }
 
         return {
