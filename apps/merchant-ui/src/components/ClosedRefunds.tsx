@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { PaginatedTable } from '@/components/PaginatedTable';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
+import { useMerchantStore } from '@/stores/merchantStore';
 import { RefundStatus, useClosedRefundStore } from '@/stores/refundStore';
 import { useEffect, useState } from 'react';
 
@@ -15,6 +16,7 @@ export function ClosedRefunds(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
 
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const closedRefunds = useClosedRefundStore(state => state.closedRefunds);
     const getClosedRefunds = useClosedRefundStore(state => state.getClosedRefunds);
 
@@ -23,6 +25,19 @@ export function ClosedRefunds(props: Props) {
             setTotalNumPages(closedRefunds.data.totalPages);
         }
     }, [closedRefunds]);
+
+    if (RE.isFailed(merchantInfo)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
+                        <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (RE.isOk(closedRefunds) && closedRefunds.data.refunds.length === 0) {
         return (

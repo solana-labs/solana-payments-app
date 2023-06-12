@@ -4,6 +4,7 @@ import * as RE from '@/lib/Result';
 import { abbreviateAddress } from '@/lib/abbreviateAddress';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { formatPrice } from '@/lib/formatPrice';
+import { useMerchantStore } from '@/stores/merchantStore';
 import { RefundStatus, useOpenRefundStore } from '@/stores/refundStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -27,6 +28,7 @@ export function OpenRefunds(props: Props) {
 
     const openRefunds = useOpenRefundStore(state => state.openRefunds);
     const getOpenRefunds = useOpenRefundStore(state => state.getOpenRefunds);
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
 
     const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
@@ -178,6 +180,19 @@ export function OpenRefunds(props: Props) {
             setDenyApprove(null);
             setDenyPending(false);
         }
+    }
+
+    if (RE.isFailed(merchantInfo)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
+                        <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (RE.isOk(openRefunds) && openRefunds.data.refunds.length === 0) {

@@ -1,7 +1,8 @@
 import { LoadingDots } from '@/components/LoadingDots';
-import { isOk, isPending } from '@/lib/Result';
+import { isFailed, isOk, isPending } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { useOpenRefundStore } from '@/stores/refundStore';
+import { User } from '@carbon/icons-react';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
@@ -64,11 +65,11 @@ export function DefaultLayoutNavigation(props: Props) {
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
                 <div className="mt-16 pb-6 border-b border-slate-200">
-                    {isOk(merchantInfo) ? (
+                    {isOk(merchantInfo) && (
                         <div className="text-black font-semibold text-lg">{merchantInfo.data.name} </div>
-                    ) : (
-                        <LoadingDots />
                     )}
+                    {isPending(merchantInfo) && <LoadingDots />}
+                    {isFailed(merchantInfo) && <DefaultLayoutNavigationLink href="/" icon={<User />} text="Sign In" />}
                 </div>
                 {isPending(merchantInfo) && (
                     <div className="mt-6">

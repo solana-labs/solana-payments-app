@@ -1,5 +1,6 @@
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
+import { useMerchantStore } from '@/stores/merchantStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,8 @@ interface Props {
 export function PaymentsHistory(props: Props) {
     const [page, setPage] = useState(0);
     const [totalNumPages, setTotalNumPages] = useState(0);
+
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const payments = usePaymentStore(state => state.payments);
     const getPayments = usePaymentStore(state => state.getPayments);
 
@@ -35,6 +38,19 @@ export function PaymentsHistory(props: Props) {
             clearInterval(intervalId);
         };
     }, []);
+
+    if (RE.isFailed(merchantInfo)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
+                        <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (RE.isOk(payments) && payments.data.payments.length === 0) {
         return (
