@@ -1,4 +1,10 @@
-import { CoreUseCase, HandlerTaskChain, InputValidationUseCase } from '../use-cases-and-task-chain.wip.js';
+import {
+    ErrorResponseUseCase,
+    HandlerCoreFunctionUseCaseInterface,
+    HandlerErrorUseCase,
+    HandlerTaskChain,
+    InputValidationUseCase,
+} from '../use-cases-and-task-chain.wip.js';
 import { ParseAndValidateUseCase } from '../use-cases-and-task-chain.wip.js';
 import {
     parseAndValidateTransactionRequestBody,
@@ -40,6 +46,12 @@ import {
 } from '../../utilities/transaction-request/encode-transaction.utility.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { createErrorResponse, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    RecordService,
+    ShopifyRecord,
+    ShopifyResolveResponse,
+} from '../../services/database/record-service.database.service.js';
 
 export const paymentTransactionCoreUseCaseMethod = async (
     _: {},
@@ -261,12 +273,47 @@ export const paymentTransactionCoreUseCaseMethod = async (
     };
 };
 
+export class CreateTransactionUseCase
+    implements
+        HandlerCoreFunctionUseCaseInterface<
+            {},
+            TransactionRequestBody,
+            PaymentTransactionRequestParameters,
+            Promise<APIGatewayProxyResultV2>
+        >
+{
+    constructor(
+        // private recordService: RecordService<RecordType, ResponseType>,
+        private prisma: PrismaClient,
+        private trm: TrmService
+    ) {}
+
+    async coreFunction(
+        header: {},
+        body: { account: string },
+        queryParameter: { paymentId: string }
+    ): Promise<APIGatewayProxyResultV2> {
+        return await this.createTransaction(header, body, queryParameter);
+    }
+
+    private createTransaction = async (
+        _: {},
+        body: TransactionRequestBody,
+        queryParameter: PaymentTransactionRequestParameters
+    ): Promise<APIGatewayProxyResultV2> => {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({}),
+        };
+    };
+}
+
 export const paymentTransactionTaskChain = (): HandlerTaskChain<
     {},
     TransactionRequestBody,
     PaymentTransactionRequestParameters,
     APIGatewayProxyResultV2,
-    {}
+    { prisma: PrismaClient; axiosInstance: typeof axios }
 > => {
     const headerUseCase = new ParseAndValidateUseCase(() => ({}));
     const bodyUseCase = new ParseAndValidateUseCase((body: string) =>
@@ -279,8 +326,14 @@ export const paymentTransactionTaskChain = (): HandlerTaskChain<
         prisma: new PrismaClient(),
         axiosInstance: axios,
     };
-    const coreUseCase = new CoreUseCase(paymentTransactionCoreUseCaseMethod, coreUseCaseDependencies);
 
-    const taskChain = new HandlerTaskChain(inputUseCase, coreUseCase);
+    const prisma = new PrismaClient();
+    const trm = new TrmService();
+    const createTransactionUseCase = new CreateTransactionUseCase(prisma, trm);
+
+    const errorResponseUseCase = new ErrorResponseUseCase(createErrorResponse);
+    const handlerErrorUseCase = new HandlerErrorUseCase(errorResponseUseCase);
+
+    const taskChain = new HandlerTaskChain(inputUseCase, createTransactionUseCase, handlerErrorUseCase);
     return taskChain;
 };

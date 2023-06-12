@@ -1,3 +1,7 @@
+import { Body } from 'aws-sdk/clients/s3.js';
+import { createErrorResponse, errorResponse } from '../utilities/responses/error-response.utility.js';
+
+type ErrorResponseMethod<T> = (error: unknown) => T;
 type ParseAndValidateMethod<T> = (body: unknown) => T;
 type CoreUseCaseMethod<HeaderType, BodyType, QueryParameterType, ResponseType, CoreUseCaseDependencyType> = (
     header: HeaderType,
@@ -19,6 +23,22 @@ type InputValidationUseCaseValidateResponse<HeaderType, BodyType, QueryParameter
     body: BodyType;
     queryParameter: QueryParameterType;
 };
+
+export class ErrorResponseUseCase<ResponseType> {
+    constructor(private errorResponseMethod: ErrorResponseMethod<ResponseType>) {}
+
+    errorResponse(error: unknown): ResponseType {
+        return this.errorResponseMethod(error);
+    }
+}
+
+export class HandlerErrorUseCase<ResponseType> {
+    constructor(private errorResponseUseCase: ErrorResponseUseCase<ResponseType>) {}
+
+    error(error: unknown): ResponseType {
+        return this.errorResponseUseCase.errorResponse(error);
+    }
+}
 
 export class InputValidationUseCase<HeaderType, BodyType, QueryParameterType> {
     constructor(
@@ -44,38 +64,48 @@ export class InputValidationUseCase<HeaderType, BodyType, QueryParameterType> {
     }
 }
 
-export class CoreUseCase<HeaderType, BodyType, QueryParameterType, ResponseType, CoreUseCaseDependencyType> {
-    constructor(
-        private coreUseCaseMethod: CoreUseCaseMethod<
-            HeaderType,
-            BodyType,
-            QueryParameterType,
-            ResponseType,
-            CoreUseCaseDependencyType
-        >,
-        private coreUseCaseDependencies: CoreUseCaseDependencyType
-    ) {}
+// export class HandlerCoreFunctionUseCase<
+//     HeaderType,
+//     BodyType,
+//     QueryParameterType,
+//     ResponseType,
+//     CoreUseCaseDependencyType
+// > {
+//     constructor(
+//         private coreUseCaseMethod: CoreUseCaseMethod<
+//             HeaderType,
+//             BodyType,
+//             QueryParameterType,
+//             ResponseType,
+//             CoreUseCaseDependencyType
+//         >,
+//         private coreUseCaseDependencies: CoreUseCaseDependencyType
+//     ) {}
 
-    core(
-        header: HeaderType,
-        body: BodyType,
-        queryParameter: QueryParameterType,
-        dependencies: CoreUseCaseDependencyType
-    ): ResponseType {
-        return this.coreUseCaseMethod(header, body, queryParameter, dependencies);
-    }
+//     coreFunction(
+//         header: HeaderType,
+//         body: BodyType,
+//         queryParameter: QueryParameterType,
+//         dependencies: CoreUseCaseDependencyType
+//     ): ResponseType {
+//         return this.coreUseCaseMethod(header, body, queryParameter, dependencies);
+//     }
+// }
+
+export interface HandlerCoreFunctionUseCaseInterface<HeaderType, BodyType, QueryParameterType, ResponseType> {
+    coreFunction(header: HeaderType, body: BodyType, queryParameter: QueryParameterType): ResponseType;
 }
 
 export class HandlerTaskChain<HeaderType, BodyType, QueryParameterType, ResponseType, CoreUseCaseDependencyType> {
     constructor(
         private inputValidateUseCase: InputValidationUseCase<HeaderType, BodyType, QueryParameterType>,
-        private coreUseCase: CoreUseCase<
+        private handlerCoreFunctionUseCase: HandlerCoreFunctionUseCaseInterface<
             HeaderType,
             BodyType,
             QueryParameterType,
-            Promise<ResponseType>,
-            CoreUseCaseDependencyType
-        >
+            Promise<ResponseType>
+        >,
+        private handlerErrorUseCase: HandlerErrorUseCase<ResponseType>
     ) {}
 
     async completeTaskChain(
@@ -84,14 +114,15 @@ export class HandlerTaskChain<HeaderType, BodyType, QueryParameterType, Response
         parameterInput: unknown,
         dependencies: CoreUseCaseDependencyType
     ): Promise<ResponseType> {
-        const { header, body, queryParameter } = this.inputValidateUseCase.validateInputs(
-            headerInput,
-            bodyInput,
-            parameterInput
-        );
-
-        const result = await this.coreUseCase.core(header, body, queryParameter, dependencies);
-
-        return result;
+        try {
+            const { header, body, queryParameter } = this.inputValidateUseCase.validateInputs(
+                headerInput,
+                bodyInput,
+                parameterInput
+            );
+            return await this.handlerCoreFunctionUseCase.coreFunction(header, body, queryParameter);
+        } catch (error) {
+            return this.handlerErrorUseCase.error(error);
+        }
     }
 }

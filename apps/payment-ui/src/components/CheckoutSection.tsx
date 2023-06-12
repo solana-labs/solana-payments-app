@@ -29,17 +29,19 @@ const CheckoutSection = (props: BlockedProps) => {
 
     let paymentMethodCompleted = paymentMethod == 'connect-wallet' ? isCompleted : isSolanaPayCompleted;
 
-    if ( props.isBlocked == 'true' ) {
-        return <GeoBlockedView />
-    } else if ( isProcessing && paymentMethod == 'connect-wallet' ) {
-        return <PaymentLoadingView />
-    } else if ( paymentMethodCompleted ) {
-        return <ThankYouView />
-    } else if ( isError ) {
-        return <ErrorView />
-    } else {
-        return <PaymentView />
-    }
+    return <PaymentLoadingView />
+
+    // if ( props.isBlocked == 'true' ) {
+    //     return <GeoBlockedView />
+    // } else if ( isProcessing && paymentMethod == 'connect-wallet' ) {
+    //     return <PaymentLoadingView />
+    // } else if ( paymentMethodCompleted ) {
+    //     return <ThankYouView />
+    // } else if ( isError ) {
+    //     return <ErrorView />
+    // } else {
+    //     return <PaymentView />
+    // }
 
 }
 

@@ -1,3 +1,5 @@
+import { APIGatewayProxyResultV2 } from 'aws-lambda';
+
 export enum ErrorType {
     badRequest = 400,
     unauthorized = 401,
@@ -26,7 +28,16 @@ export enum ErrorMessage {
     unauthorizedMerchant = 'Merchant is not authorized.',
 }
 
-export const errorResponse = (errorType: ErrorType, errorMessage: string) => {
+export const createErrorResponse = (error: unknown): APIGatewayProxyResultV2 => {
+    return {
+        statusCode: 500,
+        body: JSON.stringify({
+            error: 'errorMessage',
+        }),
+    };
+};
+
+export const errorResponse = (errorType: ErrorType, errorMessage: string): APIGatewayProxyResultV2 => {
     return {
         statusCode: errorType.valueOf(),
         body: JSON.stringify({
