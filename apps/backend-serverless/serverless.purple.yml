@@ -31,6 +31,8 @@ provider:
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     # LOCAL_GAS: ${env:LOCAL_GAS}
     HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
+    HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
+
 package:
   excludeDevDependencies: true
   patterns:
