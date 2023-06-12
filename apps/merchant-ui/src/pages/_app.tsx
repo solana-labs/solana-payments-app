@@ -24,7 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
         getOpenRefunds(0).catch(console.error); // Fetch open refunds when App loads
         getClosedRefunds(0).catch(console.error); // Fetch open refunds when App loads
         getPayments(0).catch(console.error); // Fetch open refunds when App loads
-    }, [getMerchantInfo]); // Dependency array
+    }, []); // Dependency array
 
     return (
         <>
