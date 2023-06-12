@@ -6,7 +6,7 @@ import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { RefundStatus, useClosedRefundStore } from '@/stores/refundStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
     className?: string;
@@ -19,6 +19,24 @@ export function ClosedRefunds(props: Props) {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const closedRefunds = useClosedRefundStore(state => state.closedRefunds);
     const getClosedRefunds = useClosedRefundStore(state => state.getClosedRefunds);
+
+    const pageRef = useRef(page);
+
+    useEffect(() => {
+        pageRef.current = page;
+    }, [page]);
+
+    useEffect(() => {
+        getClosedRefunds(page);
+
+        const intervalId = setInterval(() => {
+            getClosedRefunds(pageRef.current);
+        }, 5000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
 
     useEffect(() => {
         if (RE.isOk(closedRefunds)) {

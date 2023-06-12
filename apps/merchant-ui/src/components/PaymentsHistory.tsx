@@ -3,7 +3,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { PaginatedTable } from './PaginatedTable';
 import { PaymentsHistoryStatus } from './PaymentsHistoryStatus';
@@ -21,6 +21,12 @@ export function PaymentsHistory(props: Props) {
     const payments = usePaymentStore(state => state.payments);
     const getPayments = usePaymentStore(state => state.getPayments);
 
+    const pageRef = useRef(page);
+
+    useEffect(() => {
+        pageRef.current = page;
+    }, [page]);
+
     useEffect(() => {
         if (RE.isOk(payments) && payments.data.totalPages !== totalNumPages) {
             setTotalNumPages(payments.data.totalPages);
@@ -31,7 +37,7 @@ export function PaymentsHistory(props: Props) {
         getPayments(page);
 
         const intervalId = setInterval(() => {
-            getPayments(page);
+            getPayments(pageRef.current);
         }, 5000);
 
         return () => {

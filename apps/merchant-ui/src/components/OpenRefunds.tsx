@@ -49,6 +49,12 @@ export function OpenRefunds(props: Props) {
         'Content-Type': 'application/json',
     };
 
+    const pageRef = useRef(page);
+
+    useEffect(() => {
+        pageRef.current = page;
+    }, [page]);
+
     useEffect(() => {
         if (RE.isOk(openRefunds) && openRefunds.data.totalPages !== totalNumPages) {
             setTotalNumPages(openRefunds.data.totalPages);
@@ -59,7 +65,7 @@ export function OpenRefunds(props: Props) {
         getOpenRefunds(page);
 
         const intervalId = setInterval(() => {
-            getOpenRefunds(page);
+            getOpenRefunds(pageRef.current);
         }, 5000);
 
         return () => {
