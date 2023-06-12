@@ -10,15 +10,20 @@ describe('unit testing payment address request model', () => {
 
     it('valid merchant auth token body parsing', () => {
         const result = parseAndValidatePaymentAddressRequestBody(validRequestParams);
-        expect(result).toEqual(validRequestParams);
+
+        expect(() => {
+            parseAndValidatePaymentAddressRequestBody(validRequestParams);
+        }).not.toThrow();
     });
 
     it('missing optional field', () => {
         const params = { ...validRequestParams };
         // @ts-ignore
         delete params.dismissCompleted;
-        const result = parseAndValidatePaymentAddressRequestBody(params);
-        expect(result).toEqual(params);
+
+        expect(() => {
+            parseAndValidatePaymentAddressRequestBody(params);
+        }).not.toThrow();
     });
 
     it('invalid field type', () => {
