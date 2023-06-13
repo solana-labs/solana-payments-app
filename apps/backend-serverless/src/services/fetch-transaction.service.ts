@@ -1,11 +1,24 @@
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
 import pkg from 'bs58';
+import { MissingEnvError } from '../errors/missing-env.error.js';
 const { decode } = pkg;
 
 export const fetchTransaction = async (transactionId: string): Promise<web3.Transaction> => {
+    const heliusApiKey = process.env.HELIUS_API_KEY;
+
+    console.log('fetching transaction');
+
+    console.log(heliusApiKey);
+
+    if (heliusApiKey == null) {
+        throw new MissingEnvError('helius api key');
+    }
+
+    console.log('fetching transaction');
+
     const response = await axios({
-        url: 'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e',
+        url: 'https://rpc.helius.xyz/?api-key=' + heliusApiKey,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify({

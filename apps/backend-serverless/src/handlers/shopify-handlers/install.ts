@@ -85,8 +85,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
             };
         }
 
-        // const signedCookie = createSignedShopifyCookie(newNonce);
-        // const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
+        const signedCookie = createSignedShopifyCookie(newNonce);
+        const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
 
         const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
         console.log('made new redirect url');
@@ -100,6 +100,7 @@ export const install = Sentry.AWSLambda.wrapHandler(
             //     'Content-Type': ['text/html'],
             // },
             headers: {
+                'Set-Cookie': cookieValue,
                 Location: redirectUrl,
                 'Content-Type': 'text/html',
             },

@@ -74,44 +74,6 @@ export class WebSocketService<WebsocketQuery> {
     };
 }
 
-// export const sendWebsocketMessage = async (connectionId: string, payload: unknown): Promise<void> => {
-//     const websocketUrl = process.env.WEBSOCKET_URL;
-
-//     if (websocketUrl == null) {
-//         throw new MissingEnvError('websocket url');
-//     }
-
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-//     console.log('wtfff');
-
-//     const apigwManagementApi = new ApiGatewayManagementApi({
-//         endpoint: websocketUrl,
-//     });
-
-//     const postParams = {
-//         Data: JSON.stringify(payload),
-//         ConnectionId: connectionId,
-//     };
-
-//     try {
-//         const connection = await apigwManagementApi.postToConnection(postParams).promise();
-//         console.log(connection);
-//     } catch (err) {
-//         if (err.statusCode === 410) {
-//             console.log(err);
-//             console.log('Found stale connection, deleting ' + connectionId);
-//         } else {
-//             console.error('Failed to post. Error: ' + JSON.stringify(err));
-//         }
-//     }
-// };
-
 export enum WebsocketMessage {
     completedDetails = 'completedDetails',
     paymentDetails = 'paymentDetails',

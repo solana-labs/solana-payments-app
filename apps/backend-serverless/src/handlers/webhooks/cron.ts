@@ -3,8 +3,6 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { fetchEnhancedTransaction } from '../../services/helius.service.js';
 import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { processDiscoveredPaymentTransaction } from '../../services/business-logic/process-discovered-payment-transaction.service.js';
-import { processDiscoveredRefundTransaction } from '../../services/business-logic/process-discovered-refund-transaction.service.js';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
@@ -53,6 +51,8 @@ export const cron = Sentry.AWSLambda.wrapHandler(
             if (transaction == null) {
                 continue;
             }
+
+            const boo = {};
 
             try {
                 await processTransaction(transaction, prisma, [], axios);
