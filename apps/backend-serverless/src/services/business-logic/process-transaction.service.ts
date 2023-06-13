@@ -14,13 +14,14 @@ import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enha
 import * as web3 from '@solana/web3.js';
 import { delay } from '../../utilities/delay.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
-import { sendWebsocketMessage } from '../websocket/send-websocket-message.service.js';
+import { WebSocketService } from '../websocket/send-websocket-message.service.js';
 import axios from 'axios';
+import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 
 export const processTransaction = async (
     heliusTransaction: HeliusEnhancedTransaction,
     prisma: PrismaClient,
-    websocketSessions: WebsocketSession[],
+    websocketService: WebSocketService<TransactionSignatureQuery>,
     axiosInstance: typeof axios
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
@@ -70,18 +71,8 @@ export const processTransaction = async (
     if (transactionRecord.type == 'payment') {
         const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
 
-        for (const websocketSession of websocketSessions) {
-            try {
-                await sendWebsocketMessage(websocketSession.connectionId, {
-                    messageType: 'completedDetails',
-                    completedDetails: {
-                        redirectUrl: redirectUrl,
-                    },
-                });
-            } catch (error) {
-                // prob just closed and orphaned
-                continue;
-            }
-        }
+        await websocketService.sendCompletedDetailsMessage({
+            redirectUrl,
+        });
     }
 };

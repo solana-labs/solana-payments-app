@@ -96,6 +96,12 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
         }
 
+        console.log(paymentUiUrl);
+        console.log(paymentUiUrl);
+        console.log(paymentUiUrl);
+        console.log(paymentUiUrl);
+        console.log(paymentUiUrl);
+
         return {
             statusCode: 201,
             body: JSON.stringify({

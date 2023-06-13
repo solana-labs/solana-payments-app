@@ -19,7 +19,6 @@ import {
     TransactionType,
 } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -39,6 +38,8 @@ import {
     encodeBufferToBase58,
     encodeTransaction,
 } from '../../utilities/transaction-request/encode-transaction.utility.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 export const paymentTransactionCoreUseCaseMethod = async (
     _: {},
@@ -70,20 +71,21 @@ export const paymentTransactionCoreUseCaseMethod = async (
         throw new Error('error fetching payment record');
     }
 
-    const websocketSessions = await websocketSessionService.getWebsocketSessions({
-        paymentRecordId: paymentRecord.id,
-    });
+    const websocketUrl = process.env.WEBSOCKET_URL;
 
-    for (const websocketSession of websocketSessions) {
-        try {
-            await sendWebsocketMessage(websocketSession.connectionId, {
-                messageType: 'transactionRequestStarted',
-            });
-        } catch (error) {
-            // nbd if it fails
-            continue;
-        }
+    if (websocketUrl == null) {
+        throw new MissingEnvError('websocket url');
     }
+
+    const websocketSession = new WebSocketService(
+        websocketUrl,
+        {
+            paymentRecordId: paymentRecord.id,
+        },
+        websocketSessionService
+    );
+
+    await websocketSession.sendTransacationRequestStartedMessage();
 
     try {
         gasKeypair = await fetchGasKeypair();
@@ -188,22 +190,13 @@ export const paymentTransactionCoreUseCaseMethod = async (
 
             // TODO: What to do if this fails? If it fail's they're likely gonna go into the
             // reconnect flow and we will let them know there.
-            for (const websocketSession of websocketSessions) {
-                try {
-                    sendWebsocketMessage(websocketSession.connectionId, {
-                        messageType: 'errorDetails',
-                        errorDetails: {
-                            errorTitle: 'Could not process payment.',
-                            errorDetail:
-                                'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
-                            errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
-                        },
-                    });
-                } catch (error) {
-                    // TODO: if it fails it not great but its not the end of the world
-                    continue;
-                }
-            }
+
+            await websocketSession.sendErrorDetailsMessage({
+                errorTitle: 'Could not process payment.',
+                errorDetail:
+                    'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+            });
 
             // TODO: Better error response
             throw new Error('error fetching payment transaction');
@@ -239,16 +232,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
 
     const signatureString = encodeBufferToBase58(signatureBuffer);
 
-    for (const websocketSession of websocketSessions) {
-        try {
-            await sendWebsocketMessage(websocketSession.connectionId, {
-                messageType: 'transactionDelivered',
-            });
-        } catch (error) {
-            // nbd if it fails
-            continue;
-        }
-    }
+    await websocketSession.sendTransactionDeliveredMessage();
 
     try {
         await transactionRecordService.createTransactionRecord(

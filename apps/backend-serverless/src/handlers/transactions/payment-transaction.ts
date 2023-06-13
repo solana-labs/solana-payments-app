@@ -32,7 +32,8 @@ import { validatePaymentSessionRejected } from '../../services/shopify/validate-
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
-import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 const prisma = new PrismaClient();
 
@@ -97,27 +98,21 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
         }
 
-        const websocketSessions = await websocketSessionService.getWebsocketSessions({
-            paymentRecordId: paymentRecord.id,
-        });
+        const websocketUrl = process.env.WEBSOCKET_URL;
 
-        console.log('THIS SHOULD WORK');
-        console.log('THIS SHOULD WORK');
-        console.log('THIS SHOULD WORK');
-        console.log('THIS SHOULD WORK');
-        console.log('THIS SHOULD WORK');
-        console.log('THIS SHOULD WORK');
-        console.log(websocketSessions.length);
-        for (const websocketSession of websocketSessions) {
-            try {
-                await sendWebsocketMessage(websocketSession.connectionId, {
-                    messageType: 'transactionRequestStarted',
-                });
-            } catch (error) {
-                // nbd if it fails
-                continue;
-            }
+        if (websocketUrl == null) {
+            throw new MissingEnvError('websocket url');
         }
+
+        const websocketService = new WebSocketService(
+            websocketUrl,
+            {
+                paymentRecordId: paymentRecord.id,
+            },
+            websocketSessionService
+        );
+
+        await websocketService.sendTransacationRequestStartedMessage();
 
         try {
             gasKeypair = await fetchGasKeypair();
@@ -220,24 +215,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                     }
                 }
 
-                // TODO: What to do if this fails? If it fail's they're likely gonna go into the
-                // reconnect flow and we will let them know there.
-                for (const websocketSession of websocketSessions) {
-                    try {
-                        sendWebsocketMessage(websocketSession.connectionId, {
-                            messageType: 'errorDetails',
-                            errorDetails: {
-                                errorTitle: 'Could not process payment.',
-                                errorDetail:
-                                    'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
-                                errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
-                            },
-                        });
-                    } catch (error) {
-                        // TODO: if it fails it not great but its not the end of the world
-                        continue;
-                    }
-                }
+                await websocketService.sendErrorDetailsMessage({
+                    errorTitle: 'Could not process payment.',
+                    errorDetail:
+                        'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                    errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+                });
 
                 // TODO: Better error response
                 return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
@@ -273,16 +256,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         const signatureString = encodeBufferToBase58(signatureBuffer);
 
-        for (const websocketSession of websocketSessions) {
-            try {
-                await sendWebsocketMessage(websocketSession.connectionId, {
-                    messageType: 'transactionDelivered',
-                });
-            } catch (error) {
-                // nbd if it fails
-                continue;
-            }
-        }
+        await websocketService.sendTransactionDeliveredMessage();
 
         try {
             await transactionRecordService.createTransactionRecord(

@@ -6,8 +6,11 @@ import {
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { PrismaClient, WebsocketSession } from '@prisma/client';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { sendWebsocketMessage } from '../../services/websocket/send-websocket-message.service.js';
+import {
+    PaymentRecordService,
+    TransactionSignatureQuery,
+} from '../../services/database/payment-record-service.database.service.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
@@ -61,43 +64,30 @@ export const helius = Sentry.AWSLambda.wrapHandler(
 
         console.log('parsed helius');
 
+        const websocketUrl = process.env.WEBSOCKET_URL;
+
+        if (websocketUrl == null) {
+            throw new Error('Missing websocket url');
+        }
+
         for (const heliusTransaction of heliusEnhancedTransactions) {
-            let websocketSessions: WebsocketSession[] | null = null;
+            const websocketService = new WebSocketService(
+                websocketUrl,
+                {
+                    signature: heliusTransaction.signature,
+                },
+                paymentRecordService
+            );
 
-            const paymentRecordAndWebsocketService =
-                await paymentRecordService.getPaymentRecordAndWebsocketServiceForTransactionSignature(
-                    heliusTransaction.signature
-                );
-
-            websocketSessions = paymentRecordAndWebsocketService.websocketSessions;
-
-            for (const websocketSession of websocketSessions) {
-                try {
-                    await sendWebsocketMessage(websocketSession.connectionId, {
-                        messageType: 'processingTransaction',
-                    });
-                } catch (error) {
-                    // prob just closed and orphaned
-                    continue;
-                }
-            }
+            await websocketService.sendProcessingTransactionMessage();
 
             try {
-                await processTransaction(heliusTransaction, prisma, websocketSessions, axios);
+                await processTransaction(heliusTransaction, prisma, websocketService, axios);
             } catch (error) {
                 // We will catch here on odd throws, valuable catches should happen elsewhere
                 // TODO: Add logging around these odd throws with Sentry
 
-                for (const websocketSession of websocketSessions) {
-                    try {
-                        await sendWebsocketMessage(websocketSession.connectionId, {
-                            messageType: 'failedProcessingTransaction',
-                        });
-                    } catch (error) {
-                        // prob just closed and orphaned
-                        continue;
-                    }
-                }
+                await websocketService.sendFailedProcessingTransactionMessage();
 
                 Sentry.captureException(error);
                 continue;
