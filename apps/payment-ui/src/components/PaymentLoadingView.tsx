@@ -1,14 +1,17 @@
 import Checkmark from '@carbon/icons-react/lib/Checkmark';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { RiCheckFill } from 'react-icons/ri'
+import { useSelector } from 'react-redux';
+import { getMergedState } from '@/features/payment-session/paymentSessionSlice';
 
 const StepBar = ({ completed, include }: { completed: boolean; include: boolean }) => (
     <div
         className={twMerge(
-            'w-1/2',
+            'w-1/2 scale-105',
             'h-1',
             !include ? 'bg-background' : completed ? 'bg-black' : 'bg-gray-200',
-            'self-center'
+            'self-center',
         )}
     />
 );
@@ -23,7 +26,7 @@ const CompletedStep = () => (
     <div>
         <Circle color="bg-black">
             <span className={twMerge('text-white', 'p-1')}>
-                <Checkmark />
+                <RiCheckFill />
             </span>
         </Circle>
     </div>
@@ -32,7 +35,7 @@ const CompletedStep = () => (
 const PendingStep = () => (
     <div>
         <Circle color="bg-black p-2">
-            <span className="loading loading-spinner p-2"></span>
+            <span className="loading loading-spinner p-1.5 text-white"></span>
         </Circle>
     </div>
 );
@@ -57,7 +60,7 @@ const StepComponent = ({ status }: { status: string }) => {
     }
 
     return (
-        <div className={twMerge('flex flex-col items-center text-center')}>
+        <div className={twMerge('flex flex-col items-center text-center relative z-10')}>
             <Step />
         </div>
     );
@@ -74,7 +77,10 @@ const getStepStatus = ({ index, currentStep }: { index: number; currentStep: num
 };
 
 export const PaymentLoadingView = () => {
-    const currentStep = 2;
+
+    const mergedState = useSelector(getMergedState);
+
+    const currentStep = mergedState - 1;
 
     return (
         <div className="flex flex-col items-center">
