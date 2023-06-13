@@ -44,6 +44,10 @@ export function middleware(request: NextRequest) {
 
     const geo = request.geo;
 
+    if (isBlocked) {
+        request.nextUrl.pathname = '/blocked';
+    }
+
     if (geo) {
         url.searchParams.set('country', geo.country ?? 'unknown');
     }

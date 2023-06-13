@@ -11,9 +11,8 @@ export const createGeneralResponse = async (
     prisma: PrismaClient
 ): Promise<GeneralResponse> => {
     const refundRecordService = new RefundRecordService(prisma);
-    const total = await refundRecordService.getTotalRefundRecordsForMerchant({
+    const total = await refundRecordService.getTotalOpenRefundRecordsForMerchant({
         merchantId: merchantAuthToken.id,
-        status: RefundRecordStatus.pending,
     });
     return {
         refundBadges: total,

@@ -1,6 +1,6 @@
 import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
-import { PrismaClient, RefundRecordStatus } from '@prisma/client';
+import { PaymentRecord, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { Pagination } from './database-services.utility.js';
 import { RefundDataResponse, createRefundDataResponseFromRefundRecord } from './refund-record.utility.js';
 
@@ -11,17 +11,40 @@ export interface RefundResponse {
     data: RefundDataResponse[];
 }
 
+export enum RefundStatusOption {
+    open = 'open',
+    closed = 'closed',
+}
+
 export const createRefundResponse = async (
     merchantAuthToken: MerchantAuthToken,
-    status: RefundRecordStatus,
+    status: RefundStatusOption,
     pagination: Pagination,
     prisma: PrismaClient
 ): Promise<RefundResponse> => {
     const refundRecordService = new RefundRecordService(prisma);
-    const refundRecords = await refundRecordService.getRefundRecordsForMerchantWithPagination(
-        { merchantId: merchantAuthToken.id, status: status },
-        pagination
-    );
+    let refundRecords: (RefundRecord & { paymentRecord: PaymentRecord | null })[] | null;
+    let total: number;
+
+    if (status == RefundStatusOption.open) {
+        refundRecords = await refundRecordService.getOpenRefundRecordsForMerchantWithPagination(
+            { merchantId: merchantAuthToken.id },
+            pagination
+        );
+        total =
+            (await refundRecordService.getTotalOpenRefundRecordsForMerchant({
+                merchantId: merchantAuthToken.id,
+            })) ?? 0;
+    } else {
+        refundRecords = await refundRecordService.getClosedRefundRecordsForMerchantWithPagination(
+            { merchantId: merchantAuthToken.id },
+            pagination
+        );
+        total =
+            (await refundRecordService.getTotalClosedRefundRecordsForMerchant({
+                merchantId: merchantAuthToken.id,
+            })) ?? 0;
+    }
 
     if (refundRecords == null || refundRecords.length == 0) {
         return {
@@ -31,12 +54,6 @@ export const createRefundResponse = async (
             data: [],
         };
     }
-
-    const total =
-        (await refundRecordService.getTotalRefundRecordsForMerchant({
-            merchantId: merchantAuthToken.id,
-            status: status,
-        })) ?? 0;
 
     const refundRecordResponseData = refundRecords.map(refundRecord => {
         return createRefundDataResponseFromRefundRecord(refundRecord);
