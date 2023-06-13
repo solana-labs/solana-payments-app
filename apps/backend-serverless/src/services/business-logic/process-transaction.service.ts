@@ -1,6 +1,10 @@
 import { PrismaClient, WebsocketSession } from '@prisma/client';
 import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
-import { ShopifyResolveResponse, getRecordServiceForTransaction } from '../database/record-service.database.service.js';
+import {
+    PaymentResolveResponse,
+    ShopifyResolveResponse,
+    getRecordServiceForTransaction,
+} from '../database/record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import {
     verifyRecordWithHeliusTranscation,
@@ -63,17 +67,21 @@ export const processTransaction = async (
 
     await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
-    for (const websocketSession of websocketSessions) {
-        try {
-            await sendWebsocketMessage(websocketSession.connectionId, {
-                messageType: 'completedDetails',
-                completedDetails: {
-                    redirectUrl: 'https://www.google.com',
-                },
-            });
-        } catch (error) {
-            // prob just closed and orphaned
-            continue;
+    if (transactionRecord.type == 'payment') {
+        const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
+
+        for (const websocketSession of websocketSessions) {
+            try {
+                await sendWebsocketMessage(websocketSession.connectionId, {
+                    messageType: 'completedDetails',
+                    completedDetails: {
+                        redirectUrl: redirectUrl,
+                    },
+                });
+            } catch (error) {
+                // prob just closed and orphaned
+                continue;
+            }
         }
     }
 };
