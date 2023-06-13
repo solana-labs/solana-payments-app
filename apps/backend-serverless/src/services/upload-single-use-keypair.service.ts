@@ -1,12 +1,12 @@
-import { PaymentRecord } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import pkg from 'aws-sdk';
+import { ShopifyRecord } from './database/record-service.database.service.js';
 const { S3 } = pkg;
 
 // This service method should upload the keypair to an encrypted s3 bucket for rent collection
 // at a later time.
 
-export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, paymentRecord: PaymentRecord) => {
+export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, record: ShopifyRecord) => {
     const bucket = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME;
     const accessKey = process.env.AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY;
     const secretKey = process.env.AWS_SINGLE_USE_KEYPAIR_SECRET_KEY;
@@ -29,7 +29,7 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
         await s3
             .upload({
                 Bucket: bucket,
-                Key: `${paymentRecord.id}.json`,
+                Key: `${record.id}.json`,
                 Body: seedString,
                 ContentType: 'application/json',
             })

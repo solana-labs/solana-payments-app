@@ -36,7 +36,7 @@ export const processTransaction = async (
 
     const recordService = await getRecordServiceForTransaction(transactionRecord, prisma);
 
-    const record = await recordService.getRecord(transactionRecord);
+    const record = await recordService.getRecordFromTransactionRecord(transactionRecord);
 
     if (record == null) {
         throw new Error('Record not found');

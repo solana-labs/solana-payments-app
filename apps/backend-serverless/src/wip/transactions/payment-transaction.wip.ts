@@ -12,7 +12,7 @@ import {
 } from '../../models/transaction-requests/transaction-request-body.model.js';
 import {
     parseAndValidatePaymentTransactionRequest,
-    PaymentTransactionRequestParameters,
+    TransactionRequestParameters,
 } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
 import * as web3 from '@solana/web3.js';
@@ -28,7 +28,10 @@ import { PaymentRecordService } from '../../services/database/payment-record-ser
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import {
+    generateSingleUseKeypairFromPaymentRecord,
+    generateSingleUseKeypairFromRecord,
+} from '../../utilities/generate-single-use-keypair.utility.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
@@ -50,8 +53,10 @@ import { createErrorResponse, errorResponse } from '../../utilities/responses/er
 import {
     RecordService,
     ShopifyRecord,
+    ShopifyRejectResponse,
     ShopifyResolveResponse,
 } from '../../services/database/record-service.database.service.js';
+import { fetchRecordTransaction } from '../../services/transaction-request/fetch-transaction.service.js';
 
 export const paymentTransactionCoreUseCaseMethod = async (
     _: {},
@@ -273,45 +278,226 @@ export const paymentTransactionCoreUseCaseMethod = async (
     };
 };
 
+export interface CreateTransactionRecordServiceInterface<RecordType, RejectResponse> {
+    getRecordFromId: (id: string) => Promise<RecordType | null>;
+}
+
 export class CreateTransactionUseCase
     implements
         HandlerCoreFunctionUseCaseInterface<
             {},
             TransactionRequestBody,
-            PaymentTransactionRequestParameters,
+            TransactionRequestParameters,
             Promise<APIGatewayProxyResultV2>
         >
 {
     constructor(
-        // private recordService: RecordService<RecordType, ResponseType>,
+        private recordService: CreateTransactionRecordServiceInterface<ShopifyRecord, ShopifyRejectResponse>,
         private prisma: PrismaClient,
-        private trm: TrmService
+        private trm: TrmService,
+        private axiosInstance: typeof axios
     ) {}
-
-    async coreFunction(
-        header: {},
-        body: { account: string },
-        queryParameter: { paymentId: string }
-    ): Promise<APIGatewayProxyResultV2> {
-        return await this.createTransaction(header, body, queryParameter);
-    }
 
     private createTransaction = async (
         _: {},
         body: TransactionRequestBody,
-        queryParameter: PaymentTransactionRequestParameters
+        queryParameter: TransactionRequestParameters
     ): Promise<APIGatewayProxyResultV2> => {
+        let record: ShopifyRecord | null;
+        let merchant: Merchant | null;
+        let transactionResponse: TransactionRequestResponse;
+        let transaction: web3.Transaction;
+        let gasKeypair: web3.Keypair;
+
+        const merchantService = new MerchantService(this.prisma);
+        const transactionRecordService = new TransactionRecordService(this.prisma);
+        const websocketSessionService = new WebsocketSessionService(this.prisma);
+
+        try {
+            record = await this.recordService.getRecordFromId(queryParameter.id);
+        } catch (error) {
+            throw new Error('error fetching record');
+        }
+
+        if (record == null) {
+            throw new Error('fetched record was null');
+        }
+
+        const websocketUrl = process.env.WEBSOCKET_URL;
+
+        if (websocketUrl == null) {
+            throw new MissingEnvError('websocket url');
+        }
+
+        const websocketSession = new WebSocketService(
+            websocketUrl,
+            {
+                paymentRecordId: record.id,
+            },
+            websocketSessionService
+        );
+
+        await websocketSession.sendTransacationRequestStartedMessage();
+
+        try {
+            gasKeypair = await fetchGasKeypair();
+        } catch (error) {
+            throw new Error('error fetching gas keypair');
+        }
+
+        try {
+            merchant = await merchantService.getMerchant({
+                id: record.merchantId,
+            });
+        } catch (error) {
+            throw new Error('error fetching merchant');
+        }
+
+        if (merchant == null) {
+            throw new Error('merchant is null');
+        }
+
+        if (merchant.accessToken == null) {
+            throw new Error('merchant access token is null');
+        }
+
+        const singleUseKeypair = await generateSingleUseKeypairFromRecord(record);
+
+        try {
+            await uploadSingleUseKeypair(singleUseKeypair, record);
+        } catch (error) {
+            console.log('could not upload single use keypair');
+            // TODO: Log this error in sentry
+            // TODO: Prob dont crash here, fail ez, nbd
+        }
+
+        try {
+            transactionResponse = await fetchRecordTransaction(
+                record,
+                merchant,
+                body.account,
+                gasKeypair.publicKey.toBase58(),
+                singleUseKeypair.publicKey.toBase58(),
+                gasKeypair.publicKey.toBase58(),
+                this.axiosInstance
+            );
+        } catch (error) {
+            throw new Error('error fetching payment transaction');
+        }
+
+        if (record.test == false) {
+            try {
+                await this.trm.screenAddress(body.account);
+            } catch (error) {
+                // let rejectionReason: PaymentSessionStateRejectedReason =
+                //     PaymentSessionStateRejectedReason.processingError;
+                // if (error instanceof RiskyWalletError) {
+                //     rejectionReason = PaymentSessionStateRejectedReason.risky;
+                // }
+                // const paymentSessionReject = makePaymentSessionReject(axios);
+                // let paymentSessionData: { redirectUrl: string };
+                // try {
+                //     const paymentSessionRejectResponse = await paymentSessionReject(
+                //         record.shopGid,
+                //         rejectionReason,
+                //         merchant.shop,
+                //         merchant.accessToken
+                //     );
+                //     paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
+                //     try {
+                //         paymentRecord = await paymentRecordService.updatePaymentRecord(paymentRecord, {
+                //             status: PaymentRecordStatus.rejected,
+                //             redirectUrl: paymentSessionData.redirectUrl,
+                //             completedAt: new Date(),
+                //             rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
+                //         });
+                //     } catch (error) {
+                //         // TODO: Handle the database update failing here
+                //     }
+                // } catch (error) {
+                //     try {
+                //         await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
+                //     } catch (error) {
+                //         // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
+                //         // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
+                //         // build in a way to manually intervene here if needed.
+                //     }
+                // }
+                // // TODO: What to do if this fails? If it fail's they're likely gonna go into the
+                // // reconnect flow and we will let them know there.
+                // await websocketSession.sendErrorDetailsMessage({
+                //     errorTitle: 'Could not process payment.',
+                //     errorDetail:
+                //         'It looks like your wallet has been flagged for suspicious activity. We are not able to process your payment at this time. Please go back and try another method.',
+                //     errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL,
+                // });
+                // // TODO: Better error response
+                // throw new Error('error fetching payment transaction');
+            }
+        }
+
+        try {
+            transaction = encodeTransaction(transactionResponse.transaction);
+        } catch (error) {
+            throw new Error('error encoding transaction');
+        }
+
+        transaction.partialSign(gasKeypair);
+        transaction.partialSign(singleUseKeypair);
+
+        const transactionSignature = transaction.signature;
+
+        if (transactionSignature == null) {
+            console.log('transaction signature is null');
+            throw new Error('transaction signature is null');
+        }
+
+        const signatureBuffer = transactionSignature;
+
+        const signatureString = encodeBufferToBase58(signatureBuffer);
+
+        await websocketSession.sendTransactionDeliveredMessage();
+
+        try {
+            await transactionRecordService.createTransactionRecord(
+                signatureString,
+                TransactionType.payment,
+                record.id,
+                null
+            );
+        } catch (error) {
+            console.log('error creating transaction record');
+            throw new Error('error creating transaction record');
+        }
+
+        const transactionBuffer = transaction.serialize({
+            verifySignatures: false,
+            requireAllSignatures: false,
+        });
+        const transactionString = transactionBuffer.toString('base64');
+
         return {
             statusCode: 200,
-            body: JSON.stringify({}),
+            body: JSON.stringify({
+                transaction: transactionString,
+                message: `Paying ${merchant.name} ${record.usdcAmount.toFixed(6)} USDC`,
+            }),
         };
     };
+
+    async coreFunction(
+        header: {},
+        body: TransactionRequestBody,
+        queryParameter: TransactionRequestParameters
+    ): Promise<APIGatewayProxyResultV2> {
+        return await this.createTransaction(header, body, queryParameter);
+    }
 }
 
 export const paymentTransactionTaskChain = (): HandlerTaskChain<
     {},
     TransactionRequestBody,
-    PaymentTransactionRequestParameters,
+    TransactionRequestParameters,
     APIGatewayProxyResultV2,
     { prisma: PrismaClient; axiosInstance: typeof axios }
 > => {
@@ -322,14 +508,12 @@ export const paymentTransactionTaskChain = (): HandlerTaskChain<
     const parameterUseCase = new ParseAndValidateUseCase(parseAndValidatePaymentTransactionRequest);
     const inputUseCase = new InputValidationUseCase(headerUseCase, bodyUseCase, parameterUseCase);
 
-    const coreUseCaseDependencies = {
-        prisma: new PrismaClient(),
-        axiosInstance: axios,
-    };
-
     const prisma = new PrismaClient();
     const trm = new TrmService();
-    const createTransactionUseCase = new CreateTransactionUseCase(prisma, trm);
+
+    const paymentRecordService = new PaymentRecordService(prisma);
+
+    const createTransactionUseCase = new CreateTransactionUseCase(paymentRecordService, prisma, trm, axios);
 
     const errorResponseUseCase = new ErrorResponseUseCase(createErrorResponse);
     const handlerErrorUseCase = new HandlerErrorUseCase(errorResponseUseCase);

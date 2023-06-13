@@ -1,18 +1,18 @@
 import { object, InferType, string } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 
-export const paymentTransactionRequestParametersScheme = object().shape({
-    paymentId: string().required(),
+export const transactionRequestParametersScheme = object().shape({
+    id: string().required(),
 });
 
-export type PaymentTransactionRequestParameters = InferType<typeof paymentTransactionRequestParametersScheme>;
+export type TransactionRequestParameters = InferType<typeof transactionRequestParametersScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentStatusRequestParameters: unknown
-): PaymentTransactionRequestParameters => {
+    transactionRequestParamters: unknown
+): TransactionRequestParameters => {
     return parseAndValidate(
-        paymentStatusRequestParameters,
-        paymentTransactionRequestParametersScheme,
-        'Can not parse payment transaction request parameters. Unkownn reason.'
+        transactionRequestParamters,
+        transactionRequestParametersScheme,
+        'Can not parse transaction request parameters. Unkownn reason.'
     );
 };
