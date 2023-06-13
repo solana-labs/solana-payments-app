@@ -101,6 +101,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             paymentRecordId: paymentRecord.id,
         });
 
+        console.log('THIS SHOULD WORK');
+        console.log('THIS SHOULD WORK');
+        console.log('THIS SHOULD WORK');
+        console.log('THIS SHOULD WORK');
+        console.log('THIS SHOULD WORK');
+        console.log('THIS SHOULD WORK');
+        console.log(websocketSessions.length);
         for (const websocketSession of websocketSessions) {
             try {
                 await sendWebsocketMessage(websocketSession.connectionId, {

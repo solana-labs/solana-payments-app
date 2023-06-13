@@ -7,6 +7,7 @@ const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const sessionState = useSelector(getSessionState)
     const paymentId = useSelector(getPaymentId)
+    const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'socket'
 
     let socket = useRef<WebSocket | null>(null);
     let timer = useRef<any | null>(null);
@@ -18,7 +19,7 @@ const WebsocketHandler: React.FC = () => {
                 socket.current.close();
             }
 
-            socket.current = new WebSocket( process.env.NEXT_PUBLIC_WEBSOCKET_URL + '?paymentId=' + paymentId);
+            socket.current = new WebSocket( websocketUrl + '?paymentId=' + paymentId);
 
             socket.current.onopen = () => {
                 console.log('WebSocket Client Connected');

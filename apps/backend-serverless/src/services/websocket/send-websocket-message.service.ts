@@ -23,6 +23,15 @@ export const sendWebsocketMessage = async (connectionId: string, payload: unknow
         throw new MissingEnvError('websocket url');
     }
 
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+    console.log('wtfff');
+
     const apigwManagementApi = new ApiGatewayManagementApi({
         endpoint: websocketUrl,
     });

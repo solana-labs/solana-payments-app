@@ -32,6 +32,7 @@ provider:
     # LOCAL_GAS: ${env:LOCAL_GAS}
     HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
     HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
+    WEBSOCKET_URL: ${env:WEBSOCKET_URL}
 
 package:
   excludeDevDependencies: true
