@@ -48,7 +48,7 @@ export function middleware(request: NextRequest) {
 
     console.log('after geo', url);
 
-    if (geo.country === BLOCKED_COUNTRY) {
+    if (!geo || (geo && geo.country === BLOCKED_COUNTRY)) {
         request.nextUrl.pathname = '/';
     }
 
