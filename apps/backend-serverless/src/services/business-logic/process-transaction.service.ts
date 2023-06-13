@@ -34,7 +34,7 @@ export const processTransaction = async (
     // TODO: Make this a factory class
     const recordService = await getRecordServiceForTransaction(transactionRecord, prisma);
 
-    const record = await recordService.getRecord(transactionRecord);
+    const record = await recordService.getRecordFromTransactionRecord(transactionRecord);
 
     // This shouldn't happen, like ever. We should eventually map out what situations this could happen.
     // And if it doesn, is that bad for a customer or are we throwing too much this way?

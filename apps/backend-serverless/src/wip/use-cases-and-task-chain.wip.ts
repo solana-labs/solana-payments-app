@@ -3,12 +3,6 @@ import { createErrorResponse, errorResponse } from '../utilities/responses/error
 
 type ErrorResponseMethod<T> = (error: unknown) => T;
 type ParseAndValidateMethod<T> = (body: unknown) => T;
-type CoreUseCaseMethod<HeaderType, BodyType, QueryParameterType, ResponseType, CoreUseCaseDependencyType> = (
-    header: HeaderType,
-    body: BodyType,
-    queryParameter: QueryParameterType,
-    dependencies: CoreUseCaseDependencyType
-) => ResponseType;
 
 export class ParseAndValidateUseCase<ValidatedType> {
     constructor(private parseAndValidateMethod: ParseAndValidateMethod<ValidatedType>) {}
@@ -63,34 +57,6 @@ export class InputValidationUseCase<HeaderType, BodyType, QueryParameterType> {
         };
     }
 }
-
-// export class HandlerCoreFunctionUseCase<
-//     HeaderType,
-//     BodyType,
-//     QueryParameterType,
-//     ResponseType,
-//     CoreUseCaseDependencyType
-// > {
-//     constructor(
-//         private coreUseCaseMethod: CoreUseCaseMethod<
-//             HeaderType,
-//             BodyType,
-//             QueryParameterType,
-//             ResponseType,
-//             CoreUseCaseDependencyType
-//         >,
-//         private coreUseCaseDependencies: CoreUseCaseDependencyType
-//     ) {}
-
-//     coreFunction(
-//         header: HeaderType,
-//         body: BodyType,
-//         queryParameter: QueryParameterType,
-//         dependencies: CoreUseCaseDependencyType
-//     ): ResponseType {
-//         return this.coreUseCaseMethod(header, body, queryParameter, dependencies);
-//     }
-// }
 
 export interface HandlerCoreFunctionUseCaseInterface<HeaderType, BodyType, QueryParameterType, ResponseType> {
     coreFunction(header: HeaderType, body: BodyType, queryParameter: QueryParameterType): ResponseType;
