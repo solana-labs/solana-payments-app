@@ -1,18 +1,25 @@
 import Checkmark from '@carbon/icons-react/lib/Checkmark';
-import React from 'react';
+import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const StepBar = ({ completed }) => (
-    <div className={twMerge('w-1/4', 'h-1', completed ? 'bg-black' : 'bg-gray-200', 'self-center')} />
+const StepBar = ({ completed, include }: { completed: boolean; include: boolean }) => (
+    <div
+        className={twMerge(
+            'w-1/2',
+            'h-1',
+            !include ? 'bg-background' : completed ? 'bg-black' : 'bg-gray-200',
+            'self-center'
+        )}
+    />
 );
 
-const Circle = ({ color, children }) => (
+const Circle = ({ color, children }: { color: string; children: ReactNode }) => (
     <div className={twMerge('w-5', 'h-5', 'rounded-full', 'flex', 'items-center', 'justify-center', color)}>
         {children}
     </div>
 );
 
-const CompletedStep = ({ label }) => (
+const CompletedStep = () => (
     <div>
         <Circle color="bg-black">
             <span className={twMerge('text-white', 'p-1')}>
@@ -22,7 +29,7 @@ const CompletedStep = ({ label }) => (
     </div>
 );
 
-const PendingStep = ({ label }) => (
+const PendingStep = () => (
     <div>
         <Circle color="bg-black p-2">
             <span className="loading loading-spinner p-2"></span>
@@ -30,16 +37,16 @@ const PendingStep = ({ label }) => (
     </div>
 );
 
-const WaitingStep = ({ label }) => (
+const WaitingStep = () => (
     <div>
-        <Circle color="bg-white border border-4" />
+        <Circle color="bg-white border border-4" children={undefined}></Circle>
     </div>
 );
 
 const stepLabels = ['Submitting', 'Approving', 'Processing', 'Completing'];
 const stepLabelsPast = ['Submitted', 'Approved', 'Processed', 'Completed'];
 
-const StepComponent = ({ status, label, currentStep, index }) => {
+const StepComponent = ({ status }: { status: string }) => {
     let Step;
     if (status === 'completed') {
         Step = CompletedStep;
@@ -56,7 +63,7 @@ const StepComponent = ({ status, label, currentStep, index }) => {
     );
 };
 
-const getStepStatus = (index, currentStep) => {
+const getStepStatus = ({ index, currentStep }: { index: number; currentStep: number }) => {
     if (index < currentStep) {
         return 'completed';
     } else if (index === currentStep) {
@@ -71,19 +78,18 @@ export const PaymentLoadingView = () => {
 
     return (
         <div className="flex flex-col items-center">
-            <h2 className="text-black text-center text-xl mt-16">Transaction in progress</h2>
-            <div className="flex flex-row justify-center w-72 mt-9">
+            <h2 className="text-black text-center text-xl mt-16 mb-9">Transaction in progress</h2>
+            <div className="grid grid-cols-4 place-items-stretch text-sm w-96 text-center gap-y-3">
                 {stepLabels.map((label, index) => {
-                    const status = getStepStatus(index, currentStep);
+                    const status = getStepStatus({ index, currentStep });
                     return (
-                        <React.Fragment key={label}>
-                            <StepComponent status={status} label={label} currentStep={currentStep} index={index} />
-                            {index < stepLabels.length - 1 && <StepBar completed={currentStep > index} />}
-                        </React.Fragment>
+                        <div className="flex flex-row">
+                            {<StepBar completed={currentStep > index - 1} include={index > 0} />}
+                            <StepComponent status={status} />
+                            {<StepBar completed={currentStep > index} include={1 < stepLabels.length - index} />}
+                        </div>
                     );
                 })}
-            </div>
-            <div className="flex flex-row justify-between text-sm w-80 mt-3">
                 {stepLabels.map((label, index) => (
                     <p className={currentStep >= index ? 'text-black' : 'text-gray-400'}>
                         {currentStep > index ? stepLabelsPast[index] : label}
