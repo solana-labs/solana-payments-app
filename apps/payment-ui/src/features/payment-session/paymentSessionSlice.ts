@@ -17,6 +17,15 @@ export enum SessionState {
     error,
 }
 
+export enum MergedState {
+    start,
+    submitting,
+    approving,
+    processing,
+    completing,
+    laggedCompleting,
+}
+
 export enum SolanaPayState {
     start,
     transactionRequestStarted,
@@ -55,6 +64,7 @@ interface PaymentSessionState {
     solanaPayState: SolanaPayState;
     connectWalletState: ConnectWalletState;
     transactionRequestState: TransactionRequestState;
+    mergedState: MergedState;
 }
 
 const initalState: PaymentSessionState = {
@@ -66,6 +76,7 @@ const initalState: PaymentSessionState = {
     solanaPayState: SolanaPayState.start,
     connectWalletState: ConnectWalletState.start,
     transactionRequestState: TransactionRequestState.started,
+    mergedState: MergedState.start,
 };
 
 interface PaymentDetails {
@@ -134,6 +145,7 @@ const paymentSessionSlice = createSlice({
         setProcessing: state => {
             state.sessionState = SessionState.processing;
             state.solanaPayState = SolanaPayState.processing;
+            state.mergedState = MergedState.processing;
         },
         setFailedProcessing: state => {
             // What state gets us out of failed processing?
@@ -142,18 +154,31 @@ const paymentSessionSlice = createSlice({
         },
         setTransactionRequestStarted: state => {
             state.solanaPayState = SolanaPayState.transactionRequestStarted;
+            state.mergedState = MergedState.submitting;
         },
+
+        // export enum MergedState {
+        //     start,
+        //     submitting,
+        //     approving,
+        //     processing,
+        //     completing,
+        //     laggedCompleting,
+        // }
+
         setTransactionRequestFailed: state => {
             state.transactionRequestState = TransactionRequestState.failed;
         },
         setTransactionDelivered: state => {
             state.solanaPayState = SolanaPayState.transactionDelivered;
             state.transactionRequestState = TransactionRequestState.delivered;
+            state.mergedState = MergedState.approving;
         },
         setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
             state.sessionState = SessionState.completed;
             state.redirectUrl = action.payload.redirectUrl;
             state.solanaPayState = SolanaPayState.completed;
+            state.mergedState = MergedState.completing;
         },
         setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
             state.errorDetails = action.payload;
@@ -167,6 +192,7 @@ const paymentSessionSlice = createSlice({
         },
         setSolanaPayCompleted: state => {
             state.solanaPayState = SolanaPayState.solanaPayCompleted;
+            state.mergedState = MergedState.laggedCompleting;
         },
         setConnectWalletLoading: state => {
             state.connectWalletState = ConnectWalletState.loading;
@@ -220,6 +246,7 @@ export const getPaymentId = (state: RootState): string | null => state.paymentSe
 export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
 export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
 export const getConnectWalletState = (state: RootState): ConnectWalletState => state.paymentSession.connectWalletState;
+export const getMergedState = (state: RootState): MergedState => state.paymentSession.mergedState;
 
 export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;

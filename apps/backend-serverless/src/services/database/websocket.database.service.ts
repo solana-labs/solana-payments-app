@@ -1,5 +1,7 @@
 import { GDPR, PrismaClient, WebsocketSession } from '@prisma/client';
 import { prismaErrorHandler } from './shared.database.service.js';
+import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
+import { query } from 'express';
 
 export type WebsocketPaymentRecordIdQuery = {
     paymentRecordId: string;
@@ -9,9 +11,13 @@ export type WebsocketConnectionIdQuery = {
     connectionId: string;
 };
 
+export type WebsocketTransactionSignatureQuery = {
+    transactionSignature: string;
+};
+
 export type WebsocketSessionQuery = WebsocketPaymentRecordIdQuery | WebsocketConnectionIdQuery;
 
-export class WebsocketSessionService {
+export class WebsocketSessionService implements WebSocketSessionFetcher<WebsocketSessionQuery> {
     private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
@@ -27,6 +33,10 @@ export class WebsocketSessionService {
                 },
             })
         );
+    }
+
+    async fetchWebsocketSessions(query: WebsocketSessionQuery): Promise<WebsocketSession[]> {
+        return this.getWebsocketSessions(query);
     }
 
     async getWebsocketSession(query: WebsocketSessionQuery): Promise<WebsocketSession | null> {
