@@ -16,6 +16,7 @@ import axios from 'axios';
 import { MerchantService } from './merchant-service.database.service.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
+import { WebSocketService, WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -64,9 +65,15 @@ export type MerchantIdQuery = {
     merchantId: string;
 };
 
+export type TransactionSignatureQuery = {
+    signature: string;
+};
+
 export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
 
-export class PaymentRecordService implements RecordService<PaymentRecord, PaymentResolveResponse> {
+export class PaymentRecordService
+    implements RecordService<PaymentRecord, PaymentResolveResponse>, WebSocketSessionFetcher<TransactionSignatureQuery>
+{
     private prisma: PrismaClient;
     private merchantService: MerchantService;
 
@@ -165,9 +172,13 @@ export class PaymentRecordService implements RecordService<PaymentRecord, Paymen
         );
     }
 
+    async fetchWebsocketSessions(query: TransactionSignatureQuery): Promise<WebsocketSession[]> {
+        return (await this.getPaymentRecordAndWebsocketServiceForTransactionSignature(query.signature))
+            .websocketSessions;
+    }
+
     async getPaymentRecordAndWebsocketServiceForTransactionSignature(
         transactionSignature: string
-        // ): Promise<{ paymentRecord: PaymentRecord | null; websocketSessions: WebsocketSession[] }> {
     ): Promise<{ websocketSessions: WebsocketSession[] }> {
         const transactionRecord = await prismaErrorHandler(
             this.prisma.transactionRecord.findUnique({

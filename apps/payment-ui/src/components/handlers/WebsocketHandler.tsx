@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestFailed, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setFailedProcessing, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestFailed, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const sessionState = useSelector(getSessionState)
     const paymentId = useSelector(getPaymentId)
+    const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'socket'
 
     let socket = useRef<WebSocket | null>(null);
     let timer = useRef<any | null>(null);
@@ -18,7 +19,7 @@ const WebsocketHandler: React.FC = () => {
                 socket.current.close();
             }
 
-            socket.current = new WebSocket( process.env.NEXT_PUBLIC_WEBSOCKET_URL + '?paymentId=' + paymentId);
+            socket.current = new WebSocket( websocketUrl + '?paymentId=' + paymentId);
 
             socket.current.onopen = () => {
                 console.log('WebSocket Client Connected');
@@ -31,11 +32,12 @@ const WebsocketHandler: React.FC = () => {
                 console.log('Message: ' + data.messageType)
 
                 if ( data.messageType == 'paymentDetails' ) {
-                    dispatch(setPaymentDetails(data.paymentDetails))
+                    dispatch(setPaymentDetails(data.payload.paymentDetails))
                 } else if ( data.messageType == 'completedDetails' ) {
-                    dispatch(setCompleted(data.completedDetails)) 
+                    console.log(data)
+                    dispatch(setCompleted(data.payload.completedDetails)) 
                 } else if ( data.messageType == 'errorDetails' ) {
-                    dispatch(setErrorDetails(data.errorDetails)) 
+                    dispatch(setErrorDetails(data.payload.errorDetails)) 
                 } else if ( data.messageType == 'processingTransaction' ) {
                     dispatch(setProcessing())
                 } else if ( data.messageType == 'transactionRequestStarted' ) {
@@ -43,7 +45,7 @@ const WebsocketHandler: React.FC = () => {
                 } else if ( data.messageType == 'transactionDelivered' ) {
                     dispatch(setTransactionDelivered())
                 } else if ( data.messageType == 'failedProcessingTransaction' ) {
-                    
+                    dispatch(setFailedProcessing())
                 } else if ( data.messageType == 'transactionRequestFailed') {
                     dispatch(setTransactionRequestFailed())
                 }

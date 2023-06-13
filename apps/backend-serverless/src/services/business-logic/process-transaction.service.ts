@@ -1,6 +1,10 @@
 import { PrismaClient, WebsocketSession } from '@prisma/client';
 import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
-import { ShopifyResolveResponse, getRecordServiceForTransaction } from '../database/record-service.database.service.js';
+import {
+    PaymentResolveResponse,
+    ShopifyResolveResponse,
+    getRecordServiceForTransaction,
+} from '../database/record-service.database.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import {
     verifyRecordWithHeliusTranscation,
@@ -10,13 +14,14 @@ import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enha
 import * as web3 from '@solana/web3.js';
 import { delay } from '../../utilities/delay.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
-import { sendWebsocketMessage } from '../websocket/send-websocket-message.service.js';
+import { WebSocketService } from '../websocket/send-websocket-message.service.js';
 import axios from 'axios';
+import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 
 export const processTransaction = async (
     heliusTransaction: HeliusEnhancedTransaction,
     prisma: PrismaClient,
-    websocketSessions: WebsocketSession[],
+    websocketService: WebSocketService<TransactionSignatureQuery>,
     axiosInstance: typeof axios
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
@@ -63,17 +68,11 @@ export const processTransaction = async (
 
     await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
-    for (const websocketSession of websocketSessions) {
-        try {
-            await sendWebsocketMessage(websocketSession.connectionId, {
-                messageType: 'completedDetails',
-                completedDetails: {
-                    redirectUrl: 'https://www.google.com',
-                },
-            });
-        } catch (error) {
-            // prob just closed and orphaned
-            continue;
-        }
+    if (transactionRecord.type == 'payment') {
+        const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
+
+        await websocketService.sendCompletedDetailsMessage({
+            redirectUrl,
+        });
     }
 };
