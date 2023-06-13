@@ -5,9 +5,9 @@ import { NextResponse } from 'next/server';
 const BLOCKED_COUNTRY = 'US';
 
 // Trigger this middleware to run on the `/secret-page` route
-export const config = {
-    matcher: '/',
-};
+// export const config = {
+//     matcher: '/.*',
+// };
 
 const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
 const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
@@ -39,19 +39,17 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 export function middleware(request: NextRequest) {
     const { nextUrl: url } = request;
 
-    console.log('in middleware');
-
-    console.log('request', request);
-
     const isBlocked = isBlockedGeo(request);
-
     const geo = request.geo;
-
-    console.log('geo', geo);
-    console.log('isBlocked', isBlocked);
 
     if (geo) {
         url.searchParams.set('country', geo.country ?? 'unknown');
+    }
+
+    console.log('after geo', url);
+
+    if (geo.country === BLOCKED_COUNTRY) {
+        request.nextUrl.pathname = '/';
     }
 
     url.searchParams.set('isBlocked', isBlocked.toString());
