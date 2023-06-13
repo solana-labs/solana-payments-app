@@ -1,9 +1,11 @@
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import {
+    MergedState,
     getIsCompleted,
     getIsError,
     getIsProcessing,
     getIsSolanaPayCompleted,
+    getMergedState,
 } from '@/features/payment-session/paymentSessionSlice';
 import { BlockedProps } from '@/pages';
 import { useSelector } from 'react-redux';
@@ -19,16 +21,13 @@ const CheckoutSection = (props: BlockedProps) => {
     const isSolanaPayCompleted = useSelector(getIsSolanaPayCompleted);
     const isError = useSelector(getIsError);
     const paymentMethod = useSelector(getPaymentMethod);
+    const mergedState = useSelector(getMergedState)
 
     let paymentMethodCompleted = paymentMethod == 'connect-wallet' ? isCompleted : isSolanaPayCompleted;
 
-    if (true) {
-        return <PaymentLoadingView />;
-    }
-
     if (props.isBlocked == 'true') {
         return <GeoBlockedView />;
-    } else if (isProcessing && paymentMethod == 'connect-wallet') {
+    } else if (mergedState > MergedState.start && mergedState < MergedState.laggedCompleting) {
         return <PaymentLoadingView />;
     } else if (paymentMethodCompleted) {
         return <ThankYouView />;
