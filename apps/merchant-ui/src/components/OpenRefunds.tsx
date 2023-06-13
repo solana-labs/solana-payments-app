@@ -12,6 +12,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Transaction } from '@solana/web3.js';
 import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
+import { MdSyncProblem } from 'react-icons/md';
 import { twMerge } from 'tailwind-merge';
 import * as Button from './Button';
 import { Close } from './icons/Close';
@@ -196,6 +197,17 @@ export function OpenRefunds(props: Props) {
                         <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
                         <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (RE.isFailed(openRefunds)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full text-red-700 items-center space-y-4">
+                    <MdSyncProblem size={36} />
+                    <p>We're having trouble loading your closed refunds data</p>
                 </div>
             </div>
         );
