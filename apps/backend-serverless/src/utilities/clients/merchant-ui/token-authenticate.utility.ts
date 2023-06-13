@@ -53,7 +53,7 @@ export const verifyShopifySignedCookie = (cookies: string[] | undefined, lastNon
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
     if (jwtSecretKey == null) {
-        throw new Error('JWT secret key is not set');
+        throw new Error('JWT secret key is not set.');
     }
 
     if (cookies == null || cookies.length === 0) {
