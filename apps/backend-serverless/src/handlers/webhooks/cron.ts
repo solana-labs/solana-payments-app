@@ -52,6 +52,8 @@ export const cron = Sentry.AWSLambda.wrapHandler(
                 continue;
             }
 
+            const boo = {};
+
             try {
                 await processTransaction(transaction, prisma, [], axios);
             } catch (error) {

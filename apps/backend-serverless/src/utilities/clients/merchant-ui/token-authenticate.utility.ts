@@ -3,6 +3,7 @@ import {
     MerchantAuthToken,
     parseAndValidateMerchantAuthToken,
 } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
+import { last } from 'lodash';
 
 export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
@@ -46,4 +47,30 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     // TODO: Validate the contents of merchantAuthToken response
 
     return merchantAuthToken;
+};
+
+export const verifyShopifySignedCookie = (cookies: string[] | undefined, lastNonce: string) => {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+
+    if (jwtSecretKey == null) {
+        throw new Error('JWT secret key is not set');
+    }
+
+    if (cookies == null || cookies.length === 0) {
+        throw new Error('Failed to find a cookie');
+    }
+
+    const nonceCookie = cookies.find(cookie => cookie.startsWith('nonce='));
+
+    if (nonceCookie == null) {
+        throw new Error('Failed to find a cookie');
+    }
+
+    const nonceToken = nonceCookie.split('nonce=')[1];
+
+    const decodedToken = jwt.verify(nonceToken, jwtSecretKey);
+
+    if (decodedToken != lastNonce) {
+        throw new Error('Last nonce does not match');
+    }
 };

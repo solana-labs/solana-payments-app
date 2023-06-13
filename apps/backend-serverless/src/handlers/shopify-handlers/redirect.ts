@@ -18,6 +18,7 @@ import { makeAdminData } from '../../services/shopify/admin-data.service.js';
 import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
 import { validatePaymentAppConfigured } from '../../services/shopify/validate-payment-app-configured.service.js';
 import { sendAppConfigureRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
+import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -72,6 +73,12 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
 
         if (merchant == null) {
             return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+        }
+
+        try {
+            verifyShopifySignedCookie(event.cookies, merchant.lastNonce);
+        } catch (error) {
+            return errorResponse(ErrorType.unauthorized, ErrorMessage.invalidRequestHeaders);
         }
 
         const updateData = {
