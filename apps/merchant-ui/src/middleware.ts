@@ -57,8 +57,8 @@ export function middleware(request: NextRequest) {
     // }
 
     if (isBlocked && url.pathname !== '/') {
-        return NextResponse.redirect('/');
-        // console.log('yes indeed blocked', isBlocked.toString());
+        // return NextResponse.redirect(new URL('/home', request.url));
+        console.log('yes indeed blocked', isBlocked.toString());
     }
 
     url.searchParams.set('isBlocked', isBlocked.toString());
