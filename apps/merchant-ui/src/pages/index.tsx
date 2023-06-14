@@ -1,15 +1,16 @@
 import { Welcome } from '@/components/Welcome';
 import { WelcomeHero } from '@/components/WelcomeHero';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { twMerge } from 'tailwind-merge';
 
-// export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-//     const { query } = context;
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+    const { query } = context;
 
-//     return {
-//         props: query,
-//     };
-// };
+    return {
+        props: query,
+    };
+};
 
 export type BlockedProps = {
     isBlocked: string;
