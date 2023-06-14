@@ -8,6 +8,7 @@ interface Props {
 }
 
 export function Welcome(props: Props) {
+    console.log('welcome props', props);
     return (
         <article className={props.className}>
             <SolanaPayMark className="h-8 md:h-14 mb-10 md:mb-14" />
