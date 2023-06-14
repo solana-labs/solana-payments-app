@@ -1,28 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-// The country to block from accessing the secret page
-const BLOCKED_COUNTRY = 'US';
-
-// Trigger this middleware to run on the `/secret-page` route
-// export const config = {
-//     matcher: '/.*',
-// };
-
-// export const config = {
-//     matcher: [
-//         '/getting-started',
-//         '/getting-started/add-wallet',
-//         '/404',
-//         '/merchant',
-//         '/payments',
-//         '/refunds',
-//         '/support',
-//         '/',
-//     ],
-// };
-
-const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'US'];
+const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
 const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
 
 const isBlockedGeo = (request: NextRequest): boolean => {
@@ -37,7 +16,6 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const country = geo.country;
-    console.log('country', country);
 
     if (country == null) {
         return true;
@@ -51,7 +29,6 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 };
 
 export function middleware(request: NextRequest) {
-    console.log('pathname', request.nextUrl.pathname);
     if (
         request.nextUrl.pathname.startsWith('/public/images/') ||
         request.nextUrl.pathname.startsWith('/_next/static/') ||
@@ -65,34 +42,16 @@ export function middleware(request: NextRequest) {
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
 
-    console.log('request', request);
-    console.log('geo', request.geo);
-
     if (geo) {
         request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
     }
 
-    console.log('after geo', request.nextUrl);
-
-    console.log('url stuff', request.nextUrl.origin, request.nextUrl.pathname.toLowerCase());
     request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
 
-    // const newUrl = new URL('/', request.url);
-    // console.log('new url', newUrl, newUrl.toString());
-
     if (isBlocked && request.nextUrl.pathname !== '/') {
-        //     console.log('in blocked if');
-        //     console.log('pre pathname', request.nextUrl);
         request.nextUrl.pathname = '/';
         return NextResponse.redirect(request.nextUrl);
-        //     console.log('post pathname', request.nextUrl);
-        //     console.log('yes indeed blocked', isBlocked.toString());
-        //     // return NextResponse.redirect(request.nextUrl);
     }
 
-    // console.log('final url', request.nextUrl);
-    // console.log('final url', request.nextUrl.toString());
-
     return NextResponse.rewrite(request.nextUrl);
-    // return NextResponse.next();
 }
