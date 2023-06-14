@@ -46,7 +46,7 @@ type OpenRefundStore = {
     getOpenRefunds: (page: number) => Promise<void>;
 };
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 7;
 
 export const useOpenRefundStore = create<OpenRefundStore>(set => ({
     openRefunds: RE.pending(),

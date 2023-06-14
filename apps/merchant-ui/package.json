@@ -37,14 +37,15 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
+        "react-icons": "^4.9.0",
         "styled-components": "^5.3.11",
         "tailwind-merge": "^1.13.1",
         "tailwindcss-animate": "^1.0.5",
         "zustand": "^4.3.8"
     },
     "devDependencies": {
-        "@types/jest": "^29.5.2",
         "@types/carbon__icons-react": "^11.20.0",
+        "@types/jest": "^29.5.2",
         "@types/node": "^18.16.1",
         "@types/react": "^18.2.6",
         "autoprefixer": "^10.4.13",
