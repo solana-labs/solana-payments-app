@@ -8,7 +8,7 @@ import {
     TransactionRecord,
 } from '@prisma/client';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
-import { Pagination } from '../../utilities/clients/merchant-ui/database-services.utility.js';
+import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 import { RecordService, RefundResolveResponse } from './record-service.database.service.js';
 import axios from 'axios';
@@ -95,6 +95,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 data: {
                     status: PaymentRecordStatus.paid,
                     transactionSignature: transactionSignature,
+                    completedAt: new Date(),
                 },
             })
         );
@@ -159,26 +160,96 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         );
     }
 
-    async getRefundRecordsForMerchantWithPagination(
+    async getOpenRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
         pagination: Pagination
     ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
         return prismaErrorHandler(
             this.prisma.refundRecord.findMany({
-                where: query,
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'pending',
+                        },
+                    ],
+                },
                 include: {
                     paymentRecord: true,
                 },
+                orderBy: {
+                    requestedAt: 'desc',
+                },
                 take: pagination.pageSize,
-                skip: pagination.pageSize * (pagination.page - 1),
+                skip: calculatePaginationSkip(pagination),
             })
         );
     }
 
-    async getTotalRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number | null> {
+    async getClosedRefundRecordsForMerchantWithPagination(
+        query: RefundRecordQuery,
+        pagination: Pagination
+    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findMany({
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'paid',
+                        },
+                        {
+                            status: 'completed',
+                        },
+                        {
+                            status: 'rejected',
+                        },
+                    ],
+                },
+                include: {
+                    paymentRecord: true,
+                },
+                orderBy: {
+                    completedAt: 'desc',
+                },
+                take: pagination.pageSize,
+                skip: calculatePaginationSkip(pagination),
+            })
+        );
+    }
+
+    async getTotalOpenRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number | null> {
         return await prismaErrorHandler(
             this.prisma.refundRecord.count({
-                where: query,
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'pending',
+                        },
+                    ],
+                },
+            })
+        );
+    }
+
+    async getTotalClosedRefundRecordsForMerchant(query: RefundRecordQuery): Promise<number | null> {
+        return await prismaErrorHandler(
+            this.prisma.refundRecord.count({
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'paid',
+                        },
+                        {
+                            status: 'completed',
+                        },
+                        {
+                            status: 'rejected',
+                        },
+                    ],
+                },
             })
         );
     }
