@@ -68,6 +68,6 @@ export function middleware(request: NextRequest) {
     console.log('final url', request.nextUrl);
     console.log('final url', request.nextUrl.toString());
 
-    // return NextResponse.rewrite(request.nextUrl);
-    return NextResponse.next();
+    return NextResponse.rewrite(request.nextUrl);
+    // return NextResponse.next();
 }
