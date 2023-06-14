@@ -2,6 +2,7 @@ import { DefaultLayout } from '@/components/DefaultLayout';
 import { SupportFaq } from '@/components/SupportFaq';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
+import Router from 'next/router';
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
     const { query } = context;
@@ -17,6 +18,9 @@ export type BlockedProps = {
 };
 
 export default function Support({ isBlocked, country }: BlockedProps) {
+    if (isBlocked === 'true') {
+        Router.push('/');
+    }
     return (
         <>
             <Head>
