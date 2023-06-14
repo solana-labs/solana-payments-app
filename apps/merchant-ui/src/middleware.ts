@@ -44,9 +44,9 @@ export function middleware(request: NextRequest) {
     console.log('request', request);
     console.log('geo', request.geo);
 
-    if (geo) {
-        request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
-    }
+    // if (geo) {
+    //     request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
+    // }
 
     console.log('after geo', request.nextUrl);
 
