@@ -1,10 +1,24 @@
 import { DefaultLayout } from '@/components/DefaultLayout';
 import { isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Router from 'next/router';
 
-export default function Custom404() {
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+    const { query } = context;
+
+    return {
+        props: query,
+    };
+};
+
+export type BlockedProps = {
+    isBlocked: string;
+    country: string;
+};
+
+export default function Custom404({ isBlocked, country }: BlockedProps) {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     if (isOk(merchantInfo) && !merchantInfo.data.completed) {
         Router.push('/getting-started');
