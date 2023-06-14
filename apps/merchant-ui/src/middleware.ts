@@ -55,18 +55,19 @@ export function middleware(request: NextRequest) {
     console.log('url stuff', request.nextUrl.origin, request.nextUrl.pathname.toLowerCase());
     // request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
 
-    if (isBlocked && request.nextUrl.pathname !== '/') {
-        console.log('in blocked if');
-        console.log('pre pathname', request.nextUrl);
-        request.nextUrl.pathname = '/';
-        // return NextResponse.redirect(request.nextUrl.origin + '/');
-        console.log('post pathname', request.nextUrl);
-        console.log('yes indeed blocked', isBlocked.toString());
-        return NextResponse.redirect(request.nextUrl);
-    }
+    // if (isBlocked && request.nextUrl.pathname !== '/') {
+    //     console.log('in blocked if');
+    //     console.log('pre pathname', request.nextUrl);
+    //     request.nextUrl.pathname = '/';
+    //     // return NextResponse.redirect(request.nextUrl.origin + '/');
+    //     console.log('post pathname', request.nextUrl);
+    //     console.log('yes indeed blocked', isBlocked.toString());
+    //     return NextResponse.redirect(request.nextUrl);
+    // }
 
     console.log('final url', request.nextUrl);
     console.log('final url', request.nextUrl.toString());
 
-    return NextResponse.rewrite(request.nextUrl);
+    // return NextResponse.rewrite(request.nextUrl);
+    return NextResponse.next();
 }
