@@ -7,9 +7,6 @@ provider:
   httpApi:
     cors: true
   stage: ${opt:stage, 'dev'}
-  s3:
-    gas:
-      name: gas-${self:provider.stage}
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
@@ -21,15 +18,15 @@ provider:
     TRM_API_KEY: ${env:TRM_API_KEY}
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
-    AWS_BUCKET_OBJECT_NAME: ${env:AWS_BUCKET_OBJECT_NAME}
-    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
-    AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}
-    AWS_GAS_SECRET_KEY: ${env:AWS_GAS_SECRET_KEY}
+    AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
+    AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
+    # AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}
+    # AWS_GAS_SECRET_KEY: ${env:AWS_GAS_SECRET_KEY}
     AWS_BUCKET_REGION: ${env:AWS_BUCKET_REGION}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION}
-    AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
-    AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
-    AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
+    # AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
+    # AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
     SHOPIFY_SQS_URL: ${env:SHOPIFY_SQS_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
@@ -75,6 +72,15 @@ functions:
       - httpApi:
           path: /payment-transaction
           method: post
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/${self:custom.gas-object-name}'
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
@@ -204,6 +210,25 @@ resources:
       Description: The ARN of the retry machine
       Value:
         Fn::GetAtt: [RetryStepFunctionsStateMachine, Arn]
+    GasBucketArn:
+      Description: The arn of the gas bucket
+      Value:
+        Fn::GetAtt: [GasBucket, Arn]
+    SingleUseKeyPairBucketArn:
+      Description: The arn of the single use key pair bucket
+      Value:
+        Fn::GetAtt: [SingleUseKeyPairBucket, Arn]
+  Resources:
+    GasBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: ${self:custom.gas-bucket-name}
+    SingleUseKeyPairBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: ${self:custom.single-use-bucket-name}
 
 plugins:
   - serverless-plugin-typescript
@@ -212,6 +237,7 @@ plugins:
   - serverless-prune-plugin
   - serverless-step-functions
   - serverless-iam-roles-per-function
+  - serverless-s3-local
   - serverless-offline
 
 custom:
@@ -219,3 +245,14 @@ custom:
     httpPort: 4000
     lambdaPort: 4001
     websocketPort: 4009
+  s3:
+    address: 'localhost'
+    port: 4569
+    directory: './buckets'
+    # accessKeyId: 'S3RVER'
+    # secretAccessKey: 'S3RVER'
+
+  gas-bucket-name: ${self:provider.stage}GasBucket
+  single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
+  gas-object-name: 'gaskp'
+

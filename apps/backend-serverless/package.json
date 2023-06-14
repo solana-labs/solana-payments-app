@@ -84,6 +84,7 @@
     "serverless-plugin-include-dependencies": "^5.1.0",
     "serverless-plugin-typescript": "2.1.4",
     "serverless-prune-plugin": "^2.0.2",
+    "serverless-s3-local": "^0.7.2",
     "serverless-step-functions": "^3.13.1",
     "ts-jest": "^29.1.0",
     "tsx": "^3.12.7",
