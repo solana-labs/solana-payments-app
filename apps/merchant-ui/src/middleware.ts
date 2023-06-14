@@ -59,7 +59,7 @@ export function middleware(request: NextRequest) {
         console.log('in blocked if');
         console.log('pre pathname', request.nextUrl);
         request.nextUrl.pathname = '/solana_pay_hero.png';
-        // return NextResponse.redirect(request.nextUrl.origin + '/');
+        return NextResponse.redirect(request.nextUrl);
         console.log('post pathname', request.nextUrl);
         console.log('yes indeed blocked', isBlocked.toString());
         // return NextResponse.redirect(request.nextUrl);
