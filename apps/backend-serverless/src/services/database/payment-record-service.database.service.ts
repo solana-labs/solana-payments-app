@@ -105,6 +105,7 @@ export class PaymentRecordService
                 data: {
                     status: PaymentRecordStatus.paid,
                     transactionSignature: transactionSignature,
+                    completedAt: new Date(),
                 },
             })
         );
@@ -165,7 +166,23 @@ export class PaymentRecordService
     ): Promise<PaymentRecord[] | null> {
         return prismaErrorHandler(
             this.prisma.paymentRecord.findMany({
-                where: query,
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'paid',
+                        },
+                        {
+                            status: 'completed',
+                        },
+                        {
+                            status: 'rejected',
+                        },
+                    ],
+                },
+                orderBy: {
+                    completedAt: 'desc',
+                },
                 take: pagination.pageSize,
                 skip: calculatePaginationSkip(pagination),
             })

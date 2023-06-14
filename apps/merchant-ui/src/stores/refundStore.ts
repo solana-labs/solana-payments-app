@@ -54,8 +54,8 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
     getOpenRefunds: async (page: number) => {
         const params: any = {
             pageNumber: page + 1,
-            pageSize: PAGE_SIZE,
-            refundStatus: 'pending',
+            pageSize: 5,
+            refundStatus: 'open',
         };
 
         try {
@@ -94,51 +94,26 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
         const params: any = {
             pageNumber: page + 1,
             pageSize: PAGE_SIZE,
+            refundStatus: 'closed',
         };
 
         try {
-            const responseRejected = await fetch(
-                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=rejected`
-            );
-            const dataRejected = await responseRejected.json();
+            const responseClosed = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`);
+            const dataClosed = await responseClosed.json();
 
-            const responsePaid = await fetch(
-                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=paid`
-            );
-            const dataPaid = await responsePaid.json();
-
-            const responseCompleted = await fetch(
-                `${API_ENDPOINTS.refundData}?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&refundStatus=completed`
-            );
-            const dataCompleted = await responseCompleted.json();
-
-            if (responseRejected.status !== 200 || responsePaid.status !== 200) {
+            if (responseClosed.status !== 200) {
                 let errorMsg = 'Failed to fetch closed refunds';
-                if (responseRejected.status !== 200) {
-                    errorMsg = dataRejected.message || errorMsg;
-                }
-                if (responsePaid.status !== 200) {
-                    errorMsg = dataPaid.message || errorMsg;
-                }
                 set({ closedRefunds: RE.failed(new Error(errorMsg)) });
             } else {
-                const refundsRejected = transformRefund<ClosedRefund>(dataRejected);
-                const refundsPaid = transformRefund<ClosedRefund>(dataPaid);
-                const refundsCompleted = transformRefund<ClosedRefund>(dataCompleted);
-                const refunds = [...refundsRejected, ...refundsPaid, ...refundsCompleted];
+                const refundsClosed = transformRefund<ClosedRefund>(dataClosed);
+                const refunds = [...refundsClosed];
                 set({
                     closedRefunds: RE.ok({
                         refunds: refunds,
-                        totalPages: Math.floor(
-                            (dataRejected.refundData.total +
-                                dataPaid.refundData.total +
-                                dataCompleted.refundData.total +
-                                1) /
-                                PAGE_SIZE
-                        ),
+                        totalPages: Math.floor((dataClosed.refundData.total + 1) / PAGE_SIZE),
                     }),
                 });
-                set({ refundCount: dataRejected.refundData.total + dataPaid.refundData.total });
+                set({ refundCount: dataClosed.refundData.total });
             }
         } catch (error) {
             console.log('error: ', error);
