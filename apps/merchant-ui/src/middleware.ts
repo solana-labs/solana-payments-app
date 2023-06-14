@@ -55,7 +55,12 @@ export function middleware(request: NextRequest) {
     //     request.nextUrl.pathname = '/';
     // }
 
+    if (isBlocked) {
+        console.log('yes indeed blocked', isBlocked.toString());
+    }
+
     url.searchParams.set('isBlocked', isBlocked.toString());
+    console.log('final url', url);
 
     return NextResponse.rewrite(url);
 }
