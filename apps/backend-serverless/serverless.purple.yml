@@ -77,6 +77,10 @@ functions:
         Action:
           - s3:PutObject
         Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: "*"
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
@@ -233,7 +237,6 @@ plugins:
   - serverless-prune-plugin
   - serverless-step-functions
   - serverless-iam-roles-per-function
-  - serverless-s3-local
   - serverless-offline
 
 custom:
@@ -241,14 +244,14 @@ custom:
     httpPort: 4000
     lambdaPort: 4001
     websocketPort: 4009
-  s3:
-    address: 'localhost'
-    port: 4569
-    directory: './buckets'
-    accessKeyId: 'S3RVER'
-    secretAccessKey: 'S3RVER'
+  # s3:
+  #   address: 'localhost'
+  #   port: 4569
+  #   directory: './buckets'
+  #   accessKeyId: 'S3RVER'
+  #   secretAccessKey: 'S3RVER'
 
-  gas-bucket-name: ${self:provider.stage}GasBucket
+  gas-bucket-name: gas-bucket-${self:provider.stage}
   single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
   gas-object-name: 'gas-kp.json'
 

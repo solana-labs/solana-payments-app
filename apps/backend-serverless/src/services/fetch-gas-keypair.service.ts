@@ -32,12 +32,12 @@ export const fetchGasKeypair = async (): Promise<web3.Keypair> => {
     // }
 
     const s3 = new S3({
-        // region: region,
-        accessKeyId: 'S3RVER',
-        secretAccessKey: 'S3RVER',
+        region: region,
+        // accessKeyId: 'S3RVER',
+        // secretAccessKey: 'S3RVER',
         // // accessKeyId: accessKey,
         // // secretAccessKey: secretKey,
-        endpoint: new Endpoint('http://localhost:4569'),
+        // endpoint: new Endpoint('http://localhost:4569'),
     });
 
     const output = await s3

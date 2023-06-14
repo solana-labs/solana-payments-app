@@ -20,7 +20,7 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
     }
 
     const s3 = new S3({
-        s3ForcePathStyle: true,
+        // s3ForcePathStyle: true,
         region: region,
         // accessKeyId: accessKey,
         // secretAccessKey: secretKey,

@@ -23,6 +23,7 @@ export class WebSocketService<WebsocketQuery> {
 
     private loadSessions = async (): Promise<void> => {
         this.websockerSessions = await this.websocketSessionService.fetchWebsocketSessions(this.query);
+        console.log('this.websockerSessions: ', this.websockerSessions);
         this.loaded = true;
     };
 
@@ -41,7 +42,9 @@ export class WebSocketService<WebsocketQuery> {
                     ConnectionId: websocketSession.connectionId,
                 };
                 await this.apiGatewayManagementApi.postToConnection(postParams).promise();
-            } catch (error) {}
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
