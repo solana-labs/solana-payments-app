@@ -52,9 +52,11 @@ export function middleware(request: NextRequest) {
 
     console.log('after geo', url);
 
+    const newUrl = new URL('/', request.url);
+    console.log('new url', newUrl);
+
     if (isBlocked && url.pathname !== '/') {
-        const newUrl = new URL('/', request.url);
-        console.log('new url', newUrl);
+        console.log('in blocked if');
         return NextResponse.redirect(newUrl.toString());
         console.log('yes indeed blocked', isBlocked.toString());
     }
