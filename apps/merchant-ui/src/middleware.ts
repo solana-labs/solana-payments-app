@@ -44,21 +44,21 @@ export function middleware(request: NextRequest) {
     console.log('request', request);
     console.log('geo', request.geo);
 
-    // if (geo) {
-    //     request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
-    // }
+    if (geo) {
+        request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
+    }
 
     console.log('after geo', request.nextUrl);
 
     // const newUrl = new URL('/', request.url);
     // console.log('new url', newUrl, newUrl.toString());
     console.log('url stuff', request.nextUrl.origin, request.nextUrl.pathname.toLowerCase());
-    // request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
+    request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
 
     // if (isBlocked && request.nextUrl.pathname !== '/') {
     //     console.log('in blocked if');
     //     console.log('pre pathname', request.nextUrl);
-    //     request.nextUrl.pathname = '/';
+    // request.nextUrl.pathname = '/';
     //     // return NextResponse.redirect(request.nextUrl.origin + '/');
     //     console.log('post pathname', request.nextUrl);
     //     console.log('yes indeed blocked', isBlocked.toString());
