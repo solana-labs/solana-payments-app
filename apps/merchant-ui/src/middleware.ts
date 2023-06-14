@@ -38,8 +38,6 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 };
 
 export function middleware(request: NextRequest) {
-    const { nextUrl: url } = request;
-
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
 
@@ -47,23 +45,25 @@ export function middleware(request: NextRequest) {
     console.log('geo', request.geo);
 
     if (geo) {
-        url.searchParams.set('country', geo.country ?? 'unknown');
+        request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
     }
 
-    console.log('after geo', url);
+    console.log('after geo', request.nextUrl);
 
-    const newUrl = new URL('/', request.url);
-    console.log('new url', newUrl, newUrl.toString());
+    // const newUrl = new URL('/', request.url);
+    // console.log('new url', newUrl, newUrl.toString());
     console.log('url stuff', request.nextUrl.origin, request.nextUrl.pathname.toLowerCase());
+    request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
 
-    if (isBlocked && url.pathname !== '/') {
+    if (isBlocked && request.nextUrl.pathname !== '/') {
         console.log('in blocked if');
-        return NextResponse.redirect(request.nextUrl.origin + '/');
+        request.nextUrl.pathname = '/';
+        // return NextResponse.redirect(request.nextUrl.origin + '/');
         console.log('yes indeed blocked', isBlocked.toString());
     }
 
-    url.searchParams.set('isBlocked', isBlocked.toString());
-    console.log('final url', url);
+    console.log('final url', request.nextUrl);
+    console.log('final url', request.nextUrl.toString());
 
-    return NextResponse.rewrite(url);
+    return NextResponse.rewrite(request.nextUrl);
 }
