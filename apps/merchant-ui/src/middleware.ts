@@ -57,8 +57,10 @@ export function middleware(request: NextRequest) {
 
     if (isBlocked && request.nextUrl.pathname !== '/') {
         console.log('in blocked if');
+        console.log('pre pathname', request.nextUrl);
         request.nextUrl.pathname = '/';
         // return NextResponse.redirect(request.nextUrl.origin + '/');
+        console.log('post pathname', request.nextUrl);
         console.log('yes indeed blocked', isBlocked.toString());
         return NextResponse.redirect(request.nextUrl);
     }
