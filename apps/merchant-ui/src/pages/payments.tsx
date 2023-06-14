@@ -20,9 +20,9 @@ export type BlockedProps = {
 };
 
 export default function Payments({ isBlocked, country }: BlockedProps) {
-    if (isBlocked === 'true') {
-        Router.push('/');
-    }
+    // if (isBlocked === 'true') {
+    //     Router.push('/');
+    // }
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     if (isOk(merchantInfo) && !merchantInfo.data.completed) {
         Router.push('/getting-started');
