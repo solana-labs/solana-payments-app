@@ -51,6 +51,16 @@ const isBlockedGeo = (request: NextRequest): boolean => {
 };
 
 export function middleware(request: NextRequest) {
+    console.log('pathname', request.nextUrl.pathname);
+    if (
+        request.nextUrl.pathname.startsWith('/public/images/') ||
+        request.nextUrl.pathname.startsWith('/_next/static/') ||
+        request.nextUrl.pathname.startsWith('/_next/image/') ||
+        request.nextUrl.pathname.startsWith('/favicon.ico')
+    ) {
+        return NextResponse.next();
+    }
+
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
 
