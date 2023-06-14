@@ -42,6 +42,9 @@ export function middleware(request: NextRequest) {
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
 
+    console.log('request', request);
+    console.log('geo', request.geo);
+
     if (geo) {
         url.searchParams.set('country', geo.country ?? 'unknown');
     }
