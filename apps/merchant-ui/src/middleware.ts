@@ -9,7 +9,7 @@ const BLOCKED_COUNTRY = 'US';
 //     matcher: '/.*',
 // };
 
-const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
+const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'US'];
 const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
 
 const isBlockedGeo = (request: NextRequest): boolean => {
@@ -24,6 +24,7 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const country = geo.country;
+    console.log('country', country);
 
     if (country == null) {
         return true;
