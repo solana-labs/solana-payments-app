@@ -53,7 +53,8 @@ export function middleware(request: NextRequest) {
     console.log('after geo', url);
 
     const newUrl = new URL('/', request.url);
-    console.log('new url', newUrl);
+    console.log('new url', newUrl, newUrl.toString());
+    console.log('url stuff', request.nextUrl.origin, request.nextUrl.pathname.toLowerCase());
 
     if (isBlocked && url.pathname !== '/') {
         console.log('in blocked if');
