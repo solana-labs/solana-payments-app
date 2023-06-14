@@ -60,6 +60,7 @@ export function middleware(request: NextRequest) {
         request.nextUrl.pathname = '/';
         // return NextResponse.redirect(request.nextUrl.origin + '/');
         console.log('yes indeed blocked', isBlocked.toString());
+        return NextResponse.redirect(request.nextUrl);
     }
 
     console.log('final url', request.nextUrl);
