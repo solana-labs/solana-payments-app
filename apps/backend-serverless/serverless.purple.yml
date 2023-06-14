@@ -20,13 +20,9 @@ provider:
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
     AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
-    # AWS_GAS_ACCESS_KEY: ${env:AWS_GAS_ACCESS_KEY}
-    # AWS_GAS_SECRET_KEY: ${env:AWS_GAS_SECRET_KEY}
     AWS_BUCKET_REGION: ${env:AWS_BUCKET_REGION}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
-    # AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
-    # AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
     SHOPIFY_SQS_URL: ${env:SHOPIFY_SQS_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
@@ -249,10 +245,10 @@ custom:
     address: 'localhost'
     port: 4569
     directory: './buckets'
-    # accessKeyId: 'S3RVER'
-    # secretAccessKey: 'S3RVER'
+    accessKeyId: 'S3RVER'
+    secretAccessKey: 'S3RVER'
 
   gas-bucket-name: ${self:provider.stage}GasBucket
   single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
-  gas-object-name: 'gaskp'
+  gas-object-name: 'gas-kp.json'
 
