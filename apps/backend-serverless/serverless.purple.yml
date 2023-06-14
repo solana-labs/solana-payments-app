@@ -6,6 +6,10 @@ provider:
   runtime: nodejs18.x
   httpApi:
     cors: true
+  stage: ${opt:stage, 'dev'}
+  s3:
+    gas:
+      name: gas-${self:provider.stage}
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
@@ -26,7 +30,7 @@ provider:
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME}
     AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY}
     AWS_SINGLE_USE_KEYPAIR_SECRET_KEY: ${env:AWS_SINGLE_USE_KEYPAIR_SECRET_KEY}
-    AWS_SHOPIFY_MUTATION_QUEUE_URL: ${env:AWS_SHOPIFY_MUTATION_QUEUE_URL}
+    SHOPIFY_SQS_URL: ${env:SHOPIFY_SQS_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     # LOCAL_GAS: ${env:LOCAL_GAS}
@@ -131,7 +135,7 @@ functions:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
       - sqs:
-          arn: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+          arn: ${env:SHOPIFY_SQS_ARN}
           batchSize: 1
     iamRoleStatements:
       - Effect: Allow
@@ -141,7 +145,7 @@ functions:
       - Effect: Allow
         Action:
           - sqs:ReceiveMessage
-        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+        Resource: ${env:SHOPIFY_SQS_ARN}
   retry-request:
     handler: src/handlers/webhooks/retry.retry
   queue:
@@ -154,7 +158,7 @@ functions:
       - Effect: Allow
         Action:
           - sqs:SendMessage
-        Resource: arn:aws:sqs:us-east-1:177666607693:pay-shopify-retry-queue
+        Resource: ${env:SHOPIFY_SQS_ARN}
   connectHandler:
     handler: src/handlers/websockets/connect.connect
     events:
@@ -177,7 +181,6 @@ functions:
 stepFunctions:
   stateMachines:
     retry:
-        name: retry
         definition:
           StartAt: wait_using_seconds
           States: 
@@ -192,11 +195,15 @@ stepFunctions:
               End: true
 
 resources:
+  Parameters:
+      Stage:
+        Type: String
+        Default: ${self:provider.stage}
   Outputs:
     RetryMachine:
       Description: The ARN of the retry machine
       Value:
-        Fn::GetAtt: [Retry, Arn]
+        Fn::GetAtt: [RetryStepFunctionsStateMachine, Arn]
 
 plugins:
   - serverless-plugin-typescript

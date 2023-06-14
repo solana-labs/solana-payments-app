@@ -96,7 +96,7 @@ export const sendRetryMessage = async (
     retryStepIndex = 0,
     sqs: pkg.SQS = new SQS()
 ) => {
-    const queueUrl = process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL;
+    const queueUrl = process.env.SHOPIFY_SQS_URL;
 
     if (queueUrl == null) {
         throw new MissingEnvError('aws shopify mutation queue url');
