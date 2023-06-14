@@ -9,18 +9,18 @@ const BLOCKED_COUNTRY = 'US';
 //     matcher: '/.*',
 // };
 
-export const config = {
-    matcher: [
-        '/getting-started',
-        '/getting-started/add-wallet',
-        '/404',
-        '/merchant',
-        '/payments',
-        '/refunds',
-        '/support',
-        '/',
-    ],
-};
+// export const config = {
+//     matcher: [
+//         '/getting-started',
+//         '/getting-started/add-wallet',
+//         '/404',
+//         '/merchant',
+//         '/payments',
+//         '/refunds',
+//         '/support',
+//         '/',
+//     ],
+// };
 
 const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'US'];
 const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
@@ -56,7 +56,8 @@ export function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith('/public/images/') ||
         request.nextUrl.pathname.startsWith('/_next/static/') ||
         request.nextUrl.pathname.startsWith('/_next/image/') ||
-        request.nextUrl.pathname.startsWith('/favicon.ico')
+        request.nextUrl.pathname.startsWith('/favicon.ico') ||
+        request.nextUrl.pathname.endsWith('.png')
     ) {
         return NextResponse.next();
     }
