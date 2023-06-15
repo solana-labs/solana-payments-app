@@ -7,10 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { WalletDisconnectButton } from './WalletDisconnectButton';
 import { WalletCopyButton } from './WalletCopyButton';
 import Image from 'next/image';
+import { getBalance } from '@/features/wallet/walletSlice';
 
 
 const WalletButton = () => {
     const { publicKey, sendTransaction } = useWallet();
+
+    const usdcBalance = useSelector(getBalance)
 
     const walletDisplayString = (pubkey: web3.PublicKey | null) => {
         if (pubkey == null) {
@@ -41,7 +44,7 @@ const WalletButton = () => {
                             <div className='flex flex-col items-center justify-center h-full'>
                                 <Image className='' src="/connected-icon.svg" alt="Wallet Connected Icon" width={56} height={56} />
                                 <div className='pt-5 text-black text-3xl font-medium'>{walletDisplayString(publicKey)}</div>
-                                <div className='pt-2 text-gray-700 text-md font-normal'>{'24.48 USDC'}</div>
+                                <div className='pt-2 text-gray-700 text-md font-normal'>{usdcBalance}</div>
                             </div>
                         </div>
                         <div className='z-10 flex flex-row items-end justify-end h-full relative'>

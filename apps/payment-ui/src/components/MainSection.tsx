@@ -13,7 +13,7 @@ interface CheckoutWrapperProps {
   
 const CheckoutWrapper: React.FC<CheckoutWrapperProps> = ({ children }) => {
     return (
-      <div className="w-full mx-auto rounded-t-xl bg-white sm:h-[95vh] h-[90vh] sm:px-16 px-4">
+      <div className='flex flex-grow flex-col h-full'>
         {children}
       </div>
     );
@@ -27,12 +27,9 @@ const MainSection = (props: BlockedProps) => {
     }
 
     return (
-        <div className="flex flex-col h-[100vh] w-full max-w-2xl mx-auto">
-            <DisplaySection />
-            <CheckoutWrapper>
-                <CheckoutSection isBlocked={props.isBlocked} country={props.country} />
-            </CheckoutWrapper>
-        </div>
+        <CheckoutWrapper>
+            <CheckoutSection isBlocked={props.isBlocked} country={props.country} />
+        </CheckoutWrapper>
     );
 };
 
