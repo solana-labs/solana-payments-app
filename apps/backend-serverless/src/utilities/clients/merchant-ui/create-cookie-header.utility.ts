@@ -15,8 +15,6 @@ interface CookieOptions {
 export const createMechantAuthCookieHeader = (id: string): string => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-    console.log('jwtSecretKey', jwtSecretKey);
-
     if (jwtSecretKey == null) {
         throw new MissingEnvError('jwt secret key');
     }
@@ -30,10 +28,6 @@ export const createMechantAuthCookieHeader = (id: string): string => {
     };
 
     const token = jwt.sign(payload, jwtSecretKey, {});
-
-    console.log(token);
-
-    console.log(process.env.NODE_ENV);
 
     const domain = process.env.NODE_ENV === 'production' ? '.solanapay.com' : 'localhost';
 
