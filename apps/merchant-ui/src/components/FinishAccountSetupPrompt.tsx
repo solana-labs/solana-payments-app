@@ -90,6 +90,18 @@ export function FinishAccountSetupPrompt(props: Props) {
         }
     }
 
+    async function updateMerchantTosClick() {
+        setPendingTos(true);
+        console.log('about to update merchant tos');
+        try {
+            await updateMerchantTos();
+            await getMerchantInfo();
+            setPendingTos(false);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     if (!isOk(merchantInfo)) {
         return (
             <div className="flex items-center justify-center h-screen">
