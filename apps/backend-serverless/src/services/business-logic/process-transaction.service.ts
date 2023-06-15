@@ -21,7 +21,7 @@ import { TransactionSignatureQuery } from '../database/payment-record-service.da
 export const processTransaction = async (
     heliusTransaction: HeliusEnhancedTransaction,
     prisma: PrismaClient,
-    websocketService: WebSocketService<TransactionSignatureQuery>,
+    websocketService: WebSocketService<TransactionSignatureQuery> | null,
     axiosInstance: typeof axios
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
@@ -68,7 +68,7 @@ export const processTransaction = async (
 
     await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
-    if (transactionRecord.type == 'payment') {
+    if (transactionRecord.type == 'payment' && websocketService != null) {
         const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
 
         await websocketService.sendCompletedDetailsMessage({
