@@ -47,6 +47,7 @@ provider:
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:
   excludeDevDependencies: true
