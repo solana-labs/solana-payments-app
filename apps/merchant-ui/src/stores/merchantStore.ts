@@ -81,7 +81,7 @@ export async function updateMerchantTos() {
             body: JSON.stringify({
                 acceptedTermsAndConditions: 'true',
             }),
-            // credentials: 'include',
+            credentials: 'include',
         });
     } catch (error) {
         console.log('update merchant tos error', error);
