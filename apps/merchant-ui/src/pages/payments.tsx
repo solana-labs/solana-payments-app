@@ -10,6 +10,7 @@ export default function Payments() {
     if (isOk(merchantInfo) && !merchantInfo.data.completed) {
         Router.push('/getting-started');
     }
+
     return (
         <>
             <Head>

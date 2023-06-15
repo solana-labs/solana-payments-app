@@ -54,7 +54,7 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
     getOpenRefunds: async (page: number) => {
         const params: any = {
             pageNumber: page + 1,
-            pageSize: 5,
+            pageSize: PAGE_SIZE,
             refundStatus: 'open',
         };
 
@@ -65,7 +65,7 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
             if (response.status !== 200) {
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
             }
-            const refunds = transformRefund<OpenRefund>(data); // assuming you have transformRefund function
+            const refunds = transformRefund<OpenRefund>(data);
 
             set({
                 openRefunds: RE.ok({
