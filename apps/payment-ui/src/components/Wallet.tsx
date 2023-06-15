@@ -44,11 +44,9 @@ const Wallet: FC = () => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <div className="">
                         <div className="py-2">
                             <WalletSection />
                         </div>
-                    </div>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>

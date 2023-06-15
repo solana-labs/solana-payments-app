@@ -5,10 +5,8 @@ import { SolanaPayState, getSolanaPayState } from '@/features/payment-session/pa
 const PayWithQRCodeSection = () => {
 
     return (
-        <div className="flex flex-col justify-start items-center mx-auto h-full w-full">
-            <div className='h-[300]'>
-                <QRCode />
-            </div>
+        <div className="flex flex-col items-center justify-end pb-16 h-full">
+            <QRCode />
         </div>
     );
 };
