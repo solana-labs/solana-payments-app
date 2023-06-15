@@ -7,8 +7,6 @@ import { getPaymentMethod } from "@/features/payment-options/paymentOptionsSlice
 
 export const PaymentView = () => {
 
-    const paymentMethod = useSelector(getPaymentMethod);
-
     return (
         <div className='flex flex-col justify-between h-full'>
             <div className="w-full flex flex-col pt-16 relative">
@@ -17,9 +15,6 @@ export const PaymentView = () => {
                 </div>
                 <PayToLabel />
             </div>
-            {/* <div className="relative flex flex-col h-full">
-                {paymentMethod == 'connect-wallet' ? <PayWithWalletSection /> : <PayWithQRCodeSection />}
-            </div> */}
         </div>
     )
 }

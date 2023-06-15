@@ -68,7 +68,9 @@ export const fetchUsdcBalance = async (pubkey: string): Promise<string> => {
         return '0 USDC';
     }
 
-    return `${usdcTokenBalance.amount} USDC`;
+    const usdcSize = usdcTokenBalance.amount / 10 ** usdcTokenBalance.decimals;
+
+    return `${usdcSize.toFixed(3)} USDC`;
 };
 
 // export class HeliusService {

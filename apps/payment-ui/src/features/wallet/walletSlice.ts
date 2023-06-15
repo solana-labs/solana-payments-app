@@ -77,3 +77,4 @@ export default walletSlice.reducer;
 
 export const getIsWalletConnected = (state: RootState): boolean => state.wallet.pubkey != null;
 export const getWalletPubkey = (state: RootState): string | null => state.wallet.pubkey;
+export const getBalance = (state: RootState): string | null => state.wallet.usdcBalance;
