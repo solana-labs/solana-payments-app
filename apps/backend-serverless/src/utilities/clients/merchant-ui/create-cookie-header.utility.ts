@@ -19,6 +19,8 @@ export const createMechantAuthCookieHeader = (id: string): string => {
         throw new MissingEnvError('jwt secret key');
     }
 
+    console.log('secret is good');
+
     const payload = {
         id: id,
         iat: Math.floor(Date.now() / 1000),
@@ -37,6 +39,8 @@ export const createMechantAuthCookieHeader = (id: string): string => {
         path: '/',
         domain: domain,
     };
+
+    console.log(cookieOptions);
 
     return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${
         cookieOptions.httpOnly ? 'true' : ''

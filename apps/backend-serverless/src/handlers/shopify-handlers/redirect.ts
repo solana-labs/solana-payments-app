@@ -143,12 +143,16 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             }
         }
 
+        console.log(merchant.id);
+
         let merchantAuthCookieHeader: string;
         try {
             merchantAuthCookieHeader = createMechantAuthCookieHeader(merchant.id);
         } catch (error) {
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
+
+        console.log(merchantAuthCookieHeader);
 
         return {
             statusCode: 301,
