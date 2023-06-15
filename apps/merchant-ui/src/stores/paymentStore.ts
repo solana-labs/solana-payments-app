@@ -53,7 +53,9 @@ export const usePaymentStore = create<PaymentStore>(set => ({
         };
 
         try {
-            const response = await fetch(`${API_ENDPOINTS.paymentData}?${new URLSearchParams(params)}`);
+            const response = await fetch(`${API_ENDPOINTS.paymentData}?${new URLSearchParams(params)}`, {
+                credentials: 'include',
+            });
             const data = await response.json();
 
             if (response.status !== 200) {

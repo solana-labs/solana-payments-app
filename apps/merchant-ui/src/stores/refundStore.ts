@@ -59,7 +59,9 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
         };
 
         try {
-            const response = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`);
+            const response = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`, {
+                credentials: 'include',
+            });
 
             const data = await response.json();
             if (response.status !== 200) {
@@ -98,7 +100,9 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
         };
 
         try {
-            const responseClosed = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`);
+            const responseClosed = await fetch(`${API_ENDPOINTS.refundData}?${new URLSearchParams(params)}`, {
+                credentials: 'include',
+            });
             const dataClosed = await responseClosed.json();
 
             if (responseClosed.status !== 200) {

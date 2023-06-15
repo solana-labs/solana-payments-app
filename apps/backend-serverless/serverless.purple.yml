@@ -5,7 +5,21 @@ provider:
   name: aws
   runtime: nodejs18.x
   httpApi:
-    cors: true
+    cors:
+      allowedOrigins:
+        - http://localhost:3005
+        - https://merchant.solanapay.com
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - OPTIONS
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      allowCredentials: true
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   environment:
@@ -18,7 +32,6 @@ provider:
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
     TRM_API_KEY: ${env:TRM_API_KEY}
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
-    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
     AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
     AWS_BUCKET_REGION: ${self:provider.region}
@@ -81,7 +94,7 @@ functions:
       - Effect: Allow
         Action:
           - execute-api:ManageConnections
-        Resource: "*"
+        Resource: '*'
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
@@ -185,12 +198,12 @@ functions:
   connectHandler:
     handler: src/handlers/websockets/connect.connect
     events:
-      - websocket: $connect     
+      - websocket: $connect
     iamRoleStatements:
       - Effect: Allow
         Action:
           - execute-api:ManageConnections
-        Resource: "*"
+        Resource: '*'
   disconnectHandler:
     handler: src/handlers/websockets/disconnect.disconnect
     events:
@@ -216,9 +229,9 @@ stepFunctions:
               End: true
 resources:
   Parameters:
-      Stage:
-        Type: String
-        Default: ${self:provider.stage}
+    Stage:
+      Type: String
+      Default: ${self:provider.stage}
   Outputs:
     RetryMachine:
       Description: The ARN of the retry machine
@@ -282,4 +295,3 @@ custom:
   gas-bucket-name: gas-bucket-${self:provider.stage}
   single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
   gas-object-name: 'gas-kp.json'
-

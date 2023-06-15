@@ -37,20 +37,38 @@ function generateMerchantRecords(count = 1): any[] {
     const records = [];
 
     for (let i = 0; i < count; i++) {
-        const merchant = {
-            id: `merchant-${i}`,
-            shop: `store${i}.myshopify.com`,
-            name: `Merchant ${i}`,
-            accessToken: `access-token-${i}`,
-            scopes: 'write_payment_gateways,write_payment_sessions',
-            lastNonce: `nonce-${i}`,
-            paymentAddress: 'JAiArByfpjM3CKYms47FGNEqxuwDpJ93vDj9wGmQenJr',
-            kybInquiry: `inq_${i}`,
-            kybState: 'finished',
-            acceptedTermsAndConditions: true,
-            dismissCompleted: false,
-            active: true,
-        };
+        let merchant;
+        if (i === 0) {
+            merchant = {
+                id: `merchant-${i}`,
+                shop: `localhost:4004`,
+                name: `Merchant ${i}`,
+                accessToken: `access-token-${i}`,
+                scopes: 'write_payment_gateways,write_payment_sessions',
+                lastNonce: `nonce-${i}`,
+                paymentAddress: 'JAiArByfpjM3CKYms47FGNEqxuwDpJ93vDj9wGmQenJr',
+                kybInquiry: `inq_${i}`,
+                kybState: 'finished',
+                acceptedTermsAndConditions: false,
+                dismissCompleted: false,
+                active: true,
+            };
+        } else {
+            merchant = {
+                id: `merchant-${i}`,
+                shop: `store${i}.myshopify.com`,
+                name: `Merchant ${i}`,
+                accessToken: `access-token-${i}`,
+                scopes: 'write_payment_gateways,write_payment_sessions',
+                lastNonce: `nonce-${i}`,
+                paymentAddress: 'JAiArByfpjM3CKYms47FGNEqxuwDpJ93vDj9wGmQenJr',
+                kybInquiry: `inq_${i}`,
+                kybState: 'finished',
+                acceptedTermsAndConditions: false,
+                dismissCompleted: false,
+                active: true,
+            };
+        }
 
         records.push(merchant);
     }
