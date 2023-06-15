@@ -43,7 +43,7 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                     </div>
                 </div>
                 <div className="w-full bg-black">
-                    <div className="container h-24 mx-auto px-8 bg-white text-white text-center max-w-xl">
+                    <div className="container h-36 mx-auto px-8 bg-white text-white text-center max-w-xl">
                         { paymentMethod == 'connect-wallet' ? <PayWithWalletSection /> : <div></div> }
                     </div>
                 </div>
