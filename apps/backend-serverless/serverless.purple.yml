@@ -45,6 +45,7 @@ provider:
     HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
     WEBSOCKET_URL: ${env:WEBSOCKET_URL}
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
+    PERSONA_API_KEY: ${env:PERSONA_API_KEY}
 
 package:
   excludeDevDependencies: true
