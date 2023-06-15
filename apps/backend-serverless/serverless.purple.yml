@@ -7,6 +7,7 @@ provider:
   httpApi:
     cors: true
   stage: ${opt:stage, 'dev'}
+  region: us-east-1
   environment:
     SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
     SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
@@ -20,10 +21,10 @@ provider:
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
     AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
-    AWS_BUCKET_REGION: ${env:AWS_BUCKET_REGION}
-    AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${env:AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION}
+    AWS_BUCKET_REGION: ${self:provider.region}
+    AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
-    SHOPIFY_SQS_URL: ${env:SHOPIFY_SQS_URL}
+    SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     # LOCAL_GAS: ${env:LOCAL_GAS}
@@ -157,7 +158,7 @@ functions:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
       - sqs:
-          arn: ${env:SHOPIFY_SQS_ARN}
+          arn: ${self:resources.Outputs.ShopifyQueueArn.Value}
           batchSize: 1
     iamRoleStatements:
       - Effect: Allow
@@ -167,7 +168,7 @@ functions:
       - Effect: Allow
         Action:
           - sqs:ReceiveMessage
-        Resource: ${env:SHOPIFY_SQS_ARN}
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   retry-request:
     handler: src/handlers/webhooks/retry.retry
   queue:
@@ -180,7 +181,7 @@ functions:
       - Effect: Allow
         Action:
           - sqs:SendMessage
-        Resource: ${env:SHOPIFY_SQS_ARN}
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   connectHandler:
     handler: src/handlers/websockets/connect.connect
     events:
@@ -198,8 +199,6 @@ functions:
     handler: src/handlers/websockets/default.defaultHandler
     events:
       - websocket: $default
-
-
 stepFunctions:
   stateMachines:
     retry:
@@ -215,7 +214,6 @@ stepFunctions:
               Resource:
                 Fn::GetAtt: [retry-request, Arn]
               End: true
-
 resources:
   Parameters:
       Stage:
@@ -234,6 +232,15 @@ resources:
       Description: The arn of the single use key pair bucket
       Value:
         Fn::GetAtt: [SingleUseKeyPairBucket, Arn]
+    ShopifyQueueArn:
+      Description: The arn of the shopify sqs queue
+      Value:
+        Fn::GetAtt: [ShopifyQueue, Arn]
+    ShopifyQueueUrl:
+      Description: The url of the shopify sqs queue
+      Value: 
+        Ref: ShopifyQueue
+        
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket
@@ -245,6 +252,11 @@ resources:
       DeletionPolicy: Retain
       Properties:
         BucketName: ${self:custom.single-use-bucket-name}
+    ShopifyQueue:
+      Type: AWS::SQS::Queue
+      DeletionPolicy: Retain
+      Properties:
+        QueueName: shopify-queue-${self:provider.stage}
 
 plugins:
   - serverless-plugin-typescript

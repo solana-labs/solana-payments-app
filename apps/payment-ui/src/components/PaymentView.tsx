@@ -4,8 +4,11 @@ import { useSelector } from "react-redux";
 import PayWithWalletSection from "./PayWithWalletSection";
 import PayWithQRCodeSection from "./PayWithQRCodeSection";
 import { getPaymentMethod } from "@/features/payment-options/paymentOptionsSlice";
+import { QRCode } from "./QRCode";
 
 export const PaymentView = () => {
+
+    const paymentMethod = useSelector(getPaymentMethod)
 
     return (
         <div className='flex flex-col justify-between h-full'>
@@ -14,6 +17,9 @@ export const PaymentView = () => {
                     <PaymentMethodTab />
                 </div>
                 <PayToLabel />
+            </div>
+            <div className="w-full flex flex-col justify-center items-center h-full relative">
+                { paymentMethod == 'qr-code' ? <QRCode /> : <div></div> }
             </div>
         </div>
     )
