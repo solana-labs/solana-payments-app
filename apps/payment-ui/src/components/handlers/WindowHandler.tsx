@@ -9,6 +9,7 @@ const WindowHandler: React.FC = () => {
     useEffect(() => {
         const handleResize = () => {
             dispatch(setIsMobile(window.innerWidth < 640));
+            console.log('window.innerHeight', window.innerHeight)
         };
 
         window.addEventListener('resize', handleResize);
