@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { MissingEnvError } from '../../../errors/missing-env.error.js';
 
-export const AUTH_TOKEN_COOKIE_NAME = 'authToken';
+export const AUTH_TOKEN_COOKIE_NAME = 'Bearer';
 
 interface CookieOptions {
     maxAge: number;
@@ -9,6 +9,7 @@ interface CookieOptions {
     secure: boolean;
     sameSite: 'strict' | 'lax' | 'none';
     path: string;
+    domain: string;
 }
 
 export const createMechantAuthCookieHeader = (id: string): string => {
@@ -26,17 +27,22 @@ export const createMechantAuthCookieHeader = (id: string): string => {
 
     const token = jwt.sign(payload, jwtSecretKey, {});
 
+    const domain = process.env.NODE_ENV === 'production' ? '.solanapay.com' : 'localhost';
+
     const cookieOptions: CookieOptions = {
         maxAge: 24 * 60 * 60, // 1 day in seconds
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/',
+        domain: domain,
     };
 
     return `${AUTH_TOKEN_COOKIE_NAME}=${token}; Max-Age=${cookieOptions.maxAge}; HttpOnly=${
         cookieOptions.httpOnly ? 'true' : ''
-    }${cookieOptions.secure ? ' Secure' : ''}; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}`;
+    }${cookieOptions.secure ? ' Secure' : ''}; SameSite=${cookieOptions.sameSite}; Path=${cookieOptions.path}; Domain=${
+        cookieOptions.domain
+    }`;
 };
 
 export const createSignedShopifyCookie = (cookie: string): string => {
