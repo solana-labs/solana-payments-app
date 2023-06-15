@@ -35,7 +35,8 @@
     "prisma:studio:prod": "dotenv -e .env.prod -- npx prisma studio",
     "prisma:generate:dev": "dotenv -e .env.dev -- npx prisma generate",
     "prisma:generate:stage": "dotenv -e .env.stage -- npx prisma generate",
-    "prisma:generate:prod": "dotenv -e .env.prod -- npx prisma generate"
+    "prisma:generate:prod": "dotenv -e .env.prod -- npx prisma generate",
+    "prisma:seed:dev": "dotenv -e .env.dev -- npx prisma db seed"
   },
   "keywords": [],
   "author": "@tj_littlejohn",

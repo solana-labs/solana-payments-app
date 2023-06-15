@@ -46,6 +46,7 @@ provider:
     WEBSOCKET_URL: ${env:WEBSOCKET_URL}
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
+    NODE_ENV: ${env:NODE_ENV}
 
 package:
   excludeDevDependencies: true
