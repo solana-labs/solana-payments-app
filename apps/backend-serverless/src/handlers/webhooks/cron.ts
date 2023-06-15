@@ -7,6 +7,8 @@ import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enha
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +21,13 @@ Sentry.AWSLambda.init({
 export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const transactionRecordService = new TransactionRecordService(prisma);
+        const paymentRecordService = new PaymentRecordService(prisma);
+
+        const websocketUrl = process.env.WEBSOCKET_URL;
+
+        if (websocketUrl == null) {
+            throw new Error('Missing websocket url');
+        }
 
         let paymentTransactionRecords: TransactionRecord[];
 
@@ -41,6 +50,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
         for (const transactionRecord of allTransactionRecords) {
             let transaction: HeliusEnhancedTransaction | null;
 
+            // Todo: use the api that gets you a bunch of transactions, up to 100
             try {
                 transaction = await fetchEnhancedTransaction(transactionRecord.signature);
             } catch (error) {
@@ -52,10 +62,18 @@ export const cron = Sentry.AWSLambda.wrapHandler(
                 continue;
             }
 
-            const boo = {};
+            const websocketService = new WebSocketService(
+                websocketUrl,
+                {
+                    signature: transaction.signature,
+                },
+                paymentRecordService
+            );
+
+            await websocketService.sendProcessingTransactionMessage();
 
             try {
-                await processTransaction(transaction, prisma, [], axios);
+                await processTransaction(transaction, prisma, websocketService, axios);
             } catch (error) {
                 Sentry.captureException(error);
                 continue;

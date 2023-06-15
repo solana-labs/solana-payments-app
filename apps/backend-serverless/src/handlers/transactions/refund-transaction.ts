@@ -20,6 +20,7 @@ import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/genera
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
+import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 
 const prisma = new PrismaClient();
 
@@ -167,11 +168,11 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
-        // try {
-        //     verifyRefundTransactionWithRefundRecord(refundRecord, transaction, true);
-        // } catch (error) {
-        //     return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        // }
+        try {
+            verifyTransactionWithRecord(refundRecord, transaction, true);
+        } catch (error) {
+            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+        }
 
         const signatureBuffer = transactionSignature;
 
