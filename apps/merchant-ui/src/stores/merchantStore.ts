@@ -23,7 +23,9 @@ export const useMerchantStore = create<MerchantStore>(set => ({
 
     getMerchantInfo: async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.merchantData);
+            const response = await fetch(API_ENDPOINTS.merchantData, {
+                credentials: 'include',
+            });
             const merchantJson = await response.json();
 
             set({
@@ -60,6 +62,7 @@ export async function updateMerchantAddress(walletAddress: string | null | undef
             body: JSON.stringify({
                 paymentAddress: walletAddress,
             }),
+            credentials: 'include',
         });
     } catch (error) {
         console.log('update merchant address error', error);
@@ -71,15 +74,15 @@ export async function updateMerchantTos() {
         'Content-Type': 'application/json',
     };
 
-    const response = await fetch(API_ENDPOINTS.updateMerchant, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({
-            acceptedTermsAndConditions: 'true',
-        }),
-    });
-
     try {
+        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({
+                acceptedTermsAndConditions: 'true',
+            }),
+            // credentials: 'include',
+        });
     } catch (error) {
         console.log('update merchant tos error', error);
     }
@@ -95,6 +98,7 @@ export async function updateMerchantKybInquiry(kybInquiry: string) {
             headers,
             method: 'PUT',
             body: JSON.stringify({ kybInquiry }),
+            credentials: 'include',
         });
     } catch (error) {
         console.log('update merchant kyb inquiry error', error);

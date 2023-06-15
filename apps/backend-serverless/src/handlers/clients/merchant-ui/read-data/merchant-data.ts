@@ -1,18 +1,15 @@
+import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import axios from 'axios';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
 import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
-import { makePaymentAppConfigure } from '../../../../services/shopify/payment-app-configure.service.js';
-import axios from 'axios';
-import { validatePaymentAppConfigured } from '../../../../services/shopify/validate-payment-app-configured.service.js';
-import { sendAppConfigureRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
-import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
+import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -83,6 +80,10 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 200,
             body: JSON.stringify(responseBodyData),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+            },
         };
     },
     {
