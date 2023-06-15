@@ -5,7 +5,7 @@ import { ShopifyMutationRetryType } from '../../../../src/models/shopify-mutatio
 
 describe('unit testing the sqs send message service', () => {
     it('should call SQS.sendMessage with correct parameters', async () => {
-        process.env.AWS_SHOPIFY_MUTATION_QUEUE_URL = 'mock-queue-url';
+        process.env.SHOPIFY_SQS_URL = 'mock-queue-url';
 
         // Mock SQS instance
         const mockSqs = {

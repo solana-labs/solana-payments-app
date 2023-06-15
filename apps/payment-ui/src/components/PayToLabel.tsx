@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../store';
+import { AppDispatch } from '../store';
 import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
 import { MdArrowBack } from 'react-icons/md';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
@@ -9,7 +9,7 @@ import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDis
 import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayAmountTokensDisplay';
-import { PaymentMethod, getPayingToken, getPaymentMethod, setPaymentMethod } from '../payment-options/paymentOptionsSlice';
+import { PaymentMethod, getPayingToken, getPaymentMethod, setPaymentMethod } from '../features/payment-options/paymentOptionsSlice';
 
 export const PayToLabel = () => {
 
@@ -49,11 +49,11 @@ export const PayToLabel = () => {
             <div className="flex flex-col w-full">
                 <div className="divider" />
             </div>
-            <div className="flex flex-row w-full justify-between">
+            <div className="flex flex-row w-full items-center justify-between">
                 <div className="label-text">Cart</div>
                 { paymentDetails == null ? <CartAmountLoading /> : <CartAmountDisplay displayAmount={paymentDetails.totalAmountFiatDisplay} /> }
             </div>
-            <div className="flex flex-row w-full justify-between">
+            <div className="flex flex-row w-full items-center justify-between">
                 <div className="label-text">Transaction Fee</div>
                 { paymentDetails == null ? <FeePriceDisplayLoading /> : <FeePriceDisplay /> }
             </div>

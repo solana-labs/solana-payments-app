@@ -8,18 +8,22 @@ const { S3 } = pkg;
 
 export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, paymentRecord: PaymentRecord) => {
     const bucket = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME;
-    const accessKey = process.env.AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY;
-    const secretKey = process.env.AWS_SINGLE_USE_KEYPAIR_SECRET_KEY;
+    // const accessKey = process.env.AWS_SINGLE_USE_KEYPAIR_ACCESS_KEY;
+    // const secretKey = process.env.AWS_SINGLE_USE_KEYPAIR_SECRET_KEY;
     const region = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION;
 
-    if (bucket == null || accessKey == null || secretKey == null || region == null) {
+    console.log(bucket);
+
+    // if (bucket == null || accessKey == null || secretKey == null || region == null) {
+    if (bucket == null || region == null) {
         throw new Error('AWS credentials not found');
     }
 
     const s3 = new S3({
+        // s3ForcePathStyle: true,
         region: region,
-        accessKeyId: accessKey,
-        secretAccessKey: secretKey,
+        // accessKeyId: accessKey,
+        // secretAccessKey: secretKey,
     });
 
     const seedString = JSON.stringify(singleUseKeypair.secretKey);

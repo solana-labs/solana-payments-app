@@ -12,6 +12,8 @@ const RouterHandler: React.FC = () => {
         return null;
     }
 
+    console.log(router.query)
+
     const { paymentId } = router.query;
 
     useEffect(() => {
