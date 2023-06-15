@@ -9,6 +9,7 @@ provider:
       allowedOrigins:
         - http://localhost:3005
         - https://merchant.solanapay.com
+        - https://shopify-payment-ui.vercel.app
       allowedHeaders:
         - Content-Type
         - Authorization
