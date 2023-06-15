@@ -4,6 +4,7 @@ import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 
 export const verifyTransactionWithRecord = (
     record: PaymentRecord | RefundRecord,
@@ -15,6 +16,7 @@ export const verifyTransactionWithRecord = (
     // }
     // verifySingleUseInstruction(transaction);
     // verifyTransferInstructionIsCorrect(transaction, record);
+    verifyPayerIsNotHistoricalFeePayer(transaction);
 };
 
 export const verifyRecordWithHeliusTranscation = (
@@ -27,6 +29,16 @@ export const verifyRecordWithHeliusTranscation = (
     }
     // verifySingleUseInstructionWithHeliusEnhancedTransaction(transaction);
     verifyTransferInstructionIsCorrectWithHeliusTransaction(transaction, record);
+};
+
+export const verifyPayerIsNotHistoricalFeePayer = async (transaction: web3.Transaction) => {
+    const payingCustomerWalletAddress = await findPayingWalletFromTransaction(transaction);
+
+    const feePayers = historicalFeePayers();
+
+    if (feePayers.includes(payingCustomerWalletAddress.toBase58())) {
+        throw new Error('The transaction is using a histroical fee payer.');
+    }
 };
 
 // KEEP
