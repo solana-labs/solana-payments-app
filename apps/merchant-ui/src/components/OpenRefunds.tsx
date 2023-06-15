@@ -215,7 +215,7 @@ export function OpenRefunds(props: Props) {
             <div className={props.className}>
                 <div className="flex flex-col justify-center h-full text-red-700 items-center space-y-4">
                     <MdSyncProblem size={36} />
-                    <p>We're having trouble loading your closed refunds data</p>
+                    <p>We're having trouble loading your open refunds data</p>
                 </div>
             </div>
         );
