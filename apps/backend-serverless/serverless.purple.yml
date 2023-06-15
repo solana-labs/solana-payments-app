@@ -105,6 +105,12 @@ functions:
       - httpApi:
           path: /payment-status
           method: get
+  balance:
+    handler: src/handlers/clients/payment-ui/balance.balance
+    events:
+      - httpApi:
+          path: /balance
+          method: get
   merchant-data:
     handler: src/handlers/clients/merchant-ui/read-data/merchant-data.merchantData
     events:

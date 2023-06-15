@@ -7,8 +7,6 @@ import {
 
 import { PrismaClient, TransactionType, WebsocketSession } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { processDiscoveredPaymentTransaction } from '../../services/business-logic/process-discovered-payment-transaction.service.js';
-import { processDiscoveredRefundTransaction } from '../../services/business-logic/process-discovered-refund-transaction.service.js';
 import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
 import {
     PaymentRecordService,
@@ -92,7 +90,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 // TODO: Add logging around these odd throws with Sentry
 
                 await websocketService.sendFailedProcessingTransactionMessage();
-
                 Sentry.captureException(error);
                 continue;
             }
