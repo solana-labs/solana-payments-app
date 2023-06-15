@@ -253,7 +253,6 @@ resources:
       Description: The url of the shopify sqs queue
       Value: 
         Ref: ShopifyQueue
-        
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket
@@ -270,7 +269,6 @@ resources:
       DeletionPolicy: Retain
       Properties:
         QueueName: shopify-queue-${self:provider.stage}
-
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
