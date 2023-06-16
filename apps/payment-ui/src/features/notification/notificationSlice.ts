@@ -32,7 +32,7 @@ export enum Notification {
     transactionRequestFailed = 'There was an issue building your payment transaction. Please try again.',
     declined = 'It looks like you declined the transaction. Was something wrong? Please try again.',
     duplicatePayment = 'It looks like you already paid. Please check your wallet.',
-    insufficentFunds = "It looks like you don't have enough USDC in your wallet. Please add more and try again.",
+    insufficentFunds = "You don't have enough funds for this transaction.",
     simulatingIssue = "There's an issue with your transaction. Please try again.",
 }
 
@@ -41,7 +41,7 @@ interface NotificationState {
 }
 
 const initalState: NotificationState = {
-    notification: Notification.none,
+    notification: Notification.insufficentFunds,
 };
 
 const notificationSlice = createSlice({

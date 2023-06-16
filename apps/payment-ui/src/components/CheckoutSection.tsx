@@ -14,6 +14,7 @@ import { GeoBlockedView } from './GeoBlockedView';
 import { PaymentLoadingView } from './PaymentLoadingView';
 import { PaymentView } from './PaymentView';
 import { ThankYouView } from './ThankYou';
+import CancelledTransactionView from './CancelledTransactionView';
 
 const CheckoutSection = (props: BlockedProps) => {
     const isProcessing = useSelector(getIsProcessing);

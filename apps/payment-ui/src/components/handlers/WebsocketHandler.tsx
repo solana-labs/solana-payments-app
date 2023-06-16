@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setFailedProcessing, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestFailed, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
+import { setNotification } from '@/features/notification/notificationSlice';
+import { NotificationView } from '../NotificationView';
+import { Notification } from '@/features/notification/notificationSlice'
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -49,7 +52,7 @@ const WebsocketHandler: React.FC = () => {
                 } else if ( data.messageType == 'transactionRequestFailed') {
                     dispatch(setTransactionRequestFailed())
                 } else if ( data.messageType == 'insufficientFunds') {
-                    dispatch(setTransactionRequestFailed())
+                    dispatch(setNotification(Notification.insufficentFunds))
                 }
 
             };

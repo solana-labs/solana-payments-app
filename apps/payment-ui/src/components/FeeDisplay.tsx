@@ -1,6 +1,6 @@
 const FeePriceDisplayBase = ( props: { showFree: boolean } ) => {
     return (
-        <div className="text-black bg-gray-200 w-16 flex justify-center rounded-md h-8 items-center font-bold">
+        <div className="text-black bg-gray-100 w-16 flex justify-center rounded-md h-8 items-center font-bold">
             { props.showFree ? 'Free' : '' }
         </div>
     )

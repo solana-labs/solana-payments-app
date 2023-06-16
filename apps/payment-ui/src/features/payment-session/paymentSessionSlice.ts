@@ -56,6 +56,8 @@ export interface ErrorDetails {
 }
 
 interface PaymentSessionState {
+    pubkey: string | null;
+    usdcBalance: number | null;
     paymentId: string | null;
     sessionState: SessionState;
     paymentDetails: PaymentDetails | null;
@@ -68,6 +70,8 @@ interface PaymentSessionState {
 }
 
 const initalState: PaymentSessionState = {
+    pubkey: null,
+    usdcBalance: null,
     paymentId: null,
     sessionState: SessionState.start,
     paymentDetails: null,
@@ -88,6 +92,12 @@ interface PaymentDetails {
     redirectUrl: string | null;
 }
 
+type BalanceResponse = {
+    pubkey: string;
+    usdcBalance: number;
+    error: string | null;
+};
+
 interface CompletedDetails {
     redirectUrl: string;
 }
@@ -97,6 +107,32 @@ type PaymentDetailsSocketMessageResponse = { error: unknown | null };
 type PaymentDetailsSocketMessageInfo = { paymentDetails: PaymentDetails };
 type SocketMessageResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
 type SocketMessage = { paymentDetails: PaymentDetails | null };
+
+export const setWalletConnected = createAsyncThunk<BalanceResponse, string>(
+    'wallet/setWalletConnected',
+    async (pubkey, { getState }): Promise<BalanceResponse> => {
+        const state = getState() as RootState;
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+        if (backendUrl == null) {
+            return {
+                pubkey: pubkey,
+                usdcBalance: 0,
+                error: null,
+            };
+        }
+
+        const url = `${backendUrl}/balance?pubkey=${pubkey}`;
+        const response = await axios.get(url);
+        const usdcBalance = response.data.usdcBalance;
+
+        return {
+            pubkey: pubkey,
+            usdcBalance: usdcBalance,
+            error: null,
+        };
+    }
+);
 
 export const socketConnected = createAsyncThunk<SocketConnectedResponse>(
     'paymentSession/socketConnected',
@@ -156,16 +192,6 @@ const paymentSessionSlice = createSlice({
             state.solanaPayState = SolanaPayState.transactionRequestStarted;
             state.mergedState = MergedState.submitting;
         },
-
-        // export enum MergedState {
-        //     start,
-        //     submitting,
-        //     approving,
-        //     processing,
-        //     completing,
-        //     laggedCompleting,
-        // }
-
         setTransactionRequestFailed: state => {
             state.transactionRequestState = TransactionRequestState.failed;
         },
@@ -206,6 +232,9 @@ const paymentSessionSlice = createSlice({
         setInsufficientFunds: state => {
             // set some error state for insuffient funds
         },
+        setCancelTransaction: state => {
+            state.mergedState = MergedState.start;
+        },
     },
     extraReducers(builder) {
         builder
@@ -218,9 +247,19 @@ const paymentSessionSlice = createSlice({
                     state.paymentDetails = action.payload.paymentDetails;
                     state.sessionState = SessionState.connected;
                 }
+            )
+            .addCase(setWalletConnected.pending, (state: PaymentSessionState) => {})
+            .addCase(setWalletConnected.rejected, (state: PaymentSessionState) => {})
+            .addCase(
+                setWalletConnected.fulfilled,
+                (state: PaymentSessionState, action: PayloadAction<BalanceResponse>) => {
+                    state.pubkey = action.payload.pubkey;
+                    state.usdcBalance = action.payload.usdcBalance;
+                }
             );
     },
 });
+
 export const {
     setPaymentId,
     setPaymentDetails,
@@ -238,6 +277,7 @@ export const {
     setConnectWalletStart,
     setTransactionRequestFailed,
     setInsufficientFunds,
+    setCancelTransaction,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;

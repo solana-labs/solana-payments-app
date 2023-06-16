@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NotificationView } from './NotificationView';
 import { AppDispatch } from '@/store';
 import { setWalletConnected } from '@/features/wallet/walletSlice';
+import SimpleNotificationView from './SimpleNotificationView';
 
 
 const WalletSection = () => {
@@ -46,7 +47,7 @@ const WalletSection = () => {
                 (
                     <div className=''>
                         <div className='pb-4'>
-                            { isNotification ? <NotificationView /> : null }
+                            <SimpleNotificationView />
                         </div>
                         <div className='pb-2'>
                             <WalletButton />
