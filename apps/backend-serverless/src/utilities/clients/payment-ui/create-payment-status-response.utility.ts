@@ -4,7 +4,11 @@ import { paymentSessionRejectionDisplayMessages } from '../../../services/shopif
 export interface PaymentStatusResponse {
     merchantDisplayName: string;
     totalAmountFiatDisplay: string;
+<<<<<<< HEAD
     usdcSize: number;
+=======
+    totalAmountUSDCDisplay: string;
+>>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
     cancelUrl: string;
     redirectUrl: string | null;
     completed: boolean;
@@ -26,7 +30,11 @@ export const createPaymentStatusResponse = (
         style: 'currency',
         currency: paymentRecord.currency,
     });
+<<<<<<< HEAD
     const usdcSize = paymentRecord.usdcAmount;
+=======
+    const totalAmountUSDCDisplay = `${paymentRecord.usdcAmount.toFixed(2)} USDC`;
+>>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
     const cancelUrl = paymentRecord.cancelURL;
     const redirectUrl = paymentRecord.redirectUrl;
     const completed = paymentRecord.redirectUrl ? true : false;
@@ -34,7 +42,11 @@ export const createPaymentStatusResponse = (
     return {
         merchantDisplayName,
         totalAmountFiatDisplay,
+<<<<<<< HEAD
         usdcSize,
+=======
+        totalAmountUSDCDisplay,
+>>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
         cancelUrl,
         redirectUrl,
         completed,

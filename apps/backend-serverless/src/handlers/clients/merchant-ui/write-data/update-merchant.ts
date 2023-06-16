@@ -22,7 +22,10 @@ import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
+<<<<<<< HEAD
 import { PubkeyType, getPubkeyType } from '../../../../services/helius.service.js';
+=======
+>>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
 
 const prisma = new PrismaClient();
 
