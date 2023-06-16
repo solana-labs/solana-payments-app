@@ -33,7 +33,7 @@ const WalletSection = () => {
 
     return (
         <div>
-            { !wallet && !base58 ? 
+            { !base58 ? 
                 (
                     <WalletMultiButton style={{ backgroundColor: 'black', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div className='flex flex-row items-center justify-center'>
