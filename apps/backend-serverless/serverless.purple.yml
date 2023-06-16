@@ -70,6 +70,11 @@ functions:
       - httpApi:
           path: /redirect
           method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   helius:
     handler: src/handlers/webhooks/helius.helius
     timeout: 60 # Increase the timeout to 60 seconds
@@ -92,6 +97,15 @@ functions:
       - httpApi:
           path: /cron
           method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ProcessQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: '*'
   payment-transaction:
     handler: src/handlers/transactions/payment-transaction.paymentTransaction
     events:
@@ -115,6 +129,10 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.SolanaPayInfoQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
@@ -130,13 +148,17 @@ functions:
         Action:
           - s3:PutObject
         Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
-
   reject-refund:
     handler: src/handlers/clients/merchant-ui/write-data/reject-refund.rejectRefund
     events:
       - httpApi:
           path: /reject-refund
           method: post
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   payment-metadata:
     handler: src/handlers/transactions/payment-transaction.paymentMetadata
     events:
@@ -161,6 +183,11 @@ functions:
       - httpApi:
           path: /merchant-data
           method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   refund-data:
     handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
     events:
@@ -185,6 +212,11 @@ functions:
       - httpApi:
           path: /update-merchant
           method: put
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   sqs-message-receive:
     handler: src/handlers/webhooks/sqs/sqs-message-receive.sqsMessageReceive
     environment:
@@ -217,6 +249,10 @@ functions:
         Action:
           - execute-api:ManageConnections
         Resource: '*'
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   sp-info-message:
     handler: src/handlers/webhooks/sqs/solana-pay-info-message.solanaPayInfoMessage
     events:
@@ -234,6 +270,11 @@ functions:
         Resource: '*'
   retry-request:
     handler: src/handlers/webhooks/retry.retry
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   queue:
     handler: src/handlers/testing/queue.queue
     events:

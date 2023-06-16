@@ -20,7 +20,7 @@ export const contingentlyHandleAppConfigure = async (
 
     const canBeActive = addedWallet && acceptedTermsAndConditions && kybIsFinished;
 
-    if (merchant.kybState == KybState.finished && merchant.accessToken != null) {
+    if (merchant.accessToken != null) {
         try {
             const appConfigureResponse = await paymentAppConfigure(
                 merchant.id,

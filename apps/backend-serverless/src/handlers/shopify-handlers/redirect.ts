@@ -20,6 +20,7 @@ import { sendAppConfigureRetryMessage } from '../../services/sqs/sqs-send-messag
 import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
 
 const prisma = new PrismaClient();
 
@@ -109,32 +110,11 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             // TODO: Figure out failure strategy, we might want to add this to a retry queue
         }
 
-        const paymentAppConfigure = makePaymentAppConfigure(axios);
-
-        const addedWallet = merchant.paymentAddress != null;
-        const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
-        const kybIsFinished = merchant.kybState === KybState.finished;
-
-        const canBeActive = addedWallet && acceptedTermsAndConditions && kybIsFinished;
-
         try {
-            const appConfigureResponse = await paymentAppConfigure(
-                merchant.id,
-                canBeActive,
-                shop,
-                accessTokenResponse.access_token
-            );
-
-            validatePaymentAppConfigured(appConfigureResponse);
-
-            merchant = await merchantService.updateMerchant(merchant, { active: canBeActive });
+            await contingentlyHandleAppConfigure(merchant, axios, prisma);
         } catch (error) {
-            try {
-                await sendAppConfigureRetryMessage(merchant.id, canBeActive);
-            } catch (error) {
-                Sentry.captureException(error);
-                // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
-            }
+            Sentry.captureException(error);
+            // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
         }
 
         let merchantAuthCookieHeader: string | null = null;

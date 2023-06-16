@@ -7,7 +7,7 @@ import axios from 'axios';
 import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service.js';
 
 export const retryRefundReject = async (
-    refundRejectInfo: ShopifyMutationRefundReject | undefined,
+    refundRejectInfo: ShopifyMutationRefundReject | null,
     prisma: PrismaClient,
     axiosInstance: typeof axios
 ) => {
