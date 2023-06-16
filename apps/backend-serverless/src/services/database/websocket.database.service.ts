@@ -1,7 +1,6 @@
-import { GDPR, PrismaClient, WebsocketSession } from '@prisma/client';
+import { PrismaClient, WebsocketSession } from '@prisma/client';
 import { prismaErrorHandler } from './shared.database.service.js';
 import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
-import { query } from 'express';
 
 export type WebsocketPaymentRecordIdQuery = {
     paymentRecordId: string;
