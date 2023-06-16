@@ -4,7 +4,7 @@ import {
     ShopifyMutationRetry,
     ShopifyMutationRetryType,
     parseAndValidateShopifyMutationRetry,
-} from '../../models/shopify-mutation-retry.model.js';
+} from '../../models/sqs/shopify-mutation-retry.model.js';
 import { PrismaClient } from '@prisma/client';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';

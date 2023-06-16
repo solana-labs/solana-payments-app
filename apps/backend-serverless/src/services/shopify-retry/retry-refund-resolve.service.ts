@@ -1,5 +1,5 @@
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
-import { ShopifyMutationRefundResolve } from '../../models/shopify-mutation-retry.model.js';
+import { ShopifyMutationRefundResolve } from '../../models/sqs/shopify-mutation-retry.model.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';

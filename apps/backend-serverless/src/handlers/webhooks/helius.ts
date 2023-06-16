@@ -5,25 +5,16 @@ import {
     parseAndValidateHeliusEnchancedTransaction,
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 
-import { PrismaClient, TransactionType, WebsocketSession } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
-import {
-    PaymentRecordService,
-    TransactionSignatureQuery,
-} from '../../services/database/payment-record-service.database.service.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
-import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
-import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { sendProcessTransactionMessage } from '../../services/sqs/sqs-send-message.service.js';
 
 const prisma = new PrismaClient();
 
@@ -33,11 +24,13 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
+// TODO: If we only get one transaction, we should just process it right away. We should only send it to the queue if we get multiple transactions.
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
         let heliusHeaders: HeliusHeader;
         const paymentRecordService = new PaymentRecordService(prisma);
+        const transactionRecordService = new TransactionRecordService(prisma);
 
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body'));
@@ -71,23 +64,45 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         if (websocketUrl == null) {
+            const error = new MissingEnvError('websocket url');
+            Sentry.captureException(error);
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
-        for (const heliusTransaction of heliusEnhancedTransactions) {
-            const websocketService = new WebSocketService(
-                websocketUrl,
-                {
-                    signature: heliusTransaction.signature,
-                },
-                paymentRecordService
-            );
+        const signatures = heliusEnhancedTransactions.map(transaction => transaction.signature);
 
+        const websocketService = new WebSocketService(
+            websocketUrl,
+            {
+                signatures: signatures,
+            },
+            paymentRecordService
+        );
+
+        try {
             await websocketService.sendProcessingTransactionMessage();
+        } catch (error) {
+            Sentry.captureException(error);
+            // If it fails, its not the end of the world
+        }
 
+        const transactionRecords = await transactionRecordService.getTransactionRecords(signatures);
+
+        if (transactionRecords == null) {
+            await websocketService.sendFailedProcessingTransactionMessage();
+            return {
+                statusCode: 200,
+                body: JSON.stringify({}),
+            };
+        }
+
+        for (const transactionRecord of transactionRecords) {
+            // send a message to the queue, even better if we can send an array of messages to the queue
             try {
-                await processTransaction(heliusTransaction, prisma, websocketService, axios);
+                console.log('sending message to queue');
+                await sendProcessTransactionMessage(transactionRecord.signature);
             } catch (error) {
+                // TODO: Only send the failed message to the failed websocket sessions
                 await websocketService.sendFailedProcessingTransactionMessage();
                 Sentry.captureException(error);
                 continue;

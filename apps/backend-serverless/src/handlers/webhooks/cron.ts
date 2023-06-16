@@ -1,20 +1,12 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { fetchEnhancedTransaction } from '../../services/helius.service.js';
-import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import { PrismaClient, TransactionRecord } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { create } from 'lodash';
 
 const prisma = new PrismaClient();
 
@@ -53,33 +45,21 @@ export const cron = Sentry.AWSLambda.wrapHandler(
 
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];
 
+        const signatures = allTransactionRecords.map(transactionRecord => transactionRecord.signature);
+
+        const websocketService = new WebSocketService(
+            websocketUrl,
+            {
+                signatures: signatures,
+            },
+            paymentRecordService
+        );
+
+        await websocketService.sendProcessingTransactionMessage();
+
         for (const transactionRecord of allTransactionRecords) {
-            let transaction: HeliusEnhancedTransaction | null;
-
-            // Todo: use the api that gets you a bunch of transactions, up to 100
             try {
-                transaction = await fetchEnhancedTransaction(transactionRecord.signature);
-            } catch (error) {
-                Sentry.captureException(error);
-                continue;
-            }
-
-            if (transaction == null) {
-                continue;
-            }
-
-            const websocketService = new WebSocketService(
-                websocketUrl,
-                {
-                    signature: transaction.signature,
-                },
-                paymentRecordService
-            );
-
-            await websocketService.sendProcessingTransactionMessage();
-
-            try {
-                await processTransaction(transaction, prisma, websocketService, axios);
+                await processTransaction(transactionRecord.signature, prisma, websocketService, axios);
             } catch (error) {
                 Sentry.captureException(error);
                 continue;

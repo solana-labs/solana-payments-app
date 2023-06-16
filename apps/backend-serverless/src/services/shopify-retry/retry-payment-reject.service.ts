@@ -1,4 +1,4 @@
-import { ShopifyMutationPaymentReject } from '../../models/shopify-mutation-retry.model.js';
+import { ShopifyMutationPaymentReject } from '../../models/sqs/shopify-mutation-retry.model.js';
 import { PrismaClient, PaymentRecordStatus } from '@prisma/client';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../database/payment-record-service.database.service.js';

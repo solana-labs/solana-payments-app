@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import { startExecutionOfShopifyMutationRetry } from '../../services/step-function/start-execution-shopify-retry.service.js';
+import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,

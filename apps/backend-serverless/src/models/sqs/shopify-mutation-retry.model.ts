@@ -1,9 +1,9 @@
 import { object, string, InferType, number, boolean } from 'yup';
-import { parseAndValidate } from '../utilities/yup.utility.js';
+import { parseAndValidate } from '../../utilities/yup.utility.js';
 import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
-} from './shopify-graphql-responses/shared.model.js';
+} from '../shopify-graphql-responses/shared.model.js';
 export enum ShopifyMutationRetryType {
     paymentResolve = 'payment-resolve',
     paymentReject = 'payment-reject',

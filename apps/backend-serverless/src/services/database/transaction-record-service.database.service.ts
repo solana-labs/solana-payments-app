@@ -9,11 +9,17 @@ export type SignatureQuery = {
     signature: string;
 };
 
+export type SignaturesQuery = {
+    signatures: string[];
+};
+
 export type TransactionIdQuery = {
     id: number;
 };
 
 export type TransactionRecordQuery = SignatureQuery | TransactionIdQuery;
+
+export type TransactionRecordsQuery = SignaturesQuery;
 
 export class TransactionRecordService {
     private prisma: PrismaClient;
@@ -25,6 +31,12 @@ export class TransactionRecordService {
     async getTransactionRecord(query: TransactionRecordQuery): Promise<TransactionRecord | null> {
         return await this.prisma.transactionRecord.findFirst({
             where: query,
+        });
+    }
+
+    async getTransactionRecords(signatures: string[]): Promise<TransactionRecord[] | null> {
+        return await this.prisma.transactionRecord.findMany({
+            where: { signature: { in: signatures } },
         });
     }
 
