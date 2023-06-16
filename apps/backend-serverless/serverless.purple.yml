@@ -10,6 +10,7 @@ provider:
         - http://localhost:3005
         - https://merchant.solanapay.com
         - https://shopify-payment-ui.vercel.app
+        - https://pay.solanapay.com
       allowedHeaders:
         - Content-Type
         - Authorization
