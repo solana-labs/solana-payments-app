@@ -203,6 +203,9 @@ const paymentSessionSlice = createSlice({
         setConnectWalletStart: state => {
             state.connectWalletState = ConnectWalletState.start;
         },
+        setInsufficientFunds: state => {
+            // set some error state for insuffient funds
+        },
     },
     extraReducers(builder) {
         builder
@@ -234,6 +237,7 @@ export const {
     setConnectWalletSentTransaction,
     setConnectWalletStart,
     setTransactionRequestFailed,
+    setInsufficientFunds,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;

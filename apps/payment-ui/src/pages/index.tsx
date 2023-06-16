@@ -30,26 +30,37 @@ export default function Home({ isBlocked, country }: BlockedProps) {
     const mergedState = useSelector(getMergedState)
 
     return (
-        <React.Fragment>
-            <div className="flex flex-col h-screen bg-black">
-                <div className="w-full max-w-xl mx-auto">
-                    <div className="container mx-auto">
-                        <div className="block h-16 py-2 font-black text-white text-2xl max-w-xl">
-                            <DisplaySection />
+        <>
+            <Head>
+                <title>Solana Pay</title>
+                <meta
+                    name="description"
+                    content="Solana Pay makes it easy for you to accept Solana and USDC payments on your Shopify site."
+                />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <React.Fragment>
+                <div className="flex flex-col h-screen bg-black">
+                    <div className="w-full max-w-xl mx-auto">
+                        <div className="container mx-auto">
+                            <div className="block h-16 py-2 font-black text-white text-2xl max-w-xl">
+                                <DisplaySection />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col flex-auto bg-black">
+                        <div className="flex-grow container mx-auto p-4 bg-white rounded-t-lg max-w-xl">
+                            <MainSection isBlocked={'false'} country={'usa'} />
+                        </div>
+                    </div>
+                    <div className="w-full bg-black">
+                        <div className="container h-36 mx-auto px-8 bg-white text-white text-center max-w-xl">
+                            { paymentMethod == 'connect-wallet' && mergedState == MergedState.start ? <PayWithWalletSection /> : <div></div> }
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col flex-auto bg-black">
-                    <div className="flex-grow container mx-auto p-4 bg-white rounded-t-lg max-w-xl">
-                        <MainSection isBlocked={'false'} country={'usa'} />
-                    </div>
-                </div>
-                <div className="w-full bg-black">
-                    <div className="container h-36 mx-auto px-8 bg-white text-white text-center max-w-xl">
-                        { paymentMethod == 'connect-wallet' && mergedState == MergedState.start ? <PayWithWalletSection /> : <div></div> }
-                    </div>
-                </div>
-            </div>
-        </React.Fragment>
+            </React.Fragment>
+        </>
+        
     );
 }
