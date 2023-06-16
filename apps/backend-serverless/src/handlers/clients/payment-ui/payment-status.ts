@@ -1,27 +1,20 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import {
-    Merchant,
-    PaymentRecord,
-    PaymentRecordRejectionReason,
-    PaymentRecordStatus,
-    PrismaClient,
-} from '@prisma/client';
+import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
 import {
     parseAndValidatePaymentStatusRequest,
     PaymentStatusRequest,
 } from '../../../models/clients/payment-ui/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
-import { paymentSessionRejectionDisplayMessages } from '../../../services/shopify/payment-session-reject.service.js';
-
-// TODO: Find somewhere to put this
-interface PaymentErrrorResponse {
-    errorTitle: string;
-    errorDetail: string;
-    errorRedirect: string;
-}
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { MissingExpectedDatabaseRecordError } from '../../../errors/missing-expected-database-record.error.js';
+import {
+    PaymentErrrorResponse,
+    PaymentStatusResponse,
+    createPaymentErrorResponse,
+    createPaymentStatusResponse,
+} from '../../../utilities/clients/payment-ui/create-payment-status-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -40,8 +33,8 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
 
         try {
             parsedPaymentStatusQuery = await parseAndValidatePaymentStatusRequest(event.queryStringParameters);
-        } catch (error: unknown) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+        } catch (error) {
+            return createErrorResponse(error);
         }
 
         let paymentRecord: PaymentRecord | null;
@@ -51,12 +44,11 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
                 id: parsedPaymentStatusQuery.paymentId,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
-        // TODO: Make this return as expected and show some kind of boof empty state
         if (paymentRecord == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
         }
 
         let merchant: Merchant | null;
@@ -66,52 +58,35 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
                 id: paymentRecord.merchantId,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
-        // TODO: Make this return as expected and show some kind of boof empty state
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
-        const paymentStatusResponse = {
-            merchantDisplayName: merchant.name ?? merchant.shop.split('.')[0],
-            totalAmountFiatDisplay: paymentRecord.amount.toLocaleString(parsedPaymentStatusQuery.language, {
-                style: 'currency',
-                currency: paymentRecord.currency,
-            }),
-            totalAmountUSDCDisplay: `${paymentRecord.usdcAmount.toFixed(2)} USDC`,
-            cancelUrl: paymentRecord.cancelURL,
-            redirectUrl: paymentRecord.redirectUrl,
-            completed: paymentRecord.redirectUrl ? true : false,
-        };
+        let paymentStatusResponse: PaymentStatusResponse;
+        let paymentErrorResponse: PaymentErrrorResponse | null;
 
-        let paymentStatusError: PaymentErrrorResponse | null = null;
-
-        if (paymentRecord.status == PaymentRecordStatus.rejected) {
-            const rejectionReason = paymentRecord.rejectionReason ?? PaymentRecordRejectionReason.unknownReason;
-            const rejectionReasonDisplayMesages = paymentSessionRejectionDisplayMessages(rejectionReason);
-
-            paymentStatusError = {
-                errorTitle: rejectionReasonDisplayMesages.errorTitle,
-                errorDetail: rejectionReasonDisplayMesages.errorDescription,
-                errorRedirect: paymentRecord.redirectUrl ?? paymentRecord.cancelURL, // TODO: Use reason data to populate this, ALSO we should probably use the redirect url here but cancel is kinda ok i guess
-            };
+        try {
+            paymentStatusResponse = createPaymentStatusResponse(
+                paymentRecord,
+                merchant,
+                parsedPaymentStatusQuery.language
+            );
+            paymentErrorResponse = createPaymentErrorResponse(paymentRecord);
+        } catch (error) {
+            return createErrorResponse(error);
         }
 
-        // TODO: Rename these, these are bad
         const responseBodyData = {
             paymentStatus: paymentStatusResponse,
-            error: paymentStatusError,
+            error: paymentErrorResponse,
         };
 
         return {
             statusCode: 200,
             body: JSON.stringify(responseBodyData),
-            // headers: {
-            //     'Access-Control-Allow-Origin': '*',
-            //     'Access-Control-Allow-Credentials': true,
-            // },
         };
     }
 );

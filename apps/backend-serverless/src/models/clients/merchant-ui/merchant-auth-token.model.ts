@@ -1,10 +1,10 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, number } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
 
 export const merchantAuthTokenSchema = object().shape({
     id: string().required(),
-    iat: string().required(),
-    exp: string().required(),
+    iat: number().required(),
+    exp: number().required(),
 });
 
 export type MerchantAuthToken = InferType<typeof merchantAuthTokenSchema>;

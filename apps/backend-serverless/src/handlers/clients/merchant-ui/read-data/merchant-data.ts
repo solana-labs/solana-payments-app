@@ -5,11 +5,18 @@ import axios from 'axios';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
+import {
+    GeneralResponse,
+    createGeneralResponse,
+} from '../../../../utilities/clients/merchant-ui/create-general-response.js';
+import {
+    OnboardingResponse,
+    createOnboardingResponse,
+} from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -28,7 +35,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            return createErrorResponse(error);
         }
 
         let merchant: Merchant | null;
@@ -36,38 +43,40 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, merchantAuthToken.id);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
             try {
                 merchant = await syncKybState(merchant, prisma);
             } catch (error) {
-                // Maybe we don't wana throw in this state though
-                // TODO: decide if we want to throw here
-                // TODO: Log this
+                Sentry.captureException(error);
             }
 
             if (merchant.kybState === KybState.finished) {
                 try {
                     merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
                 } catch (error) {
-                    // Maybe we don't wana throw in this state though
-                    // TODO: decide if we want to throw here
-                    // TODO: Log this
+                    // TODO: This would be worse, if it throws trying to do app configure, figure out what has to happen here
+                    Sentry.captureException(error);
                 }
             }
         }
 
-        // TODO: try/catch this
-        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
-        const onboardingResponse = createOnboardingResponse(merchant);
+        let generalResponse: GeneralResponse;
+        let onboardingResponse: OnboardingResponse;
 
-        // TODO: Create a type for this
+        try {
+            generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+            onboardingResponse = createOnboardingResponse(merchant);
+        } catch (error) {
+            return createErrorResponse(error);
+        }
+
         const responseBodyData = {
             merchantData: {
                 name: merchant.name,

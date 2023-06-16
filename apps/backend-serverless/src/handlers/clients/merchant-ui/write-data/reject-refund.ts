@@ -12,10 +12,14 @@ import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authen
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import axios from 'axios';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
 import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service.js';
 import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model.js';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
+import { UnauthorizedRequestError } from '../../../../errors/unauthorized-request.error.js';
+import { ConflictingStateError } from '../../../../errors/conflicting-state.error.js';
+import { DependencyError } from '../../../../errors/dependency.error.js';
 
 const prisma = new PrismaClient();
 
@@ -36,13 +40,13 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            return createErrorResponse(error);
         }
 
         try {
             rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         let refundRecord: RefundRecord | null;
@@ -52,11 +56,11 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                 shopId: rejectRefundRequest.refundId,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (refundRecord == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('refund record'));
         }
 
         let merchant: Merchant | null;
@@ -66,26 +70,26 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                 id: merchantAuthToken.id,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         if (merchant.id !== refundRecord.merchantId) {
-            return errorResponse(ErrorType.conflict, ErrorMessage.incompatibleDatabaseRecords);
+            return createErrorResponse(new UnauthorizedRequestError('merchant does not own the refund'));
         }
 
         if (refundRecord.status !== RefundRecordStatus.pending) {
-            return errorResponse(ErrorType.conflict, ErrorMessage.incorrectRefundRecordState);
+            return createErrorResponse(new ConflictingStateError('refund is not pending'));
         }
 
         const shop = merchant.shop;
         const accessToken = merchant.accessToken;
 
         if (accessToken == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unauthorizedMerchant);
+            return createErrorResponse(new UnauthorizedRequestError('merchant is missing valid access token'));
         }
 
         let rejectRefundResponse: RejectRefundResponse;
@@ -109,12 +113,8 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     rejectRefundRequest.merchantReason
                 );
             } catch (sendMessageError) {
-                // TODO: This should not happen but if it does we should log it
-                // We will add some kind of redudancy to this later
-                // For now we will just return an error. The good thing is that this is the safest error to have, reject-refund
+                return createErrorResponse(new DependencyError('failed to send refund reject retry message'));
             }
-
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
         }
 
         try {
@@ -122,10 +122,8 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                 status: RefundRecordStatus.rejected,
             });
         } catch (error) {
-            // This will leave us in an odd spot because Shopify would be updated but we would not be
-            // We should probably retry this as well but this will go along with what ever strategy we
-            // use on failed database updates in general
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            // TODO: Log as a big issue with sentry. Db should not fail.
+            return createErrorResponse(new DependencyError('failed to update internal record. please retry.'));
         }
 
         return {

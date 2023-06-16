@@ -9,8 +9,16 @@ import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    createErrorResponse,
+    errorResponse,
+} from '../../utilities/responses/error-response.utility.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -27,17 +35,18 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         const paymentUiUrl = process.env.PAYMENT_UI_URL;
 
         if (paymentUiUrl == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
+            return createErrorResponse(new MissingEnvError('payment ui url'));
         }
 
         if (event.body == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+            return createErrorResponse(new InvalidInputError('request body'));
         }
 
+        // TODO: Add validation for shopify-shop-domain header
         const shop = event.headers['shopify-shop-domain'];
 
         if (shop == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
+            return createErrorResponse(new InvalidInputError('shopify domain header'));
         }
 
         let merchant: Merchant | null;
@@ -45,11 +54,11 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ shop: shop });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         let paymentInitiation: ShopifyPaymentInitiation;
@@ -57,8 +66,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
         } catch (error) {
-            // TODO: Correct error response
-            return requestErrorResponse(error);
+            return createErrorResponse(error);
         }
 
         let paymentRecord: PaymentRecord | null;
@@ -68,7 +76,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 shopId: paymentInitiation.id,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         try {
@@ -93,14 +101,8 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 );
             }
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.incompatibleDatabaseRecords);
+            return createErrorResponse(error);
         }
-
-        console.log(paymentUiUrl);
-        console.log(paymentUiUrl);
-        console.log(paymentUiUrl);
-        console.log(paymentUiUrl);
-        console.log(paymentUiUrl);
 
         return {
             statusCode: 201,

@@ -4,11 +4,17 @@ import { fetchEnhancedTransaction } from '../../services/helius.service.js';
 import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    createErrorResponse,
+    errorResponse,
+} from '../../utilities/responses/error-response.utility.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { create } from 'lodash';
 
 const prisma = new PrismaClient();
 
@@ -34,7 +40,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
         try {
             paymentTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingPayments();
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         let refundTransactionRecords: TransactionRecord[];
@@ -42,7 +48,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
         try {
             refundTransactionRecords = await transactionRecordService.getTransactionRecordsForPendingRefunds();
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         const allTransactionRecords = [...paymentTransactionRecords, ...refundTransactionRecords];

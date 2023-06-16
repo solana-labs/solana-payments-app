@@ -1,3 +1,12 @@
+import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
+import { DependencyError } from '../../errors/dependency.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
+import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+
 export enum ErrorType {
     badRequest = 400,
     unauthorized = 401,
@@ -35,19 +44,35 @@ export const errorResponse = (errorType: ErrorType, errorMessage: string) => {
     };
 };
 
-export const errorTypeForError = (error: unknown): ErrorType => {
-    if (error instanceof Error) {
-        switch (error.name) {
-            case 'MissingEnvError':
-                return ErrorType.internalServerError;
-            case 'ValidationError':
-                return ErrorType.badRequest;
-            case 'DependencyError':
-                return ErrorType.internalServerError;
-            default:
-                return ErrorType.internalServerError;
-        }
+export const createErrorResponse = (error: unknown) => {
+    if (error instanceof MissingEnvError) {
+        return fooBar(ErrorType.internalServerError, error.message);
+    } else if (error instanceof UnauthorizedRequestError) {
+        return fooBar(ErrorType.unauthorized, error.message);
+    } else if (error instanceof MissingExpectedDatabaseRecordError) {
+        return fooBar(ErrorType.notFound, error.message);
+    } else if (error instanceof ConflictingStateError) {
+        return fooBar(ErrorType.conflict, error.message);
+    } else if (error instanceof DependencyError) {
+        return fooBar(ErrorType.internalServerError, error.message);
+    } else if (error instanceof InvalidInputError) {
+        return fooBar(ErrorType.badRequest, error.message);
+    } else if (error instanceof MissingExpectedDatabaseValueError) {
+        return fooBar(ErrorType.notFound, error.message);
+    } else if (error instanceof RiskyWalletError) {
+        return fooBar(ErrorType.unauthorized, error.message);
+    } else if (error instanceof Error) {
+        return fooBar(ErrorType.internalServerError, error.message);
     } else {
-        return ErrorType.internalServerError;
+        return fooBar(ErrorType.internalServerError, 'Unknown error. Please contact support.');
     }
+};
+
+const fooBar = (statusCode: number, message: string) => {
+    return {
+        statusCode,
+        body: JSON.stringify({
+            error: message,
+        }),
+    };
 };

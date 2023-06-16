@@ -1,4 +1,12 @@
-import { Merchant } from '@prisma/client';
+import { KybState, Merchant } from '@prisma/client';
+
+export interface OnboardingResponse {
+    completed: boolean;
+    acceptedTerms: boolean;
+    addedWallet: boolean;
+    dismissedCompleted: boolean;
+    kybState: KybState;
+}
 
 export const createOnboardingResponse = (merchant: Merchant) => {
     const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;

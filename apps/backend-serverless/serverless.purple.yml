@@ -212,10 +212,6 @@ functions:
     handler: src/handlers/websockets/disconnect.disconnect
     events:
       - websocket: $disconnect
-  defaultHandler:
-    handler: src/handlers/websockets/default.defaultHandler
-    events:
-      - websocket: $default
 stepFunctions:
   stateMachines:
     retry:

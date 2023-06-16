@@ -6,19 +6,20 @@ import {
     parseAndValidateAppRedirectQueryParams,
 } from '../../models/shopify/redirect-query-params.model.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
-import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
 import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import axios from 'axios';
 import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { makeAdminData } from '../../services/shopify/admin-data.service.js';
 import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
 import { validatePaymentAppConfigured } from '../../services/shopify/validate-payment-app-configured.service.js';
 import { sendAppConfigureRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
 import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -39,19 +40,19 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
         if (redirectUrl == null || jwtSecretKey == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
+            return createErrorResponse(new MissingEnvError('merchant ui url or jwt secret key'));
         }
 
         try {
             parsedAppRedirectQuery = await parseAndValidateAppRedirectQueryParams(event.queryStringParameters);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         try {
             await verifyRedirectParams(parsedAppRedirectQuery, prisma);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         const shop = parsedAppRedirectQuery.shop;
@@ -60,7 +61,7 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         try {
             accessTokenResponse = await fetchAccessToken(shop, code);
         } catch (error) {
-            return requestErrorResponse(error);
+            return createErrorResponse(error);
         }
 
         let merchant: Merchant | null;
@@ -68,17 +69,17 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ shop: shop });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         try {
             verifyShopifySignedCookie(event.cookies, merchant.lastNonce);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.invalidRequestHeaders);
+            return createErrorResponse(error);
         }
 
         const updateData = {
@@ -89,7 +90,7 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.updateMerchant(merchant, updateData);
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
         const adminData = makeAdminData(axios);
@@ -103,13 +104,9 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
                 email: adminDataResponse.data.shop.email,
             });
         } catch (error) {
-            // TODO: Handle the error
-            return {
-                statusCode: 200,
-                body: JSON.stringify(error),
-            };
+            Sentry.captureException(error);
             // I don't think we would want to fail anything here, at best we can retry it
-            // TODO: Figure out failure strategy
+            // TODO: Figure out failure strategy, we might want to add this to a retry queue
         }
 
         const paymentAppConfigure = makePaymentAppConfigure(axios);
@@ -135,32 +132,31 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             try {
                 await sendAppConfigureRetryMessage(merchant.id, canBeActive);
             } catch (error) {
-                // If this fails we should log a critical error but it's not the end of the world, it just means that we have an issue sending retry messages
-                // We should eventually have some kind of redundant system here but for now we can just send the user back to the merchant ui
-                // in a state that is logged in but not fully set up with Shopify
-                // TODO: Handle this better
-                // TODO: Log critical error
+                Sentry.captureException(error);
+                // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
             }
         }
 
-        console.log(merchant.id);
-
-        let merchantAuthCookieHeader: string;
+        let merchantAuthCookieHeader: string | null = null;
         try {
             merchantAuthCookieHeader = createMechantAuthCookieHeader(merchant.id);
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            // This would mean that the merchant won't be logged in, we could probably send them to the merchant UI with an error that they need to log in again
+            // TODO: Add data to the merchant ui request that they need to log in again
         }
 
-        console.log(merchantAuthCookieHeader);
+        let redirectHeaders = {
+            Location: `${redirectUrl}/merchant`,
+            'Content-Type': 'text/html',
+        };
+
+        if (merchantAuthCookieHeader != null) {
+            redirectHeaders['Set-Cookie'] = merchantAuthCookieHeader;
+        }
 
         return {
             statusCode: 301,
-            headers: {
-                Location: `${redirectUrl}/merchant`,
-                'Content-Type': 'text/html',
-                'Set-Cookie': merchantAuthCookieHeader,
-            },
+            headers: redirectHeaders,
             body: JSON.stringify({}),
         };
     },

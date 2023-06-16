@@ -6,7 +6,7 @@ import {
     parseAndValidateShopifyMutationRetry,
 } from '../../models/shopify-mutation-retry.model.js';
 import { PrismaClient } from '@prisma/client';
-import { InvalidInputError } from '../../errors/InvalidInput.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
 import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service.js';
 import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service.js';
@@ -32,6 +32,8 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             // Throwing should cause the step function to be retried. However, we should
             // manually view the error becuase it shouldn't work next titme either.
+            // TODO: Log more data with the capture because the data here should be good to parse
+            Sentry.captureException(error);
             throw new InvalidInputError('shopify mutation retry body'); // TODO: Critical Error
         }
 

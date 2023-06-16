@@ -7,11 +7,18 @@ import {
     parseAndValidatePaymentDataRequestParameters,
 } from '../../../../models/clients/merchant-ui/payment-data-request.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createPaymentResponse } from '../../../../utilities/clients/merchant-ui/create-payment-response.utility.js';
+import {
+    GeneralResponse,
+    createGeneralResponse,
+} from '../../../../utilities/clients/merchant-ui/create-general-response.js';
+import {
+    PaymentResponse,
+    createPaymentResponse,
+} from '../../../../utilities/clients/merchant-ui/create-payment-response.utility.js';
 import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +38,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            return createErrorResponse(error);
         }
 
         let merchant: Merchant | null;
@@ -39,17 +46,17 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         try {
             paymentDataRequestParameters = parseAndValidatePaymentDataRequestParameters(event.queryStringParameters);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         const pagination: Pagination = {
@@ -57,9 +64,15 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             pageSize: paymentDataRequestParameters.pageSize,
         };
 
-        // TODO: try/catch this
-        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
-        const paymentResponse = await createPaymentResponse(merchantAuthToken, pagination, prisma);
+        let generalResponse: GeneralResponse;
+        let paymentResponse: PaymentResponse;
+
+        try {
+            generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+            paymentResponse = await createPaymentResponse(merchantAuthToken, pagination, prisma);
+        } catch (error) {
+            return createErrorResponse(error);
+        }
 
         const responseBodyData = {
             paymentData: paymentResponse,
