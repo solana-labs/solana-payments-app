@@ -12,7 +12,6 @@ export const QRCode: FC = () => {
     const paymentId = useSelector(getPaymentId);
 
     // useEffect(() => {
-    //     const listener = () => setSize(Math.min(window.screen.availWidth - 48, 400));
 
     //     window.addEventListener('resize', listener);
     //     return () => window.removeEventListener('resize', listener);
