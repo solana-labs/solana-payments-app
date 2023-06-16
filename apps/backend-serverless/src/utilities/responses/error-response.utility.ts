@@ -1,5 +1,10 @@
+import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
+import { DependencyError } from '../../errors/dependency.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
+import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
 
 export enum ErrorType {
@@ -46,6 +51,16 @@ export const createErrorResponse = (error: unknown) => {
         return fooBar(ErrorType.unauthorized, error.message);
     } else if (error instanceof MissingExpectedDatabaseRecordError) {
         return fooBar(ErrorType.notFound, error.message);
+    } else if (error instanceof ConflictingStateError) {
+        return fooBar(ErrorType.conflict, error.message);
+    } else if (error instanceof DependencyError) {
+        return fooBar(ErrorType.internalServerError, error.message);
+    } else if (error instanceof InvalidInputError) {
+        return fooBar(ErrorType.badRequest, error.message);
+    } else if (error instanceof MissingExpectedDatabaseValueError) {
+        return fooBar(ErrorType.notFound, error.message);
+    } else if (error instanceof RiskyWalletError) {
+        return fooBar(ErrorType.unauthorized, error.message);
     } else if (error instanceof Error) {
         return fooBar(ErrorType.internalServerError, error.message);
     } else {
