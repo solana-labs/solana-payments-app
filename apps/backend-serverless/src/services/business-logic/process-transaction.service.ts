@@ -29,6 +29,7 @@ export const processTransaction = async (
         throw new Error('Transaction record not found');
     }
 
+    // TODO: Make this a factory class
     const recordService = await getRecordServiceForTransaction(transactionRecord, prisma);
 
     const record = await recordService.getRecord(transactionRecord);
@@ -62,6 +63,7 @@ export const processTransaction = async (
 
     await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
+    // TODO: Make this use generic and the record service
     if (transactionRecord.type == 'payment' && websocketService != null) {
         const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
 

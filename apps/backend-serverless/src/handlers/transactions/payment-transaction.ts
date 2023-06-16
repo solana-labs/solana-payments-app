@@ -179,8 +179,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             try {
                 await trmService.screenAddress(account);
             } catch (error) {
-                let rejectionReason: PaymentSessionStateRejectedReason =
-                    PaymentSessionStateRejectedReason.processingError;
+                let rejectionReason = PaymentSessionStateRejectedReason.processingError;
 
                 if (error instanceof RiskyWalletError) {
                     rejectionReason = PaymentSessionStateRejectedReason.risky;

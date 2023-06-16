@@ -14,6 +14,7 @@ import { retryRefundReject } from '../../services/shopify-retry/retry-refund-rej
 import { retryAppConfigure } from '../../services/shopify-retry/retry-app-configure.service.js';
 import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -41,23 +42,23 @@ export const retry = Sentry.AWSLambda.wrapHandler(
             switch (shopifyMutationRetry.retryType) {
                 case ShopifyMutationRetryType.paymentResolve:
                     console.log('payment resolve');
-                    // await retryPaymentResolve(shopifyMutationRetry.paymentResolve, prisma);
+                    await retryPaymentResolve(shopifyMutationRetry.paymentResolve, prisma, axios);
                     break;
                 case ShopifyMutationRetryType.paymentReject:
                     console.log('payment reject');
-                    // await retryPaymentReject(shopifyMutationRetry.paymentReject, prisma);
+                    await retryPaymentReject(shopifyMutationRetry.paymentReject, prisma, axios);
                     break;
                 case ShopifyMutationRetryType.refundResolve:
                     console.log('refund resolve');
-                    // await retryRefundResolve(shopifyMutationRetry.refundResolve, prisma);
+                    await retryRefundResolve(shopifyMutationRetry.refundResolve, prisma, axios);
                     break;
                 case ShopifyMutationRetryType.refundReject:
                     console.log('refund reject');
-                    // await retryRefundReject(shopifyMutationRetry.refundReject, prisma);
+                    await retryRefundReject(shopifyMutationRetry.refundReject, prisma, axios);
                     break;
                 case ShopifyMutationRetryType.appConfigure:
                     console.log('app configure');
-                    // await retryAppConfigure(shopifyMutationRetry.appConfigure, prisma);
+                    await retryAppConfigure(shopifyMutationRetry.appConfigure, prisma, axios);
                     break;
             }
         } catch (error) {
