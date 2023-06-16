@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { getBalance } from '@/features/wallet/walletSlice';
 
 
-const WalletButton = () => {
+const WalletButton = ( ) => {
     const { publicKey, sendTransaction } = useWallet();
 
     const usdcBalance = useSelector(getBalance)
