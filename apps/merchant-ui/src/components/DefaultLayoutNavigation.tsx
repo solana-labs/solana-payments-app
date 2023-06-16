@@ -2,7 +2,7 @@ import { LoadingDots } from '@/components/LoadingDots';
 import { isFailed, isOk, isPending } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { useOpenRefundStore } from '@/stores/refundStore';
-import { User } from '@carbon/icons-react';
+import User from '@carbon/icons-react/lib/User';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
@@ -12,6 +12,7 @@ import { RefundCount } from './RefundCount';
 import { SolanaPayMark } from './SolanaPayMark';
 import { Description } from './icons/Description';
 import { Flag } from './icons/Flag';
+import { Folder } from './icons/Folder';
 import { ReceiptLong } from './icons/ReceiptLong';
 import { Reply } from './icons/Reply';
 import { Store } from './icons/Store';
@@ -105,7 +106,15 @@ export function DefaultLayoutNavigation(props: Props) {
             </NavigationMenu.List>
             <NavigationMenu.List>
                 <div className="pr-6">
-                    <DefaultLayoutNavigationExternalLink href="/docs" icon={<Description />} text="Documentation" />
+                    <DefaultLayoutNavigationExternalLink href="/docs" icon={<Folder />} text="Documentation" />
+                </div>
+                <div className="pr-6">
+                    <DefaultLayoutNavigationExternalLink
+                        className="bg-slate-600"
+                        href="/tos"
+                        icon={<Description />}
+                        text="Terms of Service"
+                    />
                 </div>
             </NavigationMenu.List>
         </NavigationMenu.Root>
