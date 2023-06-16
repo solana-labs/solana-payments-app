@@ -9,6 +9,7 @@ import React from 'react';
 import PayWithQRCodeSection from '@/components/PayWithQRCodeSection';
 import { useSelector } from 'react-redux';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
+import { MergedState, getMergedState } from '@/features/payment-session/paymentSessionSlice';
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
     const { query } = context;
@@ -26,6 +27,7 @@ export type BlockedProps = {
 export default function Home({ isBlocked, country }: BlockedProps) {
 
     const paymentMethod = useSelector(getPaymentMethod)
+    const mergedState = useSelector(getMergedState)
 
     return (
         <React.Fragment>
@@ -44,7 +46,7 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                 </div>
                 <div className="w-full bg-black">
                     <div className="container h-36 mx-auto px-8 bg-white text-white text-center max-w-xl">
-                        { paymentMethod == 'connect-wallet' ? <PayWithWalletSection /> : <div></div> }
+                        { paymentMethod == 'connect-wallet' && mergedState == MergedState.start ? <PayWithWalletSection /> : <div></div> }
                     </div>
                 </div>
             </div>
