@@ -66,7 +66,7 @@ export type MerchantIdQuery = {
 };
 
 export type TransactionSignatureQuery = {
-    signature: string;
+    signatures: string[];
 };
 
 export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
@@ -190,7 +190,7 @@ export class PaymentRecordService
     }
 
     async fetchWebsocketSessions(query: TransactionSignatureQuery): Promise<WebsocketSession[]> {
-        return (await this.getPaymentRecordAndWebsocketServiceForTransactionSignature(query.signature))
+        return (await this.getPaymentRecordAndWebsocketServiceForTransactionSignatures(query.signatures))
             .websocketSessions;
     }
 
@@ -219,6 +219,32 @@ export class PaymentRecordService
 
         // return { paymentRecord: null, websocketSessions: [] };
         return { websocketSessions: [] };
+    }
+
+    async getPaymentRecordAndWebsocketServiceForTransactionSignatures(
+        transactionSignatures: string[]
+    ): Promise<{ websocketSessions: WebsocketSession[] }> {
+        const transactionRecords = await prismaErrorHandler(
+            this.prisma.transactionRecord.findMany({
+                where: { signature: { in: transactionSignatures } },
+                include: {
+                    paymentRecord: {
+                        include: {
+                            websocketSessions: true,
+                        },
+                    },
+                },
+            })
+        );
+
+        let websocketSessions: WebsocketSession[] = [];
+        transactionRecords.forEach(record => {
+            if (record && record.paymentRecord) {
+                websocketSessions = [...websocketSessions, ...(record.paymentRecord.websocketSessions || [])];
+            }
+        });
+
+        return { websocketSessions: websocketSessions };
     }
 
     async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {

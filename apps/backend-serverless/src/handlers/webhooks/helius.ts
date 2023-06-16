@@ -71,20 +71,33 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         if (websocketUrl == null) {
+            const error = new MissingEnvError('websocket url');
+            Sentry.captureException(error);
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
+        const websocketService = new WebSocketService(
+            websocketUrl,
+            {
+                signatures: heliusEnhancedTransactions.map(transaction => transaction.signature),
+            },
+            paymentRecordService
+        );
+
+        await websocketService.sendProcessingTransactionMessage();
+
         for (const heliusTransaction of heliusEnhancedTransactions) {
-            const websocketService = new WebSocketService(
-                websocketUrl,
-                {
-                    signature: heliusTransaction.signature,
-                },
-                paymentRecordService
-            );
+            // const websocketService = new WebSocketService(
+            //     websocketUrl,
+            //     {
+            //         signature: heliusTransaction.signature,
+            //     },
+            //     paymentRecordService
+            // );
 
-            await websocketService.sendProcessingTransactionMessage();
-
+            // I don't think I actually want to process all of the transactions here, i should move this to a queue for final processing.
+            // But do i want to get the transaction record first? We would only want to process the transactions if there is a transcation record for it.
+            // I could try to do a single prisma query to get all of the transaction records and the websocket sessions. It would probably be the most performant.
             try {
                 await processTransaction(heliusTransaction, prisma, websocketService, axios);
             } catch (error) {
