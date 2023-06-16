@@ -5,12 +5,7 @@ import {
     ShopifyResolveResponse,
     getRecordServiceForTransaction,
 } from '../database/record-service.database.service.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import {
-    verifyRecordWithHeliusTranscation,
-    verifyTransactionWithRecord,
-} from '../transaction-validation/validate-discovered-payment-transaction.service.js';
-import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
+import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import * as web3 from '@solana/web3.js';
 import { delay } from '../../utilities/delay.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
@@ -19,7 +14,7 @@ import axios from 'axios';
 import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 
 export const processTransaction = async (
-    heliusTransaction: HeliusEnhancedTransaction,
+    signature: string,
     prisma: PrismaClient,
     websocketService: WebSocketService<TransactionSignatureQuery> | null,
     axiosInstance: typeof axios
@@ -27,7 +22,7 @@ export const processTransaction = async (
     const transactionRecordService = new TransactionRecordService(prisma);
 
     const transactionRecord = await transactionRecordService.getTransactionRecord({
-        signature: heliusTransaction.signature,
+        signature: signature,
     });
 
     if (transactionRecord == null) {
@@ -42,20 +37,19 @@ export const processTransaction = async (
         throw new Error('Record not found');
     }
 
-    verifyRecordWithHeliusTranscation(record, heliusTransaction, true);
-
     let rpcTransaction: web3.Transaction | null = null;
 
     while (rpcTransaction == null) {
         try {
+            // TODO: play around with lowering this time
             await delay(3000);
-            rpcTransaction = await fetchTransaction(heliusTransaction.signature);
+            rpcTransaction = await fetchTransaction(signature);
         } catch (error) {}
     }
 
     verifyTransactionWithRecord(record, rpcTransaction, true);
 
-    await recordService.updateRecordToPaid(record.id, heliusTransaction.signature);
+    await recordService.updateRecordToPaid(record.id, signature);
 
     let resolveResponse: ShopifyResolveResponse;
 

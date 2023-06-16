@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ShopifyMutationAppConfigure } from '../../models/shopify-mutation-retry.model.js';
+import { ShopifyMutationAppConfigure } from '../../models/sqs/shopify-mutation-retry.model.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
 import axios from 'axios';

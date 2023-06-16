@@ -50,6 +50,7 @@ provider:
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
 
 package:
   excludeDevDependencies: true
@@ -75,6 +76,15 @@ functions:
       - httpApi:
           path: /helius
           method: post
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ProcessQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: '*'
   raw-helius:
     handler: src/handlers/testing/raw-helius.rawHelius
     timeout: 30 # Increase the timeout to 30 seconds
@@ -178,7 +188,7 @@ functions:
           path: /update-merchant
           method: put
   sqs-message-receive:
-    handler: src/handlers/webhooks/sqs-message-receive.sqsMessageReceive
+    handler: src/handlers/webhooks/sqs/sqs-message-receive.sqsMessageReceive
     environment:
       RETRY_ARN: ${self:resources.Outputs.RetryMachine.Value}
     events:
@@ -194,6 +204,21 @@ functions:
         Action:
           - sqs:ReceiveMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
+  process-message:
+    handler: src/handlers/webhooks/sqs/process-transaction-message.processTransactionMessage
+    events:
+      - sqs:
+          arn: ${self:resources.Outputs.ProcessQueueArn.Value}
+          batchSize: 1
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:ReceiveMessage
+        Resource: ${self:resources.Outputs.ProcessQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: '*'
   retry-request:
     handler: src/handlers/webhooks/retry.retry
   queue:
@@ -261,6 +286,14 @@ resources:
       Description: The url of the shopify sqs queue
       Value: 
         Ref: ShopifyQueue
+    ProcessQueueArn:
+      Description: The arn of the process sqs queue
+      Value:
+        Fn::GetAtt: [ProcessQueue, Arn]
+    ProcessQueueUrl:
+      Description: The arn of the process sqs queue
+      Value:
+        Ref: ProcessQueue
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket
@@ -277,6 +310,11 @@ resources:
       DeletionPolicy: Retain
       Properties:
         QueueName: shopify-queue-${self:provider.stage}
+    ProcessQueue:
+      Type: AWS::SQS::Queue
+      DeletionPolicy: Retain
+      Properties:
+        QueueName: process-queue-${self:provider.stage}
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies

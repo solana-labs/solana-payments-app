@@ -7,7 +7,7 @@ import {
     ShopifyMutationRefundReject,
     ShopifyMutationRefundResolve,
     ShopifyMutationRetryType,
-} from '../../models/shopify-mutation-retry.model.js';
+} from '../../models/sqs/shopify-mutation-retry.model.js';
 import { nextRetryTimeInterval, retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import {
     PaymentSessionStateRejectedReason,
@@ -126,6 +126,34 @@ export const sendRetryMessage = async (
                         StringValue: 'shopify-mutation-retry',
                     },
                 },
+            })
+            .promise();
+    }, maxNumberOfSendMessageAttempts);
+
+    if (attempts === maxNumberOfSendMessageAttempts) {
+        // TODO: Log in sentry as critical error
+        throw new Error('Could not send SQS message');
+    }
+};
+
+export const sendProcessTransactionMessage = async (signature: string, sqs: pkg.SQS = new SQS()) => {
+    const queueUrl = process.env.PROCESS_SQS_URL;
+
+    if (queueUrl == null) {
+        throw new MissingEnvError('process queue url');
+    }
+
+    console.log(queueUrl);
+
+    const maxNumberOfSendMessageAttempts = 3;
+
+    const attempts = await retry(() => {
+        return sqs
+            .sendMessage({
+                QueueUrl: queueUrl,
+                MessageBody: JSON.stringify({
+                    signature: signature,
+                }),
             })
             .promise();
     }, maxNumberOfSendMessageAttempts);

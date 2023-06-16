@@ -11,11 +11,11 @@ export const verifyTransactionWithRecord = (
     transaction: web3.Transaction,
     weShouldHaveSigned: boolean
 ) => {
-    // if (weShouldHaveSigned) {
-    //     verifyAppCreatedTheTransaction(transaction);
-    // }
-    // verifySingleUseInstruction(transaction);
-    // verifyTransferInstructionIsCorrect(transaction, record);
+    if (weShouldHaveSigned) {
+        verifyAppCreatedTheTransaction(transaction);
+    }
+    verifySingleUseInstruction(transaction);
+    verifyTransferInstructionIsCorrect(transaction, record);
     verifyPayerIsNotHistoricalFeePayer(transaction);
 };
 
@@ -135,6 +135,10 @@ export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) =>
     }
 
     const feePayers = historicalFeePayers();
+
+    console.log(feePayer.toBase58());
+
+    console.log(feePayers.includes(feePayer.toBase58()));
 
     if (!feePayers.includes(feePayer.toBase58())) {
         throw new Error('The transaction was not created by the app');
