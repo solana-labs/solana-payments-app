@@ -7,6 +7,12 @@ import {
 } from '../models/dependencies/helius-enhanced-transaction.model.js';
 import { parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
 import { USDC_MINT } from '../configs/tokens.config.js';
+import { DependencyError } from '../errors/dependency.error.js';
+import {
+    GetAccountInfo,
+    PubkeyOwner,
+    parseAndValidateGetAccountInfo,
+} from '../models/dependencies/get-account-info.model.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -82,4 +88,58 @@ export const fetchUsdcSize = async (pubkey: string): Promise<number> => {
 export const fetchUsdcBalance = async (pubkey: string): Promise<string> => {
     const usdcSize = await fetchUsdcSize(pubkey);
     return `${usdcSize.toFixed(3)} USDC`;
+};
+
+export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> => {
+    let response: AxiosResponse;
+
+    const apiKey = process.env.HELIUS_API_KEY;
+
+    if (apiKey == null) {
+        throw new Error('No API key found');
+    }
+
+    const getAccountInfoUrl = `https://rpc.helius.xyz/?api-key=${apiKey}`;
+
+    try {
+        response = await axios.post(getAccountInfoUrl, {
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getAccountInfo',
+            params: [
+                pubkey,
+                {
+                    encoding: 'jsonParsed',
+                },
+            ],
+        });
+    } catch {
+        throw new DependencyError('helius rpc get account info');
+    }
+
+    const getAccountInfo = parseAndValidateGetAccountInfo(response.data);
+
+    return getAccountInfo;
+};
+
+export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
+    const accountInfo = await getAccountInfo(pubkey);
+    const owner = accountInfo.result.value.owner;
+    return getPubkeyTypeForProgramOwner(owner);
+};
+
+export enum PubkeyType {
+    native = 'native',
+    token = 'token',
+}
+
+export const getPubkeyTypeForProgramOwner = (owner: PubkeyOwner): PubkeyType => {
+    switch (owner) {
+        case PubkeyOwner.systemProgram:
+            return PubkeyType.native;
+        case PubkeyOwner.tokenProgram:
+            return PubkeyType.token;
+        default:
+            throw new Error('Unknown owner');
+    }
 };

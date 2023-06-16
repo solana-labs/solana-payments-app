@@ -98,6 +98,8 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
         }
 
+        // Validate the wallet address and figure out what type of wallet it is
+
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
         } catch (error) {
