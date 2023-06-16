@@ -10,6 +10,7 @@ provider:
         - http://localhost:3005
         - https://merchant.solanapay.com
         - https://shopify-payment-ui.vercel.app
+        - https://pay.solanapay.com
       allowedHeaders:
         - Content-Type
         - Authorization
@@ -212,10 +213,6 @@ functions:
     handler: src/handlers/websockets/disconnect.disconnect
     events:
       - websocket: $disconnect
-  defaultHandler:
-    handler: src/handlers/websockets/default.defaultHandler
-    events:
-      - websocket: $default
 stepFunctions:
   stateMachines:
     retry:

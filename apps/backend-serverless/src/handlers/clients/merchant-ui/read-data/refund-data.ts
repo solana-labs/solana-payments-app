@@ -7,11 +7,18 @@ import {
     parseAndValidateRefundDataRequestParameters,
 } from '../../../../models/clients/merchant-ui/refund-data-request.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createRefundResponse } from '../../../../utilities/clients/merchant-ui/create-refund-response.utility.js';
+import {
+    GeneralResponse,
+    createGeneralResponse,
+} from '../../../../utilities/clients/merchant-ui/create-general-response.js';
+import {
+    RefundResponse,
+    createRefundResponse,
+} from '../../../../utilities/clients/merchant-ui/create-refund-response.utility.js';
 import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +38,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.unauthorized);
+            return createErrorResponse(error);
         }
 
         let merchant: Merchant | null;
@@ -39,17 +46,17 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         try {
             merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, merchantAuthToken.id);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         try {
             refundDataRequestParameters = parseAndValidateRefundDataRequestParameters(event.queryStringParameters);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         const pagination: Pagination = {
@@ -57,14 +64,20 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
             pageSize: refundDataRequestParameters.pageSize,
         };
 
-        // TODO: try/catch this
-        const refundResponse = await createRefundResponse(
-            merchantAuthToken,
-            refundDataRequestParameters.refundStatus,
-            pagination,
-            prisma
-        );
-        const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+        let refundResponse: RefundResponse;
+        let generalResponse: GeneralResponse;
+
+        try {
+            refundResponse = await createRefundResponse(
+                merchantAuthToken,
+                refundDataRequestParameters.refundStatus,
+                pagination,
+                prisma
+            );
+            generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+        } catch (error) {
+            return createErrorResponse(error);
+        }
 
         const responseBodyData = {
             refundData: refundResponse,

@@ -4,6 +4,8 @@ import {
     parseAndValidateMerchantAuthToken,
 } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { last } from 'lodash';
+import { MissingEnvError } from '../../../errors/missing-env.error.js';
+import { UnauthorizedRequestError } from '../../../errors/unauthorized-request.error.js';
 
 export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
@@ -19,17 +21,17 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     }
 
     if (jwtSecretKey == null) {
-        throw new Error('JWT secret key is not set');
+        throw new MissingEnvError('jwt secret');
     }
 
     if (cookies == null || cookies.length === 0) {
-        throw new Error('Failed to find a cookie');
+        throw new UnauthorizedRequestError('did not include cookies');
     }
 
     const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
 
     if (bearerCookie == null) {
-        throw new Error('Failed to find a cookie');
+        throw new UnauthorizedRequestError('did not include bearer cookie');
     }
 
     const bearerToken = bearerCookie.split('Bearer=')[1];
@@ -41,10 +43,14 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     try {
         merchantAuthToken = parseAndValidateMerchantAuthToken(decodedToken);
     } catch {
-        throw new Error('Failed to parse and validate merchant auth token');
+        throw new UnauthorizedRequestError('bearer cookie did not decode correctly');
     }
 
-    // TODO: Validate the contents of merchantAuthToken response
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+
+    if (merchantAuthToken.exp < currentTimestamp) {
+        throw new UnauthorizedRequestError('token has expired');
+    }
 
     return merchantAuthToken;
 };

@@ -7,7 +7,12 @@ import {
 
 import { PrismaClient, TransactionType, WebsocketSession } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    createErrorResponse,
+    errorResponse,
+} from '../../utilities/responses/error-response.utility.js';
 import {
     PaymentRecordService,
     TransactionSignatureQuery,
@@ -16,6 +21,9 @@ import { WebSocketService } from '../../services/websocket/send-websocket-messag
 import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 const prisma = new PrismaClient();
 
@@ -31,45 +39,39 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         let heliusHeaders: HeliusHeader;
         const paymentRecordService = new PaymentRecordService(prisma);
 
-        console.log('in helius');
-
         if (event.body == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+            return createErrorResponse(new InvalidInputError('missing body'));
         }
-
-        console.log(event.body);
 
         const requiredAuthorizationHeader = process.env.HELIUS_AUTHORIZATION;
 
         if (requiredAuthorizationHeader == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.missingEnv);
+            return createErrorResponse(new UnauthorizedRequestError('missing authorization header'));
         }
 
         try {
             heliusHeaders = parseAndValidateHeliusHeader({ authorization: event.headers['authorization'] });
         } catch (error) {
             Sentry.captureException(error);
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingHeader);
+            return createErrorResponse(error);
         }
 
         if (heliusHeaders.authorization !== requiredAuthorizationHeader) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.missingHeader);
+            return createErrorResponse(new UnauthorizedRequestError('invalid authorization header'));
         }
 
         try {
             heliusEnhancedTransactions = parseAndValidateHeliusEnchancedTransaction(JSON.parse(event.body));
         } catch (error) {
-            // TODO: Log this, actually might not be critical but we might want to put more logic around seeing if it's critical
+            // I dont think this is critical, but it kinda is because helius should be giving us expected data
             Sentry.captureException(error);
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
+            return createErrorResponse(error);
         }
-
-        console.log('parsed helius');
 
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         if (websocketUrl == null) {
-            throw new Error('Missing websocket url');
+            return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
         for (const heliusTransaction of heliusEnhancedTransactions) {
@@ -86,9 +88,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             try {
                 await processTransaction(heliusTransaction, prisma, websocketService, axios);
             } catch (error) {
-                // We will catch here on odd throws, valuable catches should happen elsewhere
-                // TODO: Add logging around these odd throws with Sentry
-
                 await websocketService.sendFailedProcessingTransactionMessage();
                 Sentry.captureException(error);
                 continue;

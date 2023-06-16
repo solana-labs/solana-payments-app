@@ -9,6 +9,7 @@ Sentry.AWSLambda.init({
 
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
+        // TODO: Don't throw in the loop
         for (const record of event.Records) {
             console.log(record);
             const attributes = record.messageAttributes;
