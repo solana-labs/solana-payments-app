@@ -32,7 +32,6 @@ export const fetchTransaction = async (transactionId: string): Promise<web3.Tran
     console.log(response.data);
 
     const decodedTransaction = decode(response.data.result.transaction[0]);
-
     const tx = web3.Transaction.from(decodedTransaction);
 
     return tx;

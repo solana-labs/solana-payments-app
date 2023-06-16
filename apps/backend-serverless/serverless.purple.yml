@@ -75,6 +75,13 @@ functions:
       - httpApi:
           path: /helius
           method: post
+  raw-helius:
+    handler: src/handlers/testing/raw-helius.rawHelius
+    timeout: 30 # Increase the timeout to 30 seconds
+    events:
+      - httpApi:
+          path: /helius-raw
+          method: post
   cron:
     handler: src/handlers/webhooks/cron.cron
     events:
