@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { PrismaClient, TransactionRecord } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
