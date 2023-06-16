@@ -6,7 +6,13 @@ import {
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify/shopify-webhook-headers.model.js';
 import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    createErrorResponse,
+    errorResponse,
+} from '../../../utilities/responses/error-response.utility.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -20,15 +26,15 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
+            return createErrorResponse(error);
         }
 
         if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
+            return createErrorResponse(new InvalidInputError('incorrect topic for customer data'));
         }
 
         if (event.body == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+            return createErrorResponse(new InvalidInputError('mising body'));
         }
 
         const cusomterDataBodyString = JSON.stringify(event.body);
@@ -36,7 +42,7 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         try {
             verifyShopifyWebhook(cusomterDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.invalidSecurityInput);
+            return createErrorResponse(error);
         }
 
         // At this point we would have verified the webhook. We do not store any customer

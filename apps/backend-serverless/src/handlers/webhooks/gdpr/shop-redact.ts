@@ -5,16 +5,17 @@ import {
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify/shopify-webhook-headers.model.js';
-import { requestErrorResponse } from '../../../utilities/responses/request-response.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
 import {
     ShopRedactRequest,
     parseAndValidateShopRedactRequestBody,
 } from '../../../models/shopify/shop-redact-request.model.js';
-import { GDPR, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 import { GDPRService } from '../../../services/database/gdpr-service.database.service.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -33,15 +34,15 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
+            return createErrorResponse(error);
         }
 
         if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestHeaders);
+            return createErrorResponse(new InvalidInputError('incorrect topic for shop redact'));
         }
 
         if (event.body == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+            return createErrorResponse(new InvalidInputError('mising body'));
         }
 
         const shopRedactBodyString = JSON.stringify(event.body);
@@ -49,7 +50,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         try {
             verifyShopifyWebhook(shopRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
-            return requestErrorResponse(error);
+            return createErrorResponse(error);
         }
 
         let shopReactRequest: ShopRedactRequest;
@@ -57,25 +58,19 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         try {
             shopReactRequest = parseAndValidateShopRedactRequestBody(event.body);
         } catch (error) {
-            return errorResponse(ErrorType.unauthorized, ErrorMessage.invalidSecurityInput);
+            return createErrorResponse(error);
         }
 
         const merchant = await merchantService.getMerchant({ shop: shopReactRequest.shop_domain });
 
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
-
-        let gdpr: GDPR;
 
         try {
-            gdpr = await gdprService.createGDPRRequest(merchant.id);
+            await gdprService.createGDPRRequest(merchant.id);
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
-        }
-
-        if (gdpr == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
         return {

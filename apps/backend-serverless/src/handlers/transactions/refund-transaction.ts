@@ -18,9 +18,18 @@ import { RefundRecordService } from '../../services/database/refund-record-servi
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { ErrorMessage, ErrorType, errorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    ErrorMessage,
+    ErrorType,
+    createErrorResponse,
+    errorResponse,
+} from '../../utilities/responses/error-response.utility.js';
 import axios from 'axios';
 import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { create } from 'lodash';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { DependencyError } from '../../errors/dependency.error.js';
 
 const prisma = new PrismaClient();
 
@@ -43,7 +52,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         const trmService = new TrmService();
 
         if (event.body == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.missingBody);
+            return createErrorResponse(new InvalidInputError('request body'));
         }
 
         const body = JSON.parse(event.body);
@@ -52,10 +61,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         const account = body['account'] as string | null;
 
         if (account == null) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestBody);
+            return createErrorResponse(new InvalidInputError('account is missing from body'));
         }
-
-        console.log('body');
 
         try {
             refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
@@ -63,17 +70,13 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
         }
 
-        console.log('here');
-
         let gasKeypair: web3.Keypair;
 
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
-
-        console.log('there');
 
         let refundRecord: RefundRecord | null;
 
@@ -82,30 +85,24 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 shopId: refundRequest.refundId,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
-        console.log('where');
-
         if (refundRecord == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownRefundRecord);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('refund record'));
         }
 
         let paymentRecord: PaymentRecord | null;
 
-        console.log('oh');
-
         try {
             paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
         if (paymentRecord == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownPaymentRecord);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
         }
-
-        console.log('yep');
 
         let merchant: Merchant | null;
 
@@ -114,18 +111,15 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 id: refundRecord.merchantId,
             });
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.databaseAccessError);
+            return createErrorResponse(error);
         }
 
-        console.log('haaa');
-
         if (merchant == null) {
-            return errorResponse(ErrorType.notFound, ErrorMessage.unknownMerchant);
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         const singleUseKeypair = await generateSingleUseKeypairFromRefundRecord(refundRecord);
 
-        console.log('nah');
         try {
             refundTransaction = await fetchRefundTransaction(
                 refundRecord,
@@ -137,26 +131,24 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 axios
             );
         } catch (error) {
-            console.log(error);
-            console.log(error.message);
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
-        console.log('ripp');
-
+        // I'm not sure we should do this for merchant refunds
         // We don't need to check with TRM for test transactions
+        // We probably want to but TODO on what the output should be
         if (refundRecord.test == false) {
             try {
                 await trmService.screenAddress(account);
             } catch (error) {
-                return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+                return createErrorResponse(error);
             }
         }
 
         try {
             transaction = encodeTransaction(refundTransaction.transaction);
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
         transaction.partialSign(gasKeypair);
@@ -165,13 +157,13 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         const transactionSignature = transaction.signature;
 
         if (transactionSignature == null) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(new DependencyError('transaction signature null'));
         }
 
         try {
             verifyTransactionWithRecord(refundRecord, transaction, true);
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
         const signatureBuffer = transactionSignature;
@@ -186,7 +178,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 refundRecord.id
             );
         } catch (error) {
-            return errorResponse(ErrorType.internalServerError, ErrorMessage.internalServerError);
+            return createErrorResponse(error);
         }
 
         const transactionBuffer = transaction.serialize({
