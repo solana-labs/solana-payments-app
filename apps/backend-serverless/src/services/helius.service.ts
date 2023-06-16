@@ -73,20 +73,6 @@ export const fetchUsdcBalance = async (pubkey: string): Promise<string> => {
     return `${usdcSize.toFixed(3)} USDC`;
 };
 
-export const fetchRawTransaction = async (transactionId: string) => {
-    // const apiKey = process.env.HELIUS_API_KEY;
-    // if (apiKey == null) {
-    //     throw new Error('No API key found');
-    // }
-    // const heliusTransactionApiUrl = `https://api.helius.xyz/v0/addresses/${pubkey}/balances?api-key=${apiKey}`;
-    // try {
-    //     const response = await axios.post(heliusTransactionApiUrl, { transactions: [transactionId] });
-    //     return response.data;
-    // } catch {
-    //     throw new Error('Failed to fetch transaction from Helius.');
-    // }
-};
-
 // export class HeliusService {
 //     constructor(private apiKey: string, private axiosInstance: typeof axios) {}
 

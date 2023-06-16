@@ -12,17 +12,17 @@ const { Helius } = require("helius-sdk");
 
 //   if (webhooks.length == 0) {
 
-    helius.createWebhook({
-      webhookURL: webhookUrl,
-      transactionTypes: ['ANY'],
-      accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'],
-      webhookType: 'enhanced',
-      encoding: 'jsonParsed',
-    }).then((webhook) => {
-      console.log("Created webhook with helius: ", webhook.webhookID);
-    }).catch((err) => {
-      console.log("Could not create webhook with helius: ", err);
-    })
+    // helius.createWebhook({
+    //   webhookURL: webhookUrl,
+    //   transactionTypes: ['ANY'],
+    //   accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'],
+    //   webhookType: 'enhanced',
+    //   encoding: 'jsonParsed',
+    // }).then((webhook) => {
+    //   console.log("Created webhook with helius: ", webhook.webhookID);
+    // }).catch((err) => {
+    //   console.log("Could not create webhook with helius: ", err);
+    // })
 
 //   } else {
 
