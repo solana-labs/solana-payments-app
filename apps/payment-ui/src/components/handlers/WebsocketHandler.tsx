@@ -48,6 +48,8 @@ const WebsocketHandler: React.FC = () => {
                     dispatch(setFailedProcessing())
                 } else if ( data.messageType == 'transactionRequestFailed') {
                     dispatch(setTransactionRequestFailed())
+                } else if ( data.messageType == 'insufficientFunds') {
+                    dispatch(setTransactionRequestFailed())
                 }
 
             };

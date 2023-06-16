@@ -79,6 +79,10 @@ export class WebSocketService<WebsocketQuery> {
     sendFailedProcessingTransactionMessage = async () => {
         await this.sendMessage(WebsocketMessage.failedProcessingTransaction, null);
     };
+
+    sendInsufficientFundsMessage = async () => {
+        await this.sendMessage(WebsocketMessage.insufficientFunds, null);
+    };
 }
 
 export enum WebsocketMessage {
@@ -90,6 +94,7 @@ export enum WebsocketMessage {
     transactionRequestFailed = 'transactionRequestFailed',
     processingTransaction = 'processingTransaction',
     failedProcessingTransaction = 'failedProcessingTransaction',
+    insufficientFunds = 'insufficientFunds',
 }
 
 export type CompletedDetailsPayload = {

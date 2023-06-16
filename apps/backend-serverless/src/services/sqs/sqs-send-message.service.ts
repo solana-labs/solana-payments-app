@@ -163,3 +163,32 @@ export const sendProcessTransactionMessage = async (signature: string, sqs: pkg.
         throw new Error('Could not send SQS message');
     }
 };
+
+export const sendSolanaPayInfoMessage = async (account: string, paymentRecordId: string, sqs: pkg.SQS = new SQS()) => {
+    const queueUrl = process.env.SP_INFO_SQS_URL;
+
+    if (queueUrl == null) {
+        throw new MissingEnvError('solana pay queue url');
+    }
+
+    console.log(queueUrl);
+
+    const maxNumberOfSendMessageAttempts = 3;
+
+    const attempts = await retry(() => {
+        return sqs
+            .sendMessage({
+                QueueUrl: queueUrl,
+                MessageBody: JSON.stringify({
+                    account: account,
+                    paymentRecordId: paymentRecordId,
+                }),
+            })
+            .promise();
+    }, maxNumberOfSendMessageAttempts);
+
+    if (attempts === maxNumberOfSendMessageAttempts) {
+        // TODO: Log in sentry as critical error
+        throw new Error('Could not send SQS message');
+    }
+};

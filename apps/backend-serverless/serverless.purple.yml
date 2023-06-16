@@ -39,7 +39,6 @@ provider:
     AWS_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
-    SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     # LOCAL_GAS: ${env:LOCAL_GAS}
@@ -50,7 +49,9 @@ provider:
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
+    SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
 
 package:
   excludeDevDependencies: true
@@ -110,6 +111,10 @@ functions:
         Action:
           - execute-api:ManageConnections
         Resource: '*'
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.SolanaPayInfoQueueArn.Value}
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
     events:
@@ -212,6 +217,21 @@ functions:
         Action:
           - execute-api:ManageConnections
         Resource: '*'
+  sp-info-message:
+    handler: src/handlers/webhooks/sqs/solana-pay-info-message.solanaPayInfoMessage
+    events:
+      - sqs:
+          arn: ${self:resources.Outputs.SolanaPayInfoQueueArn.Value}
+          batchSize: 1
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:ReceiveMessage
+        Resource: ${self:resources.Outputs.SolanaPayInfoQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - execute-api:ManageConnections
+        Resource: '*'
   retry-request:
     handler: src/handlers/webhooks/retry.retry
   queue:
@@ -287,6 +307,14 @@ resources:
       Description: The arn of the process sqs queue
       Value:
         Ref: ProcessQueue
+    SolanaPayInfoQueueArn:
+      Description: The arn of the solana pay info sqs queue
+      Value:
+        Fn::GetAtt: [SolanaPayInfoQueue, Arn]
+    SolanaPayInfoQueueUrl:
+      Description: The url of the solana pay info sqs queue
+      Value:
+        Ref: SolanaPayInfoQueue
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket
@@ -308,6 +336,11 @@ resources:
       DeletionPolicy: Retain
       Properties:
         QueueName: process-queue-${self:provider.stage}
+    SolanaPayInfoQueue:
+      Type: AWS::SQS::Queue
+      DeletionPolicy: Retain
+      Properties:
+        QueueName: sp-info-queue-${self:provider.stage}
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
