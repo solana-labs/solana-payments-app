@@ -1,16 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
-import { MdArrowBack } from 'react-icons/md';
+import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
 import PaymentTokenSelector from '@/components/PaymentTokenSelector';
-import { convertToDollarString } from '@/utility';
 import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/FeeDisplay';
 import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDisplay';
 import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayAmountTokensDisplay';
 import { PaymentMethod, getPayingToken, getPaymentMethod, setPaymentMethod } from '../features/payment-options/paymentOptionsSlice';
-import TransactionFeeDetailModal from './TransactionFeeDetailModal';
 import { BiInfoCircle } from 'react-icons/bi';
 
 export const PayToLabel = () => {
@@ -42,7 +39,7 @@ export const PayToLabel = () => {
                 { paymentDetails == null ? <PayToLoading /> : <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> }
                 { paymentDetails == null ? <PayAmountLoading /> : <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} /> }
                 <div className="flex flex-row w-full justify-between items-center">
-                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={paymentDetails.totalAmountUSDCDisplay} /> }
+                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={paymentDetails.usdcSize.toFixed(2) + ' USDC'} /> }
                     <div className="w-2/3">
                         <PaymentTokenSelector />
                     </div>
@@ -84,33 +81,3 @@ export const PayToLabel = () => {
         </div>
     );
 };
-
-
-// const TransactionFeeDetailModal = () => {
-//     return (
-//         <div className="w-full">
-//             <label tabIndex={0} className="text-black" htmlFor="fee-detail-modal">
-//                 Hello World
-//             </label>
-//             <input type="checkbox" id="fee-detail-modal" className="modal-toggle" />
-//             <div id="fee-detail-modal" className="modal modal-bottom sm:modal-middle">
-//                 <div className="modal-box bg-white">
-//                     <div className='flex flex-col h-full items-start justify-center'>
-//                         <div className="modal-action">
-//                             <label htmlFor="fee-detail-modal" className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-gray-900 bg-gray-200">✕</label>
-//                         </div>
-//                         <div className='text-black text-xl font-semibold mb-2'>
-//                             Transaction Fee
-//                         </div>
-//                         <div className='text-gray-600'>
-//                             Solana Pay covers the transaction fee so that all you need is USDC to complete your transaction. Your wallet may still show  this as part of your transaction.
-//                         </div>
-//                     </div>
-//                 </div>
-//                 <label className="modal-backdrop" htmlFor="fee-detail-modal">Close</label>
-//             </div>
-//         </div>
-//     );
-// }
-
-// export default TransactionFeeDetailModal;

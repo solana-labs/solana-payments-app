@@ -1,22 +1,21 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentId, getSessionState, SessionState, setClosed, setCompleted, setErrorDetails, setFailedProcessing, setPaymentDetails, setProcessing, setReadyToConnect, setTransactionDelivered, setTransactionRequestFailed, setTransactionRequestStarted, socketConnected } from '@/features/payment-session/paymentSessionSlice';
-import { setNotification } from '@/features/notification/notificationSlice';
-import { NotificationView } from '../NotificationView';
-import { Notification } from '@/features/notification/notificationSlice'
+import { WebsocketSesssionState, getWebsocketSessionState, setWebsocketConnected, setWebsocketClosed, setWebsocketReadyToConnect } from '@/features/websocket/websocketSlice';
+import { getWebSocketUrl } from '@/features/env/envSlice';
+import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const sessionState = useSelector(getSessionState)
-    const paymentId = useSelector(getPaymentId)
-    const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'socket'
+    const websocketUrl = useSelector(getWebSocketUrl)
+    const websocketSessionState = useSelector(getWebsocketSessionState);
+    const paymentId = useSelector(getPaymentId);
 
     let socket = useRef<WebSocket | null>(null);
     let timer = useRef<any | null>(null);
     useEffect(() => {
 
-        if ( sessionState == SessionState.readyToConnect ) {
+        if ( websocketSessionState == WebsocketSesssionState.readyToConnect && websocketUrl != undefined && paymentId != null ) {
 
             if (socket.current !== null) {
                 socket.current.close();
@@ -26,53 +25,53 @@ const WebsocketHandler: React.FC = () => {
 
             socket.current.onopen = () => {
                 console.log('WebSocket Client Connected');
-                dispatch(socketConnected())
+                dispatch(setWebsocketConnected())
             };
               
             socket.current.onmessage = (event) => {
 
-                const data = JSON.parse(event.data);
-                console.log('Message: ' + data.messageType)
+                // const data = JSON.parse(event.data);
+                // console.log('Message: ' + data.messageType)
 
-                if ( data.messageType == 'paymentDetails' ) {
-                    dispatch(setPaymentDetails(data.payload.paymentDetails))
-                } else if ( data.messageType == 'completedDetails' ) {
-                    console.log(data)
-                    dispatch(setCompleted(data.payload.completedDetails)) 
-                } else if ( data.messageType == 'errorDetails' ) {
-                    dispatch(setErrorDetails(data.payload.errorDetails)) 
-                } else if ( data.messageType == 'processingTransaction' ) {
-                    dispatch(setProcessing())
-                } else if ( data.messageType == 'transactionRequestStarted' ) {
-                    dispatch(setTransactionRequestStarted())
-                } else if ( data.messageType == 'transactionDelivered' ) {
-                    dispatch(setTransactionDelivered())
-                } else if ( data.messageType == 'failedProcessingTransaction' ) {
-                    dispatch(setFailedProcessing())
-                } else if ( data.messageType == 'transactionRequestFailed') {
-                    dispatch(setTransactionRequestFailed())
-                } else if ( data.messageType == 'insufficientFunds') {
-                    dispatch(setNotification(Notification.insufficentFunds))
-                }
+                // if ( data.messageType == 'paymentDetails' ) {
+                //     dispatch(setPaymentDetails(data.payload.paymentDetails))
+                // } else if ( data.messageType == 'completedDetails' ) {
+                //     console.log(data)
+                //     dispatch(setCompleted(data.payload.completedDetails)) 
+                // } else if ( data.messageType == 'errorDetails' ) {
+                //     dispatch(setErrorDetails(data.payload.errorDetails)) 
+                // } else if ( data.messageType == 'processingTransaction' ) {
+                //     dispatch(setProcessing())
+                // } else if ( data.messageType == 'transactionRequestStarted' ) {
+                //     dispatch(setTransactionRequestStarted())
+                // } else if ( data.messageType == 'transactionDelivered' ) {
+                //     dispatch(setTransactionDelivered())
+                // } else if ( data.messageType == 'failedProcessingTransaction' ) {
+                //     dispatch(setFailedProcessing())
+                // } else if ( data.messageType == 'transactionRequestFailed') {
+                //     dispatch(setTransactionRequestFailed())
+                // } else if ( data.messageType == 'insufficientFunds') {
+                //     dispatch(setNotification(Notification.insufficentFunds))
+                // }
 
             };
               
             socket.current.onclose = () => {
                 console.log('WebSocket is closed now.');
-                dispatch(setClosed())
+                dispatch(setWebsocketClosed())
             };
               
             socket.current.onerror = (error) => {
                 console.log('WebSocket encountered error: ', error);
             };
 
-        } else if ( sessionState == SessionState.closed ) {
+        } else if ( websocketSessionState == WebsocketSesssionState.closed ) {
             const interval = 5000; // 5 seconds
 
             timer.current = setInterval(() => {
-                console.log('BANG')
+                console.log('Trying to connect')
                 clearInterval(timer.current);
-                dispatch(setReadyToConnect())
+                dispatch(setWebsocketReadyToConnect())
             }, interval);
         }
 
@@ -82,7 +81,7 @@ const WebsocketHandler: React.FC = () => {
             //     socket.close();
             // }
         };
-    }, [dispatch, sessionState]);
+    }, [dispatch, websocketUrl, paymentId, websocketSessionState]);
 
     return null;
 };

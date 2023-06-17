@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { ErrorGoBack } from "./ErrorGoBack"
-import { getPaymentDetails } from "@/features/payment-session/paymentSessionSlice";
+import { getPaymentDetails } from "@/features/payment-details/paymentDetailsSlice";
 
 export const GeoBlockedView = () => {
 

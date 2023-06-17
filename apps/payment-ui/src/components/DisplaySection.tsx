@@ -1,6 +1,6 @@
 import { MdArrowBack } from 'react-icons/md';
 import Image from 'next/image';
-import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
 import { useSelector } from 'react-redux';
 
 const DisplaySection = () => {

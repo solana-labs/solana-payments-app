@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentDetails } from '@/features/payment-session/paymentSessionSlice';
 import { getRedirectUrl } from '@/features/payment-session/paymentSessionSlice';
 
 const FinishHandler: React.FC = () => {

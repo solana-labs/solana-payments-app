@@ -1,6 +1,6 @@
 import { VscArrowLeft } from 'react-icons/vsc'
 import { ImWarning } from 'react-icons/im'
-import { getErrorDetails } from '@/features/payment-session/paymentSessionSlice'
+import { getErrorDetails } from '@/features/payment-details/paymentDetailsSlice'
 import { useSelector } from 'react-redux'
 
 export const ErrorView = () => {

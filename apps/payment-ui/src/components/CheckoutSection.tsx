@@ -2,7 +2,6 @@ import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice
 import {
     MergedState,
     getIsCompleted,
-    getIsError,
     getIsProcessing,
     getIsSolanaPayCompleted,
     getMergedState,
@@ -14,13 +13,15 @@ import { GeoBlockedView } from './GeoBlockedView';
 import { PaymentLoadingView } from './PaymentLoadingView';
 import { PaymentView } from './PaymentView';
 import { ThankYouView } from './ThankYou';
+
 import CancelledTransactionView from './CancelledTransactionView';
+import { getIsPaymentError } from '@/features/payment-details/paymentDetailsSlice';
 
 const CheckoutSection = (props: BlockedProps) => {
     const isProcessing = useSelector(getIsProcessing);
     const isCompleted = useSelector(getIsCompleted);
     const isSolanaPayCompleted = useSelector(getIsSolanaPayCompleted);
-    const isError = useSelector(getIsError);
+    const isError = useSelector(getIsPaymentError);
     const paymentMethod = useSelector(getPaymentMethod);
     const mergedState = useSelector(getMergedState)
 

@@ -41,7 +41,7 @@ interface NotificationState {
 }
 
 const initalState: NotificationState = {
-    notification: Notification.insufficentFunds,
+    notification: Notification.none,
 };
 
 const notificationSlice = createSlice({

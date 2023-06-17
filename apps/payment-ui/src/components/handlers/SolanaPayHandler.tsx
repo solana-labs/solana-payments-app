@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { SolanaPayState, getPaymentDetails, getSolanaPayState, setSolanaPayCompleted } from '@/features/payment-session/paymentSessionSlice';
+import { SolanaPayState, getSolanaPayState, setSolanaPayCompleted } from '@/features/payment-session/paymentSessionSlice';
 import { getRedirectUrl } from '@/features/payment-session/paymentSessionSlice';
 
 const SolanaPayHandler: React.FC = () => {

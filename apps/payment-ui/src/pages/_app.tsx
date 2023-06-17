@@ -7,6 +7,9 @@ import SetPaymentMethodHandler from '@/components/handlers/SetPaymentMethodHandl
 import WebsocketHandler from '@/components/handlers/WebsocketHandler';
 import RouterHandler from '@/components/handlers/RouterHandler';
 import SolanaPayHandler from '@/components/handlers/SolanaPayHandler';
+import EnvHandler from '@/components/handlers/EnvHandler';
+import PaymentDetailsHandler from '@/components/handlers/PaymentDetailsHandler';
+import WalletHandler from '@/components/handlers/WalletHandler';
 
 function App({ Component, pageProps }: AppProps) {
 
@@ -14,6 +17,9 @@ function App({ Component, pageProps }: AppProps) {
 
     return (
         <Provider store={store}>
+            <EnvHandler />
+            <WalletHandler />
+            <PaymentDetailsHandler />
             <SolanaPayHandler />
             <WindowHandler />
             <SetPaymentMethodHandler />
