@@ -36,11 +36,11 @@ export function DefaultLayoutNavigation(props: Props) {
     async function logout() {
         const response = await fetch(`${API_ENDPOINTS.logout} `, {
             method: 'GET',
+            credentials: 'include',
         });
 
-        if (response.ok) {
-            console.log('cleared cookies');
-            // router.push('/');
+        if (response.status === 200) {
+            router.push('/');
         }
     }
 

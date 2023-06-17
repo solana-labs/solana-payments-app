@@ -14,16 +14,17 @@ Sentry.AWSLambda.init({
 export const logout = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         console.log('hitting logout');
-        const newCookie = deleteMerchantAuthCookieHeader();
-        const cookieValue = `nonce=${newCookie}; HttpOnly; Secure; SameSite=Lax`;
+        const merchantCookie = deleteMerchantAuthCookieHeader();
+        const nonceCookie = `nonce=; HttpOnly; Secure; SameSite=Lax; Max-age=0;`;
 
         return {
             statusCode: 200,
             headers: {
-                'Set-Cookie': newCookie,
-                Location: 'http://localhost:3005',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'text/html',
             },
+            cookies: [merchantCookie, nonceCookie],
             body: JSON.stringify({ message: 'Logged out' }),
         };
     }
