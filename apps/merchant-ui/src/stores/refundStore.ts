@@ -6,6 +6,7 @@ export enum RefundStatus {
     Pending = 'pending',
     Paid = 'paid',
     Rejected = 'rejected',
+    Completed = 'completed',
 }
 
 export interface OpenRefund extends Refund {
@@ -67,12 +68,13 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
             if (response.status !== 200) {
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
             }
+            console.log('refunds: ', Math.ceil((data.refundData.total + 1) / PAGE_SIZE));
             const refunds = transformRefund<OpenRefund>(data);
 
             set({
                 openRefunds: RE.ok({
                     refunds: refunds,
-                    totalPages: Math.floor((data.refundData.total + 1) / PAGE_SIZE),
+                    totalPages: Math.ceil((data.refundData.total + 1) / PAGE_SIZE),
                 }),
             });
             set({ refundCount: data.refundData.total });
@@ -114,7 +116,7 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
                 set({
                     closedRefunds: RE.ok({
                         refunds: refunds,
-                        totalPages: Math.floor((dataClosed.refundData.total + 1) / PAGE_SIZE),
+                        totalPages: Math.ceil((dataClosed.refundData.total + 1) / PAGE_SIZE),
                     }),
                 });
                 set({ refundCount: dataClosed.refundData.total });
