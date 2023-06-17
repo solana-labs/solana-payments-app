@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
-import { ConnectWalletState, getConnectWalletState, setConnectWalletLoading, setConnectWalletSentTransaction, setConnectWalletStart } from '@/features/payment-session/paymentSessionSlice';
+import { ConnectWalletState, getConnectWalletState, setConnectWalletSentTransaction, setConnectWalletStart } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
