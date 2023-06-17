@@ -88,7 +88,7 @@ export function DefaultLayoutNavigation(props: Props) {
                                     text="Refunds"
                                     renderInRhs={<RefundCount refundCount={refundCount} />}
                                 />
-                                <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant Info" />
+                                <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant" />
                                 <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
                             </div>
                         ) : (
