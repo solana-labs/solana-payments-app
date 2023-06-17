@@ -49,7 +49,7 @@ function generateMerchantRecords(count = 1): any[] {
                 paymentAddress: 'JAiArByfpjM3CKYms47FGNEqxuwDpJ93vDj9wGmQenJr',
                 kybInquiry: `inq_${i}`,
                 kybState: 'finished',
-                acceptedTermsAndConditions: false,
+                acceptedTermsAndConditions: true,
                 dismissCompleted: false,
                 active: true,
             };
@@ -205,7 +205,7 @@ async function insertJsonData() {
     });
 }
 
-async function insertGeneratedData() {
+async function insertGeneratedData(count: number) {
     const merchantInfo = await prisma.merchant.createMany({
         data: generateMerchantRecords().map(merchant => ({
             ...merchant,
@@ -213,7 +213,7 @@ async function insertGeneratedData() {
     });
 
     const paymentRecords = await prisma.paymentRecord.createMany({
-        data: generatePaymentRecords(1, 30).map(record => ({
+        data: generatePaymentRecords(1, count).map(record => ({
             ...record,
             status: stringToPaymentRecordStatus(record.status),
             test: Boolean(record.test),
@@ -221,7 +221,7 @@ async function insertGeneratedData() {
     });
 
     const refundRecords = await prisma.refundRecord.createMany({
-        data: generateRefundRecords(1, 30).map(record => ({
+        data: generateRefundRecords(1, count).map(record => ({
             ...record,
             status: stringToRefundRecordStatus(record.status),
             test: Boolean(record.test),
@@ -238,7 +238,7 @@ async function main() {
     // await prisma.$executeRaw`DROP TABLE PaymentRecord `;
     // await prisma.$executeRaw`DROP TABLE RefundRecord `;
 
-    await insertGeneratedData();
+    await insertGeneratedData(10);
 }
 
 main()
