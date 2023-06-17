@@ -48,6 +48,7 @@ provider:
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
@@ -62,6 +63,12 @@ functions:
     events:
       - httpApi:
           path: /install
+          method: get
+  logout:
+    handler: src/handlers/shopify-handlers/logout.logout
+    events:
+      - httpApi:
+          path: /logout
           method: get
   redirect:
     handler: src/handlers/shopify-handlers/redirect.redirect
@@ -336,31 +343,18 @@ functions:
 stepFunctions:
   stateMachines:
     retry:
-        definition:
-          StartAt: wait_using_seconds
-          States: 
-            wait_using_seconds: 
-              Type: Wait
-              SecondsPath: "$.retrySeconds"
-              Next: process_retry
-            process_retry: 
-              Type: Task
-              Resource:
-                Fn::GetAtt: [retry-request, Arn]
-              End: true
-    saftey:
-        definition:
-          StartAt: wait_using_seconds
-          States: 
-            wait_using_seconds: 
-              Type: Wait
-              Seconds: 240
-              Next: sweep_saftey
-            sweep_saftey: 
-              Type: Task
-              Resource:
-                Fn::GetAtt: [saftey-key-sweep, Arn]
-              End: true
+      definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+            Type: Wait
+            SecondsPath: '$.retrySeconds'
+            Next: process_retry
+          process_retry:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [retry-request, Arn]
+            End: true
 resources:
   Parameters:
     Stage:
@@ -389,7 +383,7 @@ resources:
         Fn::GetAtt: [ShopifyQueue, Arn]
     ShopifyQueueUrl:
       Description: The url of the shopify sqs queue
-      Value: 
+      Value:
         Ref: ShopifyQueue
     ProcessQueueArn:
       Description: The arn of the process sqs queue
@@ -413,13 +407,13 @@ resources:
         Ref: WebsocketsApi
     WebsocketUrl:
       Description: Example of joining two strings
-      Value: 
+      Value:
         Fn::Join:
-          - ""
-          - - "https://"
-            - "${self:resources.Outputs.WebSocketApiId.Value}"
-            - ".execute-api.us-east-1.amazonaws.com/"
-            - "${self:provider.stage}"
+          - ''
+          - - 'https://'
+            - '${self:resources.Outputs.WebSocketApiId.Value}'
+            - '.execute-api.us-east-1.amazonaws.com/'
+            - '${self:provider.stage}'
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket

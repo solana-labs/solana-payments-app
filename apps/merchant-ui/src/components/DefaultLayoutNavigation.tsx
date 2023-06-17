@@ -1,12 +1,16 @@
 import { LoadingDots } from '@/components/LoadingDots';
 import { isFailed, isOk, isPending } from '@/lib/Result';
+import { API_ENDPOINTS } from '@/lib/endpoints';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { useOpenRefundStore } from '@/stores/refundStore';
+import Logout from '@carbon/icons-react/lib/Logout';
 import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import User from '@carbon/icons-react/lib/User';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { cloneElement } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { DefaultLayoutNavigationExternalLink } from './DefaultLayoutNavigationExternalLink';
 import { DefaultLayoutNavigationLink } from './DefaultLayoutNavigationLink';
@@ -27,6 +31,19 @@ interface Props {
 export function DefaultLayoutNavigation(props: Props) {
     const refundCount = useOpenRefundStore(state => state.refundCount);
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const router = useRouter();
+
+    async function logout() {
+        const response = await fetch(`${API_ENDPOINTS.logout} `, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            console.log('cleared cookies');
+            // router.push('/');
+        }
+    }
+
     return (
         <NavigationMenu.Root
             className={twMerge(
@@ -119,6 +136,25 @@ export function DefaultLayoutNavigation(props: Props) {
                     icon={<RuleDataQuality />}
                     text="Privacy Policy"
                 />
+                <button
+                    onClick={logout}
+                    className={twMerge(
+                        'gap-x-4',
+                        'gap-x-3',
+                        'group',
+                        'grid',
+                        'items-center',
+                        'px-3',
+                        'py-2',
+                        'rounded-md',
+                        'grid-cols-[24px,1fr,max-content]'
+                    )}
+                >
+                    {cloneElement(<Logout />, {
+                        className: twMerge('fill-slate-400', 'h-6', 'transition-colors', 'w-6'),
+                    })}
+                    <div className={twMerge('transition-all', 'group-hover:font-semibold')}>{'Logout'}</div>
+                </button>
             </NavigationMenu.List>
         </NavigationMenu.Root>
     );
