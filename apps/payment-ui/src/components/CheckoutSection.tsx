@@ -12,6 +12,7 @@ import { ThankYouView } from './ThankYou';
 import { getIsPaymentError } from '@/features/payment-details/paymentDetailsSlice';
 import { getIsBlocked } from '@/features/geo/geoSlice';
 import { NotificationType, getConnectWalletNotification, Notification } from '@/features/notification/notificationSlice';
+import CancelledTransactionView from './CancelledTransactionView';
 
 const CheckoutSection = () => {
     const isCompleted = useSelector(getIsCompleted);
@@ -23,7 +24,7 @@ const CheckoutSection = () => {
     if (isBlocked) {
         return <GeoBlockedView />;
     } else if ( connectedWalletNotification == Notification.declined ) {
-
+        return <CancelledTransactionView />
     } else if (mergedState > MergedState.start && mergedState < MergedState.completed) {
         return <PaymentLoadingView />;
     } else if (isCompleted) {
