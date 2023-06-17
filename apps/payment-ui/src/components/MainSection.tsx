@@ -28,7 +28,7 @@ const MainSection = (props: BlockedProps) => {
 
     return (
         <CheckoutWrapper>
-            <CheckoutSection isBlocked={props.isBlocked} country={props.country} />
+            <CheckoutSection />
         </CheckoutWrapper>
     );
 };

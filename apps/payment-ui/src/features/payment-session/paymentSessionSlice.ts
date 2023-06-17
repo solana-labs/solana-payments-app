@@ -7,15 +7,27 @@ import { SocketConnectedWithoutPaymentIdError } from '@/errors/socket-connected-
 import { PaymentDetailsMessageWithoutDetailsError } from '@/errors/payment-details-message-without-details.error';
 import { SocketMessageWithNoTypeError } from '@/errors/socket-message-with-no-type.error';
 
+/**
+ * SessionState - The state of the payment session, agnostic to how the user is paying
+ */
+
 export enum SessionState {
-    start,
-    readyToConnect,
-    closed,
-    connected,
-    processing,
-    completed,
-    error,
+    fresh, // fresh start, browser load, has no paymentId
+    aware, // aware of the payment id, can start the fun stuff
+    submitting, // payment has been requested
+    approving, // payment has been delivered
+    processing, // payment is being processed
+    completing, // payment is done but we are flexing with a completing state for added rizz
+    completed, // payment is done
+    error, // payment had a terminal error
+    blocked, // payment has been geo blocked, maybe get rid of this too
 }
+
+/**
+ *
+ * MergedState - The state of how they're paying, agnostic to the payment method
+ *
+ */
 
 export enum MergedState {
     start,
@@ -23,8 +35,15 @@ export enum MergedState {
     approving,
     processing,
     completing,
-    laggedCompleting,
+    completed,
+    error,
 }
+
+/**
+ *
+ * SolanaPayState - The state of a user paying with SolanaPay
+ *
+ */
 
 export enum SolanaPayState {
     start,
@@ -35,116 +54,72 @@ export enum SolanaPayState {
     solanaPayCompleted,
 }
 
-export enum TransactionRequestState {
-    started,
-    delivered,
-    failed,
-}
+/**
+ *
+ * ConnectWalletState - The state of a user paying with a connected wallet
+ *
+ */
 
 export enum ConnectWalletState {
     start,
     loading,
+    submitting,
+    approving,
     sentTransaction,
     processing,
     completed,
 }
 
-export interface ErrorDetails {
-    errorTitle: string;
-    errorDetail: string;
-    errorRedirect: string;
-}
+/**
+ *
+ * ConnectWalletState - The state of a user paying with a connected wallet
+ *
+ */
 
 interface PaymentSessionState {
-    paymentId: string | null;
+    pubkey: string | null;
+    usdcBalance: number | null;
     sessionState: SessionState;
-    paymentDetails: PaymentDetails | null;
     redirectUrl: string | null;
-    errorDetails: ErrorDetails | null;
     solanaPayState: SolanaPayState;
     connectWalletState: ConnectWalletState;
-    transactionRequestState: TransactionRequestState;
     mergedState: MergedState;
 }
 
 const initalState: PaymentSessionState = {
-    paymentId: null,
-    sessionState: SessionState.start,
-    paymentDetails: null,
+    pubkey: null,
+    usdcBalance: null,
+    sessionState: SessionState.fresh,
     redirectUrl: null,
-    errorDetails: null,
     solanaPayState: SolanaPayState.start,
     connectWalletState: ConnectWalletState.start,
-    transactionRequestState: TransactionRequestState.started,
     mergedState: MergedState.start,
 };
 
-interface PaymentDetails {
-    merchantDisplayName: string;
-    totalAmountUSDCDisplay: string;
-    totalAmountFiatDisplay: string;
-    cancelUrl: string | null;
-    completed: boolean;
-    redirectUrl: string | null;
-}
+type BalanceResponse = {
+    pubkey: string;
+    usdcBalance: number;
+    error: string | null;
+};
 
 interface CompletedDetails {
     redirectUrl: string;
 }
 
-type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: ErrorDetails | null };
-type PaymentDetailsSocketMessageResponse = { error: unknown | null };
-type PaymentDetailsSocketMessageInfo = { paymentDetails: PaymentDetails };
-type SocketMessageResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
-type SocketMessage = { paymentDetails: PaymentDetails | null };
-
-export const socketConnected = createAsyncThunk<SocketConnectedResponse>(
-    'paymentSession/socketConnected',
-    async (_, { getState }): Promise<SocketConnectedResponse> => {
-        const state = getState() as RootState;
-        const paymentId = state.paymentSession.paymentId;
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-        if (paymentId == null) {
-            return {
-                paymentDetails: null,
-                error: null,
-            };
-        }
-
-        if (backendUrl == null) {
-            return {
-                paymentDetails: null,
-                error: null,
-            };
-        }
-
-        const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
-        const response = await axios.get(url);
-        const paymentStatusResponse = response.data.paymentStatus;
-        const errorResponse = response.data.error;
-
-        return {
-            paymentDetails: paymentStatusResponse,
-            error: errorResponse,
-        };
-    }
-);
+// type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: ErrorDetails | null };
+// type PaymentDetailsSocketMessageResponse = { error: unknown | null };
+// type PaymentDetailsSocketMessageInfo = { paymentDetails: PaymentDetails };
+// type SocketMessageResponse = { paymentDetails: PaymentDetails | null; error: unknown | null };
+// type SocketMessage = { paymentDetails: PaymentDetails | null };
 
 const paymentSessionSlice = createSlice({
     name: 'paymentSession',
     initialState: initalState,
     reducers: {
         setPaymentId: (state, action: PayloadAction<string>) => {
-            state.paymentId = action.payload;
-            state.sessionState = SessionState.readyToConnect;
-        },
-        setPaymentDetails: (state, action: PayloadAction<PaymentDetails>) => {
-            state.paymentDetails = action.payload;
+            // I don't want any bias here
         },
         setProcessing: state => {
-            state.sessionState = SessionState.processing;
-            state.solanaPayState = SolanaPayState.processing;
             state.mergedState = MergedState.processing;
         },
         setFailedProcessing: state => {
@@ -152,101 +127,73 @@ const paymentSessionSlice = createSlice({
             // It'll likely be a timer that will set us back to readyToConnect
             // We should also show some kind of a message
         },
+        resetSession: state => {
+            state.mergedState = MergedState.start;
+            state.solanaPayState = SolanaPayState.start;
+            state.connectWalletState = ConnectWalletState.start;
+            state.sessionState = SessionState.fresh;
+        },
         setTransactionRequestStarted: state => {
             state.solanaPayState = SolanaPayState.transactionRequestStarted;
             state.mergedState = MergedState.submitting;
+            state.sessionState = SessionState.submitting;
+            state.connectWalletState = ConnectWalletState.loading;
         },
-
-        // export enum MergedState {
-        //     start,
-        //     submitting,
-        //     approving,
-        //     processing,
-        //     completing,
-        //     laggedCompleting,
-        // }
-
         setTransactionRequestFailed: state => {
-            state.transactionRequestState = TransactionRequestState.failed;
+            // Do transaction request failing stuff here
         },
         setTransactionDelivered: state => {
-            state.solanaPayState = SolanaPayState.transactionDelivered;
-            state.transactionRequestState = TransactionRequestState.delivered;
+            console.log('state should be set');
+            // state.solanaPayState = SolanaPayState.transactionDelivered;
             state.mergedState = MergedState.approving;
+            // state.sessionState = SessionState.approving;
+            // state.connectWalletState = ConnectWalletState.approving;
         },
-        setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
-            state.sessionState = SessionState.completed;
-            state.redirectUrl = action.payload.redirectUrl;
-            state.solanaPayState = SolanaPayState.completed;
+        setCompleted: state => {
+            state.mergedState = MergedState.completed;
+        },
+        setCompleting: state => {
             state.mergedState = MergedState.completing;
         },
-        setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
-            state.errorDetails = action.payload;
+        setError: state => {
+            state.mergedState = MergedState.error;
         },
         setClosed: state => {
             // there's a chance we could want to do a short timer here.
-            state.sessionState = SessionState.closed;
-        },
-        setReadyToConnect: state => {
-            state.sessionState = SessionState.readyToConnect;
+            // I think this is a websocket thing
         },
         setSolanaPayCompleted: state => {
-            state.solanaPayState = SolanaPayState.solanaPayCompleted;
-            state.mergedState = MergedState.laggedCompleting;
-        },
-        setConnectWalletLoading: state => {
-            state.connectWalletState = ConnectWalletState.loading;
+            // I don't even know if I want this anymore
         },
         setConnectWalletSentTransaction: state => {
-            state.connectWalletState = ConnectWalletState.sentTransaction;
+            // Probably want something like this still
         },
         setConnectWalletStart: state => {
-            state.connectWalletState = ConnectWalletState.start;
+            // Idk if i'm gonna want this anymore
         },
-        setInsufficientFunds: state => {
-            // set some error state for insuffient funds
-        },
-    },
-    extraReducers(builder) {
-        builder
-            .addCase(socketConnected.pending, (state: PaymentSessionState) => {})
-            .addCase(socketConnected.rejected, (state: PaymentSessionState) => {})
-            .addCase(
-                socketConnected.fulfilled,
-                (state: PaymentSessionState, action: PayloadAction<SocketConnectedResponse>) => {
-                    state.errorDetails = action.payload.error;
-                    state.paymentDetails = action.payload.paymentDetails;
-                    state.sessionState = SessionState.connected;
-                }
-            );
     },
 });
+
 export const {
     setPaymentId,
-    setPaymentDetails,
     setProcessing,
     setFailedProcessing,
     setCompleted,
-    setErrorDetails,
+    setCompleting,
     setClosed,
-    setReadyToConnect,
     setTransactionRequestStarted,
     setTransactionDelivered,
     setSolanaPayCompleted,
-    setConnectWalletLoading,
     setConnectWalletSentTransaction,
     setConnectWalletStart,
     setTransactionRequestFailed,
-    setInsufficientFunds,
+    resetSession,
+    setError,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
 
-export const getPaymentDetails = (state: RootState): PaymentDetails | null => state.paymentSession.paymentDetails;
-export const getErrorDetails = (state: RootState): ErrorDetails | null => state.paymentSession.errorDetails;
-
 export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
-export const getPaymentId = (state: RootState): string | null => state.paymentSession.paymentId;
 export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
 export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
 export const getConnectWalletState = (state: RootState): ConnectWalletState => state.paymentSession.connectWalletState;
@@ -254,7 +201,8 @@ export const getMergedState = (state: RootState): MergedState => state.paymentSe
 
 export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;
-export const getIsCompleted = (state: RootState): boolean => state.paymentSession.redirectUrl != null;
+export const getIsCompleted = (state: RootState): boolean => state.paymentSession.mergedState === MergedState.completed;
 export const getIsSolanaPayCompleted = (state: RootState): boolean =>
     state.paymentSession.solanaPayState === SolanaPayState.solanaPayCompleted;
-export const getIsError = (state: RootState): boolean => state.paymentSession.errorDetails != null;
+export const getIsCompleting = (state: RootState): boolean =>
+    state.paymentSession.mergedState === MergedState.completing;

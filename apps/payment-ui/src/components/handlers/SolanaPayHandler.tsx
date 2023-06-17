@@ -1,32 +1,32 @@
-import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../store';
-import { SolanaPayState, getPaymentDetails, getSolanaPayState, setSolanaPayCompleted } from '@/features/payment-session/paymentSessionSlice';
-import { getRedirectUrl } from '@/features/payment-session/paymentSessionSlice';
+// import { useEffect, useRef } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { AppDispatch } from '../../store';
+// import { SolanaPayState, getSolanaPayState, setSolanaPayCompleted } from '@/features/payment-session/paymentSessionSlice';
+// import { getRedirectUrl } from '@/features/payment-session/paymentSessionSlice';
 
-const SolanaPayHandler: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const solanaPayState = useSelector(getSolanaPayState);
-    let timer = useRef<any | null>(null);
+// const SolanaPayHandler: React.FC = () => {
+//     const dispatch = useDispatch<AppDispatch>();
+//     const mergedState = useSelector(get);
+//     let timer = useRef<any | null>(null);
 
-    useEffect(() => {
+//     useEffect(() => {
         
-        if ( solanaPayState == SolanaPayState.completed ) {
-            const interval = 1500; // 1 second
+//         if ( solanaPayState == SolanaPayState.completed ) {
+//             const interval = 1500; // 1 second
 
-            timer.current = setInterval(() => {
-                console.log('Solana Pay Completed')
-                clearInterval(timer.current);
-                dispatch(setSolanaPayCompleted())
-            }, interval);
-        }
+//             timer.current = setInterval(() => {
+//                 console.log('Solana Pay Completed')
+//                 clearInterval(timer.current);
+//                 dispatch(setSolanaPayCompleted())
+//             }, interval);
+//         }
 
-        return () => {
+//         return () => {
             
-        };
-    }, [dispatch, solanaPayState]);
+//         };
+//     }, [dispatch, solanaPayState]);
 
-    return null;
-};
+//     return null;
+// };
 
-export default SolanaPayHandler;
+// export default SolanaPayHandler;

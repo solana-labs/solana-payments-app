@@ -6,7 +6,7 @@ import {
     BalanceRequestParameters,
     parseAndValidateBalanceParameters,
 } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
-import { fetchUsdcBalance } from '../../../services/helius.service.js';
+import { fetchUsdcBalance, fetchUsdcSize } from '../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 
@@ -26,10 +26,10 @@ export const balance = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        let usdcBalance: string;
+        let usdcSize: number;
 
         try {
-            usdcBalance = await fetchUsdcBalance(balanceRequestParameters.pubkey);
+            usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -37,7 +37,7 @@ export const balance = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 200,
             body: JSON.stringify({
-                usdcBalance: usdcBalance,
+                usdcBalance: usdcSize,
             }),
         };
     }

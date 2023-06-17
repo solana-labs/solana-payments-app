@@ -1,6 +1,6 @@
 export const CartAmountDisplay = ( props: { displayAmount: string } ) => {
     return (
-        <div className="text-gray-500 w-16 flex justify-center rounded-md h-8 items-center">
+        <div className="label-text text-gray-600 w-16 flex justify-center rounded-md h-8 items-center">
             {props.displayAmount}
         </div>
     )

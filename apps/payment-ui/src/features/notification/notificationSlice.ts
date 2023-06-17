@@ -1,58 +1,70 @@
 import { RootState } from '@/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-const notificationTypeForNotification = (notification: Notification): NotificationType => {
-    switch (notification) {
-        case Notification.noPayment:
-        case Notification.noWallet:
-        case Notification.declined:
-        case Notification.duplicatePayment:
-        case Notification.insufficentFunds:
-        case Notification.simulatingIssue:
-            return NotificationType.info;
-        case Notification.transactionRequestFailed:
-            return NotificationType.error;
-        default:
-            return NotificationType.none;
-    }
-};
+// const notificationTypeForNotification = (notification: Notification): NotificationType => {
+//     switch (notification) {
+//         case Notification.noPayment:
+//         case Notification.noWallet:
+//         case Notification.declined:
+//         case Notification.duplicatePayment:
+//         case Notification.insufficentFunds:
+//         case Notification.simulatingIssue:
+//             return NotificationType.info;
+//         case Notification.transactionRequestFailed:
+//             return NotificationType.error;
+//         default:
+//             return NotificationType.none;
+//     }
+// };
 
 export enum NotificationType {
-    none,
-    info,
-    success,
-    warning,
-    error,
+    connectWallet,
+    solanaPay,
+    both,
 }
 
 export enum Notification {
     none = 'Remember to drink water today.',
     noPayment = "We couldn't find a payment for you. Are you sure you're in the right place?",
-    noWallet = "We don' see your wallet connected. Please connect your wallet to continue.",
+    noWallet = 'There is a problem with your wallet. Disconnect and try again.',
     transactionRequestFailed = 'There was an issue building your payment transaction. Please try again.',
     declined = 'It looks like you declined the transaction. Was something wrong? Please try again.',
     duplicatePayment = 'It looks like you already paid. Please check your wallet.',
-    insufficentFunds = "It looks like you don't have enough USDC in your wallet. Please add more and try again.",
+    insufficentFunds = "You don't have enough funds for this transaction.",
     simulatingIssue = "There's an issue with your transaction. Please try again.",
 }
 
 interface NotificationState {
-    notification: Notification;
+    connectWalletNotification: Notification;
+    solanaPayNotification: Notification;
 }
 
 const initalState: NotificationState = {
-    notification: Notification.none,
+    connectWalletNotification: Notification.none,
+    solanaPayNotification: Notification.none,
 };
 
 const notificationSlice = createSlice({
     name: 'notification',
     initialState: initalState,
     reducers: {
-        setNotification: (state, action: PayloadAction<Notification>) => {
-            state.notification = action.payload;
+        setNotification: (state, action: PayloadAction<{ notification: Notification; type: NotificationType }>) => {
+            switch (action.payload.type) {
+                case NotificationType.connectWallet:
+                    state.connectWalletNotification = action.payload.notification;
+                    break;
+                case NotificationType.solanaPay:
+                    state.solanaPayNotification = action.payload.notification;
+                    break;
+                case NotificationType.both:
+                    state.connectWalletNotification = action.payload.notification;
+                    state.solanaPayNotification = action.payload.notification;
+                    break;
+            }
         },
         removeNotification: state => {
-            state.notification = Notification.none;
+            state.solanaPayNotification = Notification.none;
+            state.connectWalletNotification = Notification.none;
         },
     },
 });
@@ -61,7 +73,10 @@ export const { setNotification, removeNotification } = notificationSlice.actions
 
 export default notificationSlice.reducer;
 
-export const getIsNotification = (state: RootState): boolean => state.notification.notification !== Notification.none;
-export const getNotification = (state: RootState): Notification => state.notification.notification;
-export const getNotificationType = (state: RootState): NotificationType =>
-    notificationTypeForNotification(state.notification.notification);
+export const getIsSolanaPayNotification = (state: RootState): boolean =>
+    state.notification.solanaPayNotification != Notification.none;
+export const getIsConnectWalletNotification = (state: RootState): boolean =>
+    state.notification.connectWalletNotification != Notification.none;
+export const getSolanaPayNotification = (state: RootState): Notification => state.notification.solanaPayNotification;
+export const getConnectWalletNotification = (state: RootState): Notification =>
+    state.notification.connectWalletNotification;

@@ -4,7 +4,7 @@ import { paymentSessionRejectionDisplayMessages } from '../../../services/shopif
 export interface PaymentStatusResponse {
     merchantDisplayName: string;
     totalAmountFiatDisplay: string;
-    totalAmountUSDCDisplay: string;
+    usdcSize: number;
     cancelUrl: string;
     redirectUrl: string | null;
     completed: boolean;
@@ -26,7 +26,7 @@ export const createPaymentStatusResponse = (
         style: 'currency',
         currency: paymentRecord.currency,
     });
-    const totalAmountUSDCDisplay = `${paymentRecord.usdcAmount.toFixed(2)} USDC`;
+    const usdcSize = paymentRecord.usdcAmount;
     const cancelUrl = paymentRecord.cancelURL;
     const redirectUrl = paymentRecord.redirectUrl;
     const completed = paymentRecord.redirectUrl ? true : false;
@@ -34,7 +34,7 @@ export const createPaymentStatusResponse = (
     return {
         merchantDisplayName,
         totalAmountFiatDisplay,
-        totalAmountUSDCDisplay,
+        usdcSize,
         cancelUrl,
         redirectUrl,
         completed,
