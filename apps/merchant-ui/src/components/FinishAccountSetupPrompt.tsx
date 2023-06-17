@@ -1,7 +1,8 @@
+import AcceptTOS from '@/AcceptTOS';
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
-import { updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import { useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
 import Store from '@carbon/icons-react/lib/Store';
 import Wallet from '@carbon/icons-react/lib/Wallet';
@@ -58,8 +59,6 @@ export function FinishAccountSetupPrompt(props: Props) {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
-    const [pendingTos, setPendingTos] = useState(false);
-
     const [remainingSetupItems, setRemainingSetupItems] = useState<RemainingSetupItem[]>([
         RemainingSetupItem.AcceptTerms,
         RemainingSetupItem.AddWallet,
@@ -89,13 +88,6 @@ export function FinishAccountSetupPrompt(props: Props) {
             case RemainingSetupItem.VerifyBusiness:
                 return merchantInfo.data.kybState === 'finished';
         }
-    }
-
-    async function updateMerchantTosClick() {
-        setPendingTos(true);
-        await updateMerchantTos();
-        await getMerchantInfo();
-        setPendingTos(false);
     }
 
     if (!isOk(merchantInfo)) {
@@ -145,11 +137,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => (
-                                  <Primary onClick={updateMerchantTosClick} pending={pendingTos}>
-                                      Accept
-                                  </Primary>
-                              )
+                            ? () => <AcceptTOS />
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
                     }
                     onStart={() => props.onBeginSetupItem?.(step)}

@@ -81,6 +81,20 @@ export function ClosedRefunds(props: Props) {
         );
     }
 
+    function refundIsCompleted(status: RefundStatus) {
+        if (status === RefundStatus.Completed) {
+            return true;
+        }
+
+        if (status === RefundStatus.Paid) {
+            return true;
+        }
+
+        if (status === RefundStatus.Rejected) {
+            return false;
+        }
+    }
+
     return (
         <PaginatedTable
             className={twMerge(props.className, 'mt-8')}
@@ -142,7 +156,7 @@ export function ClosedRefunds(props: Props) {
                 ),
                 status: (_, refund) => (
                     <div className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center')}>
-                        {refund.status === RefundStatus.Paid && (
+                        {refundIsCompleted(refund.status) ? (
                             <div
                                 className={twMerge(
                                     'border',
@@ -158,8 +172,7 @@ export function ClosedRefunds(props: Props) {
                             >
                                 Refunded
                             </div>
-                        )}
-                        {refund.status === RefundStatus.Rejected && (
+                        ) : (
                             <div
                                 className={twMerge(
                                     'border',
