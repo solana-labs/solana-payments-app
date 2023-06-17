@@ -82,6 +82,8 @@ export const PaymentLoadingView = () => {
 
     const currentStep = mergedState - 1;
 
+    console.log(currentStep, 'currentStep')
+
     return (
         <div className="flex flex-col items-center">
             <h2 className="text-black text-center text-xl mt-16 mb-9">Transaction in progress</h2>
@@ -89,7 +91,7 @@ export const PaymentLoadingView = () => {
                 {stepLabels.map((label, index) => {
                     const status = getStepStatus({ index, currentStep });
                     return (
-                        <div className="flex flex-row">
+                        <div key={label} className="flex flex-row">
                             {<StepBar completed={currentStep > index - 1} include={index > 0} />}
                             <StepComponent status={status} />
                             {<StepBar completed={currentStep > index} include={1 < stepLabels.length - index} />}
@@ -97,7 +99,7 @@ export const PaymentLoadingView = () => {
                     );
                 })}
                 {stepLabels.map((label, index) => (
-                    <p className={currentStep >= index ? 'text-black' : 'text-gray-400'}>
+                    <p key={index} className={currentStep >= index ? 'text-black' : 'text-gray-400'}>
                         {currentStep > index ? stepLabelsPast[index] : label}
                     </p>
                 ))}

@@ -4,19 +4,21 @@ import { useSelector } from "react-redux";
 import PayWithWalletSection from "./PayWithWalletSection";
 import CancelTransactionButton from "./CancelTransactionButton";
 import SolanaPayErrorView from "./SolanaPayErrorView";
+import { getIsSolanaPayNotification } from "@/features/notification/notificationSlice";
 
 const FooterSection = () => {
 
     const paymentMethod = useSelector(getPaymentMethod)
     const mergedState = useSelector(getMergedState)
+    const isSolanaPayNotification = useSelector(getIsSolanaPayNotification)
 
     if ( paymentMethod == 'connect-wallet' && mergedState == MergedState.start ) {
         return <PayWithWalletSection />
-    } else if ( mergedState > MergedState.start && mergedState < MergedState.laggedCompleting ) {
-        return <CancelTransactionButton />
-    } else if ( paymentMethod == 'qr-code' && mergedState == MergedState.start ) {
+    } else if ( paymentMethod == 'qr-code' && isSolanaPayNotification ) {
         return <SolanaPayErrorView />
-    } else {
+    } else if ( mergedState > MergedState.start && mergedState < MergedState.completed ) {
+        return <CancelTransactionButton />
+    }  else {
         return (<div></div>)
     }
 }

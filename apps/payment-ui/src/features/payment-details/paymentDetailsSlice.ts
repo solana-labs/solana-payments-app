@@ -49,6 +49,14 @@ const paymentDetailsSlice = createSlice({
         setPaymentId: (state, action: PayloadAction<string>) => {
             state.paymentId = action.payload;
         },
+        setRedirectUrl: (state, action: PayloadAction<string>) => {
+            if (state.paymentDetails) {
+                state.paymentDetails.redirectUrl = action.payload;
+            }
+        },
+        setErrorDetails: (state, action: PayloadAction<ErrorDetails>) => {
+            state.errorDetails = action.payload;
+        },
     },
     extraReducers(builder) {
         builder
@@ -65,7 +73,7 @@ const paymentDetailsSlice = createSlice({
     },
 });
 
-export const { setPaymentId } = paymentDetailsSlice.actions;
+export const { setPaymentId, setRedirectUrl } = paymentDetailsSlice.actions;
 
 export default paymentDetailsSlice.reducer;
 
@@ -79,6 +87,10 @@ export const getErrorDetails = (state: RootState): ErrorDetails | null => state.
 export const getIsPaymentError = (state: RootState): boolean => state.paymentDetails.errorDetails != null;
 export const getIsPaymentCompleted = (state: RootState): boolean =>
     state.paymentDetails.paymentDetails?.completed ?? false;
+export const getPaymentSize = (state: RootState): number | null =>
+    state.paymentDetails.paymentDetails ? state.paymentDetails.paymentDetails.usdcSize : null;
+export const getPaymentRedirectUrl = (state: RootState): string | null =>
+    state.paymentDetails.paymentDetails?.redirectUrl ?? null;
 
 export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
     'paymentDetails/fetchPaymentDetails',
@@ -103,6 +115,10 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
 
         let paymentDetails: PaymentDetails | null;
         let errorDetails: ErrorDetails | null;
+
+        // const headers = {
+        //     'Access-Control-Allow-Origin': 'localhost',
+        // };
 
         try {
             const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;

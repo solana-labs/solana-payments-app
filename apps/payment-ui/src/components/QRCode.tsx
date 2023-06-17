@@ -3,7 +3,7 @@ import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createQROptions } from './SolanaPayQRCode';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
-import { getPaymentId } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 
 export const QRCode: FC = () => {
     // const [size, setSize] = useState(() =>

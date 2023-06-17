@@ -3,17 +3,19 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
-import { ConnectWalletState, getConnectWalletState, setConnectWalletSentTransaction, setConnectWalletStart } from '@/features/payment-session/paymentSessionSlice';
+import { ConnectWalletState, getConnectWalletState, setConnectWalletSentTransaction, setConnectWalletStart, setTransactionRequestStarted } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
-import { Notification, setNotification } from '@/features/notification/notificationSlice';
+import { Notification, NotificationType, getConnectWalletNotification, setNotification } from '@/features/notification/notificationSlice';
+import { setWalletLoading, stopWalletLoading } from '@/features/wallet/walletSlice';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
     const { publicKey, sendTransaction, signTransaction } = useWallet();
     const dispatch = useDispatch<AppDispatch>();
     const connectWalletState = useSelector(getConnectWalletState)
+    const connectedWalletNotification = useSelector(getConnectWalletNotification)
 
     const fetchAndSendTransaction = async () => {
         const headers = {
@@ -21,12 +23,12 @@ const BuyButton = () => {
         };
         
         if ( paymentId == null ) {
-            // dispatch(setNotification(Notification.noPayment));
+            dispatch(setNotification({ notification: Notification.noPayment, type: NotificationType.connectWallet }));
             return;
         }
 
         if (publicKey == null) {
-            // dispatch(setNotification(Notification.noWallet));
+            dispatch(setNotification({ notification: Notification.noWallet, type: NotificationType.connectWallet }));
             return;
         }
 
@@ -34,7 +36,7 @@ const BuyButton = () => {
 
         let transactionString: string
 
-        dispatch(setConnectWalletLoading())
+        dispatch(setWalletLoading())
 
         try {
 
@@ -46,15 +48,16 @@ const BuyButton = () => {
 
             transactionString = response.data.transaction
         } catch (error) {
-            dispatch(setConnectWalletStart())
+            dispatch(stopWalletLoading())
+            
             // TODO: Handle error and give more specific reason
-            dispatch(setNotification(Notification.transactionRequestFailed));
+            // dispatch(setNotification(Notification.transactionRequestFailed));
             return;
         }
 
         if ( transactionString == null ) {
-            dispatch(setConnectWalletStart())
-            dispatch(setNotification(Notification.transactionRequestFailed));
+            dispatch(stopWalletLoading())
+            // dispatch(setNotification(Notification.transactionRequestFailed));
             return;
         }
 
@@ -66,8 +69,8 @@ const BuyButton = () => {
             transaction = web3.Transaction.from(buffer);
 
         } catch (error) {
-            dispatch(setConnectWalletStart())
-            dispatch(setNotification(Notification.transactionRequestFailed));
+            dispatch(stopWalletLoading())
+            // dispatch(setNotification(Notification.transactionRequestFailed));
             return
         }
 
@@ -78,36 +81,45 @@ const BuyButton = () => {
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
-            dispatch(setConnectWalletStart())
+            dispatch(stopWalletLoading())
 
             const declined = ( error instanceof Error && error.message.toLowerCase().includes('user rejected') )
             const duplicatePayment = ( error instanceof Error && error.message.toLowerCase().includes('0x0') && error.message.toLowerCase().includes('instruction 0'))
             const insufficientFunds = ( error instanceof Error && error.message.toLowerCase().includes('0x1') && error.message.toLowerCase().includes('instruction 1'))
 
             if (declined) {
-                dispatch(setNotification(Notification.declined));
+                dispatch(setNotification({ notification: Notification.declined, type: NotificationType.connectWallet }));
             } else if (duplicatePayment) {
-                dispatch(setNotification(Notification.duplicatePayment));
+                // dispatch(setNotification(Notification.duplicatePayment));
             } else if (insufficientFunds) {
-                dispatch(setNotification(Notification.insufficentFunds));
+                // dispatch(setNotification(Notification.insufficentFunds));
             } else {
-                dispatch(setNotification(Notification.simulatingIssue));
+                // dispatch(setNotification(Notification.simulatingIssue));
             }
+            
 
             return;
         }
 
-        dispatch(setConnectWalletSentTransaction())
+        // dispatch(setConnectWalletSentTransaction())
 
     };
 
+    const isDisabled = () => {
+        if ( connectedWalletNotification == Notification.insufficentFunds ) {
+            return true
+        } else if ( paymentId == null ) {
+            return true
+        }
+    }
+
     return (
         <button
-            disabled={connectWalletState == ConnectWalletState.sentTransaction}
+            disabled={isDisabled()}
             onClick={async () => {
                 await fetchAndSendTransaction();
             }}
-            className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg font-semibold flex justify-center items-center normal-case disabled:bg-slate-300 disabled:text-slate-800"
+            className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg disabled:shadow-none font-semibold flex justify-center items-center normal-case disabled:bg-slate-200 disabled:text-slate-400"
         >
             <div className={`flex flex-row items-center justify-center`}>
                { connectWalletState == ConnectWalletState.loading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div /> }             

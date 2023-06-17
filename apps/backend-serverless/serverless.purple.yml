@@ -8,6 +8,7 @@ provider:
     cors:
       allowedOrigins:
         - http://localhost:3005
+        - http://localhost:3001
         - https://merchant.solanapay.com
         - https://shopify-payment-ui.vercel.app
         - https://pay.solanapay.com

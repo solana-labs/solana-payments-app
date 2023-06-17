@@ -14,8 +14,8 @@ import { SocketMessageWithNoTypeError } from '@/errors/socket-message-with-no-ty
 export enum SessionState {
     fresh, // fresh start, browser load, has no paymentId
     aware, // aware of the payment id, can start the fun stuff
-    requested, // payment has been requested
-    delivered, // payment has been delivered
+    submitting, // payment has been requested
+    approving, // payment has been delivered
     processing, // payment is being processed
     completing, // payment is done but we are flexing with a completing state for added rizz
     completed, // payment is done
@@ -35,7 +35,8 @@ export enum MergedState {
     approving,
     processing,
     completing,
-    laggedCompleting,
+    completed,
+    error,
 }
 
 /**
@@ -62,6 +63,8 @@ export enum SolanaPayState {
 export enum ConnectWalletState {
     start,
     loading,
+    submitting,
+    approving,
     sentTransaction,
     processing,
     completed,
@@ -117,27 +120,43 @@ const paymentSessionSlice = createSlice({
             // I don't want any bias here
         },
         setProcessing: state => {
-            // I guess this is where i start the processing
+            state.mergedState = MergedState.processing;
         },
         setFailedProcessing: state => {
             // What state gets us out of failed processing?
             // It'll likely be a timer that will set us back to readyToConnect
             // We should also show some kind of a message
         },
+        resetSession: state => {
+            state.mergedState = MergedState.start;
+            state.solanaPayState = SolanaPayState.start;
+            state.connectWalletState = ConnectWalletState.start;
+            state.sessionState = SessionState.fresh;
+        },
         setTransactionRequestStarted: state => {
-            // Gonna want something like this probably
+            state.solanaPayState = SolanaPayState.transactionRequestStarted;
+            state.mergedState = MergedState.submitting;
+            state.sessionState = SessionState.submitting;
+            state.connectWalletState = ConnectWalletState.loading;
         },
         setTransactionRequestFailed: state => {
             // Do transaction request failing stuff here
         },
         setTransactionDelivered: state => {
-            // Do transaction delivered stuff here
+            console.log('state should be set');
+            // state.solanaPayState = SolanaPayState.transactionDelivered;
+            state.mergedState = MergedState.approving;
+            // state.sessionState = SessionState.approving;
+            // state.connectWalletState = ConnectWalletState.approving;
         },
-        setCompleted: (state, action: PayloadAction<CompletedDetails>) => {
-            // Do comleted stuff here, this should take us to the thank you screen
+        setCompleted: state => {
+            state.mergedState = MergedState.completed;
         },
-        setCompleting: (state, action: PayloadAction<CompletedDetails>) => {
-            // Do completing stuff here, this should take us to the the loading animation
+        setCompleting: state => {
+            state.mergedState = MergedState.completing;
+        },
+        setError: state => {
+            state.mergedState = MergedState.error;
         },
         setClosed: state => {
             // there's a chance we could want to do a short timer here.
@@ -152,12 +171,6 @@ const paymentSessionSlice = createSlice({
         setConnectWalletStart: state => {
             // Idk if i'm gonna want this anymore
         },
-        setInsufficientFunds: state => {
-            // set some error state for insuffient funds
-        },
-        setCancelTransaction: state => {
-            // I'm def gonna want something like this
-        },
     },
 });
 
@@ -166,6 +179,7 @@ export const {
     setProcessing,
     setFailedProcessing,
     setCompleted,
+    setCompleting,
     setClosed,
     setTransactionRequestStarted,
     setTransactionDelivered,
@@ -173,8 +187,8 @@ export const {
     setConnectWalletSentTransaction,
     setConnectWalletStart,
     setTransactionRequestFailed,
-    setInsufficientFunds,
-    setCancelTransaction,
+    resetSession,
+    setError,
 } = paymentSessionSlice.actions;
 
 export default paymentSessionSlice.reducer;
@@ -187,6 +201,8 @@ export const getMergedState = (state: RootState): MergedState => state.paymentSe
 
 export const getIsProcessing = (state: RootState): boolean =>
     state.paymentSession.sessionState === SessionState.processing;
-export const getIsCompleted = (state: RootState): boolean => state.paymentSession.redirectUrl != null;
+export const getIsCompleted = (state: RootState): boolean => state.paymentSession.mergedState === MergedState.completed;
 export const getIsSolanaPayCompleted = (state: RootState): boolean =>
     state.paymentSession.solanaPayState === SolanaPayState.solanaPayCompleted;
+export const getIsCompleting = (state: RootState): boolean =>
+    state.paymentSession.mergedState === MergedState.completing;

@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { WebsocketSesssionState, getWebsocketSessionState, setWebsocketConnected, setWebsocketClosed, setWebsocketReadyToConnect } from '@/features/websocket/websocketSlice';
 import { getWebSocketUrl } from '@/features/env/envSlice';
-import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
+import { getPaymentId, setRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
+import { setTransactionDelivered, setTransactionRequestStarted, setCompleting, setError, setProcessing, resetSession } from '@/features/payment-session/paymentSessionSlice';
+import { setNotification, Notification, NotificationType } from '@/features/notification/notificationSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -30,11 +32,26 @@ const WebsocketHandler: React.FC = () => {
               
             socket.current.onmessage = (event) => {
 
-                // const data = JSON.parse(event.data);
-                // console.log('Message: ' + data.messageType)
+                const data = JSON.parse(event.data);
+                console.log('Message: ' + data.messageType)
 
-                // if ( data.messageType == 'paymentDetails' ) {
-                //     dispatch(setPaymentDetails(data.payload.paymentDetails))
+                if ( data.messageType == 'transactionRequestStarted' ) {
+                    dispatch(setTransactionRequestStarted())
+                } else if (data.messageType == 'transactionDelivered') {
+                    console.log('why not us!')
+                    dispatch(setTransactionDelivered())
+                } else if (data.messageType == 'insufficientFunds') {
+                    dispatch(resetSession())
+                    dispatch(setNotification({ notification: Notification.insufficentFunds, type: NotificationType.solanaPay }))
+                } else if ( data.messageType == 'completedDetails' ) {
+                    dispatch(setRedirectUrl(data.payload.completedDetails.redirectUrl))
+                    dispatch(setCompleting(data.payload.completedDetails))
+                } else if ( data.messageType == 'errorDetails' ) {
+                    dispatch(setError(data.payload.errorDetails))
+                } else if ( data.messageType == 'processingTransaction' ) {
+                    dispatch(setProcessing())
+                }
+
                 // } else if ( data.messageType == 'completedDetails' ) {
                 //     console.log(data)
                 //     dispatch(setCompleted(data.payload.completedDetails)) 

@@ -1,13 +1,15 @@
-import { setCancelTransaction } from '@/features/payment-session/paymentSessionSlice'
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
+import { resetSession } from '@/features/payment-session/paymentSessionSlice';
+import { removeNotification } from '@/features/notification/notificationSlice';
 
 export const CancelledTransactionView = () => {
 
     const dispatch = useDispatch<AppDispatch>();
 
     const retryTransaction = () => {
-        dispatch(setCancelTransaction())
+        dispatch(resetSession())
+        dispatch(removeNotification())
     }
 
     return (

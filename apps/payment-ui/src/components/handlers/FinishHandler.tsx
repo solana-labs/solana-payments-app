@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getRedirectUrl } from '@/features/payment-session/paymentSessionSlice';
+import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 
 const FinishHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const redirectUrl = useSelector(getRedirectUrl);
+    const redirectUrl = useSelector(getPaymentRedirectUrl);
 
     useEffect(() => {
         const interval = 3000; // 3 seconds

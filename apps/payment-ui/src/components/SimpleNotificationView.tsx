@@ -1,12 +1,12 @@
 import { AppDispatch } from "@/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeNotification, getNotification, getNotificationType, NotificationType, getIsNotification } from "@/features/notification/notificationSlice";
+import { getConnectWalletNotification, getIsConnectWalletNotification } from "@/features/notification/notificationSlice";
 
 const SimpleNotificationView = () => {
 
-    const isNotification = useSelector(getIsNotification)
-    const notification = useSelector(getNotification)
+    const isNotification = useSelector(getIsConnectWalletNotification)
+    const notification = useSelector(getConnectWalletNotification)
 
     return (
         <>

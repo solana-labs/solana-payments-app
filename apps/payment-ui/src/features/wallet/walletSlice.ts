@@ -6,12 +6,14 @@ interface WalletState {
     pubkey: string | null;
     usdcBalance: number | null;
     error: string | null;
+    loading: boolean;
 }
 
 const initalState: WalletState = {
     pubkey: null,
     usdcBalance: null,
     error: null,
+    loading: false,
 };
 
 type BalanceResponse = {
@@ -65,7 +67,14 @@ const walletSlice = createSlice({
             state.pubkey = action.payload;
         },
         setWalletDisconnected: state => {
+            console.log('DISCONNECTED WALLET');
             state.pubkey = null;
+        },
+        setWalletLoading: state => {
+            state.loading = true;
+        },
+        stopWalletLoading: state => {
+            state.loading = false;
         },
     },
     extraReducers(builder) {
@@ -80,7 +89,7 @@ const walletSlice = createSlice({
     },
 });
 
-export const { setWalletDisconnected, setWalletConnected } = walletSlice.actions;
+export const { setWalletDisconnected, setWalletConnected, setWalletLoading, stopWalletLoading } = walletSlice.actions;
 
 export default walletSlice.reducer;
 
@@ -89,3 +98,4 @@ export const getWalletPubkey = (state: RootState): string | null => state.wallet
 export const getBalance = (state: RootState): number | null => state.wallet.usdcBalance;
 export const getIsWalletError = (state: RootState): boolean => state.wallet.error != null;
 export const getWalletError = (state: RootState): string | null => state.wallet.error;
+export const getIsWalletLoading = (state: RootState): boolean => state.wallet.loading;

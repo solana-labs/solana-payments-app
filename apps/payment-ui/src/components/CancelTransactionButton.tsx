@@ -1,4 +1,4 @@
-import { setCancelTransaction } from '@/features/payment-session/paymentSessionSlice';
+import { resetSession } from '@/features/payment-session/paymentSessionSlice';
 import { AppDispatch } from '@/store';
 import { useDispatch } from 'react-redux';
 
@@ -8,7 +8,7 @@ const CancelTransactionButton = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const cancelTransaction = () => {
-        dispatch(setCancelTransaction())
+        dispatch(resetSession())
     }
 
     return (

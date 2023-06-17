@@ -8,7 +8,6 @@ import { clusterApiUrl } from '@solana/web3.js';
 import WalletButton from './WalletButton';
 import BuyButton from './BuyButton';
 import Image from 'next/image';
-import { getIsNotification } from '@/features/notification/notificationSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { NotificationView } from './NotificationView';
 import { AppDispatch } from '@/store';
@@ -20,7 +19,6 @@ const WalletSection = () => {
 
     const { publicKey, wallet, disconnect } = useWallet();
     const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
-    const isNotification = useSelector(getIsNotification)
 
     const dispatch = useDispatch<AppDispatch>();
 

@@ -1,37 +1,32 @@
-import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import {
     MergedState,
     getIsCompleted,
-    getIsProcessing,
-    getIsSolanaPayCompleted,
     getMergedState,
 } from '@/features/payment-session/paymentSessionSlice';
-import { BlockedProps } from '@/pages';
 import { useSelector } from 'react-redux';
 import { ErrorView } from './ErrorView';
 import { GeoBlockedView } from './GeoBlockedView';
 import { PaymentLoadingView } from './PaymentLoadingView';
 import { PaymentView } from './PaymentView';
 import { ThankYouView } from './ThankYou';
-
-import CancelledTransactionView from './CancelledTransactionView';
 import { getIsPaymentError } from '@/features/payment-details/paymentDetailsSlice';
+import { getIsBlocked } from '@/features/geo/geoSlice';
+import { NotificationType, getConnectWalletNotification, Notification } from '@/features/notification/notificationSlice';
 
-const CheckoutSection = (props: BlockedProps) => {
-    const isProcessing = useSelector(getIsProcessing);
+const CheckoutSection = () => {
     const isCompleted = useSelector(getIsCompleted);
-    const isSolanaPayCompleted = useSelector(getIsSolanaPayCompleted);
     const isError = useSelector(getIsPaymentError);
-    const paymentMethod = useSelector(getPaymentMethod);
     const mergedState = useSelector(getMergedState)
+    const isBlocked = useSelector(getIsBlocked)
+    const connectedWalletNotification = useSelector(getConnectWalletNotification)
 
-    let paymentMethodCompleted = paymentMethod == 'connect-wallet' ? isCompleted : isSolanaPayCompleted;
-
-    if (props.isBlocked == 'true') {
+    if (isBlocked) {
         return <GeoBlockedView />;
-    } else if (mergedState > MergedState.start && mergedState < MergedState.laggedCompleting) {
+    } else if ( connectedWalletNotification == Notification.declined ) {
+
+    } else if (mergedState > MergedState.start && mergedState < MergedState.completed) {
         return <PaymentLoadingView />;
-    } else if (paymentMethodCompleted) {
+    } else if (isCompleted) {
         return <ThankYouView />;
     } else if (isError) {
         return <ErrorView />;
