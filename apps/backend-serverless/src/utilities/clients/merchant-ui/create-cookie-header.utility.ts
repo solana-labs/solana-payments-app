@@ -3,7 +3,7 @@ import { MissingEnvError } from '../../../errors/missing-env.error.js';
 
 export const AUTH_TOKEN_COOKIE_NAME = 'Bearer';
 
-interface CookieOptions {
+export interface CookieOptions {
     maxAge: number;
     httpOnly: boolean;
     secure: boolean;
