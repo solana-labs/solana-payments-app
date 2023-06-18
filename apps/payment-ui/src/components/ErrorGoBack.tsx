@@ -12,7 +12,7 @@ export const ErrorGoBack = ( props: { top: string, bottom: string, redirect: str
 
 const ErrorDisplay = ( props: { top: string, bottom: string } ) => {
     return (
-        <div className='rounded-lg outline outline-1 mt-16 h-16 outline-orange-600 bg-orange-100 flex flex-row items-start'>
+        <div className='rounded-lg outline-none border-2 border-orange-600 mt-16 h-16 bg-orange-100 flex flex-row items-start'>
             <div className='flex flex-col h-full justify-center'>
                 <ImWarning className='text-orange-600 ml-4 mr-3 text-md' />
                 <div className="text-md text-orange-100 font-light">{'.'}</div>
@@ -27,7 +27,7 @@ const ErrorDisplay = ( props: { top: string, bottom: string } ) => {
 
 const GoBackButton = ( props: { redirect: string | null } ) => {
     return (
-        <button className='btn btn-ghost outline outline-offset-0 text-black normal-case outline-2 mt-4' onClick={() => {
+        <button className='btn btn-ghost outline-none border-2 border-black hover:bg-white hover:border-black text-black normal-case  mt-4' onClick={() => {
             if ( props.redirect != null ) {
                 window.location.href = props.redirect;
             }

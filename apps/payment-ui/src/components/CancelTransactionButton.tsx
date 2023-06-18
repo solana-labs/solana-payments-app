@@ -14,7 +14,7 @@ const CancelTransactionButton = () => {
     return (
         <div className="flex flex-col justify-end h-full">
             <div className="pb-6">
-                <button className='btn w-full outline outline-1.5 hover:bg-white bg-white text-black flex justify-center items-center normal-case' onClick={cancelTransaction}>
+                <button className='btn w-full outline-none border-2 border-black hover:bg-white bg-white text-black flex justify-center items-center normal-case' onClick={cancelTransaction}>
                     <div className='flex flex-row items-center justify-center'>
                         <div className='pl-1'>Cancel transaction</div>
                     </div>

@@ -23,7 +23,6 @@ export const PaymentView: React.FC = () => {
             { paymentMethod == 'qr-code' ? 
                 <div className='w-full h-full flex flex-col items-center'>
                     <div className="flex flex-col items-center">
-                        <div className={`h-[100px]`}></div>
                         <QRCode />
                         <div className='text-gray-600 text-xs pt-4'>Scan this code to pay with your Solana wallet</div>
                     </div>
