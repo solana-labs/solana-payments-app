@@ -54,7 +54,8 @@ model Merchant {
   lastNonce      String
   paymentRecords PaymentRecord[]
   refundRecords  RefundRecord[]
-  paymentAddress String?
+  walletAddress  String?
+  tokenAddress   String?
   kybInquiry     String?
   kybState       KybState        @default(pending)
   active         Boolean         @default(false)

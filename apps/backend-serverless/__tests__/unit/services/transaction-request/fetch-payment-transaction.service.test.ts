@@ -13,7 +13,7 @@ describe('fetch payment transaction request testing suite', () => {
         process.env.TRANSACTION_REQUEST_SERVER_URL = 'https://transaction-request-server.com';
 
         const mockMerchantKeypair = web3.Keypair.generate();
-        const mockMerchant = createMockMerchant({ paymentAddress: mockMerchantKeypair.publicKey.toBase58() });
+        const mockMerchant = createMockMerchant({ walletAddress: mockMerchantKeypair.publicKey.toBase58() });
         const mockPaymentRecord = createMockPaymentRecord({ merchantId: mockMerchant.id });
 
         const mockGasKeypair = web3.Keypair.generate();

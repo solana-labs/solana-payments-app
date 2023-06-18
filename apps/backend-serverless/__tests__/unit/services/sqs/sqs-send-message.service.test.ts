@@ -1,7 +1,7 @@
 // File: sqsRetryService.test.ts
 import { sendRetryMessage } from '../../../../src/services/sqs/sqs-send-message.service.js';
 import { SQS } from 'aws-sdk';
-import { ShopifyMutationRetryType } from '../../../../src/models/shopify-mutation-retry.model.js';
+import { ShopifyMutationRetryType } from '../../../../src/models/sqs/shopify-mutation-retry.model.js';
 
 describe('unit testing the sqs send message service', () => {
     it('should call SQS.sendMessage with correct parameters', async () => {

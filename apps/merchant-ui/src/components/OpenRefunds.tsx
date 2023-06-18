@@ -240,7 +240,7 @@ export function OpenRefunds(props: Props) {
             columns={['orderId', 'requestedAt', 'requestedRefundAmount', 'purchaseAmount', 'status']}
             curPage={RE.map(openRefunds, ({ refunds }) => refunds)}
             headers={{
-                orderId: 'Shopify Order ID',
+                orderId: 'Shopify Order #',
                 requestedAt: 'Requested On',
                 requestedRefundAmount: 'Requested Refund',
                 purchaseAmount: 'Purchase Amount',
@@ -255,42 +255,18 @@ export function OpenRefunds(props: Props) {
             }}
         >
             {{
-                orderId: orderId => (
-                    <div
-                        className={twMerge(
-                            'border-b',
-                            'border-gray-200',
-                            'flex',
-                            'font-semibold',
-                            'h-20',
-                            'items-center',
-                            'text-black',
-                            'text-overflow'
-                        )}
-                        key={orderId}
-                    >
-                        {orderId.length > 12 ? orderId.substring(0, 12) + '...' : orderId}
-                    </div>
-                ),
+                orderId: id => <div className="font-semibold text-sm text-black">{id}</div>,
                 requestedAt: requestedAt => (
-                    <div
-                        className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'text-black')}
-                    >
-                        {format(requestedAt, 'MMM d, h:mmaa')}
-                    </div>
+                    <div className="text-sm text-slate-600 pr-11">{format(requestedAt, 'MMM d, h:mmaa')}</div>
                 ),
                 requestedRefundAmount: requestedRefundAmount => (
-                    <div
-                        className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'text-black')}
-                    >
-                        {formatPrice(Math.abs(requestedRefundAmount))}
+                    <div className={twMerge('text-sm', 'font-medium', 'pr-14', 'text-black')}>
+                        ${formatPrice(Math.abs(requestedRefundAmount))}
                     </div>
                 ),
                 purchaseAmount: purchaseAmount => (
-                    <div
-                        className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'text-black')}
-                    >
-                        {formatPrice(Math.abs(purchaseAmount))}
+                    <div className={twMerge('text-sm', 'font-medium', 'pr-14', 'text-black')}>
+                        ${formatPrice(Math.abs(purchaseAmount))}
                     </div>
                 ),
                 status: (_, refund) => (

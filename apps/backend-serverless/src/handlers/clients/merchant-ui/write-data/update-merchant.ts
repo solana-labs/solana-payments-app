@@ -22,6 +22,7 @@ import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
+import { PubkeyType, getPubkeyType } from '../../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 
@@ -98,6 +99,8 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
         }
 
+        // Update just the merchant wallet address
+
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
         } catch (error) {
@@ -134,7 +137,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         const responseBodyData = {
             merchantData: {
                 name: merchant.name,
-                paymentAddress: merchant.paymentAddress,
+                paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
                 onboarding: onboardingResponse,
             },
             general: generalResponse,

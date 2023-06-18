@@ -4,8 +4,8 @@ describe('unit testing the merchant auth token model', () => {
     it('valid merchant auth token body parsing', () => {
         const validInstallQueryParams = {
             id: 'some-id',
-            iat: 'some-date',
-            exp: 'some-date',
+            iat: 123,
+            exp: 123,
         };
 
         expect(() => {
@@ -15,8 +15,8 @@ describe('unit testing the merchant auth token model', () => {
 
     it('invalid merchant auth token, missing id', () => {
         const validInstallQueryParams = {
-            iat: 'some-date',
-            exp: 'some-date',
+            iat: 123,
+            exp: 123,
         };
 
         expect(() => {
@@ -27,7 +27,7 @@ describe('unit testing the merchant auth token model', () => {
     it('invalid merchant auth token, missing iat', () => {
         const validInstallQueryParams = {
             id: 'some-id',
-            exp: 'some-date',
+            exp: 123,
         };
 
         expect(() => {

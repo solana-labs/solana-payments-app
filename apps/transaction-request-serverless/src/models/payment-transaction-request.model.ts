@@ -32,7 +32,8 @@ export enum AmountType {
 }
 
 export const paymentTransactionRequestScheme = object().shape({
-    receiver: publicKeySchema.required(),
+    receiverWalletAdress: publicKeySchema.nullable(),
+    receiverTokenAdress: publicKeySchema.nullable(),
     sendingToken: publicKeySchema.required(),
     receivingToken: publicKeySchema.required(),
     feePayer: publicKeySchema.required(),
@@ -77,7 +78,8 @@ export const parseAndValidatePaymentTransactionRequest = (
 
 export class PaymentTransactionBuilder {
     private sender: web3.PublicKey;
-    private receiver: web3.PublicKey;
+    private receiverWalletAdress: web3.PublicKey | null;
+    private receiverTokenAddress: web3.PublicKey | null;
     private sendingToken: web3.PublicKey;
     private receivingToken: web3.PublicKey;
     private feePayer: web3.PublicKey;
@@ -91,7 +93,12 @@ export class PaymentTransactionBuilder {
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
-        this.receiver = new web3.PublicKey(paymentTransactionRequest.receiver);
+        this.receiverWalletAdress = paymentTransactionRequest.receiverWalletAdress
+            ? new web3.PublicKey(paymentTransactionRequest.receiverWalletAdress)
+            : null;
+        this.receiverTokenAddress = paymentTransactionRequest.receiverTokenAddress
+            ? new web3.PublicKey(paymentTransactionRequest.receiverTokenAddress)
+            : null;
         this.sendingToken = new web3.PublicKey(paymentTransactionRequest.sendingToken);
         this.receivingToken = new web3.PublicKey(paymentTransactionRequest.receivingToken);
         this.feePayer = new web3.PublicKey(paymentTransactionRequest.feePayer);
@@ -161,7 +168,8 @@ export class PaymentTransactionBuilder {
 
         transferIxs = await createTransferIx(
             this.sender,
-            this.receiver,
+            this.receiverWalletAdress,
+            this.receiverTokenAddress,
             receivingTokenInformation,
             receivingQuantity,
             this.createAta,
