@@ -5,7 +5,7 @@ import {
     parseAndValidateHeliusEnchancedTransaction,
     HeliusEnhancedTransaction,
 } from '../models/dependencies/helius-enhanced-transaction.model.js';
-import { parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
+import { HeliusBalance, parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
 import { USDC_MINT } from '../configs/tokens.config.js';
 import { DependencyError } from '../errors/dependency.error.js';
 import {

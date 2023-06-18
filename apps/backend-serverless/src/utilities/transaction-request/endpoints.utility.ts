@@ -57,5 +57,9 @@ export const buildRefundTransactionRequestEndpoint = (
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiverWalletAddress=${receiverWalletAddress}&receiverTokenAddress=${receiverTokenAddress}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?${
+        receiverWalletAddress ? `receiverWalletAddress=${receiverWalletAddress}&` : ``
+    }${
+        receiverTokenAddress ? `receiverTokenAddress=${receiverTokenAddress}&` : ``
+    }sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };
