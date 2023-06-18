@@ -6,11 +6,7 @@ import {
     BalanceRequestParameters,
     parseAndValidateBalanceParameters,
 } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
-<<<<<<< HEAD
-import { fetchUsdcBalance, fetchUsdcSize } from '../../../services/helius.service.js';
-=======
-import { fetchUsdcBalance } from '../../../services/helius.service.js';
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
+import { fetchUsdcSize } from '../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 
@@ -30,17 +26,10 @@ export const balance = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-<<<<<<< HEAD
         let usdcSize: number;
 
         try {
             usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
-=======
-        let usdcBalance: string;
-
-        try {
-            usdcBalance = await fetchUsdcBalance(balanceRequestParameters.pubkey);
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -48,11 +37,7 @@ export const balance = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 200,
             body: JSON.stringify({
-<<<<<<< HEAD
                 usdcBalance: usdcSize,
-=======
-                usdcBalance: usdcBalance,
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
             }),
         };
     }

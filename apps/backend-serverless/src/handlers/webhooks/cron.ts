@@ -3,16 +3,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { PrismaClient, TransactionRecord } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
-<<<<<<< HEAD
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-=======
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
 import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
 import axios from 'axios';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';

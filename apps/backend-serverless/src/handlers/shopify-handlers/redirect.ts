@@ -20,10 +20,7 @@ import { sendAppConfigureRetryMessage } from '../../services/sqs/sqs-send-messag
 import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-<<<<<<< HEAD
 import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
-=======
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
 
 const prisma = new PrismaClient();
 
@@ -116,17 +113,8 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         try {
             await contingentlyHandleAppConfigure(merchant, axios, prisma);
         } catch (error) {
-<<<<<<< HEAD
             Sentry.captureException(error);
             // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
-=======
-            try {
-                await sendAppConfigureRetryMessage(merchant.id, canBeActive);
-            } catch (error) {
-                Sentry.captureException(error);
-                // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
-            }
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
         }
 
         let merchantAuthCookieHeader: string | null = null;

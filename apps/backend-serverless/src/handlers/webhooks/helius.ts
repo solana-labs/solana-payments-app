@@ -7,7 +7,6 @@ import {
 
 import { PrismaClient } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-<<<<<<< HEAD
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
@@ -16,25 +15,6 @@ import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { sendProcessTransactionMessage } from '../../services/sqs/sqs-send-message.service.js';
-=======
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
-import {
-    PaymentRecordService,
-    TransactionSignatureQuery,
-} from '../../services/database/payment-record-service.database.service.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
-import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
-import axios from 'axios';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
 
 const prisma = new PrismaClient();
 
@@ -50,10 +30,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
         let heliusHeaders: HeliusHeader;
         const paymentRecordService = new PaymentRecordService(prisma);
-<<<<<<< HEAD
         const transactionRecordService = new TransactionRecordService(prisma);
-=======
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
 
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body'));
@@ -87,11 +64,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         if (websocketUrl == null) {
-<<<<<<< HEAD
             const error = new MissingEnvError('websocket url');
             Sentry.captureException(error);
-=======
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
@@ -128,10 +102,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 console.log('sending message to queue');
                 await sendProcessTransactionMessage(transactionRecord.signature);
             } catch (error) {
-<<<<<<< HEAD
                 // TODO: Only send the failed message to the failed websocket sessions
-=======
->>>>>>> 5522baa (added favicon and domain correctly goes to pay.solanapay.com (#306))
                 await websocketService.sendFailedProcessingTransactionMessage();
                 Sentry.captureException(error);
                 continue;
