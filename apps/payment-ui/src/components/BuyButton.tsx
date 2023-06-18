@@ -3,12 +3,12 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
-import { ConnectWalletState, getConnectWalletState, setConnectWalletSentTransaction, setConnectWalletStart, setTransactionRequestStarted } from '@/features/payment-session/paymentSessionSlice';
+import { ConnectWalletState, getConnectWalletState, resetSession, setConnectWalletSentTransaction, setConnectWalletStart, setTransactionRequestStarted } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 import { Notification, NotificationType, getConnectWalletNotification, setNotification } from '@/features/notification/notificationSlice';
-import { setWalletLoading, stopWalletLoading } from '@/features/wallet/walletSlice';
+import { setWalletLoading, stopWalletLoading, getIsWalletLoading } from '@/features/wallet/walletSlice';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
@@ -16,6 +16,7 @@ const BuyButton = () => {
     const dispatch = useDispatch<AppDispatch>();
     const connectWalletState = useSelector(getConnectWalletState)
     const connectedWalletNotification = useSelector(getConnectWalletNotification)
+    const isLoading = useSelector(getIsWalletLoading)
 
     const fetchAndSendTransaction = async () => {
         const headers = {
@@ -49,15 +50,15 @@ const BuyButton = () => {
             transactionString = response.data.transaction
         } catch (error) {
             dispatch(stopWalletLoading())
-            
-            // TODO: Handle error and give more specific reason
-            // dispatch(setNotification(Notification.transactionRequestFailed));
+            dispatch(resetSession())
+            dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.connectWallet }))
             return;
         }
 
         if ( transactionString == null ) {
             dispatch(stopWalletLoading())
-            // dispatch(setNotification(Notification.transactionRequestFailed));
+            dispatch(resetSession())
+            dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.connectWallet }))
             return;
         }
 
@@ -70,7 +71,8 @@ const BuyButton = () => {
 
         } catch (error) {
             dispatch(stopWalletLoading())
-            // dispatch(setNotification(Notification.transactionRequestFailed));
+            dispatch(resetSession())
+            dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.connectWallet }))
             return
         }
 
@@ -81,27 +83,29 @@ const BuyButton = () => {
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
-            dispatch(stopWalletLoading())
 
             const declined = ( error instanceof Error && error.message.toLowerCase().includes('user rejected') )
             const duplicatePayment = ( error instanceof Error && error.message.toLowerCase().includes('0x0') && error.message.toLowerCase().includes('instruction 0'))
             const insufficientFunds = ( error instanceof Error && error.message.toLowerCase().includes('0x1') && error.message.toLowerCase().includes('instruction 1'))
 
             if (declined) {
+                // The most important check, we can't detect this any other way
                 dispatch(setNotification({ notification: Notification.declined, type: NotificationType.connectWallet }));
             } else if (duplicatePayment) {
-                // dispatch(setNotification(Notification.duplicatePayment));
+                // Could also be handled by a transaction simulation webhook message
+                dispatch(setNotification({ notification: Notification.duplicatePayment, type: NotificationType.connectWallet }));
             } else if (insufficientFunds) {
-                // dispatch(setNotification(Notification.insufficentFunds));
+                // Shouldn't happen. We shouldn't let them submit a transaction if they don't have enough funds.
+                dispatch(setNotification({ notification: Notification.insufficentFunds, type: NotificationType.connectWallet }));
             } else {
-                // dispatch(setNotification(Notification.simulatingIssue));
-            }
+                dispatch(setNotification({ notification: Notification.simulatingIssue, type: NotificationType.connectWallet }));
+            }   
             
-
+            dispatch(resetSession())
+            dispatch(stopWalletLoading())
             return;
         }
 
-        // dispatch(setConnectWalletSentTransaction())
 
     };
 
@@ -109,6 +113,8 @@ const BuyButton = () => {
         if ( connectedWalletNotification == Notification.insufficentFunds ) {
             return true
         } else if ( paymentId == null ) {
+            return true
+        } else if ( isLoading ) {
             return true
         }
     }
@@ -122,7 +128,7 @@ const BuyButton = () => {
             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg disabled:shadow-none font-semibold flex justify-center items-center normal-case disabled:bg-slate-200 disabled:text-slate-400"
         >
             <div className={`flex flex-row items-center justify-center`}>
-               { connectWalletState == ConnectWalletState.loading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div /> }             
+               { isLoading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div /> }             
                 <div className='ml-1'>Buy now</div>
             </div>
         </button>
