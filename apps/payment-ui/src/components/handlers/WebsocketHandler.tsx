@@ -39,7 +39,7 @@ const WebsocketHandler: React.FC = () => {
                 if ( data.messageType == 'transactionRequestStarted' ) {
                     dispatch(setTransactionRequestStarted())
                 } else if (data.messageType == 'transactionDelivered') {
-                    if ( isEitherNotification ) {
+                    if ( isEitherNotification == false ) {
                         dispatch(setTransactionDelivered())
                     }
                 } else if (data.messageType == 'insufficientFunds') {
