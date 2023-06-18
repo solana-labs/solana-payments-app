@@ -16,10 +16,12 @@ interface Payment {
     status: PaymentStatus;
     requestedAt: number;
     completedAt?: number;
+    transactionSignature?: string;
     // user: string;
 }
 
 function transformPayment(responseData: any): Payment[] {
+    console.log('responseData: ', responseData);
     return responseData.paymentData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
@@ -27,6 +29,8 @@ function transformPayment(responseData: any): Payment[] {
             amount: parseFloat(item.amount),
             requestedAt: new Date(item.requestedAt).getTime(),
             ...(item.completedAt && { completedAt: new Date(item.completedAt).getTime() }),
+            ...(item.transactionSignature && { transactionSignature: item.transactionSignature }),
+
             // refundTo: '', // This field needs to be updated based on actual data
         };
     });

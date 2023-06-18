@@ -95,6 +95,7 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 usdcAmount: j + 1,
                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
                 merchantId: `merchant-${i}`,
+                transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
                 requestedAt: date.toISOString(), // setting requestedAt to the generated date
                 completedAt: null,
             };
@@ -114,11 +115,12 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
                 shopGroup: `shop_group_2${j}`,
                 test: 1,
-                amount: i + 1,
+                amount: j + 1,
                 currency: 'USD',
-                usdcAmount: i + 1,
+                usdcAmount: j + 1,
                 cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
                 merchantId: `merchant-${i}`,
+                transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
                 requestedAt: requestedAt.toISOString(),
                 completedAt: completedAt.toISOString(),
             };
@@ -162,9 +164,9 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
             const record = {
                 id: `refund-2${j}`,
                 status: 'completed',
-                amount: i,
+                amount: j,
                 currency: 'USD',
-                usdcAmount: i,
+                usdcAmount: j,
                 shopId: `r_2${j}_shopid`,
                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
                 shopPaymentId: `r_2${j}_shopid`,
