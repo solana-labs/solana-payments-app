@@ -14,7 +14,7 @@ export const contingentlyHandleAppConfigure = async (
 
     const paymentAppConfigure = makePaymentAppConfigure(axiosInstance);
 
-    const addedWallet = merchant.paymentAddress != null;
+    const addedWallet = merchant.walletAddress != null || merchant.tokenAddress != null;
     const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
     const kybIsFinished = merchant.kybState === KybState.finished;
 

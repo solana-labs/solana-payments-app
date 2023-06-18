@@ -10,7 +10,7 @@ export interface OnboardingResponse {
 
 export const createOnboardingResponse = (merchant: Merchant) => {
     const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
-    const addedWallet = merchant.paymentAddress != null;
+    const addedWallet = merchant.walletAddress != null || merchant.tokenAddress != null;
     const kybState = merchant.kybState;
     const dismissCompleted = merchant.dismissCompleted;
 

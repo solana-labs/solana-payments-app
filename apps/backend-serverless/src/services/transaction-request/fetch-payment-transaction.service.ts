@@ -16,19 +16,22 @@ export const fetchPaymentTransaction = async (
     singleUsePayer: string,
     axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
-    if (merchant.paymentAddress == null) {
+    if (merchant.walletAddress == null) {
         throw new Error('Merchant payment address not found.');
     }
 
     const sender = account;
-    let receiver = merchant.paymentAddress;
+    let receiverWalletAddress = merchant.walletAddress;
+    let receiverTokenAddress = merchant.tokenAddress;
 
     if (paymentRecord.test) {
-        receiver = account;
+        receiverWalletAddress = account;
+        receiverTokenAddress = null;
     }
 
     const endpoint = buildPaymentTransactionRequestEndpoint(
-        receiver,
+        receiverWalletAddress,
+        receiverTokenAddress,
         sender,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
@@ -39,7 +42,7 @@ export const fetchPaymentTransaction = async (
         'true',
         singleUseNewAcc,
         singleUsePayer,
-        'test-one,test-two'
+        'test-one,test-two' // TODO: Update these with real values
     );
     const headers = {
         'Content-Type': 'application/json',

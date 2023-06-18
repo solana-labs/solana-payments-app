@@ -1,6 +1,10 @@
 import { PrismaClient, Merchant, KybState } from '@prisma/client';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 import { prismaErrorHandler } from './shared.database.service.js';
+import { PubkeyType, getPubkeyType } from '../helius.service.js';
+import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
+import * as web3 from '@solana/web3.js';
 
 export type ShopQuery = {
     shop: string;
@@ -11,28 +15,6 @@ export type IdQuery = {
 };
 
 export type MerchantQuery = ShopQuery | IdQuery;
-
-export type LastNonceUpdate = {
-    lastNonce: string;
-};
-
-export type RedirectUpdate = {
-    accessToken: string;
-    scopes: string;
-};
-
-export type PaymentAddressUpdate = {
-    paymentAddress: string;
-};
-
-export type MerchantNameUpdate = {
-    name: string;
-};
-
-export type MerchantNamePaymentAddressUpdate = {
-    paymentAddress: string;
-    name: string;
-};
 
 export type MerchantUpdate = {
     paymentyAddress: string;
@@ -86,6 +68,37 @@ export class MerchantService {
                     id: merchant.id,
                 },
                 data: filteredUpdate,
+            })
+        );
+    }
+
+    async updateMerchantWalletAddress(merchant: Merchant, inputPubkeyString: string): Promise<Merchant> {
+        const accountType = await getPubkeyType(inputPubkeyString);
+        const inputPubkey = new web3.PublicKey(inputPubkeyString);
+
+        let updatedWalletAddress: string | null = null;
+        let updatedTokenAddress: string | null = null;
+
+        switch (accountType) {
+            case PubkeyType.native:
+                const usdcAddress = await findAssociatedTokenAddress(inputPubkey, USDC_MINT);
+                updatedWalletAddress = inputPubkey.toBase58();
+                updatedTokenAddress = usdcAddress.toBase58();
+                break;
+            case PubkeyType.token:
+                updatedTokenAddress = inputPubkey.toBase58();
+                break;
+        }
+
+        return prismaErrorHandler(
+            this.prisma.merchant.update({
+                where: {
+                    id: merchant.id,
+                },
+                data: {
+                    walletAddress: updatedWalletAddress,
+                    tokenAddress: updatedTokenAddress,
+                },
             })
         );
     }

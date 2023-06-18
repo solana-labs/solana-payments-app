@@ -7,7 +7,7 @@ export const SEED_DATA = {
             accessToken: 'accessToken1',
             scopes: 'write_payment_gateways,write_payment_sessions',
             lastNonce: '7FANeBEwPGzvBvYFjP8oh95u16X7Uro4Ch7S7G6dSVgj',
-            paymentAddress: '2BYYZYvzjvk9cyyGm2ZcD433Kh4XnNQKnuppaKmFak4H',
+            walletAddress: '2BYYZYvzjvk9cyyGm2ZcD433Kh4XnNQKnuppaKmFak4H',
             kybInquiry: 'inq_yyNQcbnQiZTeAQnxBD2qTcwu',
             kybState: 'finished',
             acceptedTermsAndConditions: true,
