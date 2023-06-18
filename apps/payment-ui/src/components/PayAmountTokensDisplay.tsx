@@ -1,7 +1,7 @@
 export const PayAmountTokensDisplay = ( props: { displayAmoumt: string } ) => {
     return (
         <div className="text-black text-lg w-1/3">
-            {'Hello World'}
+            {props.displayAmoumt}
         </div>
     )
 }
