@@ -50,12 +50,12 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                         </div>
                     </div>
                     <div className="flex flex-col flex-auto bg-black">
-                        <div className="flex-grow container mx-auto p-4 bg-white rounded-t-lg max-w-xl">
+                        <div className="flex-grow container mx-auto bg-white rounded-t-2xl max-w-2xl px-4 sm:px-20">
                             <MainSection isBlocked={'false'} country={'usa'} />
                         </div>
                     </div>
                     <div className="w-full bg-black">
-                        <div className="container h-36 mx-auto px-8 bg-white text-white text-center max-w-xl">
+                        <div className="container h-36 mx-auto px-4 sm:px-20 bg-white text-white text-center max-w-2xl">
                             <FooterSection />
                         </div>
                     </div>

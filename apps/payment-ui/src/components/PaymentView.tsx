@@ -5,8 +5,10 @@ import PayWithWalletSection from "./PayWithWalletSection";
 import PayWithQRCodeSection from "./PayWithQRCodeSection";
 import { getPaymentMethod } from "@/features/payment-options/paymentOptionsSlice";
 import { QRCode } from "./QRCode";
+import { getHeight } from "@/features/mobile/mobileSlice";
+import { FC, useEffect, useState } from "react";
 
-export const PaymentView = () => {
+export const PaymentView: React.FC = () => {
 
     const paymentMethod = useSelector(getPaymentMethod)
 
@@ -18,9 +20,17 @@ export const PaymentView = () => {
                 </div>
                 <PayToLabel />
             </div>
-            <div className="w-full flex flex-col justify-center items-center h-full relative">
-                { paymentMethod == 'qr-code' ? <QRCode /> : <div></div> }
-            </div>
+            { paymentMethod == 'qr-code' ? 
+                <div className='w-full h-full flex flex-col items-center'>
+                    <div className="flex flex-col items-center">
+                        <div className={`h-[100px]`}></div>
+                        <QRCode />
+                        <div className='text-gray-600 text-xs pt-4'>Scan this code to pay with your Solana wallet</div>
+                    </div>
+                </div> 
+                    : 
+                <div></div> }
+            
         </div>
     )
 }

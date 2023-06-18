@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { setIsMobile } from '@/features/mobile/mobileSlice';
+import { getHeight, setHeight, setIsMobile } from '@/features/mobile/mobileSlice';
 
 const WindowHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const height = useSelector(getHeight)
 
     useEffect(() => {
         const handleResize = () => {
             dispatch(setIsMobile(window.innerWidth < 640));
-            console.log('window.innerHeight', window.innerHeight)
+            
         };
 
         window.addEventListener('resize', handleResize);
