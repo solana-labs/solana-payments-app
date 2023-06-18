@@ -5,13 +5,14 @@ import { WebsocketSesssionState, getWebsocketSessionState, setWebsocketConnected
 import { getWebSocketUrl } from '@/features/env/envSlice';
 import { getPaymentId, setRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 import { setTransactionDelivered, setTransactionRequestStarted, setCompleting, setError, setProcessing, resetSession, setTransactionRequestFailed } from '@/features/payment-session/paymentSessionSlice';
-import { setNotification, Notification, NotificationType } from '@/features/notification/notificationSlice';
+import { setNotification, Notification, NotificationType, getIsEitherNotification } from '@/features/notification/notificationSlice';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const websocketUrl = useSelector(getWebSocketUrl)
     const websocketSessionState = useSelector(getWebsocketSessionState);
     const paymentId = useSelector(getPaymentId);
+    const isEitherNotification = useSelector(getIsEitherNotification)
 
     let socket = useRef<WebSocket | null>(null);
     let timer = useRef<any | null>(null);
@@ -38,8 +39,9 @@ const WebsocketHandler: React.FC = () => {
                 if ( data.messageType == 'transactionRequestStarted' ) {
                     dispatch(setTransactionRequestStarted())
                 } else if (data.messageType == 'transactionDelivered') {
-                    console.log('why not us!')
-                    dispatch(setTransactionDelivered())
+                    if ( isEitherNotification ) {
+                        dispatch(setTransactionDelivered())
+                    }
                 } else if (data.messageType == 'insufficientFunds') {
                     dispatch(resetSession())
                     dispatch(setNotification({ notification: Notification.insufficentFunds, type: NotificationType.solanaPay }))
