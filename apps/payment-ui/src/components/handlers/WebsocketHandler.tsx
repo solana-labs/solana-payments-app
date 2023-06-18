@@ -4,7 +4,7 @@ import { AppDispatch } from '../../store';
 import { WebsocketSesssionState, getWebsocketSessionState, setWebsocketConnected, setWebsocketClosed, setWebsocketReadyToConnect } from '@/features/websocket/websocketSlice';
 import { getWebSocketUrl } from '@/features/env/envSlice';
 import { getPaymentId, setRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
-import { setTransactionDelivered, setTransactionRequestStarted, setCompleting, setError, setProcessing, resetSession } from '@/features/payment-session/paymentSessionSlice';
+import { setTransactionDelivered, setTransactionRequestStarted, setCompleting, setError, setProcessing, resetSession, setTransactionRequestFailed } from '@/features/payment-session/paymentSessionSlice';
 import { setNotification, Notification, NotificationType } from '@/features/notification/notificationSlice';
 
 const WebsocketHandler: React.FC = () => {
@@ -50,6 +50,10 @@ const WebsocketHandler: React.FC = () => {
                     dispatch(setError(data.payload.errorDetails))
                 } else if ( data.messageType == 'processingTransaction' ) {
                     dispatch(setProcessing())
+                } else if ( data.messageType == 'transactionRequestFailed') {
+                    dispatch(resetSession())
+                    dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.solanaPay }))
+                    dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.connectWallet }))
                 }
 
                 // } else if ( data.messageType == 'completedDetails' ) {

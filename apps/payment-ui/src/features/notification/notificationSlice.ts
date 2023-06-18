@@ -51,14 +51,22 @@ const notificationSlice = createSlice({
         setNotification: (state, action: PayloadAction<{ notification: Notification; type: NotificationType }>) => {
             switch (action.payload.type) {
                 case NotificationType.connectWallet:
-                    state.connectWalletNotification = action.payload.notification;
+                    if (state.connectWalletNotification == Notification.none) {
+                        state.connectWalletNotification = action.payload.notification;
+                    }
                     break;
                 case NotificationType.solanaPay:
-                    state.solanaPayNotification = action.payload.notification;
+                    if (state.solanaPayNotification == Notification.none) {
+                        state.solanaPayNotification = action.payload.notification;
+                    }
                     break;
                 case NotificationType.both:
-                    state.connectWalletNotification = action.payload.notification;
-                    state.solanaPayNotification = action.payload.notification;
+                    if (state.connectWalletNotification == Notification.none) {
+                        state.connectWalletNotification = action.payload.notification;
+                    }
+                    if (state.solanaPayNotification == Notification.none) {
+                        state.solanaPayNotification = action.payload.notification;
+                    }
                     break;
             }
         },
