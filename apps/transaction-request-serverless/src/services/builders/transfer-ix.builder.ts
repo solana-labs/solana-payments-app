@@ -1,6 +1,6 @@
 import * as web3 from '@solana/web3.js';
 import { findAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '../../utils/ata.util.js';
-import { createTransferCheckedInstruction } from '@solana/spl-token';
+import { createTransferCheckedInstruction, createCloseAccountInstruction } from '@solana/spl-token';
 import { TokenInformation } from '../../configs/token-list.config.js';
 
 export const createTransferIx = async (

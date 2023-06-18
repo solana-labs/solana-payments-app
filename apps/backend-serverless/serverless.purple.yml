@@ -300,6 +300,41 @@ functions:
     handler: src/handlers/websockets/disconnect.disconnect
     events:
       - websocket: $disconnect
+  saftey-key-uploaded:
+    handler: src/handlers/webhooks/s3/saftey-key-uploaded.safteyKeyUploaded
+    environment:
+      SAFTEY_ARN: ${self:resources.Outputs.SafteyMachine.Value}
+    events:
+      - s3:
+          bucket: ${self:custom.single-use-bucket-name}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: '.json'
+          existing: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
+      - Effect: Allow
+        Action:
+          - states:StartExecution
+        Resource: ${self:resources.Outputs.SafteyMachine.Value}
+  saftey-key-sweep:
+    handler: src/handlers/webhooks/step-functions/saftey-key-sweep.safteyKeySweep
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/*'
+      - Effect: Allow
+        Action:
+          - s3:DeleteObject
+        Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
 stepFunctions:
   stateMachines:
     retry:
@@ -315,6 +350,19 @@ stepFunctions:
               Resource:
                 Fn::GetAtt: [retry-request, Arn]
               End: true
+    saftey:
+        definition:
+          StartAt: wait_using_seconds
+          States: 
+            wait_using_seconds: 
+              Type: Wait
+              Seconds: 10
+              Next: sweep_saftey
+            sweep_saftey: 
+              Type: Task
+              Resource:
+                Fn::GetAtt: [saftey-key-sweep, Arn]
+              End: true
 resources:
   Parameters:
     Stage:
@@ -325,6 +373,10 @@ resources:
       Description: The ARN of the retry machine
       Value:
         Fn::GetAtt: [RetryStepFunctionsStateMachine, Arn]
+    SafteyMachine:
+      Description: The ARN of the retry machine
+      Value:
+        Fn::GetAtt: [SafteyStepFunctionsStateMachine, Arn]
     GasBucketArn:
       Description: The arn of the gas bucket
       Value:

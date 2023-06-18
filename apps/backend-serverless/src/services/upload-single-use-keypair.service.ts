@@ -20,7 +20,13 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
         region: region,
     });
 
+    console.log(singleUseKeypair);
+
+    console.log(singleUseKeypair.secretKey);
+
     const seedString = JSON.stringify(singleUseKeypair.secretKey);
+
+    console.log(seedString);
 
     try {
         // TODO: Log the successful upload in sentry
