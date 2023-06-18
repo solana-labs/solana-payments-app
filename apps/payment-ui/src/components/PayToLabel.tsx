@@ -39,7 +39,7 @@ export const PayToLabel = () => {
                 { paymentDetails == null ? <PayToLoading /> : <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> }
                 { paymentDetails == null ? <PayAmountLoading /> : <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} /> }
                 <div className="flex flex-row w-full justify-between items-center">
-                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={`${paymentDetails.usdcSize.toFixed(2)} USDC`} /> }
+                    { paymentDetails == null ? <PayAmountTokensLoading /> : <PayAmountTokensDisplay displayAmoumt={`${'temp'} USDC`} /> }
                     <div className="w-2/3">
                         <PaymentTokenSelector />
                     </div>
