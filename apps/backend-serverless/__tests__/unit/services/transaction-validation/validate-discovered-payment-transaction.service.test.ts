@@ -12,6 +12,8 @@ import { createMockPaymentRecord } from '../../../../src/utilities/testing-helpe
 describe('unit testing validating discovered payment transactions', () => {
     beforeEach(() => {});
 
+    process.env.HISTORICAL_FEE_PAYERS = 'historical';
+
     it('valid transaction transfer', async () => {
         // Set up the mock record
         const mockPaymentRecord = createMockPaymentRecord({ amount: 10, usdcAmount: 10 });

@@ -22,6 +22,7 @@ import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
+import { PubkeyType, getPubkeyType } from '../../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 
@@ -98,7 +99,29 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
         }
 
-        // Validate the wallet address and figure out what type of wallet it is
+        if (merchantUpdateRequest.paymentAddress != null) {
+            // export enum PubkeyType {
+            //     native = 'native',
+            //     token = 'token',
+            // }
+
+            try {
+                const accountType = await getPubkeyType(merchantUpdateRequest.paymentAddress);
+
+                switch (accountType) {
+                    case PubkeyType.native:
+                        // figure out usdc address too
+                        break;
+                    case PubkeyType.token:
+                        // gonna just set it as the token address
+                        break;
+                }
+            } catch (error) {
+                return createErrorResponse(
+                    new InvalidInputError('invalid payment address, not a wallet or usdc token accoutn')
+                );
+            }
+        }
 
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);

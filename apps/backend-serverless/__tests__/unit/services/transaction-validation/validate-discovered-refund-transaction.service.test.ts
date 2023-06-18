@@ -6,6 +6,8 @@ import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.ut
 import { verifyTransactionWithRecord } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 
 describe('unit testing validating discovered payment transactions', () => {
+    process.env.HISTORICAL_FEE_PAYERS = 'historical';
+
     it('valid transaction transfer', async () => {
         // Set up the mock record
         const mockRefundRecord: RefundRecord = {

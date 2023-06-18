@@ -1,4 +1,4 @@
-import { ShopifyMutationAppConfigure } from '../../../../src/models/shopify-mutation-retry.model.js';
+import { ShopifyMutationAppConfigure } from '../../../../src/models/sqs/shopify-mutation-retry.model.js';
 import { prismaMock } from '../../../../prisma-singleton.js';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
