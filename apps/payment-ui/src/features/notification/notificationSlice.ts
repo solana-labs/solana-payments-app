@@ -88,3 +88,9 @@ export const getIsConnectWalletNotification = (state: RootState): boolean =>
 export const getSolanaPayNotification = (state: RootState): Notification => state.notification.solanaPayNotification;
 export const getConnectWalletNotification = (state: RootState): Notification =>
     state.notification.connectWalletNotification;
+export const getIsEitherNotification = (state: RootState): boolean => {
+    return (
+        state.notification.connectWalletNotification != Notification.none ||
+        state.notification.solanaPayNotification != Notification.none
+    );
+};
