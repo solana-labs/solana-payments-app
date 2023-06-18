@@ -16,7 +16,7 @@ export const fetchPaymentTransaction = async (
     singleUsePayer: string,
     axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
-    if (merchant.walletAddress == null) {
+    if (merchant.walletAddress == null && merchant.tokenAddress == null) {
         throw new Error('Merchant payment address not found.');
     }
 

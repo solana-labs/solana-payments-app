@@ -6,7 +6,7 @@ import {
     BalanceRequestParameters,
     parseAndValidateBalanceParameters,
 } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
-import { fetchUsdcBalance, fetchUsdcSize } from '../../../services/helius.service.js';
+import { fetchUsdcSize } from '../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 

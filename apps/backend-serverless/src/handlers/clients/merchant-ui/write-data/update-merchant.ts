@@ -83,10 +83,6 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['name'] = merchantUpdateRequest.name;
         }
 
-        if (merchantUpdateRequest.paymentAddress != null) {
-            merchantUpdateQuery['paymentAddress'] = merchantUpdateRequest.paymentAddress;
-        }
-
         if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
             merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
         }
@@ -99,7 +95,16 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
         }
 
-        // Update just the merchant wallet address
+        if (merchantUpdateRequest.paymentAddress != null) {
+            try {
+                merchant = await merchantService.updateMerchantWalletAddress(
+                    merchant,
+                    merchantUpdateRequest.paymentAddress
+                );
+            } catch (error) {
+                return createErrorResponse(error);
+            }
+        }
 
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);

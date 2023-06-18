@@ -6,7 +6,10 @@ import {
     parseAndValidateTransactionRequestResponse,
 } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
-import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
+import {
+    findPayingTokenAddressFromTransaction,
+    findPayingWalletFromTransaction,
+} from '../../utilities/transaction-inspection.utility.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { ref } from 'yup';
 import { send } from 'process';
@@ -30,19 +33,21 @@ export const fetchRefundTransaction = async (
     // it easier to populate on merchant-ui read calls
     // TODO: Figure out if we need to direct it to the exact token account of the customer, probably yes
     const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
-    const payingCustomerWalletAddress = await findPayingWalletFromTransaction(transaction);
+    const payingCustomerTokenAddress = await findPayingTokenAddressFromTransaction(transaction);
 
-    const sender = account;
-    let receiver = payingCustomerWalletAddress.toBase58();
+    let senderWalletAddress = account;
+    let receiverWalletAddress: string | null = null;
+    let receiverTokenAddress: string | null = payingCustomerTokenAddress.toBase58();
 
     if (refundRecord.test) {
-        receiver = account;
+        receiverWalletAddress = account;
+        receiverTokenAddress = null;
     }
 
     const endpoint = buildRefundTransactionRequestEndpoint(
-        receiver,
-        null,
-        sender,
+        receiverWalletAddress,
+        receiverTokenAddress,
+        senderWalletAddress,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
         gas,

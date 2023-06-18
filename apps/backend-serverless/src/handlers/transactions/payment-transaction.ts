@@ -123,6 +123,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
+            console.log('no gas');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
@@ -134,17 +135,20 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 id: paymentRecord.merchantId,
             });
         } catch (error) {
+            console.log('failed fetching merchant');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
 
         if (merchant == null) {
+            console.log('no merchant');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         if (merchant.accessToken == null) {
             await websocketService.sendTransactionRequestFailedMessage();
+            console.log('no access token');
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant access token'));
         }
 
@@ -168,6 +172,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 axios
             );
         } catch (error) {
+            console.log(error);
+            console.log('failed fetching payment transaction, prob lol');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }

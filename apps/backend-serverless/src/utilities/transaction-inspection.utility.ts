@@ -31,3 +31,21 @@ export const findPayingWalletFromTransaction = async (transaction: web3.Transact
 
     return owner.pubkey;
 };
+
+export const findPayingTokenAddressFromTransaction = async (transaction: web3.Transaction): Promise<web3.PublicKey> => {
+    const transferInstruction = transaction.instructions[transaction.instructions.length - 2];
+
+    if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
+        throw new Error('Invalid transaction');
+    }
+
+    console.log(transferInstruction);
+
+    const decodedInstruction = decodeTransferCheckedInstruction(transferInstruction);
+
+    console.log(decodedInstruction);
+    const source = decodedInstruction.keys.source;
+
+    // TODO: Verify this is a pda relationship for usdc ??? maybe not needed ???
+    return source.pubkey;
+};

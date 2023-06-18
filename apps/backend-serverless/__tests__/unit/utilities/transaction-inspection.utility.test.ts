@@ -13,7 +13,7 @@ describe('Transaction Inspection Utility', () => {
             receiver: bobKeypair.publicKey,
             feePayer: feePayerKeypair.publicKey,
         });
-        const walletAdress = await findPayingWalletFromTransaction(mockTransaction);
-        expect(walletAdress.toBase58()).toEqual(aliceKeypair.publicKey.toBase58());
+        const walletAddress = await findPayingWalletFromTransaction(mockTransaction);
+        expect(walletAddress.toBase58()).toEqual(aliceKeypair.publicKey.toBase58());
     });
 });

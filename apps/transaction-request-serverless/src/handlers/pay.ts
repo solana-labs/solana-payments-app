@@ -42,11 +42,16 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     try {
         paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
     } catch (error) {
+        console.log(error);
         return {
             statusCode: 503,
             body: JSON.stringify({ message: 'bufff' }, null, 2),
         };
     }
+
+    console.log(paymentTransactionRequest);
+    console.log(paymentTransactionRequest.receiverTokenAddress);
+    console.log(paymentTransactionRequest.receiverWalletAddress);
 
     const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
