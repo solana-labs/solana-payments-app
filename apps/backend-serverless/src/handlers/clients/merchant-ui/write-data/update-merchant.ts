@@ -99,29 +99,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
         }
 
-        if (merchantUpdateRequest.paymentAddress != null) {
-            // export enum PubkeyType {
-            //     native = 'native',
-            //     token = 'token',
-            // }
-
-            try {
-                const accountType = await getPubkeyType(merchantUpdateRequest.paymentAddress);
-
-                switch (accountType) {
-                    case PubkeyType.native:
-                        // figure out usdc address too
-                        break;
-                    case PubkeyType.token:
-                        // gonna just set it as the token address
-                        break;
-                }
-            } catch (error) {
-                return createErrorResponse(
-                    new InvalidInputError('invalid payment address, not a wallet or usdc token accoutn')
-                );
-            }
-        }
+        // Update just the merchant wallet address
 
         try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
@@ -159,7 +137,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         const responseBodyData = {
             merchantData: {
                 name: merchant.name,
-                paymentAddress: merchant.paymentAddress,
+                paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
                 onboarding: onboardingResponse,
             },
             general: generalResponse,

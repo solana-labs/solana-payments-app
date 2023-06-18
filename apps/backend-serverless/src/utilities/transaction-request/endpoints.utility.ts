@@ -6,7 +6,8 @@ export const accessTokenEndpoint = (shop: string, authCode: string) => {
 };
 
 export const buildPaymentTransactionRequestEndpoint = (
-    receiver: string,
+    receiverWalletAdress: string | null,
+    receiverTokenAdress: string | null,
     sender: string,
     receivingToken: string,
     sendingToken: string,
@@ -25,11 +26,15 @@ export const buildPaymentTransactionRequestEndpoint = (
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
+    // receiverWalletAdress: publicKeySchema.nullable(),
+    // receiverTokenAdress: publicKeySchema.nullable(),
+
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiverWalletAdress=${receiverWalletAdress}&receiverTokenAdress=${receiverTokenAdress}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };
 
 export const buildRefundTransactionRequestEndpoint = (
-    receiver: string,
+    receiverWalletAdress: string | null,
+    receiverTokenAdress: string | null,
     sender: string,
     receivingToken: string,
     sendingToken: string,
@@ -48,5 +53,5 @@ export const buildRefundTransactionRequestEndpoint = (
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiverWalletAdress=${receiverWalletAdress}&receiverTokenAdress=${receiverTokenAdress}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
 };

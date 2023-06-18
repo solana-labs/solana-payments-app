@@ -28,6 +28,7 @@ export const fetchRefundTransaction = async (
     // Now we have the transaction that the orginal payment was made in
     // This is also something we could add to a job with sqs to save calls here and then make
     // it easier to populate on merchant-ui read calls
+    // TODO: Figure out if we need to direct it to the exact token account of the customer, probably yes
     const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
     const payingCustomerWalletAddress = await findPayingWalletFromTransaction(transaction);
 
@@ -40,6 +41,7 @@ export const fetchRefundTransaction = async (
 
     const endpoint = buildRefundTransactionRequestEndpoint(
         receiver,
+        null,
         sender,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),

@@ -80,7 +80,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         const responseBodyData = {
             merchantData: {
                 name: merchant.name,
-                paymentAddress: merchant.paymentAddress,
+                paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
                 onboarding: onboardingResponse,
             },
             general: generalResponse,
