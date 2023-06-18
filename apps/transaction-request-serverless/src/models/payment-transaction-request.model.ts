@@ -8,6 +8,19 @@ import { USDC_PUBKEY } from '../configs/pubkeys.config.js';
 import { createAccountIx } from '../services/builders/create-account-ix.builder.js';
 import { createIndexingIx } from '../services/builders/create-index-ix.builder.js';
 
+const optionalPublicKeySchema = string().test('is-public-key', 'Invalid public key', value => {
+    if (value === undefined || value === null) {
+        return true;
+    }
+
+    try {
+        new web3.PublicKey(value);
+        return true;
+    } catch (err) {
+        return false;
+    }
+});
+
 const publicKeySchema = string().test('is-public-key', 'Invalid public key', value => {
     if (value === undefined) {
         return false;
@@ -32,8 +45,8 @@ export enum AmountType {
 }
 
 export const paymentTransactionRequestScheme = object().shape({
-    receiverWalletAdress: publicKeySchema.nullable(),
-    receiverTokenAdress: publicKeySchema.nullable(),
+    receiverWalletAddress: string().optional(),
+    receiverTokenAddress: string().optional(),
     sendingToken: publicKeySchema.required(),
     receivingToken: publicKeySchema.required(),
     feePayer: publicKeySchema.required(),
@@ -78,7 +91,7 @@ export const parseAndValidatePaymentTransactionRequest = (
 
 export class PaymentTransactionBuilder {
     private sender: web3.PublicKey;
-    private receiverWalletAdress: web3.PublicKey | null;
+    private receiverWalletAddress: web3.PublicKey | null;
     private receiverTokenAddress: web3.PublicKey | null;
     private sendingToken: web3.PublicKey;
     private receivingToken: web3.PublicKey;
@@ -92,9 +105,12 @@ export class PaymentTransactionBuilder {
     private indexInputs: string[] | null;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
+        console.log(paymentTransactionRequest);
+        console.log(paymentTransactionRequest.receiverWalletAddress);
+
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
-        this.receiverWalletAdress = paymentTransactionRequest.receiverWalletAdress
-            ? new web3.PublicKey(paymentTransactionRequest.receiverWalletAdress)
+        this.receiverWalletAddress = paymentTransactionRequest.receiverWalletAddress
+            ? new web3.PublicKey(paymentTransactionRequest.receiverWalletAddress)
             : null;
         this.receiverTokenAddress = paymentTransactionRequest.receiverTokenAddress
             ? new web3.PublicKey(paymentTransactionRequest.receiverTokenAddress)
@@ -126,6 +142,9 @@ export class PaymentTransactionBuilder {
         var indexIxs: web3.TransactionInstruction[] = [];
 
         const blockhash = await connection.getLatestBlockhash();
+
+        console.log(this.receiverWalletAddress);
+        console.log(this.receiverTokenAddress);
 
         switch (this.transactionType) {
             case TransactionType.blockhash:
@@ -168,7 +187,7 @@ export class PaymentTransactionBuilder {
 
         transferIxs = await createTransferIx(
             this.sender,
-            this.receiverWalletAdress,
+            this.receiverWalletAddress,
             this.receiverTokenAddress,
             receivingTokenInformation,
             receivingQuantity,
