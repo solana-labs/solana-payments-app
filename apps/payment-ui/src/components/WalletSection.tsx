@@ -9,7 +9,6 @@ import WalletButton from './WalletButton';
 import BuyButton from './BuyButton';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
-import { NotificationView } from './NotificationView';
 import { AppDispatch } from '@/store';
 import { setWalletConnected } from '@/features/wallet/walletSlice';
 import SimpleNotificationView from './SimpleNotificationView';
