@@ -20,7 +20,7 @@ const SolanaPayErrorView = () => {
             <div className="pb-6">
                 {
                     isNotification && notification ? (
-                        <button className='btn w-full outline hover:bg-red-100 outline-1.5 outline-red-900 border-none bg-red-100 text-red-900 font-normal flex justify-start items-center normal-case' onClick={cancelNotification}>
+                        <button className='btn w-full outline-none border-2 border-red-900 hover:bg-red-100 hover:border-red-900 bg-red-100 text-red-900 font-normal flex justify-start items-center normal-case' onClick={cancelNotification}>
                             <div className='flex flex-row items-center justify-between w-full'>
                                 <div className=''>{notification.valueOf()}</div>
                                 <FiX className='text-xl'/>
