@@ -6,6 +6,7 @@ export interface PaymentDataResponse {
     completedAt?: Date;
     status: string;
     amount: string;
+    transactionSignature?: string;
 }
 
 export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: PaymentRecord): PaymentDataResponse => {
@@ -15,5 +16,6 @@ export const createPaymentDataResponseFromPaymentRecord = (paymentRecord: Paymen
         ...(paymentRecord.completedAt && { completedAt: paymentRecord.completedAt }),
         status: paymentRecord.status,
         amount: paymentRecord.amount ? `${paymentRecord.amount} ${paymentRecord.currency}` : 'Not Availible',
+        ...(paymentRecord.transactionSignature && { transactionSignature: paymentRecord.transactionSignature }),
     };
 };

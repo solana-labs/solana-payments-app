@@ -1,3 +1,4 @@
+import { OpenInNew } from '@/components/icons/OpenInNew';
 import * as RE from '@/lib/Result';
 import { formatPrice } from '@/lib/formatPrice';
 import { useMerchantStore } from '@/stores/merchantStore';
@@ -95,13 +96,14 @@ export function PaymentsHistory(props: Props) {
                 <Tabs.Content value="all-payments">
                     <PaginatedTable
                         className="mt-8"
-                        columns={['orderId', 'requestedAt', 'status', 'amount']}
+                        columns={['orderId', 'requestedAt', 'status', 'amount', 'transactionSignature']}
                         curPage={RE.map(payments, ({ payments }) => payments)}
                         headers={{
                             amount: 'Amount',
                             orderId: 'Shopify Order #',
                             status: 'Status',
                             requestedAt: 'Date',
+                            transactionSignature: 'Details',
                         }}
                         numPages={totalNumPages}
                         rowHeight="h-20"
@@ -113,23 +115,25 @@ export function PaymentsHistory(props: Props) {
                     >
                         {{
                             amount: amount => (
-                                <div
-                                    className={twMerge(
-                                        'text-sm',
-                                        'font-semibold',
-                                        'pr-14',
-                                        amount >= 0 ? 'text-gray-600' : 'text-gray-400'
-                                    )}
-                                >
+                                <div className={twMerge('text-sm', 'font-medium', 'pr-14', 'text-black')}>
                                     ${formatPrice(Math.abs(amount))}
                                 </div>
                             ),
-                            orderId: id => <div className="font-bold text-sm text-slate-600">#{id}</div>,
+                            orderId: id => <div className="font-semibold text-sm text-black">{id}</div>,
                             status: status => <PaymentsHistoryStatus className="mr-10" status={status} />,
                             requestedAt: requestedAt => (
                                 <div className="text-sm text-slate-600 pr-11">
                                     {format(requestedAt, 'MMM d, h:mmaa')}
                                 </div>
+                            ),
+                            transactionSignature: transactionSignature => (
+                                <a
+                                    className="flex flex-row border border-slate-400 shadow-sm font-medium rounded-lg space-x-2 items-center px-2 py-1"
+                                    href={`https://explorer.solana.com/tx/${transactionSignature}`}
+                                >
+                                    <p>View transaction</p>
+                                    <OpenInNew className="w-6 fill-indigo-600" />
+                                </a>
                             ),
                         }}
                     </PaginatedTable>
