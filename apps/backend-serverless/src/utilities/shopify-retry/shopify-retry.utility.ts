@@ -50,6 +50,7 @@ export const retry = async (fn: () => Promise<unknown>, maxAttempts: number): Pr
             await fn();
             break;
         } catch (error) {
+            console.log(error);
             // TODO: Log the error with sentry every time we hit this
             attempts += 1;
         }

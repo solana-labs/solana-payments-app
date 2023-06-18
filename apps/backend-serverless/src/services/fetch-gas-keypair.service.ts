@@ -33,11 +33,17 @@ export const fetchGasKeypair = async (): Promise<web3.Keypair> => {
         throw new Error('AWS output not found');
     }
 
+    console.log(output.Body.toString('ascii'));
     const seedString = output.Body.toString('ascii');
+    console.log(seedString);
     const seedArray = JSON.parse(seedString);
+    console.log(seedArray);
 
     const seed = Uint8Array.from(seedArray);
+    console.log(seed);
     const keypair = web3.Keypair.fromSecretKey(seed);
+    console.log(keypair);
+    console.log(keypair.secretKey);
 
     return keypair;
 };
