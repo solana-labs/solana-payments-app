@@ -11,17 +11,17 @@ import { SocketMessageWithNoTypeError } from '@/errors/socket-message-with-no-ty
  * SessionState - The state of the payment session, agnostic to how the user is paying
  */
 
-export enum SessionState {
-    fresh, // fresh start, browser load, has no paymentId
-    aware, // aware of the payment id, can start the fun stuff
-    submitting, // payment has been requested
-    approving, // payment has been delivered
-    processing, // payment is being processed
-    completing, // payment is done but we are flexing with a completing state for added rizz
-    completed, // payment is done
-    error, // payment had a terminal error
-    blocked, // payment has been geo blocked, maybe get rid of this too
-}
+// export enum SessionState {
+//     fresh, // fresh start, browser load, has no paymentId
+//     aware, // aware of the payment id, can start the fun stuff
+//     submitting, // payment has been requested
+//     approving, // payment has been delivered
+//     processing, // payment is being processed
+//     completing, // payment is done but we are flexing with a completing state for added rizz
+//     completed, // payment is done
+//     error, // payment had a terminal error
+//     blocked, // payment has been geo blocked, maybe get rid of this too
+// }
 
 /**
  *
@@ -60,15 +60,15 @@ export enum SolanaPayState {
  *
  */
 
-export enum ConnectWalletState {
-    start,
-    loading,
-    submitting,
-    approving,
-    sentTransaction,
-    processing,
-    completed,
-}
+// export enum ConnectWalletState {
+//     start,
+//     loading,
+//     submitting,
+//     approving,
+//     sentTransaction,
+//     processing,
+//     completed,
+// }
 
 /**
  *
@@ -79,32 +79,22 @@ export enum ConnectWalletState {
 interface PaymentSessionState {
     pubkey: string | null;
     usdcBalance: number | null;
-    sessionState: SessionState;
+    // sessionState: SessionState;
     redirectUrl: string | null;
     solanaPayState: SolanaPayState;
-    connectWalletState: ConnectWalletState;
+    // connectWalletState: ConnectWalletState;
     mergedState: MergedState;
 }
 
 const initalState: PaymentSessionState = {
     pubkey: null,
     usdcBalance: null,
-    sessionState: SessionState.fresh,
+    // sessionState: SessionState.fresh,
     redirectUrl: null,
     solanaPayState: SolanaPayState.start,
-    connectWalletState: ConnectWalletState.start,
+    // connectWalletState: ConnectWalletState.start,
     mergedState: MergedState.start,
 };
-
-type BalanceResponse = {
-    pubkey: string;
-    usdcBalance: number;
-    error: string | null;
-};
-
-interface CompletedDetails {
-    redirectUrl: string;
-}
 
 // type SocketConnectedResponse = { paymentDetails: PaymentDetails | null; error: ErrorDetails | null };
 // type PaymentDetailsSocketMessageResponse = { error: unknown | null };
@@ -129,15 +119,15 @@ const paymentSessionSlice = createSlice({
         },
         resetSession: state => {
             state.mergedState = MergedState.start;
-            state.solanaPayState = SolanaPayState.start;
-            state.connectWalletState = ConnectWalletState.start;
-            state.sessionState = SessionState.fresh;
+            // state.solanaPayState = SolanaPayState.start;
+            // state.connectWalletState = ConnectWalletState.start;
+            // state.sessionState = SessionState.fresh;
         },
         setTransactionRequestStarted: state => {
-            state.solanaPayState = SolanaPayState.transactionRequestStarted;
+            // state.solanaPayState = SolanaPayState.transactionRequestStarted;
             state.mergedState = MergedState.submitting;
-            state.sessionState = SessionState.submitting;
-            state.connectWalletState = ConnectWalletState.loading;
+            // state.sessionState = SessionState.submitting;
+            // state.connectWalletState = ConnectWalletState.loading;
         },
         setTransactionRequestFailed: state => {
             // Do transaction request failing stuff here
@@ -193,16 +183,16 @@ export const {
 
 export default paymentSessionSlice.reducer;
 
-export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
+// export const getSessionState = (state: RootState): SessionState => state.paymentSession.sessionState;
 export const getRedirectUrl = (state: RootState): string | null => state.paymentSession.redirectUrl;
-export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
-export const getConnectWalletState = (state: RootState): ConnectWalletState => state.paymentSession.connectWalletState;
+// export const getSolanaPayState = (state: RootState): SolanaPayState => state.paymentSession.solanaPayState;
+// export const getConnectWalletState = (state: RootState): ConnectWalletState => state.paymentSession.connectWalletState;
 export const getMergedState = (state: RootState): MergedState => state.paymentSession.mergedState;
 
-export const getIsProcessing = (state: RootState): boolean =>
-    state.paymentSession.sessionState === SessionState.processing;
+// export const getIsProcessing = (state: RootState): boolean =>
+//     state.paymentSession.sessionState === SessionState.processing;
 export const getIsCompleted = (state: RootState): boolean => state.paymentSession.mergedState === MergedState.completed;
-export const getIsSolanaPayCompleted = (state: RootState): boolean =>
-    state.paymentSession.solanaPayState === SolanaPayState.solanaPayCompleted;
+// export const getIsSolanaPayCompleted = (state: RootState): boolean =>
+//     state.paymentSession.solanaPayState === SolanaPayState.solanaPayCompleted;
 export const getIsCompleting = (state: RootState): boolean =>
     state.paymentSession.mergedState === MergedState.completing;

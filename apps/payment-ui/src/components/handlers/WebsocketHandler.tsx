@@ -61,7 +61,7 @@ const WebsocketHandler: React.FC = () => {
                     // this one really shouldn't happen lol but if it does, we want to know, but shits probably gonna get terminal.
                     // lets try to persist these cases so we can escalate and manually process them.
                 } else if ( data.messageType == 'shopifyRetry' ) {
-                    dispatch(setNotification({ notification: Notification.transactionRequestFailed, type: NotificationType.solanaPay }))
+                    dispatch(setNotification({ notification: Notification.shopifyRetry, type: NotificationType.both }))
                 }
 
             };

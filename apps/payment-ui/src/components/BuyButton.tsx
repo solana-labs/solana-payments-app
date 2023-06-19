@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as web3 from '@solana/web3.js';
-import { ConnectWalletState, getConnectWalletState, resetSession, setConnectWalletSentTransaction, setConnectWalletStart, setTransactionRequestStarted } from '@/features/payment-session/paymentSessionSlice';
+import { resetSession } from '@/features/payment-session/paymentSessionSlice';
 import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { AppDispatch } from '@/store';
 import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
@@ -14,7 +14,6 @@ const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
     const { publicKey, sendTransaction, signTransaction } = useWallet();
     const dispatch = useDispatch<AppDispatch>();
-    const connectWalletState = useSelector(getConnectWalletState)
     const connectedWalletNotification = useSelector(getConnectWalletNotification)
     const isLoading = useSelector(getIsWalletLoading)
 
