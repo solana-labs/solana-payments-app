@@ -39,6 +39,8 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         let merchantAuthToken: MerchantAuthToken;
         let merchantUpdateRequest: MerchantUpdateRequest;
 
+        console.log('hello merchant');
+
         try {
             merchantAuthToken = withAuth(event.cookies);
         } catch (error) {
@@ -54,6 +56,8 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return createErrorResponse(error);
         }
+
+        console.log(merchantUpdateRequest);
 
         if (
             merchantUpdateRequest.name == null &&
