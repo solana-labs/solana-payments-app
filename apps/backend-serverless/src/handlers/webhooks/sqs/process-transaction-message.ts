@@ -33,7 +33,9 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
-        // TODO: Don't throw in the loop
+        let failedProcessingRecords: ProcessTransactionMessage[] = [];
+
+        // We have this configured for a batch of one, we look just in case but this should only return once
         for (const record of event.Records) {
             console.log(record);
 
@@ -46,6 +48,7 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
             } catch (error) {
                 console.log(error);
                 Sentry.captureException(error);
+                failedProcessingRecords.push(processTransactionMessageBody);
                 // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now. TODO.
                 continue;
             }
