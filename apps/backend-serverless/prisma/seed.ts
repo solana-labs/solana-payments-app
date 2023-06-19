@@ -1,5 +1,4 @@
 import { PaymentRecordStatus, PrismaClient, RefundRecordStatus } from '@prisma/client';
-import { SEED_DATA } from './data.js';
 
 const prisma = new PrismaClient();
 
@@ -34,7 +33,7 @@ function stringToRefundRecordStatus(status: string): RefundRecordStatus {
 }
 
 function generateMerchantRecords(count = 1): any[] {
-    const records = [];
+    const records: any[] = [];
 
     for (let i = 0; i < count; i++) {
         let merchant;
@@ -78,7 +77,7 @@ function generateMerchantRecords(count = 1): any[] {
 }
 
 function generatePaymentRecords(merchant = 1, count = 1): any[] {
-    const records = [];
+    const records: any[] = [];
 
     for (let i = 0; i < merchant; i++) {
         for (let j = 0; j < count; j++) {
@@ -86,16 +85,16 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
             date.setDate(date.getDate() + j); // adding 'j' days to the current date
 
             const record = {
-                id: `payment-1${j}`,
+                id: `payment-1-${i}-${j}`,
                 status: 'pending',
-                shopId: `r_1${j}_shopid`,
+                shopId: `r_1-${i}-${j}_shopid`,
                 shopGid: `gid://shopify/PaymentSession/r_1${j}_shopid`,
-                shopGroup: `shop_group_1${j}`,
+                shopGroup: `shop_group_1-${i}-${j}`,
                 test: 1,
                 amount: j + 1,
                 currency: 'USD',
                 usdcAmount: j + 1,
-                cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
+                cancelURL: `https://store-${i}.myshopify.com/checkouts/c/randomId_-${i}-${j}/processing`,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
                 requestedAt: date.toISOString(), // setting requestedAt to the generated date
@@ -111,16 +110,16 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
             completedAt.setDate(completedAt.getDate() + 1); // completedAt is one day after requestedAt
 
             const record = {
-                id: `payment-2${j}`,
+                id: `payment-2-${i}-${j}`,
                 status: 'completed',
-                shopId: `r_2${j}_shopid`,
+                shopId: `r_2-${i}-${j}_shopid`,
                 shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
-                shopGroup: `shop_group_2${j}`,
+                shopGroup: `shop_group_2-${i}-${j}`,
                 test: 1,
                 amount: j + 1,
                 currency: 'USD',
                 usdcAmount: j + 1,
-                cancelURL: `https://store${j}.myshopify.com/checkouts/c/randomId_${j}/processing`,
+                cancelURL: `https://store${i}.myshopify.com/checkouts/c/randomId_-${i}-${j}/processing`,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
                 requestedAt: requestedAt.toISOString(),
@@ -133,7 +132,7 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
     return records;
 }
 function generateRefundRecords(merchant = 1, count = 1): any[] {
-    const records = [];
+    const records: any[] = [];
 
     for (let i = 0; i < merchant; i++) {
         for (let j = 0; j < count; j++) {
@@ -141,14 +140,14 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
             date.setDate(date.getDate() + j); // adding 'j' days to the current date
 
             const record = {
-                id: `refund-1${j}`,
+                id: `refund-1-${i}-${j}`,
                 status: 'pending',
                 amount: j,
                 currency: 'USD',
                 usdcAmount: j,
-                shopId: `r_1${j}_shopid`,
-                shopGid: `gid://shopify/PaymentSession/rwy_shopid_1${j}`,
-                shopPaymentId: `r_1${j}_shopid`,
+                shopId: `r_1-${i}-${j}_shopid`,
+                shopGid: `gid://shopify/PaymentSession/rwy_shopid_1-${i}-${j}`,
+                shopPaymentId: `r_1-${i}-${j}_shopid`,
                 test: 1,
                 merchantId: `merchant-${i}`,
                 requestedAt: date.toISOString(), // setting requestedAt to the generated date
@@ -164,14 +163,14 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
             completedAt.setDate(completedAt.getDate() + 1); // completedAt is one day after requestedAt
 
             const record = {
-                id: `refund-2${j}`,
+                id: `refund-2-${i}-${j}`,
                 status: 'completed',
                 amount: j,
                 currency: 'USD',
                 usdcAmount: j,
-                shopId: `r_2${j}_shopid`,
-                shopGid: `gid://shopify/PaymentSession/r_2${j}_shopid`,
-                shopPaymentId: `r_2${j}_shopid`,
+                shopId: `r_2-${i}-${j}_shopid`,
+                shopGid: `gid://shopify/PaymentSession/rwy_shopid_2-${i}-${j}`,
+                shopPaymentId: `r_2-${i}-${j}_shopid`,
                 test: 1,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `signature-${j}`,
@@ -185,15 +184,15 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
     return records;
 }
 
-async function insertJsonData() {
+async function insertGeneratedData(merchants: number, payments: number, refunds: number) {
     const merchantInfo = await prisma.merchant.createMany({
-        data: SEED_DATA.merchant.map(merchant => ({
+        data: generateMerchantRecords(merchants).map(merchant => ({
             ...merchant,
         })),
     });
 
     const paymentRecords = await prisma.paymentRecord.createMany({
-        data: SEED_DATA.paymentRecords.map(record => ({
+        data: generatePaymentRecords(merchants, payments).map(record => ({
             ...record,
             status: stringToPaymentRecordStatus(record.status),
             test: Boolean(record.test),
@@ -201,31 +200,7 @@ async function insertJsonData() {
     });
 
     const refundRecords = await prisma.refundRecord.createMany({
-        data: SEED_DATA.refundRecords.map(record => ({
-            ...record,
-            status: stringToRefundRecordStatus(record.status),
-            test: Boolean(record.test),
-        })),
-    });
-}
-
-async function insertGeneratedData(count: number) {
-    const merchantInfo = await prisma.merchant.createMany({
-        data: generateMerchantRecords().map(merchant => ({
-            ...merchant,
-        })),
-    });
-
-    const paymentRecords = await prisma.paymentRecord.createMany({
-        data: generatePaymentRecords(1, count).map(record => ({
-            ...record,
-            status: stringToPaymentRecordStatus(record.status),
-            test: Boolean(record.test),
-        })),
-    });
-
-    const refundRecords = await prisma.refundRecord.createMany({
-        data: generateRefundRecords(1, count).map(record => ({
+        data: generateRefundRecords(merchants, refunds).map(record => ({
             ...record,
             status: stringToRefundRecordStatus(record.status),
             test: Boolean(record.test),
@@ -242,7 +217,7 @@ async function main() {
     // await prisma.$executeRaw`DROP TABLE PaymentRecord `;
     // await prisma.$executeRaw`DROP TABLE RefundRecord `;
 
-    await insertGeneratedData(10);
+    await insertGeneratedData(2, 6, 3);
 }
 
 main()
