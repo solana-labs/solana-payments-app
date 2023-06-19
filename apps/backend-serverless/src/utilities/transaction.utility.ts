@@ -40,6 +40,7 @@ export const sendTransaction = async (transaction: web3.Transaction) => {
     const transactionBuffer = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
     const transactionSignature = await connection.sendRawTransaction(transactionBuffer, {
         skipPreflight: true,
+        preflightCommitment: 'confirmed',
     });
     console.log(transactionSignature);
 };
