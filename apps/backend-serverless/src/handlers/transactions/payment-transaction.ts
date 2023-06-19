@@ -245,11 +245,12 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         transaction.partialSign(gasKeypair);
-        transaction.partialSign(singleUseKeypair);
+        // transaction.partialSign(singleUseKeypair);
 
         try {
             verifyTransactionWithRecord(paymentRecord, transaction, true);
         } catch (error) {
+            console.log(error);
             return createErrorResponse(error);
         }
 
