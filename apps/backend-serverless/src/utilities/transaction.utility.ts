@@ -19,7 +19,6 @@ export const createSweepingTransaction = async (
 
     const connection = new web3.Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
     const blockhash = await connection.getLatestBlockhash();
-    const balance = await connection.getBalance(sendingKeypair);
     const transaction = new web3.Transaction({
         feePayer: receivingKeypair,
         blockhash: blockhash.blockhash,
