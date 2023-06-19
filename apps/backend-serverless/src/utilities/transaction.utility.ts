@@ -1,6 +1,9 @@
 import * as web3 from '@solana/web3.js';
 import { fetchHeliusBalance } from '../services/helius.service.js';
 import { MissingEnvError } from '../errors/missing-env.error.js';
+import { TOKEN_PROGRAM_ID, createCloseAccountInstruction } from '@solana/spl-token';
+import { findAssociatedTokenAddress } from './pubkeys.utility.js';
+import { USDC_MINT } from '../configs/tokens.config.js';
 
 export const createSweepingTransaction = async (
     sendingKeypair: web3.PublicKey,
@@ -12,6 +15,8 @@ export const createSweepingTransaction = async (
         throw new MissingEnvError('helius api');
     }
 
+    const ata = await findAssociatedTokenAddress(sendingKeypair, USDC_MINT);
+
     const connection = new web3.Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
     const blockhash = await connection.getLatestBlockhash();
     const balance = await connection.getBalance(sendingKeypair);
@@ -19,13 +24,7 @@ export const createSweepingTransaction = async (
         feePayer: receivingKeypair,
         blockhash: blockhash.blockhash,
         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    }).add(
-        web3.SystemProgram.transfer({
-            fromPubkey: sendingKeypair,
-            toPubkey: receivingKeypair,
-            lamports: balance,
-        })
-    );
+    }).add(createCloseAccountInstruction(ata, receivingKeypair, sendingKeypair, [], TOKEN_PROGRAM_ID));
 
     return transaction;
 };

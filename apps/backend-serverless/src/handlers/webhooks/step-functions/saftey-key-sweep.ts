@@ -19,7 +19,8 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
         transaction.partialSign(singleUseKeypair);
         transaction.partialSign(gasKeypair);
         await sendTransaction(transaction);
-
+        // TODO: retry if it doesnt work
+        // TODO: delete the files from the bucket
         return {
             statusCode: 200,
             body: JSON.stringify({}),
