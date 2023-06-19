@@ -11,6 +11,7 @@ import { DependencyError } from '../errors/dependency.error.js';
 import {
     GetAccountInfo,
     PubkeyOwner,
+    ValueDataTokenProgram,
     parseAndValidateGetAccountInfo,
 } from '../models/dependencies/get-account-info.model.js';
 import { InvalidInputError } from '../errors/invalid-input.error.js';
@@ -126,7 +127,18 @@ export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> =>
 export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
     const accountInfo = await getAccountInfo(pubkey);
     const owner = accountInfo.result.value.owner;
-    return getPubkeyTypeForProgramOwner(owner);
+    const pubkeyType = getPubkeyTypeForProgramOwner(owner);
+    if (pubkeyType == PubkeyType.token) {
+        const data = accountInfo.result.value.data as ValueDataTokenProgram;
+        const mint = data.parsed.info.mint;
+        if (mint != USDC_MINT.toBase58()) {
+            throw new InvalidInputError(
+                'Invalid payment address input. It must be a wallet address or USDC token account address.'
+            );
+        }
+    }
+
+    return pubkeyType;
 };
 
 export enum PubkeyType {
