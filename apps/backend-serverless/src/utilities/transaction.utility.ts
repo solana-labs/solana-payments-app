@@ -19,7 +19,6 @@ export const createSweepingTransaction = async (
 
     const connection = new web3.Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
     const blockhash = await connection.getLatestBlockhash();
-    const balance = await connection.getBalance(sendingKeypair);
     const transaction = new web3.Transaction({
         feePayer: receivingKeypair,
         blockhash: blockhash.blockhash,
@@ -40,6 +39,7 @@ export const sendTransaction = async (transaction: web3.Transaction) => {
     const transactionBuffer = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
     const transactionSignature = await connection.sendRawTransaction(transactionBuffer, {
         skipPreflight: true,
+        preflightCommitment: 'confirmed',
     });
     console.log(transactionSignature);
 };
