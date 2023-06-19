@@ -33,6 +33,7 @@ export enum Notification {
     insufficentFunds = "You don't have enough funds for this transaction.",
     simulatingIssue = "There's an issue with your transaction. Please try again.",
     shopifyRetry = "We're pretty sure you paid. We even told Shopify. They were all like, yo bro not so fast. We're gonna try again in a second. You'll get an email but just hand tight.",
+    genericWalletError = 'There was an issue submitting your transaction with your conneted wallet. Please try again.',
 }
 
 interface NotificationState {

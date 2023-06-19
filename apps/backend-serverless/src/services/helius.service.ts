@@ -13,6 +13,7 @@ import {
     PubkeyOwner,
     parseAndValidateGetAccountInfo,
 } from '../models/dependencies/get-account-info.model.js';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -140,6 +141,8 @@ export const getPubkeyTypeForProgramOwner = (owner: PubkeyOwner): PubkeyType => 
         case PubkeyOwner.tokenProgram:
             return PubkeyType.token;
         default:
-            throw new Error('Unknown owner');
+            throw new InvalidInputError(
+                'Invalid payment address input. You must enter a wallet address or USDC token account address.'
+            );
     }
 };
