@@ -2,43 +2,48 @@ import * as web3 from '@solana/web3.js';
 import * as token from '@solana/spl-token';
 import { USDC_PUBKEY } from '../src/configs/pubkeys.config.js';
 import { getMinimumBalanceForRentExemptMint, MINT_SIZE } from '@solana/spl-token';
+import { findAssociatedTokenAddress } from '../src/utils/ata.util.js';
 
 describe('Sample test', () => {
     beforeEach((): void => {
         jest.setTimeout(60000);
     });
 
-    // const seed = Uint8Array.from(secretArray);
+    const secretArray = [];
 
-    // const keypair = web3.Keypair.fromSecretKey(seed);
-    // const newKeypair = web3.Keypair.generate();
-    // let tokenAccount: web3.PublicKey | null = null;
-    // const customer = web3.Keypair.generate();
-    // let mintPubkey: web3.PublicKey | null = null;
+    const seed = Uint8Array.from(secretArray);
+
+    const keypair = web3.Keypair.fromSecretKey(seed);
+    const newKeypair = web3.Keypair.generate();
+    let tokenAccount: web3.PublicKey | null = null;
+    const customer = web3.Keypair.generate();
+    let mintPubkey: web3.PublicKey | null = null;
+
+    let newGuy: web3.Keypair | null = null;
 
     it('create a mint.', async () => {
-        //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
-        //     const blockhash = await connection.getLatestBlockhash();
-        //     let tx = new web3.Transaction({
-        //         feePayer: keypair.publicKey,
-        //         blockhash: blockhash.blockhash,
-        //         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-        //     });
+        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
+        const blockhash = await connection.getLatestBlockhash();
+        let tx = new web3.Transaction({
+            feePayer: keypair.publicKey,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight,
+        });
 
-        //     mintPubkey = await token.createMint(
-        //         connection, // conneciton
-        //         keypair, // fee payer
-        //         keypair.publicKey, // mint authority
-        //         keypair.publicKey, // freeze authority (you can use `null` to disable it. when you disable it, you can't turn it on again)
-        //         8, // decimals,
-        //         newKeypair,
-        //         {
-        //             skipPreflight: true,
-        //             commitment: 'confirmed',
-        //         }
-        //     );
+        mintPubkey = await token.createMint(
+            connection, // conneciton
+            keypair, // fee payer
+            keypair.publicKey, // mint authority
+            keypair.publicKey, // freeze authority (you can use `null` to disable it. when you disable it, you can't turn it on again)
+            8, // decimals,
+            newKeypair,
+            {
+                skipPreflight: true,
+                commitment: 'confirmed',
+            }
+        );
 
-        //     console.log(mintPubkey.toBase58());
+        console.log(mintPubkey.toBase58());
 
         expect(true).toBe(true);
     });
@@ -83,73 +88,76 @@ describe('Sample test', () => {
     //     expect(true).toBe(true);
     // });
 
-    // it('create token account.', async () => {
-    //     const random = await web3.PublicKey.findProgramAddressSync(
-    //         [keypair.publicKey.toBuffer(), token.TOKEN_PROGRAM_ID.toBuffer(), mintPubkey!.toBuffer()],
-    //         token.TOKEN_PROGRAM_ID
-    //     );
-    //     tokenAccount = random[0];
-    //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
-    //     const blockhash = await connection.getLatestBlockhash();
-    //     let tx = new web3.Transaction({
-    //         feePayer: keypair.publicKey,
-    //         blockhash: blockhash.blockhash,
-    //         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    //     }).add(
-    //         // create mint account
-    //         token.createInitializeAccountInstruction(
-    //             tokenAccount,
-    //             USDC_PUBKEY,
-    //             keypair.publicKey,
-    //             token.TOKEN_PROGRAM_ID
-    //         )
-    //     );
+    it('create token account.', async () => {
+        const random = await web3.PublicKey.findProgramAddressSync(
+            [keypair.publicKey.toBuffer(), token.TOKEN_PROGRAM_ID.toBuffer(), mintPubkey!.toBuffer()],
+            token.TOKEN_PROGRAM_ID
+        );
+        tokenAccount = random[0];
 
-    //     tx.partialSign(keypair);
+        newGuy = web3.Keypair.generate();
 
-    //     const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+        const ata = await findAssociatedTokenAddress(newGuy.publicKey, USDC_PUBKEY!);
 
-    //     const signature = await connection.sendRawTransaction(txBuffer, {
-    //         skipPreflight: true,
-    //         preflightCommitment: 'confirmed',
-    //     });
+        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
+        const blockhash = await connection.getLatestBlockhash();
+        let tx = new web3.Transaction({
+            feePayer: keypair.publicKey,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight,
+        }).add(
+            token.createAssociatedTokenAccountInstruction(
+                keypair.publicKey,
+                ata,
+                newGuy.publicKey,
+                USDC_PUBKEY,
+                token.TOKEN_PROGRAM_ID,
+                token.ASSOCIATED_TOKEN_PROGRAM_ID
+            )
+        );
 
-    //     console.log(signature);
+        tx.partialSign(keypair);
 
-    //     expect(true).toBe(true);
-    // });
+        const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
 
-    // it('close token account.', async () => {
-    //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
-    //     const blockhash = await connection.getLatestBlockhash();
-    //     let tx = new web3.Transaction({
-    //         feePayer: keypair.publicKey,
-    //         blockhash: blockhash.blockhash,
-    //         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    //     }).add(
-    //         // create mint account
-    //         token.createCloseAccountInstruction(
-    //             tokenAccount!,
-    //             keypair.publicKey,
-    //             keypair.publicKey,
-    //             [],
-    //             token.TOKEN_PROGRAM_ID
-    //         )
-    //     );
+        const signature = await connection.sendRawTransaction(txBuffer, {
+            skipPreflight: true,
+            preflightCommitment: 'confirmed',
+        });
 
-    //     tx.partialSign(keypair);
+        console.log(signature);
 
-    //     const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+        expect(true).toBe(true);
+    });
 
-    //     const signature = await connection.sendRawTransaction(txBuffer, {
-    //         skipPreflight: true,
-    //         preflightCommitment: 'confirmed',
-    //     });
+    it('close token account.', async () => {
+        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
+        const blockhash = await connection.getLatestBlockhash();
+        const ata = await findAssociatedTokenAddress(newGuy!.publicKey, USDC_PUBKEY!);
 
-    //     console.log(signature);
+        let tx = new web3.Transaction({
+            feePayer: keypair.publicKey,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight,
+        }).add(
+            // create mint account
+            token.createCloseAccountInstruction(ata, keypair.publicKey, newGuy!.publicKey, [], token.TOKEN_PROGRAM_ID)
+        );
 
-    //     expect(true).toBe(true);
-    // });
+        tx.partialSign(newGuy!);
+        tx.partialSign(keypair);
+
+        const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+
+        const signature = await connection.sendRawTransaction(txBuffer, {
+            skipPreflight: true,
+            preflightCommitment: 'confirmed',
+        });
+
+        console.log(signature);
+
+        expect(true).toBe(true);
+    });
 
     // it('create a mint.', async () => {
     //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');

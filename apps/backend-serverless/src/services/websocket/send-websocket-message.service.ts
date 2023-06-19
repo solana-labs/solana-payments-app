@@ -76,6 +76,10 @@ export class WebSocketService<WebsocketQuery> {
         await this.sendMessage(WebsocketMessage.processingTransaction, null);
     };
 
+    sendShopifyRetryMessage = async () => {
+        await this.sendMessage(WebsocketMessage.shopifyRetry, null);
+    };
+
     sendFailedProcessingTransactionMessage = async () => {
         await this.sendMessage(WebsocketMessage.failedProcessingTransaction, null);
     };
@@ -93,6 +97,7 @@ export enum WebsocketMessage {
     transactionDelivered = 'transactionDelivered',
     transactionRequestFailed = 'transactionRequestFailed',
     processingTransaction = 'processingTransaction',
+    shopifyRetry = 'shopifyRetry',
     failedProcessingTransaction = 'failedProcessingTransaction',
     insufficientFunds = 'insufficientFunds',
 }

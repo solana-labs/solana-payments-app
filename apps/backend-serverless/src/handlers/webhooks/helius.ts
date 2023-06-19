@@ -5,7 +5,7 @@ import {
     parseAndValidateHeliusEnchancedTransaction,
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TransactionRecord } from '@prisma/client';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
@@ -89,6 +89,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         const transactionRecords = await transactionRecordService.getTransactionRecords(signatures);
 
         if (transactionRecords == null) {
+            // Think message isn't gonna find anyone, if it did, we would have transaction records since the websocket service
+            // has a dependency on the transaction record service. Here for safety
             await websocketService.sendFailedProcessingTransactionMessage();
             return {
                 statusCode: 200,
@@ -96,17 +98,37 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             };
         }
 
+        let failedTransactionRecordMessages: { error: unknown; transactionRecord: TransactionRecord }[] = [];
+
         for (const transactionRecord of transactionRecords) {
             // send a message to the queue, even better if we can send an array of messages to the queue
             try {
                 console.log('sending message to queue');
                 await sendProcessTransactionMessage(transactionRecord.signature);
             } catch (error) {
-                // TODO: Only send the failed message to the failed websocket sessions
-                await websocketService.sendFailedProcessingTransactionMessage();
+                failedTransactionRecordMessages.push({ error: error, transactionRecord: transactionRecord });
                 Sentry.captureException(error);
                 continue;
             }
+        }
+
+        const failedTransactionRecordSignatures = failedTransactionRecordMessages.map(record => {
+            return record.transactionRecord.signature;
+        });
+
+        const failedWebsocketService = new WebSocketService(
+            websocketUrl,
+            {
+                signatures: failedTransactionRecordSignatures,
+            },
+            paymentRecordService
+        );
+
+        try {
+            await failedWebsocketService.sendFailedProcessingTransactionMessage();
+        } catch (error) {
+            Sentry.captureException(error);
+            // I mean literally what else could go wrong?
         }
 
         return {
