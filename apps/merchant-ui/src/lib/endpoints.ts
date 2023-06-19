@@ -1,17 +1,9 @@
 export const API_ENDPOINTS = {
-    install: `${process.env.NEXT_PUBLIC_API_BASE_URL}/install`,
-    redirect: `${process.env.NEXT_PUBLIC_API_BASE_URL}/redirect`,
-    payment: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment`,
-    refund: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund`,
-    paymentTransaction: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-transaction`,
     refundTransaction: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-transaction`,
     rejectRefund: `${process.env.NEXT_PUBLIC_API_BASE_URL}/reject-refund`,
-    paymentStatus: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-status`,
     merchantData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/merchant-data`,
     refundData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-data`,
     refundStatus: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-status`,
     paymentData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-data`,
     updateMerchant: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-merchant`,
-    login: `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
-    paymentAddress: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-address`,
 };
