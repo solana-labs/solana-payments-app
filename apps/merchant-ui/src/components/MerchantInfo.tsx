@@ -60,7 +60,11 @@ export function MerchantInfo(props: Props) {
     }
 
     async function handleMerchantAddressClick() {
+        if (!formState.walletAddress) {
+            return;
+        }
         setPending(true);
+
         let response = await updateMerchantAddress(formState.walletAddress?.toString());
         if (response && response.status === 200) {
             setAddressChanged(true);
