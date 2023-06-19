@@ -71,6 +71,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
 
         const signatures = heliusEnhancedTransactions.map(transaction => transaction.signature);
 
+        console.log(signatures);
+
         const websocketService = new WebSocketService(
             websocketUrl,
             {

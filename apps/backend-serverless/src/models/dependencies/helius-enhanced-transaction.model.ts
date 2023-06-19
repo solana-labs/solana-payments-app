@@ -1,130 +1,130 @@
 import { object, string, InferType, number, array } from 'yup';
 import { parseAndValidate } from '../../utilities/yup.utility.js';
 export const heliusRawTokenAmountSchema = object().shape({
-    tokenAmount: string().required(),
-    decimals: number().required(),
+    tokenAmount: string().optional(),
+    decimals: number().optional(),
 });
 
 export const heliusNftSchema = object().shape({
-    mint: string().required(),
-    tokenStandard: string().required(),
+    mint: string().optional(),
+    tokenStandard: string().optional(),
 });
 
 export const heliusNftEventSchema = object().shape({
-    description: string().required(),
-    type: string().required(),
-    source: string().required(),
-    amount: number().required(),
-    fee: number().required(),
-    feePayer: string().required(),
-    signature: string().required(),
-    slot: number().required(),
-    timestamp: number().required(),
-    saleType: string().required(),
-    buyer: string().required(),
-    seller: string().required(),
-    staker: string().required(),
-    nfts: array().of(heliusNftSchema).required(),
+    description: string().optional(),
+    type: string().optional(),
+    source: string().optional(),
+    amount: number().optional(),
+    fee: number().optional(),
+    feePayer: string().optional(),
+    signature: string().optional(),
+    slot: number().optional(),
+    timestamp: number().optional(),
+    saleType: string().optional(),
+    buyer: string().optional(),
+    seller: string().optional(),
+    staker: string().optional(),
+    nfts: array().of(heliusNftSchema).optional(),
 });
 
 export const heliusSwapTokenOutputSchema = object().shape({
-    account: string().required(),
-    amount: string().required(),
+    account: string().optional(),
+    amount: string().optional(),
 });
 
 export const heliusSwapTokenInputSchema = object().shape({
-    userAccount: string().required(),
-    tokenAccount: string().required(),
-    mint: string().required(),
-    rawTokenAmount: heliusRawTokenAmountSchema.required(),
+    userAccount: string().optional(),
+    tokenAccount: string().optional(),
+    mint: string().optional(),
+    rawTokenAmount: heliusRawTokenAmountSchema.optional(),
 });
 
 export const heliusSwapNativeOutputSchema = object().shape({
-    account: string().required(),
-    amount: string().required(),
+    account: string().optional(),
+    amount: string().optional(),
 });
 
 export const heliusSwapNativeInputSchema = object().shape({
-    account: string().required(),
-    amount: string().required(),
+    account: string().optional(),
+    amount: string().optional(),
 });
 
 export const heliusSwapEventSchema = object().shape({
-    nativeInput: heliusSwapNativeInputSchema.required(),
-    nativeOutput: heliusSwapNativeOutputSchema.required(),
-    tokenInputs: string().required(),
-    tokenOutputs: string().required(),
-    tokenFees: string().required(),
-    nativeFees: string().required(),
-    innerSwaps: string().required(),
+    nativeInput: heliusSwapNativeInputSchema.optional(),
+    nativeOutput: heliusSwapNativeOutputSchema.optional(),
+    tokenInputs: string().optional(),
+    tokenOutputs: string().optional(),
+    tokenFees: string().optional(),
+    nativeFees: string().optional(),
+    innerSwaps: string().optional(),
 });
 
 export const heliusEventsSchema = object().shape({
-    nft: array().of(string()).required(),
-    swap: string().required(),
+    nft: array().of(string()).optional(),
+    swap: string().optional(),
 });
 
 export const heliusInnerInstructionSchema = object().shape({
-    accounts: array().of(string()).required(),
-    data: string().required(),
-    programId: string().required(),
+    accounts: array().of(string()).optional(),
+    data: string().optional(),
+    programId: string().optional(),
 });
 
 export const heliusInstructionSchema = object().shape({
-    accounts: array().of(string()).required(),
-    data: string().required(),
-    programId: string().required(),
-    innerInstructions: array().of(heliusInnerInstructionSchema).required(),
+    accounts: array().of(string()).optional(),
+    data: string().optional(),
+    programId: string().optional(),
+    innerInstructions: array().of(heliusInnerInstructionSchema).optional(),
 });
 
 export const heliusTransactionErrorSchema = object()
     .shape({
-        error: string().required(),
+        error: string().optional(),
     })
     .nullable();
 
 export const heliusTokenBalanceChangeSchema = object().shape({
-    userAccount: string().required(),
-    tokenAccount: string().required(),
-    mint: string().required(),
-    rawTokenAmount: heliusRawTokenAmountSchema.required(),
+    userAccount: string().optional(),
+    tokenAccount: string().optional(),
+    mint: string().optional(),
+    rawTokenAmount: heliusRawTokenAmountSchema.optional(),
 });
 
 export const heliusAccountTransferSchema = object().shape({
-    account: string().required(),
-    nativeBalanceChange: number().required(),
-    tokenBalanceChanges: array().of(heliusTokenBalanceChangeSchema).required(),
+    account: string().optional(),
+    nativeBalanceChange: number().optional(),
+    tokenBalanceChanges: array().of(heliusTokenBalanceChangeSchema).optional(),
 });
 
 export const heliusTokenTransferSchema = object().shape({
-    fromUserAccount: string().required(),
-    toUserAccount: string().required(),
-    fromTokenAccount: string().required(),
-    toTokenAccount: string().required(),
-    tokenAmount: number().required(),
-    mint: string().required(),
+    fromUserAccount: string().optional(),
+    toUserAccount: string().optional(),
+    fromTokenAccount: string().optional(),
+    toTokenAccount: string().optional(),
+    tokenAmount: number().optional(),
+    mint: string().optional(),
 });
 
 export const heliusNativeTransferSchema = object().shape({
-    fromUserAccount: string().required(),
-    toUserAccount: string().required(),
-    amount: number().required(),
+    fromUserAccount: string().optional(),
+    toUserAccount: string().optional(),
+    amount: number().optional(),
 });
 
 export const heliusEnhancedTransactionModelSchema = object().shape({
-    description: string().required(),
-    type: string().required(),
-    source: string().required(),
-    fee: string().required(),
-    feePayer: string().required(),
+    description: string().optional(),
+    type: string().optional(),
+    source: string().optional(),
+    fee: string().optional(),
+    feePayer: string().optional(),
     signature: string().required(),
-    slot: number().required(),
-    timestamp: number().required(),
-    nativeTransfers: array().of(heliusNativeTransferSchema).required(),
-    tokenTransfers: array().of(heliusTokenTransferSchema).required(),
-    accountData: array().of(heliusAccountTransferSchema).required(),
+    slot: number().optional(),
+    timestamp: number().optional(),
+    nativeTransfers: array().of(heliusNativeTransferSchema).optional(),
+    tokenTransfers: array().of(heliusTokenTransferSchema).optional(),
+    accountData: array().of(heliusAccountTransferSchema).optional(),
     transactionError: heliusTransactionErrorSchema.optional(),
-    instructions: array().of(heliusInstructionSchema).required(),
+    instructions: array().of(heliusInstructionSchema).optional(),
 });
 
 export const heliusEnhancedTransactionResponseSchema = array().of(heliusEnhancedTransactionModelSchema).required();
