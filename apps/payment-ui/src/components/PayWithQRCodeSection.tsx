@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux';
 import { QRCode } from './QRCode';
-import { SolanaPayState, getSolanaPayState } from '@/features/payment-session/paymentSessionSlice';
 
 const PayWithQRCodeSection = () => {
 

@@ -45,6 +45,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         try {
             heliusHeaders = parseAndValidateHeliusHeader({ authorization: event.headers['authorization'] });
         } catch (error) {
+            // need to flag this as very bad
             Sentry.captureException(error);
             return createErrorResponse(error);
         }
