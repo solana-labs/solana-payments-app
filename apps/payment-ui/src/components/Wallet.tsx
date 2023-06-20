@@ -1,12 +1,16 @@
-import React, { FC, useMemo } from 'react';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { PhantomWalletAdapter, SolflareWalletAdapter, UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { FC, useMemo } from 'react';
 // import { WalletMultiButton } from './WalletMultiButton';
+import {
+    SolanaMobileWalletAdapter,
+    createDefaultAddressSelector,
+    createDefaultAuthorizationResultCache,
+    createDefaultWalletNotFoundHandler,
+} from '@solana-mobile/wallet-adapter-mobile';
 import { clusterApiUrl } from '@solana/web3.js';
-import WalletButton from './WalletButton';
-import BuyButton from './BuyButton';
 import WalletSection from './WalletSection';
 
 // Default styles that can be overridden by your app
@@ -18,12 +22,22 @@ const Wallet: FC = () => {
 
     // You can also provide a custom RPC endpoint.
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    
 
     const wallets = useMemo(
         () => [
             new SolflareWalletAdapter(),
             new PhantomWalletAdapter(),
+            new SolanaMobileWalletAdapter({
+                addressSelector: createDefaultAddressSelector(),
+                appIdentity: {
+                    name: 'Solana Pay Payment Portal',
+                    uri: 'https://pay.solanapay.com',
+                    icon: '/favicon.ico',
+                },
+                authorizationResultCache: createDefaultAuthorizationResultCache(),
+                cluster: WalletAdapterNetwork.Mainnet,
+                onWalletNotFound: createDefaultWalletNotFoundHandler(),
+            }),
         ],
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [network]
@@ -33,9 +47,9 @@ const Wallet: FC = () => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                        <div className="py-2">
-                            <WalletSection />
-                        </div>
+                    <div className="py-2">
+                        <WalletSection />
+                    </div>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>

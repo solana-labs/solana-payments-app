@@ -12,6 +12,7 @@
     "dependencies": {
         "@carbon/icons-react": "^11.20.0",
         "@reduxjs/toolkit": "^1.9.3",
+        "@solana-mobile/wallet-adapter-mobile": "^2.0.0",
         "@solana/qr-code-styling": "^1.6.0",
         "@solana/wallet-adapter-base": "^0.9.22",
         "@solana/wallet-adapter-react": "^0.15.32",
