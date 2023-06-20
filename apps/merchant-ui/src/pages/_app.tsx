@@ -8,6 +8,7 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -49,7 +50,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
     // const endpoint = useMemo(() => "http://localhost:8899");
 
-    const wallets = useMemo(() => [], []);
+    const wallets = useMemo(() => [new SolflareWalletAdapter(), new PhantomWalletAdapter()], []);
 
     return (
         <div>
