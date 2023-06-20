@@ -24,7 +24,7 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                 <title>Solana Pay Merchant Portal</title>
                 <meta
                     name="description"
-                    content="Solana Pay makes it easy for you to accept Solana and USDC payments on your Shopify site."
+                    content="Manage your Shopify Solana Store Payments and Refunds with Solana Pay."
                 />
             </Head>
             <div className={twMerge('grid', 'h-screen', 'w-screen', 'md:grid-cols-2')}>
