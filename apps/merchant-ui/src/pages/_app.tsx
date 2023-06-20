@@ -4,6 +4,12 @@ import { usePaymentStore } from '@/stores/paymentStore';
 import { useClosedRefundStore, useOpenRefundStore } from '@/stores/refundStore';
 import '@/styles/globals.css';
 import { Provider as TooltipProvider } from '@radix-ui/react-tooltip';
+import {
+    SolanaMobileWalletAdapter,
+    createDefaultAddressSelector,
+    createDefaultAuthorizationResultCache,
+    createDefaultWalletNotFoundHandler,
+} from '@solana-mobile/wallet-adapter-mobile';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
@@ -50,7 +56,24 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
     // const endpoint = useMemo(() => "http://localhost:8899");
 
-    const wallets = useMemo(() => [new SolflareWalletAdapter(), new PhantomWalletAdapter()], []);
+    const wallets = useMemo(
+        () => [
+            new SolflareWalletAdapter(),
+            new PhantomWalletAdapter(),
+            new SolanaMobileWalletAdapter({
+                addressSelector: createDefaultAddressSelector(),
+                appIdentity: {
+                    name: 'Solana Pay Merchant Portal',
+                    uri: 'https://merchant.solanapay.com',
+                    icon: '/favicon.ico',
+                },
+                authorizationResultCache: createDefaultAuthorizationResultCache(),
+                cluster: WalletAdapterNetwork.Mainnet,
+                onWalletNotFound: createDefaultWalletNotFoundHandler(),
+            }),
+        ],
+        []
+    );
 
     return (
         <div>

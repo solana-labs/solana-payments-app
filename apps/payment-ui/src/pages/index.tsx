@@ -1,16 +1,12 @@
-import Head from 'next/head';
-import MainSection from '../components/MainSection';
-import DisplaySection from '../components/DisplaySection';
-import { PaymentView } from '@/components/PaymentView';
-import PayWithWalletSection from '@/components/PayWithWalletSection';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
-import React from 'react';
-import PayWithQRCodeSection from '@/components/PayWithQRCodeSection';
-import { useSelector } from 'react-redux';
-import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
-import { MergedState, getMergedState } from '@/features/payment-session/paymentSessionSlice';
 import FooterSection from '@/components/FooterSection';
+import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
+import { getMergedState } from '@/features/payment-session/paymentSessionSlice';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import DisplaySection from '../components/DisplaySection';
+import MainSection from '../components/MainSection';
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
     const { query } = context;
@@ -26,18 +22,14 @@ export type BlockedProps = {
 };
 
 export default function Home({ isBlocked, country }: BlockedProps) {
-
-    const paymentMethod = useSelector(getPaymentMethod)
-    const mergedState = useSelector(getMergedState)
+    const paymentMethod = useSelector(getPaymentMethod);
+    const mergedState = useSelector(getMergedState);
 
     return (
         <>
             <Head>
-                <title>Solana Pay</title>
-                <meta
-                    name="description"
-                    content="Solana Pay makes it easy for you to accept Solana and USDC payments on your Shopify site."
-                />
+                <title>Solana Pay Payment Portal</title>
+                <meta name="description" content="Use Solana Pay for your Shopify Checkout" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <React.Fragment>
@@ -62,7 +54,5 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                 </div>
             </React.Fragment>
         </>
-        
     );
 }
-
