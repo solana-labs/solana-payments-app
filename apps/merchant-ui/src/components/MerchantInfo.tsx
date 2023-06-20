@@ -92,17 +92,8 @@ export function MerchantInfo(props: Props) {
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle>Merchant Info</DefaultLayoutScreenTitle>
-            <div
-                className={twMerge(
-                    'gap-x-4',
-                    'grid-cols-[max-content,1fr]',
-                    'grid',
-                    'items-start',
-                    'max-w-4xl',
-                    'mt-9'
-                )}
-            >
-                <DefaultLayoutHeader className="mt-24 col-span-2">Information</DefaultLayoutHeader>
+            <div className={twMerge('gap-x-4', 'grid-cols-[max-content,1fr]', 'grid', 'items-start', 'max-w-4xl')}>
+                <DefaultLayoutHeader className="mt-16 col-span-2">Information</DefaultLayoutHeader>
                 <div>
                     <div className="font-medium text-black text-sm">Merchant Name</div>
                     <div className="text-sm text-neutral-600">Taken from your Shopify store</div>
@@ -111,7 +102,7 @@ export function MerchantInfo(props: Props) {
                     <Input disabled className="w-full max-w-lg" value={formState.name} />
                 </div>
                 <div className="mt-6 border-b border-gray-200 col-span-2" />
-                <DefaultLayoutHeader className="mt-24 col-span-2">Wallet and Settlement</DefaultLayoutHeader>
+                <DefaultLayoutHeader className="mt-16 col-span-2">Wallet and Settlement</DefaultLayoutHeader>
                 <div>
                     <div className="font-medium text-black text-sm">USDC Payments Address</div>
                     <div className="text-sm text-neutral-600">Receive all payments to this address</div>
