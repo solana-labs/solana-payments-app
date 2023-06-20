@@ -62,7 +62,6 @@ export async function updateMerchantAddress(walletAddress: string): Promise<Resp
         });
         return response;
     } catch (error) {
-        console.log('update merchant address error', error);
         return undefined;
     }
 }
@@ -83,9 +82,7 @@ export async function updateMerchantTos() {
             }),
             credentials: 'include',
         });
-    } catch (error) {
-        console.log('update merchant tos error', error);
-    }
+    } catch (error) {}
     return response;
 }
 
@@ -103,8 +100,6 @@ export async function updateMerchantKybInquiry(kybInquiry: string) {
             body: JSON.stringify({ kybInquiry }),
             credentials: 'include',
         });
-    } catch (error) {
-        console.log('update merchant kyb inquiry error', error);
-    }
+    } catch (error) {}
     return response;
 }

@@ -126,9 +126,7 @@ export function OpenRefunds(props: Props) {
                     description: error.message,
                     variant: 'destructive',
                 });
-                console.log('Approving refund error: ', error);
             } else {
-                console.log('Unexpected error', error);
             }
         }
 
@@ -164,11 +162,9 @@ export function OpenRefunds(props: Props) {
                 });
                 const statusData = await statusResponse.json();
                 if (!statusResponse.ok) {
-                    console.log('not okay');
                     throw new Error(`HTTP error! status: ${statusResponse.status}`);
                 }
                 if (statusData.refundStatus.status !== RefundStatus.Pending) {
-                    console.log('pending');
                     break;
                 }
             }
@@ -184,9 +180,7 @@ export function OpenRefunds(props: Props) {
                     description: error.message,
                     variant: 'destructive',
                 });
-                console.log('Rejecting refund error: ', error);
             } else {
-                console.log('Unexpected error', error);
             }
         }
 

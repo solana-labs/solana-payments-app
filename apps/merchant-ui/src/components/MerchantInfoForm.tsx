@@ -58,29 +58,6 @@ export function MerchantInfoForm(props: Props) {
             <div className="pb-9">
                 <TokenSelect disabled token={props.data.token} className="w-full max-w-lg" />
             </div>
-            {/* <div className="pr-8 pt-9 md:max-w-[280px]">
-        <div className="text-sm font-medium text-black">Company Logo</div>
-        <div className="text-neutral-600 text-sm">
-          Update your company logo and then choose where you want it to display.
-        </div>
-      </div>
-      <div className="grid-cols-[max-content,1fr] gap-x-8 pt-9 lg:grid">
-        {props.data.logoSrc ? (
-          <img className="w-36 mb-8" src={props.data.logoSrc} />
-        ) : (
-          <PlaceholderLogo className="w-36 mb-8" />
-        )}
-        <ImageUpload
-          className="w-full max-w-lg"
-          onChange={(imageSrc) => {
-            const newData = produce(props.data, (data) => {
-              data.logoSrc = imageSrc;
-            });
-            console.log(newData);
-            props.onChange?.(newData);
-          }}
-        />
-      </div> */}
         </div>
     );
 }

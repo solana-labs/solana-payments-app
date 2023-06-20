@@ -21,7 +21,6 @@ interface Payment {
 }
 
 function transformPayment(responseData: any): Payment[] {
-    console.log('responseData: ', responseData);
     return responseData.paymentData.data.map((item: any) => {
         return {
             orderId: item.shopifyOrder,
@@ -69,13 +68,12 @@ export const usePaymentStore = create<PaymentStore>(set => ({
                 set({
                     payments: RE.ok({
                         payments: payments,
-                        totalPages: Math.floor(data.paymentData.total / PAGE_SIZE) + 1,
+                        totalPages: Math.ceil(data.paymentData.total / PAGE_SIZE),
                     }),
                 });
                 set({ paymentCount: data.paymentData.total });
             }
         } catch (error) {
-            console.log('error: ', error);
             set({ payments: RE.failed(new Error('Failed to fetch payments')) });
         }
     },

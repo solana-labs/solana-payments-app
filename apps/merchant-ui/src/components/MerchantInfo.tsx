@@ -69,8 +69,8 @@ export function MerchantInfo(props: Props) {
         if (response && response.status === 200) {
             setAddressChanged(true);
         } else if (response && response.status !== 200) {
-            console.log('in not changed', response);
-            setAddressChanged(response?.statusText);
+            let d = await response.json();
+            setAddressChanged(d.error);
         }
         await getMerchantInfo();
         setPending(false);

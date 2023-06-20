@@ -1,20 +1,19 @@
-import { AxiosResponse } from 'axios';
-import axios from 'axios';
-import {
-    HeliusEnhancedTransactionArray,
-    parseAndValidateHeliusEnchancedTransaction,
-    HeliusEnhancedTransaction,
-} from '../models/dependencies/helius-enhanced-transaction.model.js';
-import { HeliusBalance, parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
+import axios, { AxiosResponse } from 'axios';
 import { USDC_MINT } from '../configs/tokens.config.js';
 import { DependencyError } from '../errors/dependency.error.js';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
 import {
     GetAccountInfo,
     PubkeyOwner,
     ValueDataTokenProgram,
     parseAndValidateGetAccountInfo,
 } from '../models/dependencies/get-account-info.model.js';
-import { InvalidInputError } from '../errors/invalid-input.error.js';
+import { HeliusBalance, parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
+import {
+    HeliusEnhancedTransaction,
+    HeliusEnhancedTransactionArray,
+    parseAndValidateHeliusEnchancedTransaction,
+} from '../models/dependencies/helius-enhanced-transaction.model.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -134,9 +133,7 @@ export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
         const data = accountInfo.result.value.data as ValueDataTokenProgram;
         const mint = data.parsed.info.mint;
         if (mint != USDC_MINT.toBase58()) {
-            throw new InvalidInputError(
-                'Invalid payment address input. It must be a wallet address or USDC token account address.'
-            );
+            throw new InvalidInputError('Payment address must be a public key or a USDC token account address.');
         }
     }
 
