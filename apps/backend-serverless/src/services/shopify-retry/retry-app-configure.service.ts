@@ -4,6 +4,7 @@ import { MerchantService } from '../database/merchant-service.database.service.j
 import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
 import axios from 'axios';
 import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 
 export const retryAppConfigure = async (
     appConfigureInfo: ShopifyMutationAppConfigure | null,
@@ -19,11 +20,11 @@ export const retryAppConfigure = async (
     const merchant = await merchantService.getMerchant({ id: appConfigureInfo.merchantId });
 
     if (merchant == null) {
-        throw new Error('Could not find merchant.');
+        throw new MissingExpectedDatabaseRecordError('merchant record: ' + appConfigureInfo.merchantId);
     }
 
     if (merchant.accessToken == null) {
-        throw new Error('Could not find access token.');
+        throw new MissingExpectedDatabaseRecordError('merchant access token');
     }
 
     const paymentAppConfigure = makePaymentAppConfigure(axiosInstance);
@@ -36,13 +37,12 @@ export const retryAppConfigure = async (
             merchant.accessToken
         );
 
-        validatePaymentAppConfigured(configureAppResponse);
+        validatePaymentAppConfigured(configureAppResponse, merchant);
 
         await merchantService.updateMerchant(merchant, { active: appConfigureInfo.state });
     } catch (error) {
-        // Throw an error specifically about the database, might be able to handle this differently
-        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
-        // likely not common but i will want to handle these all the same
-        throw new Error('Could not update merchant record.');
+        // i should handle database and merchant update errors underneath this
+        // can just throw error here
+        throw error;
     }
 };

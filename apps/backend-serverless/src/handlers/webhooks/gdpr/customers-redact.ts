@@ -56,6 +56,6 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

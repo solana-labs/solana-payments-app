@@ -1,25 +1,40 @@
+import { Merchant } from '@prisma/client';
+import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import * as Sentry from '@sentry/serverless';
 
-export const validatePaymentAppConfigured = (paymentAppConfiguredResponse: PaymentAppConfigureResponse) => {
+export const validatePaymentAppConfigured = (
+    paymentAppConfiguredResponse: PaymentAppConfigureResponse,
+    merchant: Merchant
+) => {
     const userErrors = paymentAppConfiguredResponse.data.paymentsAppConfigure.userErrors;
 
     if (userErrors.length > 0) {
-        // This is an issue because we shouldn't have user erros
-        // TODO: Log the user errors
-        // TODO: Throw because of user errors
-        throw new Error('User errors were returned.');
+        console.log(userErrors);
+        const error = new ShopifyResponseError('user errors found.' + JSON.stringify(userErrors));
+        Sentry.captureException(error);
     }
 
     const paymentAppConfigured = paymentAppConfiguredResponse.data.paymentsAppConfigure.paymentsAppConfiguration;
 
     if (paymentAppConfigured == null) {
-        // This is an issue because we should be receiving this back, i think, get clarity from Shopify
-        // TODO: Log this situation
-        // TODO: Throw because of no payment app configuration
-        // TODO: Figure out if no payment app configureation back is an issue
-        throw new Error('Payment app configuration is null.');
+        const error = new ShopifyResponseError('payment app configuration is null.');
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
     }
 
     const externalHandle = paymentAppConfigured.externalHandle;
-    // TODO: Check external handle
+
+    if (externalHandle == null || externalHandle !== merchant.id) {
+        const error = new ShopifyResponseError(
+            'merchant id does not match external handle. external handler: ' +
+                externalHandle +
+                ' merchant id: ' +
+                merchant.id
+        );
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
+    }
 };

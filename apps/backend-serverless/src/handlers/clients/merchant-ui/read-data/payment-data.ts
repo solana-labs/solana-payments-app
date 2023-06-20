@@ -89,6 +89,6 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

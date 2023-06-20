@@ -122,7 +122,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                 status: RefundRecordStatus.rejected,
             });
         } catch (error) {
-            // TODO: Log as a big issue with sentry. Db should not fail.
+            // CRITICAL: Send to critical database error queue
             return createErrorResponse(new DependencyError('failed to update internal record. please retry.'));
         }
 
@@ -132,6 +132,6 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

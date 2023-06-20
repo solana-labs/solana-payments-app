@@ -1,6 +1,8 @@
 import pkg from 'aws-sdk';
 import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import * as Sentry from '@sentry/serverless';
+
 const { StepFunctions } = pkg;
 
 /**
@@ -32,8 +34,11 @@ export const startExecutionOfSafteySweep = async (
         maxNumberOfExecutionAttempts
     );
 
+    // TODO: Get error out of retry
     if (attempts === maxNumberOfExecutionAttempts) {
-        // TODO: Log in sentry as critical error
-        throw new Error('Could not execute the shopify mutation step function');
+        const error = new Error('Could not execute the shopify mutation step function');
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
     }
 };

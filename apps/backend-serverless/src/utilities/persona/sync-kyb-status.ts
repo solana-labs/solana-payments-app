@@ -3,23 +3,25 @@ import { makePaymentAppConfigure } from '../../services/shopify/payment-app-conf
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { getKybState } from './get-kyb-state.js';
 import { DependencyError } from '../../errors/dependency.error.js';
+import * as Sentry from '@sentry/serverless';
+import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
 
 export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);
 
-    if (merchant.kybInquiry == null) {
-        throw new Error(`Merchant has no KYB inquiry: ${merchant.id}`);
-    }
-
-    let kybState: KybState;
-
     try {
-        kybState = await getKybState(merchant.kybInquiry);
+        if (merchant.kybInquiry == null) {
+            const noInquiryError = new ConflictingStateError('merchant has no kyn inquiry. merchant: ' + merchant.id);
+            Sentry.captureException(noInquiryError);
+            throw noInquiryError;
+        }
+        const kybState = await getKybState(merchant.kybInquiry);
+        merchant = await merchantService.updateMerchant(merchant, { kybState });
     } catch (error) {
-        throw new DependencyError(`Could not determine kyb status: ${error}`);
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
     }
-
-    merchant = await merchantService.updateMerchant(merchant, { kybState });
 
     return merchant;
 };

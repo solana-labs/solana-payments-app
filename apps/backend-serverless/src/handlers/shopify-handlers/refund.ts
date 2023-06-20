@@ -18,6 +18,7 @@ import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.se
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { create } from 'lodash';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -81,7 +82,8 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                 } else {
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         refundInitiation.amount,
-                        refundInitiation.currency
+                        refundInitiation.currency,
+                        axios
                     );
                 }
 
@@ -104,6 +106,6 @@ export const refund = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

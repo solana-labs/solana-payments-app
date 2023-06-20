@@ -49,7 +49,7 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
                 console.log(error);
                 Sentry.captureException(error);
                 failedProcessingRecords.push(processTransactionMessageBody);
-                // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now. TODO.
+                // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now.
                 continue;
             }
 
@@ -77,6 +77,6 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

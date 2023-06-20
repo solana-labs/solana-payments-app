@@ -23,7 +23,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
             safteyKeyMessage = parseAndValidateSafteyKeyMessage(event);
         } catch (error) {
             console.log(error);
-            // TODO: Log in sentry
+            Sentry.captureException(error);
             throw new Error('Could not parse and validate the saftey key message');
         }
 
@@ -31,8 +31,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
             gasKeypair = await fetchGasKeypair();
             singleUseKeypair = await fetchSingleUseKeypair(safteyKeyMessage.key);
         } catch (error) {
-            // TODO: Should we throw is back into the step functions?
-            // TODO: Log in sentry
+            Sentry.captureException(error);
             console.log(error);
             throw error;
         }
@@ -43,8 +42,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
             transaction.partialSign(gasKeypair);
         } catch (error) {
             console.log(error);
-            // TODO: Log in sentry
-            // TODO: Why can't we create, should we retry?
+            Sentry.captureException(error);
             throw error;
         }
 
@@ -52,8 +50,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
             await sendTransaction(transaction);
         } catch (error) {
             console.log(error);
-            // TODO: Log in sentry
-            // TODO: Why can't we send, should we rety?
+            Sentry.captureException(error);
             throw error;
         }
 
@@ -61,8 +58,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
             await deleteSingleUseKeypair(safteyKeyMessage.key);
         } catch (error) {
             console.log(error);
-            // TODO: Log in sentry
-            // TODO: Why can't we delete, should we retry?
+            Sentry.captureException(error);
         }
 
         return {
@@ -71,6 +67,6 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

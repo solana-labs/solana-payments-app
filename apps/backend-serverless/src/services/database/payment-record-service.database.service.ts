@@ -56,7 +56,6 @@ export type ShopIdQuery = {
     shopId: string;
 };
 
-// TODO: Better name for this type
 export type IdQuery = {
     id: string;
 };
