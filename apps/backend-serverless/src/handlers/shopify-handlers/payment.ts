@@ -4,21 +4,20 @@ import {
     ShopifyPaymentInitiation,
     parseAndValidateShopifyPaymentInitiation,
 } from '../../models/shopify/process-payment-request.model.js';
-import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import {
+    ShopifyRequestHeaders,
+    parseAndValidateShopifyRequestHeaders,
+} from '../../models/shopify/shopify-request-headers.model.js';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -42,8 +41,16 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('request body'));
         }
 
-        // TODO: Add validation for shopify-shop-domain header
-        const shop = event.headers['shopify-shop-domain'];
+        let shopifyHeader: ShopifyRequestHeaders;
+        try {
+            shopifyHeader = parseAndValidateShopifyRequestHeaders(event.headers);
+        } catch (error) {
+            console.log(error);
+            Sentry.captureException(error);
+            return createErrorResponse(error);
+        }
+
+        const shop = shopifyHeader['shopify-shop-domain'];
 
         if (shop == null) {
             return createErrorResponse(new InvalidInputError('shopify domain header'));
@@ -88,7 +95,8 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 } else {
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         paymentInitiation.amount,
-                        paymentInitiation.currency
+                        paymentInitiation.currency,
+                        axios
                     );
                 }
 
@@ -112,6 +120,6 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

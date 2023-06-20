@@ -30,6 +30,10 @@ import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { create } from 'lodash';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { DependencyError } from '../../errors/dependency.error.js';
+import {
+    TransactionRequestBody,
+    parseAndValidateTransactionRequestBody,
+} from '../../models/transaction-requests/transaction-request-body.model.js';
 
 const prisma = new PrismaClient();
 
@@ -57,11 +61,23 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
 
         const body = JSON.parse(event.body);
 
-        // TODO: Parse this like everything else
-        const account = body['account'] as string | null;
+        let transactionRequestBody: TransactionRequestBody;
+
+        try {
+            transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
+        } catch (error) {
+            return createErrorResponse(error);
+        }
+        const account = transactionRequestBody.account;
 
         if (account == null) {
             return createErrorResponse(new InvalidInputError('account is missing from body'));
+        }
+
+        try {
+            new web3.PublicKey(account);
+        } catch (error) {
+            return createErrorResponse(new InvalidInputError('account is not a valid public key'));
         }
 
         try {
@@ -134,17 +150,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        // I'm not sure we should do this for merchant refunds
-        // We don't need to check with TRM for test transactions
-        // We probably want to but TODO on what the output should be
-        if (refundRecord.test == false) {
-            try {
-                await trmService.screenAddress(account);
-            } catch (error) {
-                return createErrorResponse(error);
-            }
-        }
-
         try {
             transaction = encodeTransaction(refundTransaction.transaction);
         } catch (error) {
@@ -169,6 +174,18 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         const signatureBuffer = transactionSignature;
 
         const signatureString = encodeBufferToBase58(signatureBuffer);
+
+        // We're gonna return bad for transactions here but we should probably just log it and handle this with the merchant in the backend
+        if (refundRecord.test == false) {
+            try {
+                await trmService.screenAddress(account);
+            } catch (error) {
+                Sentry.captureException(new Error('Bad address for merchant: ' + merchant.id + ' ' + account));
+                return createErrorResponse(
+                    new InvalidInputError('wallet address in not able to be used. contact the solana pay team.')
+                );
+            }
+        }
 
         try {
             await transactionRecordService.createTransactionRecord(
@@ -200,6 +217,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

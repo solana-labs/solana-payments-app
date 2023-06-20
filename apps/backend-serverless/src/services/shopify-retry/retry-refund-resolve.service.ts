@@ -45,15 +45,13 @@ export const retryRefundResolve = async (
     validateRefundSessionResolved(resolveRefundResponse);
 
     try {
-        // TODO: Make sure this is how I want to update refunds in this situation
         await refundRecordService.updateRefundRecord(refundRecord, {
             status: RefundRecordStatus.completed,
             completedAt: new Date(),
         });
     } catch (error) {
-        // Throw an error specifically about the database, might be able to handle this differently
-        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
-        // likely not common but i will want to handle these all the same
-        throw new Error('Could not update refund record.');
+        // CRITICAL: Add to critical message queue
+        // We should be logging to sentry underneath so we don't need to here
+        throw error;
     }
 };

@@ -52,15 +52,13 @@ export const retryPaymentReject = async (
     validatePaymentSessionRejected(rejectPaymentResponse);
 
     try {
-        // TODO: We havne't implemented rejected payments yet, need to get this working then when i handle all of that
         await paymentRecordService.updatePaymentRecord(paymentRecord, {
             status: PaymentRecordStatus.rejected,
             completedAt: new Date(),
         });
-    } catch {
-        // Throw an error specifically about the database, might be able to handle this differently
-        // TODO: There is a theme of situations where i get valid calls back from shopify but then can't update my database
-        // likely not common but i will want to handle these all the same
-        throw new Error('Could not update payment record.');
+    } catch (error) {
+        // CRITICAL: Add to critical message queue
+        // We should be logging with sentry underneath
+        throw error;
     }
 };

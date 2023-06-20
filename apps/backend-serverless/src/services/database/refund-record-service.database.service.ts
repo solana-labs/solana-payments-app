@@ -273,8 +273,8 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         merchant: Merchant,
         usdcAmount: number
     ): Promise<RefundRecord> {
-        try {
-            return await this.prisma.refundRecord.create({
+        return await prismaErrorHandler(
+            this.prisma.refundRecord.create({
                 data: {
                     id: id,
                     status: RefundRecordStatus.pending,
@@ -290,10 +290,8 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                     requestedAt: new Date(),
                     completedAt: null,
                 },
-            });
-        } catch {
-            throw new Error('Failed to create refund record.');
-        }
+            })
+        );
     }
 
     async updateRefundRecord(refundRecord: RefundRecord, update: RefundRecordUpdate): Promise<RefundRecord> {

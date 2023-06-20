@@ -22,7 +22,6 @@ import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
-import { PubkeyType, getPubkeyType } from '../../../../services/helius.service.js';
 
 const prisma = new PrismaClient();
 
@@ -119,16 +118,18 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
             try {
                 merchant = await syncKybState(merchant, prisma);
-            } catch (error) {
-                Sentry.captureException(error);
+            } catch {
+                // it's unlikely that this will throw but we should catch and record all errors underneath this
+                // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
+                // we don't wana disrupt the flow, they'll just get blocked elsewhere
             }
 
             if (merchant.kybState === KybState.finished) {
                 try {
                     merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
-                } catch (error) {
-                    // TODO: This would be worse, if it throws trying to do app configure, figure out what has to happen here
-                    Sentry.captureException(error);
+                } catch {
+                    // It's possible for this to throw but we should capture and log alll errors underneath this
+                    // It's better if we just return the merchant data here and handle the issue elsewhere
                 }
             }
         }
@@ -163,6 +164,6 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

@@ -1,6 +1,7 @@
 import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
-
+import { USDC_MINT } from '../configs/tokens.config.js';
+import * as Sentry from '@sentry/serverless';
 /**
  *
  * @param transaction the transaction to inspect
@@ -11,7 +12,6 @@ import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-
 export const findPayingWalletFromTransaction = async (transaction: web3.Transaction): Promise<web3.PublicKey> => {
     // First thing to do is validate it's a valid transaction
 
-    console.log('M8');
     const transferInstruction = transaction.instructions[transaction.instructions.length - 2];
 
     console.log(transferInstruction.programId.toBase58());
@@ -20,14 +20,9 @@ export const findPayingWalletFromTransaction = async (transaction: web3.Transact
         throw new Error('Invalid transaction');
     }
 
-    console.log(transferInstruction);
-
     const decodedInstruction = decodeTransferCheckedInstruction(transferInstruction);
 
-    console.log(decodedInstruction);
     const owner = decodedInstruction.keys.owner;
-
-    // Verify this is a pda relationship for usdc ??? maybe not needed ???
 
     return owner.pubkey;
 };
@@ -36,16 +31,24 @@ export const findPayingTokenAddressFromTransaction = async (transaction: web3.Tr
     const transferInstruction = transaction.instructions[transaction.instructions.length - 2];
 
     if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
-        throw new Error('Invalid transaction');
+        const error = new Error('Invalid transaction.' + transferInstruction.programId.toBase58());
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
     }
-
-    console.log(transferInstruction);
 
     const decodedInstruction = decodeTransferCheckedInstruction(transferInstruction);
 
-    console.log(decodedInstruction);
     const source = decodedInstruction.keys.source;
 
-    // TODO: Verify this is a pda relationship for usdc ??? maybe not needed ???
+    const mint = decodedInstruction.keys.mint;
+
+    if (mint.pubkey.toBase58() != USDC_MINT.toBase58()) {
+        const error = new Error('Discovered payment is not in USDC. Can not process.');
+        console.log(error);
+        Sentry.captureException(error);
+        throw error;
+    }
+
     return source.pubkey;
 };

@@ -31,11 +31,10 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         try {
             shopifyMutationRetry = parseAndValidateShopifyMutationRetry(event);
         } catch (error) {
-            // Throwing should cause the step function to be retried. However, we should
-            // manually view the error becuase it shouldn't work next titme either.
-            // TODO: Log more data with the capture because the data here should be good to parse
+            // CRITICAL: Add to the critical error queue
+            console.log(error);
             Sentry.captureException(error);
-            throw new InvalidInputError('shopify mutation retry body'); // TODO: Critical Error
+            throw new InvalidInputError('shopify mutation retry body');
         }
 
         try {
@@ -88,10 +87,9 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                     nextStep
                 );
             } catch (error) {
-                // TODO: Handle this with some kind of redunndancy
-                // I need to figure out what to do in the case of SQS failures
-                // The odds are low but never zero!
-                throw new Error('SQS Failure'); // TODO: Critical Error
+                // CRITICAL: Add to critical database
+                // We should log the error underneath so no need to do it here
+                throw error;
             }
         }
 
@@ -101,6 +99,6 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

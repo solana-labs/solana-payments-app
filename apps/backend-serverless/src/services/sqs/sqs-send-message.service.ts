@@ -13,6 +13,8 @@ import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
 } from '../../models/shopify-graphql-responses/shared.model.js';
+import * as Sentry from '@sentry/serverless';
+import { DependencyError } from '../../errors/dependency.error.js';
 const { SQS } = pkg;
 
 /*
@@ -131,8 +133,11 @@ export const sendRetryMessage = async (
     }, maxNumberOfSendMessageAttempts);
 
     if (attempts === maxNumberOfSendMessageAttempts) {
-        // TODO: Log in sentry as critical error
-        throw new Error('Could not send SQS message');
+        // TODO: Get the error out of send message
+        const sqsError = new DependencyError('unable to send sqs: ' + retryType);
+        console.log(sqsError);
+        Sentry.captureException(sqsError);
+        throw sqsError;
     }
 };
 

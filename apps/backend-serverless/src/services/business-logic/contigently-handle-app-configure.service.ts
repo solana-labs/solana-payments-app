@@ -4,6 +4,7 @@ import axios from 'axios';
 import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service.js';
+import * as Sentry from '@sentry/serverless';
 
 export const contingentlyHandleAppConfigure = async (
     merchant: Merchant,
@@ -29,18 +30,16 @@ export const contingentlyHandleAppConfigure = async (
                 merchant.accessToken
             );
 
-            validatePaymentAppConfigured(appConfigureResponse);
+            validatePaymentAppConfigured(appConfigureResponse, merchant);
 
             merchant = await merchantService.updateMerchant(merchant, { active: canBeActive });
         } catch (error) {
             try {
                 await sendAppConfigureRetryMessage(merchant.id, canBeActive);
             } catch (error) {
-                // If this fails we should log a critical error but it's not the end of the world, it just means that we have an issue sending retry messages
-                // We should eventually have some kind of redundant system here but for now we can just send the user back to the merchant ui
-                // in a state that is logged in but not fully set up with Shopify
-                // TODO: Handle this better
-                // TODO: Log critical error
+                console.log(error);
+                Sentry.captureException(error);
+                // CRITICAL: Add to critical database
             }
         }
     }

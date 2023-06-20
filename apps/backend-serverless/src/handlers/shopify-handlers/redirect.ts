@@ -105,24 +105,26 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
                 email: adminDataResponse.data.shop.email,
             });
         } catch (error) {
+            console.log(error);
             Sentry.captureException(error);
-            // I don't think we would want to fail anything here, at best we can retry it
-            // TODO: Figure out failure strategy, we might want to add this to a retry queue
+            // TODO: Add to retry queue or add more places that this happens like we do for the app configure and persona
         }
 
         try {
             await contingentlyHandleAppConfigure(merchant, axios, prisma);
-        } catch (error) {
-            Sentry.captureException(error);
-            // TODO: Figure out what we can do here but I think it's ok for the merchant to move on
+        } catch {
+            // We should give the merchant other opportunties for app configure to run so moving on is okay here
+            // We also log all the errors underneath so no need here
         }
 
         let merchantAuthCookieHeader: string | null = null;
         try {
             merchantAuthCookieHeader = createMechantAuthCookieHeader(merchant.id);
         } catch (error) {
-            // This would mean that the merchant won't be logged in, we could probably send them to the merchant UI with an error that they need to log in again
-            // TODO: Add data to the merchant ui request that they need to log in again
+            // This would mean that the merchant won't be logged in
+            // Gonna return an error here becuase failing silently would be bad
+            // The only reason this should fail is if we deploy without a jwt secret key
+            return createErrorResponse(error);
         }
 
         let redirectHeaders = {
@@ -141,6 +143,6 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

@@ -47,6 +47,10 @@ import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { create } from 'lodash';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { DependencyError } from '../../errors/dependency.error.js';
+import {
+    TransactionRequestBody,
+    parseAndValidateTransactionRequestBody,
+} from '../../models/transaction-requests/transaction-request-body.model.js';
 
 const prisma = new PrismaClient();
 
@@ -71,13 +75,25 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('request body'));
         }
 
-        const body = JSON.parse(event.body);
+        let transactionRequestBody: TransactionRequestBody;
 
-        // TODO: Parse the body like everything else
-        const account = body['account'] as string | null;
+        try {
+            transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
+        } catch (error) {
+            return createErrorResponse(error);
+        }
+        const account = transactionRequestBody.account;
 
         if (account == null) {
             return createErrorResponse(new InvalidInputError('missing account in body'));
+        }
+
+        if (account != null) {
+            try {
+                const accountPubkey = new web3.PublicKey(account);
+            } catch (error) {
+                return createErrorResponse(new InvalidInputError('invalid account in body. needs to be a pubkey'));
+            }
         }
 
         try {
@@ -157,8 +173,9 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
         } catch (error) {
+            console.log(error);
             Sentry.captureException(error);
-            // TODO: Could we retry this?
+            // CRITIAL: This should work, but losing the rent here isn't the end of the world but we want to know
         }
 
         try {
@@ -210,22 +227,23 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                             status: PaymentRecordStatus.rejected,
                             redirectUrl: paymentSessionData.redirectUrl,
                             completedAt: new Date(),
-                            rejectionReason: PaymentRecordRejectionReason.customerSafetyReason, // Todo, make this more dynamic once we have location
+                            rejectionReason: PaymentRecordRejectionReason.customerSafetyReason,
                         });
                     } catch (error) {
-                        // TODO: Handle the database update failing here
-                        // TODO: Should we retry this? We should probably retry this? idk
+                        // CRITICAL: Add to database failure queue
+                        // We will log this error underneath so no need to do this here, shopify already knows what is good and big
+                        // We don't want to throw though becuase throwing would make us retry with shopify and im not sure thats how we want to handle this
                     }
                 } catch (error) {
                     try {
                         await sendPaymentRejectRetryMessage(paymentRecord.id, rejectionReason);
-                    } catch (error) {
-                        // TODO: This would be an odd error to hit, sending messages to the queue shouldn't fail. It will be good to log this
-                        // with sentry and figure out why it happened. Also good to figure out some kind of redundancy here. Also good to
-                        // build in a way to manually intervene here if needed.
+                    } catch {
+                        // This is bad but we should be logging this error underneath so no need to do it here
+                        // CRITICAL: Add this to the critical error database
                     }
                 }
 
+                // CRITICAL: Add this to the failed message queue
                 await websocketService.sendErrorDetailsMessage({
                     errorTitle: 'Could not process payment.',
                     errorDetail:
@@ -245,7 +263,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         transaction.partialSign(gasKeypair);
-        // transaction.partialSign(singleUseKeypair);
 
         try {
             verifyTransactionWithRecord(paymentRecord, transaction, true);
@@ -295,7 +312,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     },
     {
         captureTimeoutWarning: false,
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );
 

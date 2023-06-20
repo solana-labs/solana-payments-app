@@ -47,8 +47,7 @@ export const processTransaction = async (
     // TODO: If we're gonna time out, we should requeue this
     while (rpcTransaction == null) {
         try {
-            // TODO: play around with lowering this time
-            await delay(3000);
+            await delay(2000);
             rpcTransaction = await fetchTransaction(signature);
         } catch (error) {
             // it's okay if this throws, we don't expect the transaction to be there on the first try. TODO: Check why it failed
@@ -85,10 +84,10 @@ export const processTransaction = async (
         return;
     }
 
-    // TODO: Candidate for retry on database failures
+    // CRITICAL: Add this to the retry queue
     await recordService.updateRecordToCompleted(record.id, resolveResponse);
 
-    // TODO: Make this use generic and the record service
+    // REFACTOR: Make this use generic and the record service
     if (transactionRecord.type == 'payment' && websocketService != null) {
         const redirectUrl = (resolveResponse as PaymentResolveResponse).redirectUrl;
 

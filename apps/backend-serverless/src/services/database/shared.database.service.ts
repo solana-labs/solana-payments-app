@@ -27,7 +27,6 @@ export const prismaErrorHandler = async <T>(promise: Promise<T>): Promise<T> => 
         }
 
         Sentry.captureException(error);
-        // i'm not sure if throwing is good here since sentry will rethrow after capturing but probably no side effects
         throw error;
     }
 };

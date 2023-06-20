@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
 import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -9,7 +10,7 @@ Sentry.AWSLambda.init({
 
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
-        // TODO: Don't throw in the loop
+        // Theses queues are set t
         for (const record of event.Records) {
             console.log(record);
             const attributes = record.messageAttributes;
@@ -40,9 +41,11 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
                     throw new Error('Couldnt execute shopify mutation retry step function');
                 }
             } else {
-                // We have a messageType that we don't know how to handle
-                // TODO: Log and flag as a critical error with sentry
-                throw new Error('Unknown message type');
+                // CRITICAL: Can we get notified of this
+                const unknownMessageError = new InvalidInputError('unknown message type ' + messageType);
+                console.log(unknownMessageError);
+                Sentry.captureException(unknownMessageError);
+                throw unknownMessageError;
             }
         }
 
@@ -54,6 +57,6 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
         };
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );

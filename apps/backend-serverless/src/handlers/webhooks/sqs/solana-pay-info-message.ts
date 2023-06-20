@@ -50,7 +50,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
             } catch (error) {
                 console.log(error);
                 Sentry.captureException(error);
-                // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now. TODO.
+                // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now.
                 continue;
             }
 
@@ -94,7 +94,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
         return successfulMessage();
     },
     {
-        rethrowAfterCapture: true,
+        rethrowAfterCapture: false,
     }
 );
 

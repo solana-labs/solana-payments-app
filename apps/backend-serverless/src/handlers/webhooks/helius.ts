@@ -24,7 +24,6 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
-// TODO: If we only get one transaction, we should just process it right away. We should only send it to the queue if we get multiple transactions.
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
