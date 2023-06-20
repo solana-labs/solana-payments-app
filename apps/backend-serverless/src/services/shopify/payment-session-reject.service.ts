@@ -6,6 +6,8 @@ import {
 } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { PaymentRecordRejectionReason } from '@prisma/client';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import * as Sentry from '@sentry/node';
 
 // TODO: Update these to marketing strings
 export const paymentSessionRejectionDisplayMessages = (
@@ -84,13 +86,24 @@ export const makePaymentSessionReject =
                 data: JSON.stringify(graphqlQuery),
             });
 
-            paymentSessionRejectResponse = parseAndValidateRejectPaymentResponse(response.data);
-        } catch (error) {
-            if (error instanceof Error) {
-                throw error;
-            } else {
-                throw new Error('Error rejecting payment session.');
+            switch (response.status) {
+                case 200:
+                case 201:
+                case 202:
+                case 204:
+                case 205:
+                    paymentSessionRejectResponse = parseAndValidateRejectPaymentResponse(response.data);
+                    break;
+                default:
+                    const shopifyResponseError = new ShopifyResponseError(
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                    );
+                    throw shopifyResponseError;
             }
+        } catch (error) {
+            console.log(error);
+            Sentry.captureException(error);
+            throw error;
         }
 
         return paymentSessionRejectResponse;

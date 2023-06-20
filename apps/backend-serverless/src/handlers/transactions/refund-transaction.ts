@@ -157,7 +157,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         transaction.partialSign(gasKeypair);
-        transaction.partialSign(singleUseKeypair);
 
         const transactionSignature = transaction.signature;
 
