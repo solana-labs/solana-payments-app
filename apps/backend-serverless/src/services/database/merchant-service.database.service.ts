@@ -73,6 +73,8 @@ export class MerchantService {
     }
 
     async updateMerchantWalletAddress(merchant: Merchant, inputPubkeyString: string): Promise<Merchant> {
+        console.log('updating');
+
         const accountType = await getPubkeyType(inputPubkeyString);
         const inputPubkey = new web3.PublicKey(inputPubkeyString);
 

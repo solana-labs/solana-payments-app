@@ -11,8 +11,10 @@ import { DependencyError } from '../errors/dependency.error.js';
 import {
     GetAccountInfo,
     PubkeyOwner,
+    ValueDataTokenProgram,
     parseAndValidateGetAccountInfo,
 } from '../models/dependencies/get-account-info.model.js';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -29,7 +31,7 @@ export const fetchEnhancedTransaction = async (transactionId: string): Promise<H
     try {
         response = await axios.post(heliusTransactionApiUrl, { transactions: [transactionId] });
     } catch {
-        throw new Error('Failed to fetch transaction from Helius.');
+        throw new Error('Failed to fetch transaction from Helius');
     }
 
     try {
@@ -124,8 +126,21 @@ export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> =>
 
 export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
     const accountInfo = await getAccountInfo(pubkey);
+    console.log('testing here');
     const owner = accountInfo.result.value.owner;
-    return getPubkeyTypeForProgramOwner(owner);
+    const pubkeyType = getPubkeyTypeForProgramOwner(owner);
+    console.log(pubkeyType);
+    if (pubkeyType == PubkeyType.token) {
+        const data = accountInfo.result.value.data as ValueDataTokenProgram;
+        const mint = data.parsed.info.mint;
+        if (mint != USDC_MINT.toBase58()) {
+            throw new InvalidInputError(
+                'Invalid payment address input. It must be a wallet address or USDC token account address.'
+            );
+        }
+    }
+
+    return pubkeyType;
 };
 
 export enum PubkeyType {
@@ -140,6 +155,8 @@ export const getPubkeyTypeForProgramOwner = (owner: PubkeyOwner): PubkeyType => 
         case PubkeyOwner.tokenProgram:
             return PubkeyType.token;
         default:
-            throw new Error('Unknown owner');
+            throw new InvalidInputError(
+                'Invalid payment address input. You must enter a wallet address or USDC token account address.'
+            );
     }
 };
