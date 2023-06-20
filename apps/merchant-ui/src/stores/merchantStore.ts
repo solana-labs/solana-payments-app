@@ -46,17 +46,13 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
-export async function updateMerchantAddress(walletAddress: string | null | undefined) {
-    if (!walletAddress) {
-        return;
-    }
-
+export async function updateMerchantAddress(walletAddress: string): Promise<Response | undefined> {
     const headers = {
         'Content-Type': 'application/json',
     };
 
     try {
-        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+        let response = await fetch(API_ENDPOINTS.updateMerchant, {
             method: 'PUT',
             headers,
             body: JSON.stringify({
@@ -64,8 +60,10 @@ export async function updateMerchantAddress(walletAddress: string | null | undef
             }),
             credentials: 'include',
         });
+        return response;
     } catch (error) {
         console.log('update merchant address error', error);
+        return undefined;
     }
 }
 
@@ -74,8 +72,10 @@ export async function updateMerchantTos() {
         'Content-Type': 'application/json',
     };
 
+    let response;
+
     try {
-        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+        response = await fetch(API_ENDPOINTS.updateMerchant, {
             method: 'PUT',
             headers,
             body: JSON.stringify({
@@ -86,6 +86,7 @@ export async function updateMerchantTos() {
     } catch (error) {
         console.log('update merchant tos error', error);
     }
+    return response;
 }
 
 export async function updateMerchantKybInquiry(kybInquiry: string) {
@@ -93,8 +94,10 @@ export async function updateMerchantKybInquiry(kybInquiry: string) {
         'Content-Type': 'application/json',
     };
 
+    let response;
+
     try {
-        const response = await fetch(API_ENDPOINTS.updateMerchant, {
+        response = await fetch(API_ENDPOINTS.updateMerchant, {
             headers,
             method: 'PUT',
             body: JSON.stringify({ kybInquiry }),
@@ -103,4 +106,5 @@ export async function updateMerchantKybInquiry(kybInquiry: string) {
     } catch (error) {
         console.log('update merchant kyb inquiry error', error);
     }
+    return response;
 }

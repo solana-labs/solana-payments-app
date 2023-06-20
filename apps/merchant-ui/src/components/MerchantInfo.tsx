@@ -28,9 +28,10 @@ export function MerchantInfo(props: Props) {
         token: Token.USDC,
     });
     const [pending, setPending] = useState(false);
-    const [addressChanged, setAddressChanged] = useState(false);
+    const [addressChanged, setAddressChanged] = useState<boolean | string | null>(null);
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+
     useEffect(() => {
         if (RE.isOk(merchantInfo)) {
             setFormState({
@@ -43,6 +44,7 @@ export function MerchantInfo(props: Props) {
             });
         }
     }, [merchantInfo]);
+
     function shouldDisable() {
         const { walletAddress } = formState;
         let paymentAddress = RE.isOk(merchantInfo) && merchantInfo.data.paymentAddress;
@@ -56,6 +58,24 @@ export function MerchantInfo(props: Props) {
         }
         return false;
     }
+
+    async function handleMerchantAddressClick() {
+        if (!formState.walletAddress) {
+            return;
+        }
+        setPending(true);
+
+        let response = await updateMerchantAddress(formState.walletAddress?.toString());
+        if (response && response.status === 200) {
+            setAddressChanged(true);
+        } else if (response && response.status !== 200) {
+            console.log('in not changed', response);
+            setAddressChanged(response?.statusText);
+        }
+        await getMerchantInfo();
+        setPending(false);
+    }
+
     if (RE.isFailed(merchantInfo)) {
         return (
             <DefaultLayoutContent className={props.className}>
@@ -68,6 +88,7 @@ export function MerchantInfo(props: Props) {
             </DefaultLayoutContent>
         );
     }
+
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle>Merchant Info</DefaultLayoutScreenTitle>
@@ -132,17 +153,7 @@ export function MerchantInfo(props: Props) {
             </div>
             <footer className="flex items-center justify-end space-x-3 pt-4">
                 <Button.Secondary>Cancel</Button.Secondary>
-                <Button.Primary
-                    onClick={async () => {
-                        setPending(true);
-                        await updateMerchantAddress(formState.walletAddress?.toString());
-                        await getMerchantInfo();
-                        setAddressChanged(true);
-                        setPending(false);
-                    }}
-                    pending={pending}
-                    disabled={shouldDisable()}
-                >
+                <Button.Primary onClick={handleMerchantAddressClick} pending={pending} disabled={shouldDisable()}>
                     Save
                 </Button.Primary>
             </footer>

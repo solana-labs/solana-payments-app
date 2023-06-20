@@ -10,7 +10,7 @@ interface Props {
     className?: string;
     defaultValue?: null | PublicKey;
     onChange?(value: null | PublicKey): void;
-    addressChanged?: boolean;
+    addressChanged?: boolean | string | null;
     setAddressChanged?(value: boolean): void;
 }
 
@@ -118,8 +118,11 @@ export function AddressInput(props: Props) {
                 />
             </div>
             {addressIsInvalid && <div className="mt-2 text-xs text-red-500">Not a valid wallet address.</div>}
-            {props.addressChanged && !addressIsInvalid && (
+            {props.addressChanged && props.addressChanged === true && (
                 <p className="text-emerald-700 text-xs">Wallet updated successfully</p>
+            )}
+            {props.addressChanged && typeof props.addressChanged === 'string' && (
+                <p className="text-red-500 text-xs">{props.addressChanged}</p>
             )}
         </div>
     );
