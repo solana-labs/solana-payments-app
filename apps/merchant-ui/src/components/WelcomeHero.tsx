@@ -9,7 +9,7 @@ export function WelcomeHero(props: Props) {
     return (
         <Image
             className={twMerge(props.className)}
-            src="/solana_pay_hero.png"
+            src="/solana_pay_hero.svg"
             alt="Welcome to Solana Pay"
             width={400}
             height={1000}
