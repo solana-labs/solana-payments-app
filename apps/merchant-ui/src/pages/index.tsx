@@ -18,7 +18,6 @@ export type BlockedProps = {
 };
 
 export default function Home({ isBlocked, country }: BlockedProps) {
-    console.log('home props', isBlocked, country);
     return (
         <>
             <Head>

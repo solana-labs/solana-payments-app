@@ -68,7 +68,6 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
             if (response.status !== 200) {
                 set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
             }
-            console.log('refunds: ', Math.ceil((data.refundData.total + 1) / PAGE_SIZE));
             const refunds = transformRefund<OpenRefund>(data);
 
             set({
@@ -79,7 +78,6 @@ export const useOpenRefundStore = create<OpenRefundStore>(set => ({
             });
             set({ refundCount: data.refundData.total });
         } catch (error) {
-            console.log('error: ', error);
             set({ openRefunds: RE.failed(new Error('Failed to fetch open refunds')) });
         }
     },

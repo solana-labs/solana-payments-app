@@ -49,7 +49,6 @@ export function GettingStartedAddWallet(props: Props) {
             setPending(false);
             router.push('/getting-started');
         } else if (response && response.status !== 200) {
-            console.log('in not changed', response);
             await getMerchantInfo();
             setPending(false);
             setAddressChanged(response?.statusText);

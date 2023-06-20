@@ -70,7 +70,6 @@ export function MerchantInfo(props: Props) {
             setAddressChanged(true);
         } else if (response && response.status !== 200) {
             let d = await response.json();
-            console.log('in not changed', d.error);
             setAddressChanged(d.error);
         }
         await getMerchantInfo();
