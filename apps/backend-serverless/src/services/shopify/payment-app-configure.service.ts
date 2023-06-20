@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { parseAndValidatePaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import {
+    PaymentAppConfigureResponse,
+    parseAndValidatePaymentAppConfigureResponse,
+} from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import * as Sentry from '@sentry/node';
+import { parseAndValidateRejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
@@ -31,14 +37,35 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
             },
         };
 
-        const response = await axiosInstance({
-            url: shopifyGraphQLEndpoint(shop),
-            method: 'POST',
-            headers: headers,
-            data: JSON.stringify(graphqlQuery),
-        });
+        let paymentAppConfigureResponse: PaymentAppConfigureResponse;
 
-        const paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
+        try {
+            const response = await axiosInstance({
+                url: shopifyGraphQLEndpoint(shop),
+                method: 'POST',
+                headers: headers,
+                data: JSON.stringify(graphqlQuery),
+            });
+
+            switch (response.status) {
+                case 200:
+                case 201:
+                case 202:
+                case 204:
+                case 205:
+                    paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
+                    break;
+                default:
+                    const shopifyResponseError = new ShopifyResponseError(
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                    );
+                    throw shopifyResponseError;
+            }
+        } catch (error) {
+            console.log(error);
+            Sentry.captureException(error);
+            throw error;
+        }
 
         return paymentAppConfigureResponse;
     };

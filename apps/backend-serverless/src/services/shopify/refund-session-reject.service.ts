@@ -4,6 +4,8 @@ import {
     RejectRefundResponse,
     parseAndValidateRejectRefundResponse,
 } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import * as Sentry from '@sentry/node';
 
 const refundSessionRejectMutation = `mutation RefundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
     refundSessionReject(id: $id, reason: $reason) {
@@ -55,20 +57,35 @@ export const makeRefundSessionReject =
             },
         };
 
-        const response = await axiosInstance({
-            url: shopifyGraphQLEndpoint(shop),
-            method: 'POST',
-            headers: headers,
-            data: JSON.stringify(graphqlQuery),
-        });
-
-        if (response.status != 200) {
-            throw new Error('Could not reject refund session with Shopify');
-        }
-
         let rejectRefundResponse: RejectRefundResponse;
 
-        rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
+        try {
+            const response = await axiosInstance({
+                url: shopifyGraphQLEndpoint(shop),
+                method: 'POST',
+                headers: headers,
+                data: JSON.stringify(graphqlQuery),
+            });
+
+            switch (response.status) {
+                case 200:
+                case 201:
+                case 202:
+                case 204:
+                case 205:
+                    rejectRefundResponse = parseAndValidateRejectRefundResponse(response.data);
+                    break;
+                default:
+                    const shopifyResponseError = new ShopifyResponseError(
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                    );
+                    throw shopifyResponseError;
+            }
+        } catch (error) {
+            console.log(error);
+            Sentry.captureException(error);
+            throw error;
+        }
 
         return rejectRefundResponse;
     };
