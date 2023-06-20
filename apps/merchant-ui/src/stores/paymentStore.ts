@@ -68,7 +68,7 @@ export const usePaymentStore = create<PaymentStore>(set => ({
                 set({
                     payments: RE.ok({
                         payments: payments,
-                        totalPages: Math.floor(data.paymentData.total / PAGE_SIZE) + 1,
+                        totalPages: Math.ceil(data.paymentData.total / PAGE_SIZE),
                     }),
                 });
                 set({ paymentCount: data.paymentData.total });

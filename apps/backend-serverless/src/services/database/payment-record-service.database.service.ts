@@ -1,22 +1,22 @@
 import {
-    PrismaClient,
-    PaymentRecord,
     Merchant,
-    PaymentRecordStatus,
+    PaymentRecord,
     PaymentRecordRejectionReason,
-    WebsocketSession,
+    PaymentRecordStatus,
+    PrismaClient,
     TransactionRecord,
+    WebsocketSession,
 } from '@prisma/client';
+import axios from 'axios';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
-import { prismaErrorHandler } from './shared.database.service.js';
-import { PaymentResolveResponse, RecordService } from './record-service.database.service.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
-import axios from 'axios';
-import { MerchantService } from './merchant-service.database.service.js';
 import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
-import { WebSocketService, WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
+import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
+import { MerchantService } from './merchant-service.database.service.js';
+import { PaymentResolveResponse, RecordService } from './record-service.database.service.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -250,7 +250,20 @@ export class PaymentRecordService
     async getTotalPaymentRecordsForMerchant(query: PaymentRecordQuery): Promise<number> {
         return prismaErrorHandler(
             this.prisma.paymentRecord.count({
-                where: query,
+                where: {
+                    ...query,
+                    OR: [
+                        {
+                            status: 'paid',
+                        },
+                        {
+                            status: 'completed',
+                        },
+                        {
+                            status: 'rejected',
+                        },
+                    ],
+                },
             })
         );
     }
