@@ -1,5 +1,5 @@
 import * as RE from '@/lib/Result';
-import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
+import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -42,7 +42,7 @@ export function GettingStartedAddWallet(props: Props) {
         }
 
         setPending(true);
-        let response = await updateMerchantAddress(walletAddress.toString());
+        let response = await updateMerchant('paymentAddress', walletAddress.toString());
         if (response && response.status === 200) {
             setAddressChanged(true);
             await getMerchantInfo();

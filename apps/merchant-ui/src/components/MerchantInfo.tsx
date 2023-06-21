@@ -1,5 +1,5 @@
 import * as RE from '@/lib/Result';
-import { updateMerchantAddress, useMerchantStore } from '@/stores/merchantStore';
+import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -65,7 +65,7 @@ export function MerchantInfo(props: Props) {
         }
         setPending(true);
 
-        let response = await updateMerchantAddress(formState.walletAddress?.toString());
+        let response = await updateMerchant('paymentAddress', formState.walletAddress?.toString());
         if (response && response.status === 200) {
             setAddressChanged(true);
         } else if (response && response.status !== 200) {

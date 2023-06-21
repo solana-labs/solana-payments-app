@@ -1,6 +1,6 @@
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
-import { updateMerchantKybInquiry, useMerchantStore } from '@/stores/merchantStore';
+import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
@@ -69,7 +69,7 @@ export function KYBButton(props: Props) {
                             frameWidth={PERSONA_WIDTH}
                             frameHeight={PERSONA_HEIGHT}
                             onComplete={async ({ inquiryId, status, fields }) => {
-                                await updateMerchantKybInquiry(inquiryId);
+                                await updateMerchant('kybInquiry', inquiryId);
                                 await getMerchantInfo();
                                 props.onVerified?.();
                                 setOpen(false);
