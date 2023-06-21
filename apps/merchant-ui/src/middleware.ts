@@ -67,8 +67,7 @@ export function middleware(request: NextRequest) {
 
     console.log('what about a normal console');
     console.log('middleware request', request);
-    // const isBlocked = isBlockedGeo(request);
-    const isBlocked = false;
+    const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
     console.log('the geo', geo);
 
