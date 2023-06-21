@@ -1,15 +1,11 @@
 import * as Button from '@/components/Button';
 import { DefaultLayout } from '@/components/DefaultLayout';
-import { isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
 import Head from 'next/head';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 export default function Custom404() {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
-    if (isOk(merchantInfo) && !merchantInfo.data.completed) {
-        Router.push('/getting-started');
-    }
     const router = useRouter();
     return (
         <>
