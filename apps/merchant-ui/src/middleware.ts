@@ -1,8 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'US'];
-const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
+const comprehensivelySanctionedCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
+const ukraineRegions = ['crimea', 'donetsk', 'luhansk'];
+const ofacSanctionedCountries = ['BA', 'BY', 'MM', 'CF', 'CD', 'ET', 'HK', 'IQ', 'LB', 'LY', 'SD', 'VE', 'YE', 'ZW'];
+const otherCountries = ['AF', 'BY', 'MM', 'CF', 'CN', 'CI', 'CU', 'CD', 'CY', 'ER', 'HT'];
+const otherCountries2 = ['IR', 'IQ', 'LB', 'LR', 'LY', 'KP', 'SO', 'SS', 'LK', 'SD', 'SY', 'VE', 'VN', 'ZW'];
 
 const isBlockedGeo = (request: NextRequest): boolean => {
     if (process.env.NODE_ENV === 'development') {
@@ -17,12 +20,29 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const country = geo.country;
+    const region = geo.region;
 
     if (country == null) {
         return true;
     }
 
-    if (hardBlockCountries.includes(country)) {
+    if (comprehensivelySanctionedCountries.includes(country)) {
+        return true;
+    }
+
+    if (country === 'UA' && ukraineRegions.includes(region.toLowerCase())) {
+        return true;
+    }
+
+    if (ofacSanctionedCountries.includes(country)) {
+        return true;
+    }
+
+    if (otherCountries.includes(country)) {
+        return true;
+    }
+
+    if (otherCountries2.includes(country)) {
         return true;
     }
 
@@ -35,7 +55,8 @@ export function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith('/_next/static/') ||
         request.nextUrl.pathname.startsWith('/_next/image/') ||
         request.nextUrl.pathname.startsWith('/favicon.ico') ||
-        request.nextUrl.pathname.endsWith('.png')
+        request.nextUrl.pathname.endsWith('.png') ||
+        request.nextUrl.pathname.endsWith('.svg')
     ) {
         return NextResponse.next();
     }
