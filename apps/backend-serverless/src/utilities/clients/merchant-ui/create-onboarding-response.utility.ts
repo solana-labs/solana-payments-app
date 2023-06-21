@@ -17,7 +17,12 @@ export const createOnboardingResponse = (merchant: Merchant) => {
     const dismissCompleted = merchant.dismissCompleted;
 
     return {
-        completed: acceptedTermsAndConditions && acceptedPrivacyPolicy && addedWallet && kybState == 'finished',
+        completed:
+            acceptedTermsAndConditions &&
+            acceptedPrivacyPolicy &&
+            dismissCompleted &&
+            addedWallet &&
+            kybState == 'finished',
         acceptedTermsAndConditions: acceptedTermsAndConditions,
         acceptedPrivacyPolicy: acceptedPrivacyPolicy,
         addedWallet: addedWallet,
