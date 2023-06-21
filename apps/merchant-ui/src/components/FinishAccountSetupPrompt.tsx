@@ -2,7 +2,7 @@ import { AcceptPolicy } from '@/AcceptModals';
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
-import { PrivacyPolicyText, TosText } from '@/lib/policies';
+import { privacyPolicySections, tosSections } from '@/lib/policies';
 import { updateMerchantPrivacy, updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
@@ -148,14 +148,12 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => (
-                                  <AcceptPolicy title="TOS" TextComponent={TosText} updatePolicy={updateMerchantTos} />
-                              )
+                            ? () => <AcceptPolicy title="TOS" sections={tosSections} updatePolicy={updateMerchantTos} />
                             : step === RemainingSetupItem.AcceptPrivacy
                             ? () => (
                                   <AcceptPolicy
                                       title="Privacy Policy"
-                                      TextComponent={PrivacyPolicyText}
+                                      sections={privacyPolicySections}
                                       updatePolicy={updateMerchantPrivacy}
                                   />
                               )
