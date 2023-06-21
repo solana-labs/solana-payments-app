@@ -129,7 +129,7 @@ export const paymentSessionSchema = object().shape({
 });
 
 export const userErrorsSchema = object().shape({
-    field: array().of(string()).optional(), // The path to the input field that caused the error.
+    field: array().of(string()).nullable(), // The path to the input field that caused the error.
     message: string().required(), // The error message.
 });
 

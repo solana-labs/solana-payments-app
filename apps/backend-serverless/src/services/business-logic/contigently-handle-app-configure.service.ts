@@ -21,11 +21,12 @@ export const contingentlyHandleAppConfigure = async (
 
     const canBeActive = addedWallet && acceptedTermsAndConditions && kybIsFinished;
 
-    if (merchant.accessToken != null) {
+    console.log('can be active: ' + canBeActive);
+    if (merchant.accessToken != null && canBeActive) {
         try {
             const appConfigureResponse = await paymentAppConfigure(
-                merchant.id,
-                canBeActive,
+                merchant.id.slice(0, 10),
+                true,
                 merchant.shop,
                 merchant.accessToken
             );

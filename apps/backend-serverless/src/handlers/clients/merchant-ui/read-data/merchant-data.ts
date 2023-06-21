@@ -58,14 +58,14 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
                 // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
                 // we don't wana disrupt the flow, they'll just get blocked elsewhere
             }
+        }
 
-            if (merchant.kybState === KybState.finished) {
-                try {
-                    merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
-                } catch {
-                    // It's possible for this to throw but we should capture and log alll errors underneath this
-                    // It's better if we just return the merchant data here and handle the issue elsewhere
-                }
+        if (merchant.kybState === KybState.finished) {
+            try {
+                merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
+            } catch {
+                // It's possible for this to throw but we should capture and log alll errors underneath this
+                // It's better if we just return the merchant data here and handle the issue elsewhere
             }
         }
 
