@@ -12,6 +12,7 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const geo = request.geo;
+    console.log('geo logs', geo);
 
     if (geo == null) {
         return true;
