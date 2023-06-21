@@ -1,3 +1,4 @@
+import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { updateMerchantKybInquiry, useMerchantStore } from '@/stores/merchantStore';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -31,11 +32,15 @@ export function KYBButton(props: Props) {
             <div className="text-emerald-700 text-sm font-semibold mr-2">Approved</div>
             <CheckmarkCircle className="h-5 fill-emerald-700 w-5" />
         </div>
-    ) : !!kybState ? (
+    ) : kybState === 'pending' ? (
         <div className="flex items-center bg-indigo-100 px-4 py-2.5 rounded-lg">
             <div className="text-indigo-700 text-sm font-semibold mr-2">Pending verification</div>
         </div>
-    ) : (
+    ) : kybState === 'failed' ? (
+        <div className="flex items-center bg-red-100 px-4 py-2.5 rounded-lg">
+            <div className="text-red-700 text-sm font-semibold mr-2">Verification failed</div>
+        </div>
+    ) : kybState === 'incomplete' ? (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
                 <Primary className={props.className}>Start</Primary>
@@ -74,5 +79,7 @@ export function KYBButton(props: Props) {
                 </Dialog.Overlay>
             </Dialog.Portal>
         </Dialog.Root>
+    ) : (
+        <LoadingDots />
     );
 }

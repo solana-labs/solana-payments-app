@@ -1,10 +1,10 @@
-import { PrismaClient, Merchant, KybState } from '@prisma/client';
-import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
-import { prismaErrorHandler } from './shared.database.service.js';
-import { PubkeyType, getPubkeyType } from '../helius.service.js';
-import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
-import { USDC_MINT } from '../../configs/tokens.config.js';
+import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
+import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
+import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
+import { PubkeyType, getPubkeyType } from '../helius.service.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type ShopQuery = {
     shop: string;
@@ -17,10 +17,11 @@ export type IdQuery = {
 export type MerchantQuery = ShopQuery | IdQuery;
 
 export type MerchantUpdate = {
-    paymentyAddress: string;
+    paymentAddress: string;
     name: string;
     email: string;
     acceptedTermsAndConditions: boolean;
+    acceptedPrivacyPolicy: boolean;
     dismissCompleted: boolean;
     accessToken: string;
     scopes: string;

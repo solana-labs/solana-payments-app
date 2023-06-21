@@ -39,6 +39,7 @@ enum RefundRecordStatus {
 }
 
 enum KybState {
+  incomplete
   pending
   failed
   finished
@@ -57,10 +58,11 @@ model Merchant {
   walletAddress  String?
   tokenAddress   String?
   kybInquiry     String?
-  kybState       KybState        @default(pending)
+  kybState       KybState        @default(incomplete)
   active         Boolean         @default(false)
 
   acceptedTermsAndConditions Boolean @default(false)
+  acceptedPrivacyPolicy      Boolean @default(false)
   dismissCompleted           Boolean @default(false)
 }
 

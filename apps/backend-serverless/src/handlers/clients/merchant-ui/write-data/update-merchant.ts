@@ -2,6 +2,8 @@ import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
+import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import {
     MerchantUpdateRequest,
@@ -20,8 +22,6 @@ import {
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
-import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -62,6 +62,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             merchantUpdateRequest.name == null &&
             merchantUpdateRequest.paymentAddress == null &&
             merchantUpdateRequest.acceptedTermsAndConditions == null &&
+            merchantUpdateRequest.acceptedPrivacyPolicy == null &&
             merchantUpdateRequest.dismissCompleted == null &&
             merchantUpdateRequest.kybInquiry == null
         ) {
@@ -88,6 +89,10 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
 
         if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
             merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
+        }
+
+        if (merchantUpdateRequest.acceptedPrivacyPolicy != null) {
+            merchantUpdateQuery['acceptedPrivacyPolicy'] = merchantUpdateRequest.acceptedPrivacyPolicy;
         }
 
         if (merchantUpdateRequest.dismissCompleted != null) {

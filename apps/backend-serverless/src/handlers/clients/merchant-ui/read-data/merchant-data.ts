@@ -2,6 +2,7 @@ import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
@@ -16,7 +17,6 @@ import {
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 

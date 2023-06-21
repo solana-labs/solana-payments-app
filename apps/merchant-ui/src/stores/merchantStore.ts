@@ -7,9 +7,10 @@ interface MerchantInfo {
     name: string;
     paymentAddress: string;
     acceptedTermsAndConditions: boolean;
+    acceptedPrivacyPolicy: boolean;
     dismissCompleted: boolean;
     completed: boolean;
-    kybState?: 'pending' | 'failed' | 'finished';
+    kybState?: 'pending' | 'failed' | 'finished' | 'incomplete';
     kybInquiry?: string;
 }
 
@@ -33,7 +34,8 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     shop: merchantJson.merchantData.shop,
                     name: merchantJson.merchantData.name,
                     paymentAddress: merchantJson.merchantData.paymentAddress,
-                    acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTerms,
+                    acceptedTermsAndConditions: merchantJson.merchantData.onboarding.acceptedTermsAndConditions,
+                    acceptedPrivacyPolicy: merchantJson.merchantData.onboarding.acceptedPrivacyPolicy,
                     dismissCompleted: merchantJson.merchantData.onboarding.dismissCompleted,
                     completed: merchantJson.merchantData.onboarding.completed,
                     kybInquiry: merchantJson.merchantData.onboarding.kybInquiry,
@@ -79,6 +81,26 @@ export async function updateMerchantTos() {
             headers,
             body: JSON.stringify({
                 acceptedTermsAndConditions: 'true',
+            }),
+            credentials: 'include',
+        });
+    } catch (error) {}
+    return response;
+}
+
+export async function updateMerchantPrivacy() {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    let response;
+
+    try {
+        response = await fetch(API_ENDPOINTS.updateMerchant, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({
+                acceptedPrivacyPolicy: 'true',
             }),
             credentials: 'include',
         });

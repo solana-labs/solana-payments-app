@@ -1,9 +1,10 @@
-import AcceptTOS from '@/AcceptTOS';
+import { AcceptPrivacyPolicy, AcceptTOS } from '@/AcceptModals';
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
+import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import Store from '@carbon/icons-react/lib/Store';
 import Wallet from '@carbon/icons-react/lib/Wallet';
 import Link from 'next/link';
@@ -17,19 +18,23 @@ import { KYBButton } from './KYBButton';
 export enum RemainingSetupItem {
     VerifyBusiness,
     AcceptTerms,
+    AcceptPrivacy,
     AddWallet,
 }
 
 const STEPS = [
     RemainingSetupItem.VerifyBusiness,
     RemainingSetupItem.AddWallet,
+    RemainingSetupItem.AcceptPrivacy,
     RemainingSetupItem.AcceptTerms,
 ] as const;
 
 function getItemTitle(item: RemainingSetupItem) {
     switch (item) {
         case RemainingSetupItem.AcceptTerms:
-            return 'Accept Terms of Service and Privacy Policy';
+            return 'Accept Terms of Service';
+        case RemainingSetupItem.AcceptPrivacy:
+            return 'Accept Privacy Policy';
         case RemainingSetupItem.AddWallet:
             return 'Add a wallet';
         case RemainingSetupItem.VerifyBusiness:
@@ -41,6 +46,8 @@ function getItemImage(item: RemainingSetupItem) {
     switch (item) {
         case RemainingSetupItem.AcceptTerms:
             return <Policy />;
+        case RemainingSetupItem.AcceptPrivacy:
+            return <RuleDataQuality />;
         case RemainingSetupItem.AddWallet:
             return <Wallet />;
         case RemainingSetupItem.VerifyBusiness:
@@ -61,6 +68,7 @@ export function FinishAccountSetupPrompt(props: Props) {
 
     const [remainingSetupItems, setRemainingSetupItems] = useState<RemainingSetupItem[]>([
         RemainingSetupItem.AcceptTerms,
+        RemainingSetupItem.AcceptPrivacy,
         RemainingSetupItem.AddWallet,
         RemainingSetupItem.VerifyBusiness,
     ]);
@@ -83,6 +91,8 @@ export function FinishAccountSetupPrompt(props: Props) {
         switch (step) {
             case RemainingSetupItem.AcceptTerms:
                 return merchantInfo.data.acceptedTermsAndConditions === true;
+            case RemainingSetupItem.AcceptPrivacy:
+                return merchantInfo.data.acceptedPrivacyPolicy === true;
             case RemainingSetupItem.AddWallet:
                 return merchantInfo.data.paymentAddress !== null;
             case RemainingSetupItem.VerifyBusiness:
@@ -138,6 +148,8 @@ export function FinishAccountSetupPrompt(props: Props) {
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
                             ? () => <AcceptTOS />
+                            : step === RemainingSetupItem.AcceptPrivacy
+                            ? () => <AcceptPrivacyPolicy />
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
                     }
                     onStart={() => props.onBeginSetupItem?.(step)}
