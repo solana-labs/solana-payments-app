@@ -3,7 +3,7 @@ import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
 import { privacyPolicySections, tosSections } from '@/lib/policies';
-import { updateMerchantPrivacy, updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import Store from '@carbon/icons-react/lib/Store';
@@ -127,7 +127,14 @@ export function FinishAccountSetupPrompt(props: Props) {
                 <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
                 <div className="text-black">Your store now accepts Solana and USDC payments.</div>
                 <Link href="/payments">
-                    <Primary onClick={getMerchantInfo}>Go to Portal</Primary>
+                    <Primary
+                        onClick={() => {
+                            updateMerchant('dismissCompleted', 'true');
+                            getMerchantInfo();
+                        }}
+                    >
+                        Go to Portal
+                    </Primary>
                 </Link>
             </div>
         );
@@ -148,13 +155,19 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => <AcceptPolicy title="TOS" sections={tosSections} updatePolicy={updateMerchantTos} />
+                            ? () => (
+                                  <AcceptPolicy
+                                      title="TOS"
+                                      sections={tosSections}
+                                      updatePolicy={() => updateMerchant('acceptedTermsAndConditions', 'true')}
+                                  />
+                              )
                             : step === RemainingSetupItem.AcceptPrivacy
                             ? () => (
                                   <AcceptPolicy
                                       title="Privacy Policy"
                                       sections={privacyPolicySections}
-                                      updatePolicy={updateMerchantPrivacy}
+                                      updatePolicy={() => updateMerchant('acceptedPrivacyPolicy', 'true')}
                                   />
                               )
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>

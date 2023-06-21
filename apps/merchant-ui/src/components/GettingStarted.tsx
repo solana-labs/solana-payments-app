@@ -1,6 +1,7 @@
 import { LoadingDots } from '@/components/LoadingDots';
 import { isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
+import Router from 'next/router';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { FinishAccountSetupPrompt } from './FinishAccountSetupPrompt';
@@ -18,6 +19,10 @@ export function GettingStarted(props: Props) {
                 <LoadingDots />
             </div>
         );
+    }
+
+    if (isOk(merchantInfo) && merchantInfo.data.completed) {
+        Router.push('/merchant');
     }
 
     return (

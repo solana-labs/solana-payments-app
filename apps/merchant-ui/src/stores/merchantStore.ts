@@ -48,80 +48,22 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
-export async function updateMerchantAddress(walletAddress: string): Promise<Response | undefined> {
+export async function updateMerchant(field: string, value: string) {
     const headers = {
         'Content-Type': 'application/json',
     };
 
+    let response;
+
     try {
-        let response = await fetch(API_ENDPOINTS.updateMerchant, {
+        response = await fetch(API_ENDPOINTS.updateMerchant, {
             method: 'PUT',
             headers,
-            body: JSON.stringify({
-                paymentAddress: walletAddress,
-            }),
+            body: JSON.stringify({ [field]: value }),
             credentials: 'include',
         });
-        return response;
     } catch (error) {
-        return undefined;
+        console.error('Failed to update merchant data', error);
     }
-}
-
-export async function updateMerchantTos() {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    let response;
-
-    try {
-        response = await fetch(API_ENDPOINTS.updateMerchant, {
-            method: 'PUT',
-            headers,
-            body: JSON.stringify({
-                acceptedTermsAndConditions: 'true',
-            }),
-            credentials: 'include',
-        });
-    } catch (error) {}
-    return response;
-}
-
-export async function updateMerchantPrivacy() {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    let response;
-
-    try {
-        response = await fetch(API_ENDPOINTS.updateMerchant, {
-            method: 'PUT',
-            headers,
-            body: JSON.stringify({
-                acceptedPrivacyPolicy: 'true',
-            }),
-            credentials: 'include',
-        });
-    } catch (error) {}
-    return response;
-}
-
-export async function updateMerchantKybInquiry(kybInquiry: string) {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    let response;
-
-    try {
-        response = await fetch(API_ENDPOINTS.updateMerchant, {
-            headers,
-            method: 'PUT',
-            body: JSON.stringify({ kybInquiry }),
-            credentials: 'include',
-        });
-    } catch (error) {}
     return response;
 }
