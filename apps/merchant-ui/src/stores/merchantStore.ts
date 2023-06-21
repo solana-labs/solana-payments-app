@@ -12,6 +12,7 @@ interface MerchantInfo {
     completed: boolean;
     kybState?: 'pending' | 'failed' | 'finished' | 'incomplete';
     kybInquiry?: string;
+    completedRedirect: string;
 }
 
 type MerchantStore = {
@@ -40,6 +41,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     completed: merchantJson.merchantData.onboarding.completed,
                     kybInquiry: merchantJson.merchantData.onboarding.kybInquiry,
                     kybState: merchantJson.merchantData.onboarding.kybState,
+                    completedRedirect: merchantJson.merchantData.onboarding.completedRedirect,
                 }),
             });
         } catch (error) {

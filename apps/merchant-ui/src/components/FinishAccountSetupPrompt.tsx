@@ -8,8 +8,7 @@ import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import Store from '@carbon/icons-react/lib/Store';
 import Wallet from '@carbon/icons-react/lib/Wallet';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Primary } from './Button';
@@ -88,7 +87,6 @@ export function FinishAccountSetupPrompt(props: Props) {
         if (!isOk(merchantInfo)) {
             return false;
         }
-
         switch (step) {
             case RemainingSetupItem.AcceptTerms:
                 return merchantInfo.data.acceptedTermsAndConditions === true;
@@ -110,34 +108,40 @@ export function FinishAccountSetupPrompt(props: Props) {
     }
 
     if (remainingSetupItems.length === 0) {
-        return (
-            <div
-                className={twMerge(
-                    'bg-slate-50',
-                    'py-5',
-                    'px-4',
-                    'text-center',
-                    'flex',
-                    'space-y-2',
-                    'flex-col',
-                    'items-center',
-                    props.className
-                )}
-            >
-                <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
-                <div className="text-black">Your store now accepts Solana and USDC payments.</div>
-                <Link href="/payments">
-                    <Primary
-                        onClick={() => {
-                            updateMerchant('dismissCompleted', 'true');
-                            getMerchantInfo();
-                        }}
-                    >
-                        Go to Portal
-                    </Primary>
-                </Link>
-            </div>
-        );
+        if (merchantInfo.data.completed) {
+            Router.push('/merchant');
+        } else {
+            return (
+                <div
+                    className={twMerge(
+                        'bg-slate-50',
+                        'py-5',
+                        'px-4',
+                        'text-center',
+                        'flex',
+                        'space-y-2',
+                        'flex-col',
+                        'items-center',
+                        props.className
+                    )}
+                >
+                    <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>
+                    <div className="text-black">
+                        Your store now accepts Solana and USDC payments. Please enable payments in your Shopify settings
+                    </div>
+                    <a href={merchantInfo.data.completedRedirect}>
+                        <Primary
+                            onClick={() => {
+                                updateMerchant('dismissCompleted', 'true');
+                                getMerchantInfo();
+                            }}
+                        >
+                            Go Shopify Admin
+                        </Primary>
+                    </a>
+                </div>
+            );
+        }
     }
 
     return (
