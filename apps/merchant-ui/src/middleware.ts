@@ -1,8 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const comprehensivelySanctionedCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
-const ukraineRegions = ['crimea', 'donetsk', 'luhansk'];
+const comprehensivelySanctionedCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'UA'];
 const ofacSanctionedCountries = ['BA', 'BY', 'MM', 'CF', 'CD', 'ET', 'HK', 'IQ', 'LB', 'LY', 'SD', 'VE', 'YE', 'ZW'];
 const otherCountries = ['AF', 'BY', 'MM', 'CF', 'CN', 'CI', 'CU', 'CD', 'CY', 'ER', 'HT'];
 const otherCountries2 = ['IR', 'IQ', 'LB', 'LR', 'LY', 'KP', 'SO', 'SS', 'LK', 'SD', 'SY', 'VE', 'VN', 'ZW'];
@@ -13,14 +12,12 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const geo = request.geo;
-    console.log('the geo', geo);
 
     if (geo == null) {
         return true;
     }
 
     const country = geo.country;
-    // const region = geo.region;
 
     if (country == null) {
         return true;
@@ -30,13 +27,9 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
-    if (country === 'US' && geo.city === 'New York') {
+    if (country === 'US' && geo.region === 'NY') {
         return true;
     }
-
-    // if (country === 'UA' && ukraineRegions.includes(region.toLowerCase())) {
-    //     return true;
-    // }
 
     if (ofacSanctionedCountries.includes(country)) {
         return true;
@@ -65,11 +58,8 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    console.log('what about a normal console');
-    console.log('middleware request', request);
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
-    console.log('the geo', geo);
 
     if (geo) {
         request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');

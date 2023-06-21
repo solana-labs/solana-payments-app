@@ -1,17 +1,15 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { bool } from 'yup';
-
-// The country to block from accessing the secret page
-const BLOCKED_COUNTRY = 'US';
+import { NextResponse } from 'next/server';
 
 // Trigger this middleware to run on the `/secret-page` route
 export const config = {
     matcher: '/',
 };
 
-const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
-const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
+const comprehensivelySanctionedCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'UA'];
+const ofacSanctionedCountries = ['BA', 'BY', 'MM', 'CF', 'CD', 'ET', 'HK', 'IQ', 'LB', 'LY', 'SD', 'VE', 'YE', 'ZW'];
+const otherCountries = ['AF', 'BY', 'MM', 'CF', 'CN', 'CI', 'CU', 'CD', 'CY', 'ER', 'HT'];
+const otherCountries2 = ['IR', 'IQ', 'LB', 'LR', 'LY', 'KP', 'SO', 'SS', 'LK', 'SD', 'SY', 'VE', 'VN', 'ZW'];
 
 const isBlockedGeo = (request: NextRequest): boolean => {
     if (process.env.NODE_ENV === 'development') {
@@ -30,7 +28,23 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
-    if (hardBlockCountries.includes(country)) {
+    if (comprehensivelySanctionedCountries.includes(country)) {
+        return true;
+    }
+
+    if (country === 'US' && geo.region === 'NY') {
+        return true;
+    }
+
+    if (ofacSanctionedCountries.includes(country)) {
+        return true;
+    }
+
+    if (otherCountries.includes(country)) {
+        return true;
+    }
+
+    if (otherCountries2.includes(country)) {
         return true;
     }
 
