@@ -30,6 +30,10 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
+    if (country === 'US' && geo.city === 'New York') {
+        return true;
+    }
+
     // if (country === 'UA' && ukraineRegions.includes(region.toLowerCase())) {
     //     return true;
     // }
