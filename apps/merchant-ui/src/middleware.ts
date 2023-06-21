@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
+const hardBlockCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'US'];
 const hardBlockUkraine = ['crimea', 'donetsk', 'luhansk'];
 
 const isBlockedGeo = (request: NextRequest): boolean => {
