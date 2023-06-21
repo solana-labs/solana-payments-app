@@ -42,14 +42,12 @@ provider:
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
-    # LOCAL_GAS: ${env:LOCAL_GAS}
     HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
     HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
     WEBSOCKET_URL: ${env:WEBSOCKET_URL}
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
-    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
@@ -356,7 +354,7 @@ stepFunctions:
           States: 
             wait_using_seconds: 
               Type: Wait
-              Seconds: 10
+              Seconds: 240
               Next: sweep_saftey
             sweep_saftey: 
               Type: Task

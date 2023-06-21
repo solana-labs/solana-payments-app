@@ -24,13 +24,19 @@ export const convertAmountAndCurrencyToUsdcSize = async (
         const response: AxiosResponse = await axiosInstance.get(`${COIN_GECKO_API_BASE_URL}/api/v3/simple/price`, {
             params,
         });
+
+        console.log(response.data);
+
         if (response.status === 200) {
             const usdcPriceInGivenCurrency = response.data[COIN_GECKO_USDC_ID][currency.toLowerCase()] as number;
             return givenAmount / usdcPriceInGivenCurrency;
         } else {
+            console.log(response.status);
+            console.log(response.data);
             throw new DependencyError('coin gecko');
         }
     } catch (error) {
+        console.log(error);
         throw new DependencyError('coin gecko');
     }
 };
