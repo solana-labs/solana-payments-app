@@ -10,6 +10,8 @@ export interface OnboardingResponse {
 }
 
 export const createOnboardingResponse = (merchant: Merchant) => {
+    const clientId = process.env.SHOPIFY_CLIENT_ID;
+
     const acceptedTermsAndConditions = merchant.acceptedTermsAndConditions;
     const acceptedPrivacyPolicy = merchant.acceptedPrivacyPolicy;
     const addedWallet = merchant.walletAddress != null || merchant.tokenAddress != null;
@@ -28,5 +30,6 @@ export const createOnboardingResponse = (merchant: Merchant) => {
         addedWallet: addedWallet,
         dismissedCompleted: dismissCompleted,
         kybState: kybState,
+        completedRedirect: `https://${merchant.shop}.myshopify.com/services/payments_partners/gateways/${clientId}/settings`,
     };
 };
