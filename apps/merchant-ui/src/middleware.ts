@@ -20,7 +20,7 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const country = geo.country;
-    const region = geo.region;
+    // const region = geo.region;
 
     if (country == null) {
         return true;
