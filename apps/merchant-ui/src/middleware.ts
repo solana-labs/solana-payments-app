@@ -27,9 +27,9 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
-    if (country === 'US' && geo.region === 'NY') {
-        return true;
-    }
+    // if (country === 'US' && geo.region === 'NY') {
+    //     return true;
+    // }
 
     if (ofacSanctionedCountries.includes(country)) {
         return true;
