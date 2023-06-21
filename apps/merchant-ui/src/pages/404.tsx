@@ -1,11 +1,9 @@
 import * as Button from '@/components/Button';
 import { DefaultLayout } from '@/components/DefaultLayout';
-import { useMerchantStore } from '@/stores/merchantStore';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 export default function Custom404() {
-    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const router = useRouter();
     return (
         <>
