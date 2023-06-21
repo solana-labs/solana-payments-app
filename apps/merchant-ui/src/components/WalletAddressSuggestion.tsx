@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
+import { twMerge } from 'tailwind-merge';
 
 import { Info } from './icons/Info';
 
@@ -13,7 +13,7 @@ export function WalletAddressSuggestion(props: Props) {
             <div className="flex items-center space-x-2.5">
                 <Info className="fill-slate-900 h-5 w-5" />
                 <div className="text-xs text-black font-medium pr-2.5">
-                    Make sure this wallet address meets the following criteria:
+                    Make sure this wallet address is one of the following:
                 </div>
             </div>
             <div className="pl-8 mt-2 text-xs text-neutral-600">
