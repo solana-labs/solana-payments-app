@@ -1,37 +1,17 @@
 import * as Button from '@/components/Button';
-import { updateMerchantPrivacy, updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import { useMerchantStore } from '@/stores/merchantStore';
 import Close from '@carbon/icons-react/lib/Close';
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const TosText = () => {
-    return (
-        <div className="text-justify p-4 bg-white rounded-lg text-sm leading-6">
-            <h2 className="font-bold text-3xl mb-2">Terms of Service</h2>
-            <p>TEMPORARY TERMS</p>
-            <p className="mt-4">These are some services</p>
-        </div>
-    );
-};
-
-const PrivacyPolicyText = () => {
-    return (
-        <div className="text-justify p-4 bg-white rounded-lg text-sm leading-6">
-            <h2 className="font-bold text-3xl mb-2">Privacy Policy</h2>
-            <p>TEMPORARY Privacy</p>
-            <p className="mt-4">These are some Privacy policies</p>
-        </div>
-    );
-};
-
-function AcceptPolicy({
+export function AcceptPolicy({
     title,
-    TextComponent,
+    sections,
     updatePolicy,
 }: {
     title: string;
-    TextComponent: () => JSX.Element;
+    sections: Array<{ title: string; paragraphs: string[] }>;
     updatePolicy: () => Promise<Response | undefined>;
 }) {
     const [open, setOpen] = useState(false);
@@ -86,7 +66,21 @@ function AcceptPolicy({
                         'justify-between'
                     )}
                 >
-                    <TextComponent />
+                    <div className="m-16">
+                        <h2 className="font-bold text-3xl mb-10">{title}</h2>
+                        <div className="text-justify bg-white rounded-lg text-sm leading-6">
+                            {sections.map((section, index) => (
+                                <React.Fragment key={index}>
+                                    <h3 className="font-semibold text-2xl">{section.title}</h3>
+                                    {section.paragraphs.map((paragraph, i) => (
+                                        <p className={i === 0 ? '' : 'mt-4'} key={i}>
+                                            {paragraph}
+                                        </p>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
                     <Dialog.Close>
                         <button className="absolute right-2 top-2 p-2">
                             <Close size={20} />
@@ -98,15 +92,5 @@ function AcceptPolicy({
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
-    );
-}
-
-export function AcceptTOS() {
-    return <AcceptPolicy title="TOS" TextComponent={TosText} updatePolicy={updateMerchantTos} />;
-}
-
-export function AcceptPrivacyPolicy() {
-    return (
-        <AcceptPolicy title="Privacy Policy" TextComponent={PrivacyPolicyText} updatePolicy={updateMerchantPrivacy} />
     );
 }
