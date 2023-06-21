@@ -47,6 +47,7 @@ provider:
     WEBSOCKET_URL: ${env:WEBSOCKET_URL}
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
+    SHOPIFY_API_KEY: ${env:SHOPIFY_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
