@@ -62,7 +62,7 @@ model Merchant {
   active         Boolean         @default(false)
 
   acceptedTermsAndConditions Boolean @default(false)
-  // acceptedPrivacyPolicy Boolean @default(false)
+  acceptedPrivacyPolicy      Boolean @default(false)
   dismissCompleted           Boolean @default(false)
 }
 
