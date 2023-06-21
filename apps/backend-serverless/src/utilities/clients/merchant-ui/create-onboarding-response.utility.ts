@@ -18,6 +18,11 @@ export const createOnboardingResponse = (merchant: Merchant) => {
     const kybState = merchant.kybState;
     const dismissCompleted = merchant.dismissCompleted;
 
+    const ur = `https://${merchant.shop}.myshopify.com/services/payments_partners/gateways/${clientId}/settings`;
+    const quick = 'https://google.com';
+
+    console.log('the redirect link', merchant.shop, clientId, ur);
+
     return {
         completed:
             acceptedTermsAndConditions &&
@@ -30,6 +35,6 @@ export const createOnboardingResponse = (merchant: Merchant) => {
         addedWallet: addedWallet,
         dismissedCompleted: dismissCompleted,
         kybState: kybState,
-        completedRedirect: `https://${merchant.shop}.myshopify.com/services/payments_partners/gateways/${clientId}/settings`,
+        completedRedirect: quick,
     };
 };
