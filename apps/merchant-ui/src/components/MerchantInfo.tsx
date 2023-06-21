@@ -11,20 +11,23 @@ import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 import { Input } from './Input';
 import { Token, TokenSelect } from './TokenSelect';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
+
 interface FormData {
     name: string;
-    logoSrc?: string;
-    walletAddress?: null | PublicKey;
+    logoSrc: string;
+    walletAddress: string;
     token: Token;
 }
+
 interface Props {
     className?: string;
 }
+
 export function MerchantInfo(props: Props) {
     const [formState, setFormState] = useState<FormData>({
         name: '',
         logoSrc: '',
-        walletAddress: null,
+        walletAddress: '',
         token: Token.USDC,
     });
     const [pending, setPending] = useState(false);
@@ -37,26 +40,30 @@ export function MerchantInfo(props: Props) {
             setFormState({
                 name: merchantInfo.data.name,
                 logoSrc: 'a',
-                walletAddress: merchantInfo.data.paymentAddress
-                    ? new PublicKey(merchantInfo.data.paymentAddress)
-                    : null,
+                walletAddress: merchantInfo.data.paymentAddress ? merchantInfo.data.paymentAddress : '',
                 token: Token.USDC,
             });
         }
     }, [merchantInfo]);
 
+    function notChanged() {
+        if (!RE.isOk(merchantInfo)) {
+            return false;
+        }
+
+        return formState.walletAddress.toString() === merchantInfo.data.paymentAddress;
+    }
+
     function shouldDisable() {
-        const { walletAddress } = formState;
-        let paymentAddress = RE.isOk(merchantInfo) && merchantInfo.data.paymentAddress;
-        if (!walletAddress || walletAddress.toString() === paymentAddress) {
-            return true;
+        if (!RE.isOk(merchantInfo)) {
+            return false;
         }
         try {
-            new PublicKey(walletAddress);
+            new PublicKey(formState.walletAddress);
+            return false;
         } catch {
             return true;
         }
-        return false;
     }
 
     async function handleMerchantAddressClick() {
@@ -65,7 +72,7 @@ export function MerchantInfo(props: Props) {
         }
         setPending(true);
 
-        let response = await updateMerchant('paymentAddress', formState.walletAddress?.toString());
+        let response = await updateMerchant('paymentAddress', formState.walletAddress);
         if (response && response.status === 200) {
             setAddressChanged(true);
         } else if (response && response.status !== 200) {
@@ -111,15 +118,16 @@ export function MerchantInfo(props: Props) {
                 <div className="flex justify-end">
                     <AddressInput
                         className="w-full max-w-lg"
+                        value={formState.walletAddress}
                         onChange={wallet =>
                             setFormState(cur => ({
                                 ...cur,
-                                walletAddress: wallet ? new PublicKey(wallet) : null,
+                                walletAddress: wallet,
                             }))
                         }
-                        defaultValue={formState.walletAddress}
                         addressChanged={addressChanged}
                         setAddressChanged={setAddressChanged}
+                        addressIsInvalid={shouldDisable()}
                     />
                 </div>
                 <div className="my-6 border-b border-gray-200 col-span-2" />
@@ -144,7 +152,11 @@ export function MerchantInfo(props: Props) {
             </div>
             <footer className="flex items-center justify-end space-x-3 pt-4">
                 <Button.Secondary>Cancel</Button.Secondary>
-                <Button.Primary onClick={handleMerchantAddressClick} pending={pending} disabled={shouldDisable()}>
+                <Button.Primary
+                    onClick={handleMerchantAddressClick}
+                    pending={pending}
+                    disabled={notChanged() || shouldDisable()}
+                >
                     Save
                 </Button.Primary>
             </footer>

@@ -1,4 +1,3 @@
-import * as RE from '@/lib/Result';
 import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
@@ -17,16 +16,16 @@ interface Props {
 export function GettingStartedAddWallet(props: Props) {
     const router = useRouter();
 
-    const [walletAddress, setWalletAddress] = useState<null | PublicKey>(null);
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+
+    const [walletAddress, setWalletAddress] = useState<string>('');
     const [addressChanged, setAddressChanged] = useState<boolean | string | null>(null);
     const [pending, setPending] = useState(false);
-    const merchantInfo = useMerchantStore(state => state.merchantInfo);
 
     function shouldDisable(): boolean {
-        let paymentAddress = RE.isOk(merchantInfo) && merchantInfo.data.paymentAddress;
-        if (!walletAddress || walletAddress.toString() === paymentAddress) {
-            return true;
+        if (walletAddress === '') {
+            return false;
         }
         try {
             new PublicKey(walletAddress);
@@ -42,16 +41,16 @@ export function GettingStartedAddWallet(props: Props) {
         }
 
         setPending(true);
-        let response = await updateMerchant('paymentAddress', walletAddress.toString());
+        let response = await updateMerchant('paymentAddress', walletAddress);
         if (response && response.status === 200) {
             setAddressChanged(true);
             await getMerchantInfo();
             setPending(false);
             router.push('/getting-started');
         } else if (response && response.status !== 200) {
-            await getMerchantInfo();
+            let d = await response.json();
+            setAddressChanged(d.error);
             setPending(false);
-            setAddressChanged(response?.statusText);
         }
     }
 
@@ -77,10 +76,11 @@ export function GettingStartedAddWallet(props: Props) {
                 <div className="flex justify-end">
                     <AddressInput
                         className="w-full max-w-lg"
-                        onChange={wallet => setWalletAddress(wallet ? new PublicKey(wallet) : null)}
-                        defaultValue={walletAddress}
+                        value={walletAddress}
+                        onChange={wallet => setWalletAddress(wallet)}
                         addressChanged={addressChanged}
                         setAddressChanged={setAddressChanged}
+                        addressIsInvalid={shouldDisable()}
                     />
                 </div>
             </div>
@@ -97,7 +97,11 @@ export function GettingStartedAddWallet(props: Props) {
                 )}
             >
                 <Button.Secondary onClick={() => router.back()}>Cancel</Button.Secondary>
-                <Button.Primary onClick={handleMerchantAddressClick} pending={pending} disabled={shouldDisable()}>
+                <Button.Primary
+                    onClick={handleMerchantAddressClick}
+                    pending={pending}
+                    disabled={walletAddress === '' || shouldDisable()}
+                >
                     Save
                 </Button.Primary>
             </div>
