@@ -7,6 +7,7 @@ import {
 import * as Sentry from '@sentry/node';
 import { parseAndValidateRejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import { response } from 'express';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
@@ -53,6 +54,8 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                 case 202:
                 case 204:
                 case 205:
+                    console.log(response.data.data.paymentsAppConfigure.userErrors);
+                    console.log(response.data.data.paymentsAppConfigure);
                     paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
                     break;
                 default:

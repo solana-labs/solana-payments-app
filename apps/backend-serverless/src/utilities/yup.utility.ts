@@ -7,6 +7,8 @@ export const parseAndValidate = <T>(data: unknown, schema: AnySchema, errorMessa
         parsedData = schema.cast(data) as T;
     } catch (error) {
         if (error instanceof Error) {
+            console.log(error);
+            console.log(data);
             throw error;
         } else {
             throw new Error(errorMessage);
