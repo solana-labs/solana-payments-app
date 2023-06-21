@@ -10,6 +10,7 @@ const isBlockedGeo = (request: NextRequest): boolean => {
     }
 
     const geo = request.geo;
+    console.log('the geo', geo);
 
     if (geo == null) {
         return true;
@@ -39,6 +40,7 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    console.log('middleware request', request);
     const isBlocked = isBlockedGeo(request);
     const geo = request.geo;
 
