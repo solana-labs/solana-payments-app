@@ -2,6 +2,8 @@ import { LoadingDots } from '@/components/LoadingDots';
 import { isFailed, isOk, isPending } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
 import { useOpenRefundStore } from '@/stores/refundStore';
+import Policy from '@carbon/icons-react/lib/Policy';
+import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import User from '@carbon/icons-react/lib/User';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
@@ -10,7 +12,6 @@ import { DefaultLayoutNavigationExternalLink } from './DefaultLayoutNavigationEx
 import { DefaultLayoutNavigationLink } from './DefaultLayoutNavigationLink';
 import { RefundCount } from './RefundCount';
 import { SolanaPayMark } from './SolanaPayMark';
-import { Description } from './icons/Description';
 import { Flag } from './icons/Flag';
 import { Folder } from './icons/Folder';
 import { ReceiptLong } from './icons/ReceiptLong';
@@ -104,18 +105,20 @@ export function DefaultLayoutNavigation(props: Props) {
                     </>
                 )}
             </NavigationMenu.List>
-            <NavigationMenu.List>
-                <div className="pr-6">
-                    <DefaultLayoutNavigationExternalLink href="/docs" icon={<Folder />} text="Documentation" />
-                </div>
-                <div className="pr-6">
-                    <DefaultLayoutNavigationExternalLink
-                        className="bg-slate-600"
-                        href="/tos"
-                        icon={<Description />}
-                        text="Terms of Service"
-                    />
-                </div>
+            <NavigationMenu.List className="pr-6">
+                <DefaultLayoutNavigationExternalLink href="/docs" icon={<Folder />} text="Documentation" />
+                <DefaultLayoutNavigationExternalLink
+                    className="bg-slate-600"
+                    href="/termsofservice"
+                    icon={<Policy />}
+                    text="Terms of Service"
+                />
+                <DefaultLayoutNavigationExternalLink
+                    className="bg-slate-600"
+                    href="/privacy"
+                    icon={<RuleDataQuality />}
+                    text="Privacy Policy"
+                />
             </NavigationMenu.List>
         </NavigationMenu.Root>
     );
