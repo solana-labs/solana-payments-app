@@ -1,8 +1,9 @@
-import { AcceptPrivacyPolicy, AcceptTOS } from '@/AcceptModals';
+import { AcceptPolicy } from '@/AcceptModals';
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
-import { useMerchantStore } from '@/stores/merchantStore';
+import { PrivacyPolicyText, TosText } from '@/lib/policies';
+import { updateMerchantPrivacy, updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
 import Store from '@carbon/icons-react/lib/Store';
@@ -147,9 +148,17 @@ export function FinishAccountSetupPrompt(props: Props) {
                         step === RemainingSetupItem.VerifyBusiness
                             ? () => <KYBButton />
                             : step === RemainingSetupItem.AcceptTerms
-                            ? () => <AcceptTOS />
+                            ? () => (
+                                  <AcceptPolicy title="TOS" TextComponent={TosText} updatePolicy={updateMerchantTos} />
+                              )
                             : step === RemainingSetupItem.AcceptPrivacy
-                            ? () => <AcceptPrivacyPolicy />
+                            ? () => (
+                                  <AcceptPolicy
+                                      title="Privacy Policy"
+                                      TextComponent={PrivacyPolicyText}
+                                      updatePolicy={updateMerchantPrivacy}
+                                  />
+                              )
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
                     }
                     onStart={() => props.onBeginSetupItem?.(step)}

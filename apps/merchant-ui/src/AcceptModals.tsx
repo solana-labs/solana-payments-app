@@ -1,31 +1,11 @@
 import * as Button from '@/components/Button';
-import { updateMerchantPrivacy, updateMerchantTos, useMerchantStore } from '@/stores/merchantStore';
+import { useMerchantStore } from '@/stores/merchantStore';
 import Close from '@carbon/icons-react/lib/Close';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const TosText = () => {
-    return (
-        <div className="text-justify p-4 bg-white rounded-lg text-sm leading-6">
-            <h2 className="font-bold text-3xl mb-2">Terms of Service</h2>
-            <p>TEMPORARY TERMS</p>
-            <p className="mt-4">These are some services</p>
-        </div>
-    );
-};
-
-const PrivacyPolicyText = () => {
-    return (
-        <div className="text-justify p-4 bg-white rounded-lg text-sm leading-6">
-            <h2 className="font-bold text-3xl mb-2">Privacy Policy</h2>
-            <p>TEMPORARY Privacy</p>
-            <p className="mt-4">These are some Privacy policies</p>
-        </div>
-    );
-};
-
-function AcceptPolicy({
+export function AcceptPolicy({
     title,
     TextComponent,
     updatePolicy,
@@ -98,15 +78,5 @@ function AcceptPolicy({
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
-    );
-}
-
-export function AcceptTOS() {
-    return <AcceptPolicy title="TOS" TextComponent={TosText} updatePolicy={updateMerchantTos} />;
-}
-
-export function AcceptPrivacyPolicy() {
-    return (
-        <AcceptPolicy title="Privacy Policy" TextComponent={PrivacyPolicyText} updatePolicy={updateMerchantPrivacy} />
     );
 }
