@@ -17,6 +17,7 @@ provider:
     AWS_BUCKET_OBJECT_NAME: ${env:AWS_BUCKET_OBJECT_NAME}
     SENTRY_DSN: ${env:SENTRY_DSN}
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
+    COIN_GECKO_API_KEY: ${env:COIN_GECKO_API_KEY}
 package:
   excludeDevDependencies: true
   patterns:
