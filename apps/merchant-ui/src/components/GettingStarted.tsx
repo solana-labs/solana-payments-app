@@ -28,7 +28,7 @@ export function GettingStarted(props: Props) {
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle>Welcome, {merchantInfo.data.name}!</DefaultLayoutScreenTitle>
-            <div className="mt-4 text-black text-lg">Accepting payments on Solana is just three easy steps away.</div>
+            <div className="mt-4 text-black text-lg">Accepting payments on Solana is just four easy steps away.</div>
             <FinishAccountSetupPrompt className="mt-14 rounded-xl" />
         </DefaultLayoutContent>
     );
