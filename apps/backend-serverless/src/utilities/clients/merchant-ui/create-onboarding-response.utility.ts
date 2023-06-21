@@ -20,8 +20,6 @@ export const createOnboardingResponse = (merchant: Merchant) => {
 
     const redirectURL = `https://${merchant.shop}.myshopify.com/services/payments_partners/gateways/${clientId}/settings`;
 
-    console.log('the redirect link', merchant.shop, clientId, ur);
-
     return {
         completed:
             acceptedTermsAndConditions &&
