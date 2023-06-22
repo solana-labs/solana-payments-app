@@ -1,17 +1,19 @@
 import * as Button from '@/components/Button';
+import { PdfViewer } from '@/components/PdfViewer';
 import { useMerchantStore } from '@/stores/merchantStore';
 import Close from '@carbon/icons-react/lib/Close';
 import * as Dialog from '@radix-ui/react-dialog';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+
+// Dynamically import the PdfViewer component
+// const PdfViewer = dynamic(() => import('@/components/PdfViewer').then(mod => mod.default), { ssr: false });
 
 export function AcceptPolicy({
     title,
-    sections,
     updatePolicy,
 }: {
     title: string;
-    sections: Array<{ title: string; paragraphs: string[] }>;
     updatePolicy: () => Promise<Response | undefined>;
 }) {
     const [open, setOpen] = useState(false);
@@ -66,29 +68,23 @@ export function AcceptPolicy({
                         'justify-between'
                     )}
                 >
-                    <div className="m-16">
-                        <h2 className="font-bold text-3xl mb-10">{title}</h2>
-                        <div className="text-justify bg-white rounded-lg text-sm leading-6">
-                            {sections.map((section, index) => (
-                                <React.Fragment key={index}>
-                                    <h3 className="font-semibold text-2xl">{section.title}</h3>
-                                    {section.paragraphs.map((paragraph, i) => (
-                                        <p className={i === 0 ? '' : 'mt-4'} key={i}>
-                                            {paragraph}
-                                        </p>
-                                    ))}
-                                </React.Fragment>
-                            ))}
-                        </div>
+                    <div className="flex-grow overflow-auto">
+                        <PdfViewer title={title} />
                     </div>
                     <Dialog.Close>
                         <button className="absolute right-2 top-2 p-2">
                             <Close size={20} />
                         </button>
                     </Dialog.Close>
-                    <Button.Primary onClick={updatePolicyClick} className="w-fit place-self-center" pending={pending}>
-                        {`Accept ${title}`}
-                    </Button.Primary>
+                    <div className="flex justify-center">
+                        <Button.Primary
+                            onClick={updatePolicyClick}
+                            className="w-fit place-self-center"
+                            pending={pending}
+                        >
+                            {`Accept ${title}`}
+                        </Button.Primary>
+                    </div>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
