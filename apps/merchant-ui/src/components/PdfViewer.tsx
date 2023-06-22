@@ -14,17 +14,17 @@ export function PdfViewer(props: PdfViewerProps) {
         setNumPages(numPages);
     }
 
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const [width, setWidth] = useState(0);
     useEffect(() => {
         if (containerRef.current) {
-            setWidth(containerRef.current.offsetWidth);
+            setWidth(containerRef.current.getBoundingClientRect().width);
         }
 
         const handleResize = () => {
             if (containerRef.current) {
-                setWidth(containerRef.current.offsetWidth);
+                setWidth(containerRef.current.getBoundingClientRect().width);
             }
         };
 
