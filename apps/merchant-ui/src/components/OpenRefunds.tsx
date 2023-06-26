@@ -80,6 +80,7 @@ export function OpenRefunds(props: Props) {
     }, [wallet]);
 
     async function getRefundTransaction(refundIdToProcess: string) {
+        let isErrorOccurred = false;
         setApprovePending(true);
         approvePendingRef.current = true;
         if (!publicKey) {
@@ -102,17 +103,30 @@ export function OpenRefunds(props: Props) {
             const buffer = Buffer.from(data.transaction, 'base64');
             const transaction = Transaction.from(buffer);
             await sendTransaction(transaction, connection);
-            while (approvePendingRef.current) {
-                const statusResponse = await fetch(`${API_ENDPOINTS.refundStatus}?shopId=${refundIdToProcess}`, {
-                    headers: headers,
-                });
-                const statusData = await statusResponse.json();
-                if (!statusResponse.ok) {
-                    throw new Error(`HTTP error! status: ${statusResponse.status}`);
-                }
-                await new Promise(resolve => setTimeout(resolve, 500));
-                if (statusData.refundStatus.status !== RefundStatus.Pending) {
-                    break;
+            while (approvePendingRef.current && !isErrorOccurred) {
+                try {
+                    const statusResponse = await fetch(`${API_ENDPOINTS.refundStatus}?shopId=${refundIdToProcess}`, {
+                        headers: headers,
+                        credentials: 'include',
+                    });
+                    const statusData = await statusResponse.json();
+                    if (!statusResponse.ok) {
+                        throw new Error(`HTTP error! status: ${statusResponse.status}`);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    if (statusData.refundStatus.status !== RefundStatus.Pending) {
+                        break;
+                    }
+                } catch (error) {
+                    isErrorOccurred = true; // Update the flag when an error occurs
+                    if (error instanceof Error) {
+                        toast({
+                            title: 'Error Fetching Refund Status',
+                            description: error.message,
+                            variant: 'destructive',
+                        });
+                    }
+                    throw error; // Re-throw the error
                 }
             }
             toast({
