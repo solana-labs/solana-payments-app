@@ -79,7 +79,7 @@ export function OpenRefunds(props: Props) {
         setWalletModalActive(false);
     }, [wallet]);
 
-    async function getRefundTransaction(refundIdToProcess: string) {
+    async function approveRefund(refundIdToProcess: string) {
         let isErrorOccurred = false;
         setApprovePending(true);
         approvePendingRef.current = true;
@@ -452,7 +452,7 @@ export function OpenRefunds(props: Props) {
                                                         Disconnect Wallet
                                                     </Button.Secondary>
                                                     <Button.Primary
-                                                        onClick={() => getRefundTransaction(refund.orderId)}
+                                                        onClick={() => approveRefund(refund.orderId)}
                                                         pending={approvePending}
                                                     >
                                                         Approve
