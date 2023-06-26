@@ -2,7 +2,6 @@ import { PaginatedTable } from '@/components/PaginatedTable';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { abbreviateAddress } from '@/lib/abbreviateAddress';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { formatPrice } from '@/lib/formatPrice';
 import { useMerchantStore } from '@/stores/merchantStore';
@@ -406,10 +405,10 @@ export function OpenRefunds(props: Props) {
                                                         {refund.requestedRefundAmount >= 0 ? '+' : '-'}$
                                                         {formatPrice(Math.abs(refund.requestedRefundAmount))}
                                                     </div>
-                                                    <div>Refund to:</div>
+                                                    {/* <div>Refund to:</div>
                                                     <div className="font-semibold text-right">
                                                         {abbreviateAddress(refund.refundTo)}
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </div>
