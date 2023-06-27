@@ -39,6 +39,7 @@
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
         "react-icons": "^4.9.0",
+        "react-pdf": "^7.1.2",
         "styled-components": "^5.3.11",
         "tailwind-merge": "^1.13.1",
         "tailwindcss-animate": "^1.0.5",

@@ -2,7 +2,6 @@ import { AcceptPolicy } from '@/AcceptModals';
 import { LoadingDots } from '@/components/LoadingDots';
 import * as RE from '@/lib/Result';
 import { isOk } from '@/lib/Result';
-import { privacyPolicySections, tosSections } from '@/lib/policies';
 import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import Policy from '@carbon/icons-react/lib/Policy';
 import RuleDataQuality from '@carbon/icons-react/lib/RuleDataQuality';
@@ -161,8 +160,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                             : step === RemainingSetupItem.AcceptTerms
                             ? () => (
                                   <AcceptPolicy
-                                      title="TOS"
-                                      sections={tosSections}
+                                      title="Terms of Service"
                                       updatePolicy={() => updateMerchant('acceptedTermsAndConditions', 'true')}
                                   />
                               )
@@ -170,7 +168,6 @@ export function FinishAccountSetupPrompt(props: Props) {
                             ? () => (
                                   <AcceptPolicy
                                       title="Privacy Policy"
-                                      sections={privacyPolicySections}
                                       updatePolicy={() => updateMerchant('acceptedPrivacyPolicy', 'true')}
                                   />
                               )
