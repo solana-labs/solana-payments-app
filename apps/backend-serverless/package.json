@@ -26,7 +26,7 @@
     "deploy:stage:green": "serverless deploy --stage stage --config serverless.green.yml",
     "deploy:stage:purple": "serverless deploy --stage stage --config serverless.purple.yml",
     "deploy:prod:purple": "serverless deploy --stage prod --config serverless.purple.yml",
-    "sls:prune": "serverless prune -n 5 --config serverless.purple.yml",
+    "sls:prune": "serverless prune -n 1 --config serverless.purple.yml",
     "remove:prod:purple": "serverless remove --stage prod --config serverless.purple.yml",
     "prisma:push:dev": "dotenv -e .env.dev -- npx prisma db push",
     "prisma:push:stage": "dotenv -e .env.stage -- npx prisma db push",
