@@ -44,7 +44,7 @@ provider:
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
     HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
-    WEBSOCKET_URL: ${env:WEBSOCKET_URL}
+    WEBSOCKET_URL: ${self:resources.Outputs.WebsocketUrl.Value}
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
@@ -407,6 +407,19 @@ resources:
       Description: The url of the solana pay info sqs queue
       Value:
         Ref: SolanaPayInfoQueue
+    WebSocketApiId:
+      Description: The WebSocket API ID
+      Value:
+        Ref: WebsocketsApi
+    WebsocketUrl:
+      Description: Example of joining two strings
+      Value: 
+        Fn::Join:
+          - ""
+          - - "https://"
+            - "${self:resources.Outputs.WebSocketApiId.Value}"
+            - ".execute-api.us-east-1.amazonaws.com/"
+            - "${self:provider.stage}"
   Resources:
     GasBucket:
       Type: AWS::S3::Bucket

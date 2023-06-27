@@ -118,11 +118,11 @@ export const verifyTransferInstructionIsCorrect = (
 
     const decodedTransferQuantity = decodedTransferCheckedInstruction.data.amount;
 
-    const paymentRecordUsdcSize = record.usdcAmount;
+    const paymentRecordUsdcSize = parseFloat(record.usdcAmount.toFixed(6));
     const paymentRecordUsdcQuantity = paymentRecordUsdcSize * 10 ** 6;
 
     if (Number(decodedTransferQuantity) !== paymentRecordUsdcQuantity) {
-        throw new Error('The token transfer instruction was not for the correct amount of USDC');
+        throw new Error('The token transfer instruction was notd for the correct amount of USDC');
     }
 };
 
