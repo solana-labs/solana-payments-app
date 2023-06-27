@@ -1,5 +1,4 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { PublicKey } from '@solana/web3.js';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,26 +7,16 @@ import { AccountBalanceWallet } from './icons/AccountBalanceWallet';
 
 interface Props {
     className?: string;
-    defaultValue?: null | PublicKey;
-    onChange?(value: null | PublicKey): void;
+    value: string;
+    onChange?(value: string): void;
     addressChanged?: boolean | string | null;
     setAddressChanged?(value: boolean): void;
+    addressIsInvalid: boolean;
 }
 
 export function AddressInput(props: Props) {
-    const [addressText, setAddressText] = useState(props.defaultValue?.toBase58() || '');
-    const [addressIsInvalid, setAddressIsInvalid] = useState(false);
-
     const [copied, setCopied] = useState(false);
     const copyRef = useRef<number | null>(null);
-
-    useEffect(() => {
-        const newAddressText = props.defaultValue?.toBase58() || '';
-
-        if (newAddressText && newAddressText !== addressText) {
-            setAddressText(newAddressText);
-        }
-    }, [props.defaultValue]);
 
     useEffect(() => {
         return () => {
@@ -61,7 +50,7 @@ export function AddressInput(props: Props) {
                             'hover:bg-gray-50',
                             'disabled:hover:bg-transparent'
                         )}
-                        disabled={!addressText || addressIsInvalid}
+                        disabled={props.addressIsInvalid}
                         onClick={async () => {
                             try {
                                 if (copyRef.current) {
@@ -69,7 +58,7 @@ export function AddressInput(props: Props) {
                                 }
 
                                 setCopied(true);
-                                await navigator.clipboard.writeText(addressText);
+                                await navigator.clipboard.writeText(props.value);
 
                                 copyRef.current = window.setTimeout(() => {
                                     setCopied(false);
@@ -90,34 +79,13 @@ export function AddressInput(props: Props) {
                 </Tooltip.Root>
                 <Input
                     className={twMerge('border-b-0', 'border-l', 'border-r-0', 'border-t-0', 'rounded-none', 'w-full')}
-                    value={addressText}
-                    onClick={() => {
-                        props.setAddressChanged && props.setAddressChanged(false);
-                    }}
-                    onBlur={() => {
-                        try {
-                            if (addressText) {
-                                const address = new PublicKey(addressText);
-                                setAddressIsInvalid(false);
-                                props.setAddressChanged && props.setAddressChanged(false);
-                                props.onChange?.(address);
-                            } else {
-                                setAddressIsInvalid(false);
-                                props.setAddressChanged && props.setAddressChanged(false);
-                                props.onChange?.(null);
-                            }
-                        } catch {
-                            setAddressIsInvalid(true);
-                            props.onChange?.(null);
-                        }
-                    }}
+                    value={props.value}
                     onChange={e => {
-                        setAddressIsInvalid(false);
-                        setAddressText(e.currentTarget.value);
+                        props.onChange?.(e.currentTarget.value);
                     }}
                 />
             </div>
-            {addressIsInvalid && <div className="mt-2 text-xs text-red-500">Not a valid wallet address.</div>}
+            {props.addressIsInvalid && <div className="mt-2 text-xs text-red-500">Not a valid wallet address.</div>}
             {props.addressChanged && props.addressChanged === true && (
                 <p className="text-emerald-700 text-xs">Wallet updated successfully</p>
             )}
