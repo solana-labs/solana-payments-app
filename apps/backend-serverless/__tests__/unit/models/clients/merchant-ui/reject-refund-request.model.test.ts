@@ -1,78 +1,53 @@
 import { parseAndValidateRejectRefundRequest } from '../../../../../src/models/clients/merchant-ui/reject-refund-request.model.js';
 
 describe('unit testing reject refund request model', () => {
-    it('valid request parameters parsing', () => {
-        const requestBody = {
-            refundId: 'test-refund-id',
-            merchantReason: 'test-reason',
-        };
+    const fields = ['refundId', 'merchantReason'];
+    const validRequestBody = {
+        refundId: 'test-refund-id',
+        merchantReason: 'test-reason',
+    };
 
+    it('valid request parameters parsing', () => {
         expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
+            parseAndValidateRejectRefundRequest(validRequestBody);
         }).not.toThrow();
     });
 
-    it('should throw an error when refundId is missing', () => {
-        const requestBody = {
-            merchantReason: 'test-reason',
-        };
+    for (const field of fields) {
+        it(`missing required field ${field}`, () => {
+            const testBody = { ...validRequestBody }; // create a clone of the valid body
+            delete testBody[field]; // remove a field to simulate missing input
 
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
+            expect(() => {
+                parseAndValidateRejectRefundRequest(testBody);
+            }).toThrow();
+        });
+    }
 
-    it('should throw an error when merchantReason is missing', () => {
-        const requestBody = {
-            refundId: 'test-refund-id',
-        };
+    const wrongTypes = {
+        refundId: 12345, // should be a string
+        merchantReason: 12345, // should be a string
+    };
 
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
+    for (const field of fields) {
+        it(`invalid field type for ${field}`, () => {
+            const testBody = { ...validRequestBody }; // create a clone of the valid body
+            testBody[field] = wrongTypes[field]; // set a field to a wrong type
 
-    it('should throw an error when refundId is empty', () => {
-        const requestBody = {
-            refundId: '',
-            merchantReason: 'test-reason',
-        };
+            expect(() => {
+                parseAndValidateRejectRefundRequest(testBody);
+            }).toThrow();
+        });
+    }
 
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
+    for (const field of fields) {
+        it(`should throw an error when ${field} is empty`, () => {
+            const testBody = { ...validRequestBody }; // create a clone of the valid body
+            testBody[field] = ''; // set a field to an empty string
 
-    it('should throw an error when merchantReason is empty', () => {
-        const requestBody = {
-            refundId: 'test-refund-id',
-            merchantReason: '',
-        };
-
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
-
-    it('should throw an error when refundId is not a string', () => {
-        const requestBody = {
-            refundId: 12345,
-            merchantReason: 'test-reason',
-        };
-
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
-
-    it('should throw an error when merchantReason is not a string', () => {
-        const requestBody = {
-            refundId: 'test-refund-id',
-            merchantReason: 12345,
-        };
-
-        expect(() => {
-            parseAndValidateRejectRefundRequest(requestBody);
-        }).toThrow();
-    });
+            expect(() => {
+                parseAndValidateRejectRefundRequest(testBody);
+            }).toThrow();
+        });
+    }
 });
