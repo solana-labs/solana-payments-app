@@ -1,3 +1,4 @@
+import { parseAndValidateHeliusBalance } from '../../../../src/models/dependencies/helius-balance.model.js';
 import {
     runEmptyFieldTests,
     runEmptyFieldTestsInArray,
@@ -7,8 +8,6 @@ import {
     runMissingFieldTestsInArray,
     runValidParameterTest,
 } from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
-
-import { parseAndValidateHeliusBalance } from '../../../../src/models/dependencies/helius-balance.model.js';
 
 describe('unit testing helius balance model', () => {
     // using usdc mint and a token account
