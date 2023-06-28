@@ -1,10 +1,12 @@
-export function runCommonTests(parseAndValidateFunction, validParams, fields, wrongTypes) {
+export function runValidParameterTest(parseAndValidateFunction, validParams) {
     it('valid request parameters parsing', () => {
         expect(() => {
             parseAndValidateFunction(validParams);
         }).not.toThrow();
     });
+}
 
+export function runMissingFieldTests(parseAndValidateFunction, validParams, fields) {
     for (const field of fields) {
         it(`missing required field ${field}`, () => {
             const testParams = { ...validParams }; // create a clone of the valid params
@@ -15,7 +17,9 @@ export function runCommonTests(parseAndValidateFunction, validParams, fields, wr
             }).toThrow();
         });
     }
+}
 
+export function runInvalidFieldTypeTests(parseAndValidateFunction, validParams, fields, wrongTypes) {
     for (const field of fields) {
         it(`invalid field type for ${field}`, () => {
             const testParams = { ...validParams }; // create a clone of the valid params
@@ -26,7 +30,9 @@ export function runCommonTests(parseAndValidateFunction, validParams, fields, wr
             }).toThrow();
         });
     }
+}
 
+export function runEmptyFieldTests(parseAndValidateFunction, validParams, fields) {
     for (const field of fields) {
         it(`should throw an error when ${field} is empty`, () => {
             const testParams = { ...validParams }; // create a clone of the valid params
