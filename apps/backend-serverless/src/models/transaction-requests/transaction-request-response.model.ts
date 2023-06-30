@@ -1,5 +1,5 @@
-import { object, string, InferType } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export const transactionRequestResponseScheme = object().shape({
     transaction: string().required(),
@@ -11,7 +11,7 @@ export type TransactionRequestResponse = InferType<typeof transactionRequestResp
 export const parseAndValidateTransactionRequestResponse = (
     transactionRequestResponseBody: unknown
 ): TransactionRequestResponse => {
-    return parseAndValidate<TransactionRequestResponse>(
+    return parseAndValidateStrict<TransactionRequestResponse>(
         transactionRequestResponseBody,
         transactionRequestResponseScheme,
         'Could not parse the transaction request response. Unknown Reason.'
