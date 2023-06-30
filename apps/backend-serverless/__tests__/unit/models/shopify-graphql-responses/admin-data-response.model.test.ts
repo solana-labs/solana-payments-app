@@ -1,12 +1,18 @@
 import { parseAndValidateAdminDataResponse } from '../../../../src/models/shopify-graphql-responses/admin-data.response.model.js';
 import { createMockAdminDataResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
-describe('unit testing payment app configure model', () => {
-    it('valid payment app configure response', () => {
-        const validAdminDataResponse = createMockAdminDataResponse();
+import {
+    runEmptyFieldTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
-        expect(() => {
-            parseAndValidateAdminDataResponse(validAdminDataResponse);
-        }).not.toThrow();
-    });
+describe('unit testing payment app configure model', () => {
+    const validParams = createMockAdminDataResponse();
+
+    const fields = Object.keys(validParams);
+
+    runValidParameterTest(parseAndValidateAdminDataResponse, validParams);
+    runMissingFieldTests(parseAndValidateAdminDataResponse, validParams, fields);
+    runEmptyFieldTests(parseAndValidateAdminDataResponse, validParams, fields);
 });

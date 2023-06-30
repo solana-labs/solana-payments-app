@@ -1,5 +1,5 @@
-import { object, string, InferType, array, boolean } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, array, boolean, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 import { shopifyResponseExtensionsSchema, userErrorsSchema } from './shared.model.js';
 
 export const paymentsAppConfigurationSchema = object().shape({
@@ -24,10 +24,10 @@ export const paymentAppConfigureResponseSchema = object().shape({
 export type PaymentAppConfigureResponse = InferType<typeof paymentAppConfigureResponseSchema>;
 
 export const parseAndValidatePaymentAppConfigureResponse = (
-    paymentAppConfigureResponeBody: unknown
+    paymentAppConfigureResponseBody: unknown
 ): PaymentAppConfigureResponse => {
-    return parseAndValidate(
-        paymentAppConfigureResponeBody,
+    return parseAndValidateStrict(
+        paymentAppConfigureResponseBody,
         paymentAppConfigureResponseSchema,
         'Could not parse the payment app configure response. Unknown Reason.'
     );
