@@ -1,5 +1,5 @@
-import { object, string, InferType } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export const safteyKeyMessageSchema = object().shape({
     key: string().required(),
@@ -8,7 +8,7 @@ export const safteyKeyMessageSchema = object().shape({
 export type SafteyKeyMessage = InferType<typeof safteyKeyMessageSchema>;
 
 export const parseAndValidateSafteyKeyMessage = (safteyKeyMessageBody: unknown): SafteyKeyMessage => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         safteyKeyMessageBody,
         safteyKeyMessageSchema,
         'Could not parse the saftey key message. Unknown Reason.'

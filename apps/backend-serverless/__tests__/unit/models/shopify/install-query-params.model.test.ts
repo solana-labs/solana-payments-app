@@ -28,8 +28,12 @@ describe('Install Query Params Model', () => {
     runMissingFieldTests(
         parseAndValidateAppInstallQueryParms,
         validParams,
-        fields.filter(field => field === 'hmac')
+        fields.filter(field => field !== 'hmac')
     );
     runInvalidFieldTypeTests(parseAndValidateAppInstallQueryParms, validParams, fields, wrongTypes);
-    runEmptyFieldTests(parseAndValidateAppInstallQueryParms, validParams, fields);
+    runEmptyFieldTests(
+        parseAndValidateAppInstallQueryParms,
+        validParams,
+        fields.filter(field => field !== 'hmac')
+    );
 });

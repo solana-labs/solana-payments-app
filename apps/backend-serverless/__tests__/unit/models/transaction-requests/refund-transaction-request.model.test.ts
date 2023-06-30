@@ -6,7 +6,7 @@ import {
     runValidParameterTest,
 } from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
-describe('unit testing the payment transaction request parameters model', () => {
+describe('unit testing the refund transaction request model', () => {
     const validParams = {
         refundId: 'some-id',
     };
