@@ -1,5 +1,5 @@
-import { object, string, InferType, number, boolean } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, boolean, number, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
@@ -60,7 +60,7 @@ export type ShopifyMutationPaymentResolve = InferType<typeof shopifyMutationPaym
 export type ShopifyMutationRetry = InferType<typeof shopifyMutationRetrySchema>;
 
 export const parseAndValidateShopifyMutationRetry = (shopifyMutationRetryBody: unknown): ShopifyMutationRetry => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         shopifyMutationRetryBody,
         shopifyMutationRetrySchema,
         'Could not parse the shopify mutation retry body. Unknown Reason.'
