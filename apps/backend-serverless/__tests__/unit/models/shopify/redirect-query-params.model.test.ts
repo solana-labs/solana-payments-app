@@ -16,7 +16,7 @@ describe('unit testing redirect query parameters model', () => {
         state: 'some-state',
         timestamp: 'some-timestamp',
     };
-    const fields = Object.keys(validParams);
+    const fields = ['code', 'shop', 'host', 'state', 'timestamp'];
     const wrongTypes = {
         code: 123,
         hmac: 123,
