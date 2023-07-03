@@ -1,5 +1,5 @@
 import { InferType, array, boolean, mixed, number, object, string } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export enum PubkeyOwner {
     systemProgram = '11111111111111111111111111111111',
@@ -67,7 +67,7 @@ export type ValueDataTokenProgram = InferType<typeof valueDataTokenProgramSchema
 export type ValueDataSystemProgram = InferType<typeof valueDataSystemProgramSchema>;
 
 export const parseAndValidateGetAccountInfo = (getAccountInfoResponseBody: unknown): GetAccountInfo => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         getAccountInfoResponseBody,
         getAccountInfoResponseSchema,
         'Could not parse the get account info response body. Unknown Reason.'

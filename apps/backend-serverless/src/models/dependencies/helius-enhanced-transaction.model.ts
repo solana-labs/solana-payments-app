@@ -1,5 +1,5 @@
-import { object, string, InferType, number, array } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, array, number, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 export const heliusRawTokenAmountSchema = object().shape({
     tokenAmount: string().optional(),
     decimals: number().optional(),
@@ -136,7 +136,7 @@ export type HeliusEnhancedTransactionArray = InferType<typeof heliusEnhancedTran
 export const parseAndValidateHeliusEnchancedTransaction = (
     heliusEnhancedTransactionResponseBody: unknown
 ): HeliusEnhancedTransactionArray => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         heliusEnhancedTransactionResponseBody,
         heliusEnhancedTransactionResponseSchema,
         'Could not parse the heluis enhanced transaction body. Unknown Reason.'
