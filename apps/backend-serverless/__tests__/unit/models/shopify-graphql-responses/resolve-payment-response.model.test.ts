@@ -8,7 +8,7 @@ import { createMockSuccessPaymentSessionResolveResponse } from '../../../../src/
 
 describe('unit testing resolve payment response model', () => {
     const validParams = createMockSuccessPaymentSessionResolveResponse();
-    const fields = Object.keys(validParams);
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidateResolvePaymentResponse, validParams);
     runMissingFieldTests(parseAndValidateResolvePaymentResponse, validParams, fields);

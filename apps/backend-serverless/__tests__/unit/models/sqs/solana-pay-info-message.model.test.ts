@@ -12,7 +12,7 @@ describe('unit testing solana pay info message model', () => {
         paymentRecordId: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['account', 'paymentRecordId'];
 
     const wrongTypes = {
         account: 123,
