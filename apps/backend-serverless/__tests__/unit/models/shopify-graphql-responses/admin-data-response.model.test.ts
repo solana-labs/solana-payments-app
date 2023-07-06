@@ -10,7 +10,7 @@ import {
 describe('unit testing payment app configure model', () => {
     const validParams = createMockAdminDataResponse();
 
-    const fields = Object.keys(validParams);
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidateAdminDataResponse, validParams);
     runMissingFieldTests(parseAndValidateAdminDataResponse, validParams, fields);

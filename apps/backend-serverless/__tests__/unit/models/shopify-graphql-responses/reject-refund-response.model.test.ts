@@ -8,7 +8,7 @@ import { createMockSuccessRefundSessionRejectResponse } from '../../../../src/ut
 
 describe('unit testing reject refund response model', () => {
     const validParams = createMockSuccessRefundSessionRejectResponse();
-    const fields = Object.keys(validParams);
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidateRejectRefundResponse, validParams);
     runMissingFieldTests(parseAndValidateRejectRefundResponse, validParams, fields);

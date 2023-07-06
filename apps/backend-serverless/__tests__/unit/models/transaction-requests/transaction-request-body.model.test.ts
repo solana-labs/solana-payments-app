@@ -11,7 +11,7 @@ describe('unit testing the transaction request body model', () => {
         account: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['account'];
 
     const wrongTypes = {
         account: 123,

@@ -16,7 +16,15 @@ describe('unit testing shopify webhooks headers model', () => {
         'X-Shopify-Triggered-At': 'some-triggered-at',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = [
+        'X-Shopify-Topic',
+        'X-Shopify-Hmac-Sha256',
+        'X-Shopify-Shop-Domain',
+        'X-Shopify-API-Version',
+        'X-Shopify-Webhook-Id',
+        'X-Shopify-Triggered-At',
+    ];
+
     const wrongTypes = {
         'X-Shopify-Topic': 123,
         'X-Shopify-Hmac-Sha256': 123,

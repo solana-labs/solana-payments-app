@@ -11,7 +11,7 @@ describe('unit testing the process transaction message model', () => {
         signature: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['signature'];
 
     const wrongTypes = {
         signature: 123,

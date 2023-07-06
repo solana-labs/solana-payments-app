@@ -11,7 +11,7 @@ describe('unit testing the saftey key model', () => {
         key: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['key'];
 
     const wrongTypes = {
         key: 123,

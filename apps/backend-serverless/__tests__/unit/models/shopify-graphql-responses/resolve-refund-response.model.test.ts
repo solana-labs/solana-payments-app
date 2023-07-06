@@ -9,7 +9,7 @@ import {
 
 describe('unit testing resolve refund response model', () => {
     const validParams = createMockSuccessRefundSessionResolveResponse();
-    const fields = Object.keys(validParams);
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidateResolveRefundResponse, validParams);
     runMissingFieldTests(parseAndValidateResolveRefundResponse, validParams, fields);

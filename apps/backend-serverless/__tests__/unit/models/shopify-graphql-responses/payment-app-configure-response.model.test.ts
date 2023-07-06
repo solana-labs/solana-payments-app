@@ -9,29 +9,7 @@ import { createMockPaymentAppConfigureResponse } from '../../../../src/utilities
 describe('unit testing payment app configure model', () => {
     const validParams = createMockPaymentAppConfigureResponse();
 
-    const fields = Object.keys(validParams);
-
-    const wrongTypes = {
-        data: {
-            paymentsAppConfigure: {
-                paymentsAppConfiguration: {
-                    externalHandle: 'mock-internal-id',
-                },
-                userErrors: [],
-            },
-        },
-        extensions: {
-            cost: {
-                requestedQueryCost: 123,
-                actualQueryCost: 123,
-                throttleStatus: {
-                    maximumAvailable: 123,
-                    currentlyAvailable: 123,
-                    restoreRate: 123,
-                },
-            },
-        },
-    };
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidatePaymentAppConfigureResponse, validParams);
     runMissingFieldTests(parseAndValidatePaymentAppConfigureResponse, validParams, fields);

@@ -8,7 +8,7 @@ import { createMockSuccessPaymentSessionRejectResponse } from '../../../../src/u
 
 describe('unit testing reject payment response model', () => {
     const validParams = createMockSuccessPaymentSessionRejectResponse();
-    const fields = Object.keys(validParams);
+    const fields = ['data', 'extensions'];
 
     runValidParameterTest(parseAndValidateRejectPaymentResponse, validParams);
     runMissingFieldTests(parseAndValidateRejectPaymentResponse, validParams, fields);

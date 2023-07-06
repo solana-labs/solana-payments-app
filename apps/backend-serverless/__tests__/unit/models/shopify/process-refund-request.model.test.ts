@@ -18,7 +18,7 @@ describe('unit testing shopify refund initiation model', () => {
         proposed_at: '2021-07-13T00:00:00Z',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['id', 'gid', 'payment_id', 'amount', 'currency', 'test', 'merchant_locale', 'proposed_at'];
     const wrongTypes = {
         id: 123,
         gid: 123,

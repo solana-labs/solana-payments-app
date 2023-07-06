@@ -36,7 +36,16 @@ describe('unit testing mutation retry model', () => {
         appConfigure: { merchantId: 'some-id', state: true },
     };
 
-    const fields = Object.keys(validParams);
+    const fields = [
+        'retryType',
+        'retryStepIndex',
+        'retrySeconds',
+        'paymentResolve',
+        'paymentReject',
+        'refundResolve',
+        'refundReject',
+        'appConfigure',
+    ];
 
     const wrongTypes = {
         retryType: 123,

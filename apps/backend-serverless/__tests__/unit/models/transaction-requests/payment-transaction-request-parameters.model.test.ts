@@ -11,7 +11,7 @@ describe('unit testing the payment transaction request parameters model', () => 
         paymentId: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['paymentId'];
 
     const wrongTypes = {
         paymentId: 123,

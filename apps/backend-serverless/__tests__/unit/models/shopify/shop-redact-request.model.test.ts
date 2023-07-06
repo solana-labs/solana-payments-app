@@ -11,7 +11,7 @@ describe('unit testing shop redact request model', () => {
         shop_id: '123456',
         shop_domain: 'some-shop.myshopify.com',
     };
-    const fields = Object.keys(validParams);
+    const fields = ['shop_id', 'shop_domain'];
     const wrongTypes = {
         shop_id: 123,
         shop_domain: 123,

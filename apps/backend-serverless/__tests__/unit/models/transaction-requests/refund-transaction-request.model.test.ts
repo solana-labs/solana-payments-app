@@ -11,7 +11,7 @@ describe('unit testing the refund transaction request model', () => {
         refundId: 'some-id',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['refundId'];
 
     const wrongTypes = {
         refundId: 123,

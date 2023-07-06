@@ -13,7 +13,7 @@ describe('unit testing shopify request headers model', () => {
         'shopify-api-version': 'some-api-version',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['shopify-shop-domain', 'shopify-request-id', 'shopify-api-version'];
     const wrongTypes = {
         'shopify-shop-domain': 123,
         'shopify-request-id': 123,

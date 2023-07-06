@@ -12,7 +12,7 @@ describe('unit testing the transation request response model', () => {
         message: 'some-message',
     };
 
-    const fields = Object.keys(validParams);
+    const fields = ['transaction', 'message'];
 
     const wrongTypes = {
         transaction: 123,
