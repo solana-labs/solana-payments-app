@@ -1,15 +1,15 @@
-import * as Sentry from '@sentry/serverless';
 import { Merchant, PrismaClient } from '@prisma/client';
+import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { AppInstallQueryParam } from '../../models/shopify/install-query-params.model.js';
-import {
-    verifyAndParseShopifyInstallRequest,
-    createShopifyOAuthGrantRedirectUrl,
-} from '../../utilities/shopify/shopify-install-request.utility.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import {
+    createShopifyOAuthGrantRedirectUrl,
+    verifyAndParseShopifyInstallRequest,
+} from '../../utilities/shopify/shopify-install-request.utility.js';
 
 const prisma = new PrismaClient();
 
