@@ -140,7 +140,6 @@ export function DefaultLayoutNavigation(props: Props) {
                     onClick={logout}
                     className={twMerge(
                         'gap-x-4',
-                        'gap-x-3',
                         'group',
                         'grid',
                         'items-center',
