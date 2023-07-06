@@ -1,6 +1,6 @@
+import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { cloneElement } from 'react';
 import { twMerge } from 'tailwind-merge';
-import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 
 import { OpenInNew } from './icons/OpenInNew';
 
@@ -16,7 +16,6 @@ export function DefaultLayoutNavigationExternalLink(props: Props) {
         <NavigationMenu.Item>
             <NavigationMenu.Link
                 className={twMerge(
-                    'gap-x-3',
                     'gap-x-4',
                     'group',
                     'grid-cols-[24px,1fr,max-content]',
