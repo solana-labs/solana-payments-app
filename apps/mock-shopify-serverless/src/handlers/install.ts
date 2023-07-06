@@ -1,4 +1,4 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import crypto from 'crypto-js';
 
 export const stringifyParams = (params: { [key: string]: string }): string => {
@@ -10,14 +10,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 export const install = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const mockShopifySecret = 'MOCK_SHOPIFY_SECRET';
 
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
-    console.log('HELLO TEEJ');
+    console.log('In mock install handler');
 
     const installParams = {
         host: 'LETSGOPANTHERS',

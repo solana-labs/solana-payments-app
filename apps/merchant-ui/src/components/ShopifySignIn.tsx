@@ -6,10 +6,13 @@ interface Props {
 
 // TODO: Implement the sign in flow
 export function ShopifySignIn(props: Props) {
+    console.log('node env', process.env.NODE_ENV);
     return (
         <button
             onClick={() => {
-                window.location.href = '/merchant';
+                process.env.NODE_ENV === 'development'
+                    ? (window.location.href = 'https://localhost:4004/install')
+                    : (window.location.href = '/merchant');
             }}
             className={twMerge(
                 'border-gray-300',
