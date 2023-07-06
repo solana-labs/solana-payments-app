@@ -1,35 +1,25 @@
 import { parseAndValidatePaymentStatusRequest } from '../../../../../src/models/clients/payment-ui/payment-status-request.model.js';
+import {
+    runEmptyFieldTests,
+    runInvalidFieldTypeTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
 describe('unit testing the payment status request model', () => {
-    it('valid payment status request parameters', () => {
-        const validPaymentStatusRequestParameters = {
-            paymentId: 'some-id',
-            language: 'en',
-        };
+    const fields = ['paymentId', 'language'];
+    const validParams = {
+        paymentId: 'some-id',
+        language: 'en',
+    };
 
-        expect(() => {
-            parseAndValidatePaymentStatusRequest(validPaymentStatusRequestParameters);
-        }).not.toThrow();
-    });
+    const wrongTypes = {
+        paymentId: 123, // should be a string
+        language: 123, // should be a string
+    };
 
-    it('invalid payment status request parameters', () => {
-        const invalidPaymentStatusRequestParameters = {
-            id: 'some-id',
-            language: 'en',
-        };
-
-        expect(() => {
-            parseAndValidatePaymentStatusRequest(invalidPaymentStatusRequestParameters);
-        }).toThrow();
-    });
-
-    it('invalid payment status request parameters, missing language', () => {
-        const invalidPaymentStatusRequestParameters = {
-            paymentId: 'some-id',
-        };
-
-        expect(() => {
-            parseAndValidatePaymentStatusRequest(invalidPaymentStatusRequestParameters);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidatePaymentStatusRequest, validParams);
+    runMissingFieldTests(parseAndValidatePaymentStatusRequest, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidatePaymentStatusRequest, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidatePaymentStatusRequest, validParams, fields);
 });

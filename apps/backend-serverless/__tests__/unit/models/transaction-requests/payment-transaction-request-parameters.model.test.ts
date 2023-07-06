@@ -1,23 +1,24 @@
 import { parseAndValidatePaymentTransactionRequest } from '../../../../src/models/transaction-requests/payment-transaction-request-parameters.model.js';
+import {
+    runEmptyFieldTests,
+    runInvalidFieldTypeTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
 describe('unit testing the payment transaction request parameters model', () => {
-    it('valid payment transaction request parameters', () => {
-        const validPaymentTransactionRequestParameters = {
-            paymentId: 'some-id',
-        };
+    const validParams = {
+        paymentId: 'some-id',
+    };
 
-        expect(() => {
-            parseAndValidatePaymentTransactionRequest(validPaymentTransactionRequestParameters);
-        }).not.toThrow();
-    });
+    const fields = ['paymentId'];
 
-    it('invalid payment transaction request parameters', () => {
-        const invalidPaymentTransactionRequestParameters = {
-            id: 'some-id',
-        };
+    const wrongTypes = {
+        paymentId: 123,
+    };
 
-        expect(() => {
-            parseAndValidatePaymentTransactionRequest(invalidPaymentTransactionRequestParameters);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidatePaymentTransactionRequest, validParams);
+    runMissingFieldTests(parseAndValidatePaymentTransactionRequest, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidatePaymentTransactionRequest, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidatePaymentTransactionRequest, validParams, fields);
 });

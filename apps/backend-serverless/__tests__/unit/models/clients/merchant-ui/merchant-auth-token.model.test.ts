@@ -1,37 +1,27 @@
 import { parseAndValidateMerchantAuthToken } from '../../../../../src/models/clients/merchant-ui/merchant-auth-token.model.js';
+import {
+    runEmptyFieldTests,
+    runInvalidFieldTypeTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
 describe('unit testing the merchant auth token model', () => {
-    it('valid merchant auth token body parsing', () => {
-        const validInstallQueryParams = {
-            id: 'some-id',
-            iat: 123,
-            exp: 123,
-        };
+    const fields = ['id', 'iat', 'exp'];
+    const validParams = {
+        id: 'some-id',
+        iat: 123,
+        exp: 123,
+    };
 
-        expect(() => {
-            parseAndValidateMerchantAuthToken(validInstallQueryParams);
-        }).not.toThrow();
-    });
+    const wrongTypes = {
+        id: 123, // should be a string
+        iat: '123', // should be a number
+        exp: '123', // should be a number
+    };
 
-    it('invalid merchant auth token, missing id', () => {
-        const validInstallQueryParams = {
-            iat: 123,
-            exp: 123,
-        };
-
-        expect(() => {
-            parseAndValidateMerchantAuthToken(validInstallQueryParams);
-        }).toThrow();
-    });
-
-    it('invalid merchant auth token, missing iat', () => {
-        const validInstallQueryParams = {
-            id: 'some-id',
-            exp: 123,
-        };
-
-        expect(() => {
-            parseAndValidateMerchantAuthToken(validInstallQueryParams);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidateMerchantAuthToken, validParams);
+    runMissingFieldTests(parseAndValidateMerchantAuthToken, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidateMerchantAuthToken, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidateMerchantAuthToken, validParams, fields);
 });

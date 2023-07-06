@@ -1,15 +1,13 @@
 import { KybState, Merchant, PaymentRecord, PaymentRecordStatus, RefundRecord } from '@prisma/client';
-import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
-import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
-import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
-import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
-import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
-import * as web3 from '@solana/web3.js';
-import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
-import { USDC_MINT } from '../../configs/tokens.config.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
+import * as web3 from '@solana/web3.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
 import { AdminDataResponse } from '../../models/shopify-graphql-responses/admin-data.response.model.js';
+import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
+import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
+import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import {
     PaymentSessionNextActionAction,
     PaymentSessionStateCode,
@@ -17,6 +15,8 @@ import {
     RefundSessionStateCode,
     RefundSessionStateRejectedReason,
 } from '../../models/shopify-graphql-responses/shared.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { findAssociatedTokenAddress } from '../pubkeys.utility.js';
 
 /**
  *
@@ -26,19 +26,20 @@ import {
 export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Merchant => {
     return {
         id: merchantData.id ?? 'some-merchant-id',
-        email: merchantData.email ?? 'some-merchant-email',
         shop: merchantData.shop ?? 'some-merchant-shop.myshopify.com',
-        lastNonce: merchantData.lastNonce ?? 'some-nonce',
+        name: merchantData.name ?? 'Some Merchant',
+        email: merchantData.email ?? 'some-merchant-email',
         accessToken: merchantData.accessToken ?? null,
+        lastNonce: merchantData.lastNonce ?? 'some-nonce',
         scopes: merchantData.scopes ?? null,
         walletAddress: merchantData.walletAddress ?? null,
         tokenAddress: merchantData.tokenAddress ?? null,
-        name: merchantData.name ?? 'Some Merchant',
-        acceptedTermsAndConditions: merchantData.acceptedTermsAndConditions ?? false,
-        dismissCompleted: merchantData.dismissCompleted ?? false,
         kybInquiry: merchantData.kybInquiry ?? null,
         kybState: merchantData.kybState ?? KybState.pending,
         active: merchantData.active ?? false,
+        acceptedTermsAndConditions: merchantData.acceptedTermsAndConditions ?? false,
+        acceptedPrivacyPolicy: merchantData.acceptedPrivacyPolicy ?? false,
+        dismissCompleted: merchantData.dismissCompleted ?? false,
     };
 };
 
@@ -146,7 +147,17 @@ export const createMockSuccessPaymentSessionRejectResponse = (
                 userErrors: [],
             },
         },
-        extensions: {},
+        extensions: {
+            cost: {
+                requestedQueryCost: 123,
+                actualQueryCost: 123,
+                throttleStatus: {
+                    maximumAvailable: 123,
+                    currentlyAvailable: 123,
+                    restoreRate: 123,
+                },
+            },
+        },
     };
 };
 
@@ -218,7 +229,17 @@ export const createMockPaymentAppConfigureResponse = (
                 userErrors: [],
             },
         },
-        extensions: {},
+        extensions: {
+            cost: {
+                requestedQueryCost: 123,
+                actualQueryCost: 123,
+                throttleStatus: {
+                    maximumAvailable: 123,
+                    currentlyAvailable: 123,
+                    restoreRate: 123,
+                },
+            },
+        },
     };
 };
 
@@ -236,7 +257,17 @@ export const createMockAdminDataResponse = (adminDataResponse: Partial<AdminData
                 enabledPresentmentCurrencies: ['mock-currency-1', 'mock-currency-2'],
             },
         },
-        extensions: {},
+        extensions: {
+            cost: {
+                requestedQueryCost: 123,
+                actualQueryCost: 123,
+                throttleStatus: {
+                    maximumAvailable: 123,
+                    currentlyAvailable: 123,
+                    restoreRate: 123,
+                },
+            },
+        },
     };
 };
 

@@ -1,25 +1,24 @@
 import { parseAndValidateShopRedactRequestBody } from '../../../../src/models/shopify/shop-redact-request.model.js';
+import {
+    runEmptyFieldTests,
+    runInvalidFieldTypeTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
 describe('unit testing shop redact request model', () => {
-    it('valid shop redact request body', () => {
-        const validShopifyRequestHeaders = {
-            shop_id: '123456',
-            shop_domain: 'some-shop.myshopify.com',
-        };
+    const validParams = {
+        shop_id: '123456',
+        shop_domain: 'some-shop.myshopify.com',
+    };
+    const fields = ['shop_id', 'shop_domain'];
+    const wrongTypes = {
+        shop_id: 123,
+        shop_domain: 123,
+    };
 
-        expect(() => {
-            parseAndValidateShopRedactRequestBody(validShopifyRequestHeaders);
-        }).not.toThrow();
-    });
-
-    it('another valid shop redact request body', () => {
-        const validShopifyRequestHeaders = {
-            shop_id: 123456,
-            shop_domain: 'some-shop.myshopify.com',
-        };
-
-        expect(() => {
-            parseAndValidateShopRedactRequestBody(validShopifyRequestHeaders);
-        }).not.toThrow();
-    });
+    runValidParameterTest(parseAndValidateShopRedactRequestBody, validParams);
+    runMissingFieldTests(parseAndValidateShopRedactRequestBody, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidateShopRedactRequestBody, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidateShopRedactRequestBody, validParams, fields);
 });

@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export const appRedirectQueryParmSchema = object().shape({
     code: string().required(),
@@ -25,7 +25,7 @@ export const appRedirectQueryParmSchema = object().shape({
 export type AppRedirectQueryParam = InferType<typeof appRedirectQueryParmSchema>;
 
 export const parseAndValidateAppRedirectQueryParams = (appRedirectQuery: unknown): AppRedirectQueryParam => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         appRedirectQuery,
         appRedirectQueryParmSchema,
         'Could not parse the app install query. Unknown Reason.'

@@ -1,41 +1,24 @@
 import { parseAndValidateAccessTokenResponse } from '../../../../src/models/shopify/access-token-response.model.js';
+import {
+    runEmptyFieldTests,
+    runInvalidFieldTypeTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
 
 describe('Merchant Testing Suite', () => {
-    it('valid access token response', () => {
-        const accessTokenValue = 'abcd-efgh';
-        const scopeValue = 'read_products,write_products';
+    const validParams = {
+        access_token: 'abcd-efgh',
+        scope: 'read_products,write_products',
+    };
+    const fields = ['access_token', 'scope'];
+    const wrongTypes = {
+        access_token: 123, // should be a string
+        scope: 123, // should be a string
+    };
 
-        const validAccessTokenResponseBody = {
-            access_token: accessTokenValue,
-            scope: scopeValue,
-        };
-
-        expect(() => {
-            parseAndValidateAccessTokenResponse(validAccessTokenResponseBody);
-        }).not.toThrow();
-    });
-
-    it('invalid access token response, missing access_token key', () => {
-        const scopeValue = 'read_products,write_products';
-
-        const validAccessTokenResponseBody = {
-            scope: scopeValue,
-        };
-
-        expect(() => {
-            parseAndValidateAccessTokenResponse(validAccessTokenResponseBody);
-        }).toThrow();
-    });
-
-    it('invalid access token response, missing scope key', () => {
-        const accessTokenValue = 'abcd-efgh';
-
-        const validAccessTokenResponseBody = {
-            access_token: accessTokenValue,
-        };
-
-        expect(() => {
-            parseAndValidateAccessTokenResponse(validAccessTokenResponseBody);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidateAccessTokenResponse, validParams);
+    runMissingFieldTests(parseAndValidateAccessTokenResponse, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidateAccessTokenResponse, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidateAccessTokenResponse, validParams, fields);
 });

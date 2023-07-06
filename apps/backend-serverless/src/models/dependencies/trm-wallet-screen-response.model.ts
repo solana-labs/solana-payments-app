@@ -1,5 +1,5 @@
-import { object, string, number, InferType, array } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, array, number, object, string } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 const trmAddressRiskIndicatorsSchema = object().shape({
     category: string().required(),
@@ -40,7 +40,7 @@ export const trmWalletScreenResponseSchema = array().of(trmWalletScreenModelSche
 export type TrmWalletScreenResponse = InferType<typeof trmWalletScreenResponseSchema>;
 
 export const parseAndValidateTrmWalletScreenResponse = (walletScreenResponse: unknown): TrmWalletScreenResponse => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         walletScreenResponse,
         trmWalletScreenResponseSchema,
         'Failed to parse and validate TRM wallet screen response. Unknown reason.'

@@ -1,40 +1,17 @@
 import { parseAndValidatePaymentAppConfigureResponse } from '../../../../src/models/shopify-graphql-responses/payment-app-configure-response.model.js';
+import {
+    runEmptyFieldTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
+import { createMockPaymentAppConfigureResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
 describe('unit testing payment app configure model', () => {
-    it('valid payment app configure response', () => {
-        const validPaymentAppConfigureResponse = {
-            data: {
-                paymentsAppConfigure: {
-                    paymentsAppConfiguration: {
-                        externalHandle: 'mock-internal-id',
-                        ready: true,
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        };
+    const validParams = createMockPaymentAppConfigureResponse();
 
-        expect(() => {
-            parseAndValidatePaymentAppConfigureResponse(validPaymentAppConfigureResponse);
-        }).not.toThrow();
-    });
+    const fields = ['data', 'extensions'];
 
-    it('invalid payment app configure response, missing ready', () => {
-        const invalidPaymentAppConfigureResponse = {
-            data: {
-                paymentsAppConfigure: {
-                    paymentsAppConfiguration: {
-                        externalHandle: 'mock-internal-id',
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        };
-
-        expect(() => {
-            parseAndValidatePaymentAppConfigureResponse(invalidPaymentAppConfigureResponse);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidatePaymentAppConfigureResponse, validParams);
+    runMissingFieldTests(parseAndValidatePaymentAppConfigureResponse, validParams, fields);
+    runEmptyFieldTests(parseAndValidatePaymentAppConfigureResponse, validParams, fields);
 });

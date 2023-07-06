@@ -1,5 +1,5 @@
-import { object, InferType } from 'yup';
-import { parseAndValidate } from '../../utilities/yup.utility.js';
+import { InferType, object } from 'yup';
+import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 import { sharedRefundResponseRootSchema, shopifyResponseExtensionsSchema } from './shared.model.js';
 
 export const dataRefundSessionResolveSchema = object().shape({
@@ -14,7 +14,7 @@ export const refundSessionResolveResponseSchema = object().shape({
 export type ResolveRefundResponse = InferType<typeof refundSessionResolveResponseSchema>;
 
 export const parseAndValidateResolveRefundResponse = (resolveRefundResponeBody: unknown): ResolveRefundResponse => {
-    return parseAndValidate<ResolveRefundResponse>(
+    return parseAndValidateStrict<ResolveRefundResponse>(
         resolveRefundResponeBody,
         refundSessionResolveResponseSchema,
         'Could not parse the resolve refund response body. Unknown Reason.'

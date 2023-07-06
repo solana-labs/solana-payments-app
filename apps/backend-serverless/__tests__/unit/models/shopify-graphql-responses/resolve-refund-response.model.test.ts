@@ -1,32 +1,17 @@
 import { parseAndValidateResolveRefundResponse } from '../../../../src/models/shopify-graphql-responses/resolve-refund-response.model.js';
 import { createMockSuccessRefundSessionResolveResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
+import {
+    runEmptyFieldTests,
+    runMissingFieldTests,
+    runValidParameterTest,
+} from '../../../../src/utilities/testing-helper/common-model-test.utility.js';
+
 describe('unit testing resolve refund response model', () => {
-    it('valid resolve refund response', () => {
-        const validResolveRefundResponse = createMockSuccessRefundSessionResolveResponse();
+    const validParams = createMockSuccessRefundSessionResolveResponse();
+    const fields = ['data', 'extensions'];
 
-        expect(() => {
-            parseAndValidateResolveRefundResponse(validResolveRefundResponse);
-        }).not.toThrow();
-    });
-
-    it('invalid resolve refund response, missing id', () => {
-        const invalidResolveRefundResponse = {
-            data: {
-                refundSessionResolve: {
-                    refundSession: {
-                        state: {
-                            merchantMessage: 'the refund was successful',
-                        },
-                    },
-                    userErrors: [],
-                },
-            },
-            extensions: {},
-        };
-
-        expect(() => {
-            parseAndValidateResolveRefundResponse(invalidResolveRefundResponse);
-        }).toThrow();
-    });
+    runValidParameterTest(parseAndValidateResolveRefundResponse, validParams);
+    runMissingFieldTests(parseAndValidateResolveRefundResponse, validParams, fields);
+    runEmptyFieldTests(parseAndValidateResolveRefundResponse, validParams, fields);
 });
