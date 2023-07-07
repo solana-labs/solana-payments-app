@@ -40,7 +40,7 @@
         "prisma:seed:dev": "dotenv -e .env.dev -- npx prisma db seed"
     },
     "keywords": [],
-    "author": "@tj_littlejohn",
+    "author": "@solana_labs",
     "license": "ISC",
     "dependencies": {
         "@prisma/client": "4.15.0",

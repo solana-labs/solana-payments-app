@@ -1,5 +1,4 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
-import crypto from 'crypto-js';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export const admin = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     return {
@@ -8,7 +7,7 @@ export const admin = async (event: APIGatewayProxyEventV2): Promise<APIGatewayPr
             data: {
                 shop: {
                     name: 'Mock Shopify Store',
-                    email: 'teej@solanapay.com',
+                    email: 'harsha@solanapay.com',
                     enabledPresentmentCurrencies: ['USD'],
                 },
             },

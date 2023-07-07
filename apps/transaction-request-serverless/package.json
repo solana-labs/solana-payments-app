@@ -1,6 +1,6 @@
 {
     "name": "transaction-request-serverless",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "",
     "private": true,
     "main": "handler.js",
@@ -21,7 +21,7 @@
         "deploy:staging": "serverless deploy --stage staging --config serverless.yml"
     },
     "keywords": [],
-    "author": "@tj_littlejohn",
+    "author": "@solana_labs",
     "license": "ISC",
     "dependencies": {
         "@solana/web3.js": "^1.74.0",
