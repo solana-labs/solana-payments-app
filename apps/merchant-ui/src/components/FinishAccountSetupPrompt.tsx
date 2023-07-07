@@ -131,7 +131,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                     <a href={merchantInfo.data.completedRedirect}>
                         <Primary
                             onClick={() => {
-                                updateMerchant('dismissCompleted', 'true');
+                                updateMerchant('dismissCompleted', true);
                                 getMerchantInfo();
                             }}
                         >
@@ -161,14 +161,14 @@ export function FinishAccountSetupPrompt(props: Props) {
                             ? () => (
                                   <AcceptPolicy
                                       title="Terms of Service"
-                                      updatePolicy={() => updateMerchant('acceptedTermsAndConditions', 'true')}
+                                      updatePolicy={() => updateMerchant('acceptedTermsAndConditions', true)}
                                   />
                               )
                             : step === RemainingSetupItem.AcceptPrivacy
                             ? () => (
                                   <AcceptPolicy
                                       title="Privacy Policy"
-                                      updatePolicy={() => updateMerchant('acceptedPrivacyPolicy', 'true')}
+                                      updatePolicy={() => updateMerchant('acceptedPrivacyPolicy', true)}
                                   />
                               )
                             : () => <Primary onClick={() => router.push('/getting-started/add-wallet')}>Start</Primary>
