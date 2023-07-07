@@ -50,7 +50,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
-export async function updateMerchant(field: string, value: string) {
+export async function updateMerchant(field: string, value: string | boolean) {
     const headers = {
         'Content-Type': 'application/json',
     };
