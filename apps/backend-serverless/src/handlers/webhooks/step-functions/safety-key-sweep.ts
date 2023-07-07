@@ -1,35 +1,33 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyResultV2 } from 'aws-lambda';
-import axios from 'axios';
-import { parse } from 'path';
 import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
-    SafteyKeyMessage,
-    parseAndValidateSafteyKeyMessage,
-} from '../../../models/step-functions/saftey-key-sweep.model.js';
-import { fetchSingleUseKeypair } from '../../../services/fetch-single-use-keypair.service.js';
+    SafetyKeyMessage,
+    parseAndValidateSafetyKeyMessage,
+} from '../../../models/step-functions/safety-key-sweep.model.js';
 import { fetchGasKeypair } from '../../../services/fetch-gas-keypair.service.js';
-import { createSweepingTransaction, sendTransaction } from '../../../utilities/transaction.utility.js';
+import { fetchSingleUseKeypair } from '../../../services/fetch-single-use-keypair.service.js';
 import { deleteSingleUseKeypair } from '../../../services/s3/delete-single-use-keypair.service.js';
+import { createSweepingTransaction, sendTransaction } from '../../../utilities/transaction.utility.js';
 
-export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
+export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
-        let safteyKeyMessage: SafteyKeyMessage;
+        let safetyKeyMessage: SafetyKeyMessage;
         let gasKeypair: web3.Keypair;
         let singleUseKeypair: web3.Keypair;
         let transaction: web3.Transaction;
 
         try {
-            safteyKeyMessage = parseAndValidateSafteyKeyMessage(event);
+            safetyKeyMessage = parseAndValidateSafetyKeyMessage(event);
         } catch (error) {
             console.log(error);
             Sentry.captureException(error);
-            throw new Error('Could not parse and validate the saftey key message');
+            throw new Error('Could not parse and validate the safety key message');
         }
 
         try {
             gasKeypair = await fetchGasKeypair();
-            singleUseKeypair = await fetchSingleUseKeypair(safteyKeyMessage.key);
+            singleUseKeypair = await fetchSingleUseKeypair(safetyKeyMessage.key);
         } catch (error) {
             Sentry.captureException(error);
             console.log(error);
@@ -55,7 +53,7 @@ export const safteyKeySweep = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
-            await deleteSingleUseKeypair(safteyKeyMessage.key);
+            await deleteSingleUseKeypair(safetyKeyMessage.key);
         } catch (error) {
             console.log(error);
             Sentry.captureException(error);

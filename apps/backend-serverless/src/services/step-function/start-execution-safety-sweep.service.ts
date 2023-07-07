@@ -1,7 +1,7 @@
-import pkg from 'aws-sdk';
-import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 import * as Sentry from '@sentry/serverless';
+import pkg from 'aws-sdk';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 
 const { StepFunctions } = pkg;
 
@@ -11,14 +11,14 @@ const { StepFunctions } = pkg;
  * @returns nothing
  */
 // Dependency injection is used here for easier testing
-export const startExecutionOfSafteySweep = async (
+export const startExecutionOfSafetySweep = async (
     key: string,
     stepFunctions: pkg.StepFunctions = new StepFunctions()
 ) => {
-    const safteyMachineArn = process.env.SAFTEY_ARN;
+    const safetyMachineArn = process.env.SAFETY_ARN;
 
-    if (safteyMachineArn == null) {
-        throw new MissingEnvError('saftey arn');
+    if (safetyMachineArn == null) {
+        throw new MissingEnvError('safety arn');
     }
 
     const maxNumberOfExecutionAttempts = 3;
@@ -27,7 +27,7 @@ export const startExecutionOfSafteySweep = async (
         () =>
             stepFunctions
                 .startExecution({
-                    stateMachineArn: safteyMachineArn,
+                    stateMachineArn: safetyMachineArn,
                     input: JSON.stringify({ key: key }),
                 })
                 .promise(),
