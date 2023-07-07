@@ -35,20 +35,21 @@ provider:
     TRANSACTION_REQUEST_SERVER_URL: ${env:TRANSACTION_REQUEST_SERVER_URL}
     TRM_API_KEY: ${env:TRM_API_KEY}
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    SENTRY_DSN: ${env:SENTRY_DSN}
+    SENTRY_RELEASE: ${env:SENTRY_RELEASE}
+    HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
+    HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
+    HELIUS_API_KEY: ${env:HELIUS_API_KEY}
+    PERSONA_API_KEY: ${env:PERSONA_API_KEY}
+    NODE_ENV: ${env:NODE_ENV}
+    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+
     AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
     AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
     AWS_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
-    SENTRY_DSN: ${env:SENTRY_DSN}
-    SENTRY_RELEASE: ${env:SENTRY_RELEASE}
-    HELIUS_AUTHORIZATION: ${env:HELIUS_AUTHORIZATION}
-    HISTORICAL_FEE_PAYERS: ${env:HISTORICAL_FEE_PAYERS}
     WEBSOCKET_URL: ${self:resources.Outputs.WebsocketUrl.Value}
-    HELIUS_API_KEY: ${env:HELIUS_API_KEY}
-    PERSONA_API_KEY: ${env:PERSONA_API_KEY}
-    NODE_ENV: ${env:NODE_ENV}
-    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
@@ -118,6 +119,7 @@ functions:
       - httpApi:
           path: /payment-transaction
           method: post
+    iamRoleStatementsName: payment-tx
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -145,6 +147,7 @@ functions:
       - httpApi:
           path: /refund-transaction
           method: post
+    iamRoleStatementsName: refund-tx
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -231,6 +234,7 @@ functions:
       - sqs:
           arn: ${self:resources.Outputs.ShopifyQueueArn.Value}
           batchSize: 1
+    iamRoleStatementsName: sqs-msg-receive
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -305,10 +309,10 @@ functions:
     handler: src/handlers/websockets/disconnect.disconnect
     events:
       - websocket: $disconnect
-  saftey-key-uploaded:
-    handler: src/handlers/webhooks/s3/saftey-key-uploaded.safteyKeyUploaded
+  safety-key-uploaded:
+    handler: src/handlers/webhooks/s3/safety-key-uploaded.safetyKeyUploaded
     environment:
-      SAFTEY_ARN: ${self:resources.Outputs.SafteyMachine.Value}
+      SAFETY_ARN: ${self:resources.Outputs.SafetyMachine.Value}
     events:
       - s3:
           bucket: ${self:custom.single-use-bucket-name}
@@ -316,6 +320,7 @@ functions:
           rules:
             - suffix: '.json'
           existing: true
+    iamRoleStatementsName: safety-key-up
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -324,9 +329,9 @@ functions:
       - Effect: Allow
         Action:
           - states:StartExecution
-        Resource: ${self:resources.Outputs.SafteyMachine.Value}
-  saftey-key-sweep:
-    handler: src/handlers/webhooks/step-functions/saftey-key-sweep.safteyKeySweep
+        Resource: ${self:resources.Outputs.SafetyMachine.Value}
+  safety-key-sweep:
+    handler: src/handlers/webhooks/step-functions/safety-key-sweep.safetyKeySweep
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -355,6 +360,19 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [retry-request, Arn]
             End: true
+    safety:
+      definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+            Type: Wait
+            Seconds: 240
+            Next: sweep_safety
+          sweep_safety:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [safety-key-sweep, Arn]
+            End: true
 resources:
   Parameters:
     Stage:
@@ -365,18 +383,18 @@ resources:
       Description: The ARN of the retry machine
       Value:
         Fn::GetAtt: [RetryStepFunctionsStateMachine, Arn]
-    SafteyMachine:
-      Description: The ARN of the retry machine
+    SafetyMachine:
+      Description: The ARN of the safety machine
       Value:
-        Fn::GetAtt: [SafteyStepFunctionsStateMachine, Arn]
-    GasBucketArn:
-      Description: The arn of the gas bucket
-      Value:
-        Fn::GetAtt: [GasBucket, Arn]
-    SingleUseKeyPairBucketArn:
-      Description: The arn of the single use key pair bucket
-      Value:
-        Fn::GetAtt: [SingleUseKeyPairBucket, Arn]
+        Fn::GetAtt: [SafetyStepFunctionsStateMachine, Arn]
+    # GasBucketArn:
+    #   Description: The arn of the gas bucket
+    #   Value:
+    #     Fn::GetAtt: [GasBucket, Arn]
+    # SingleUseKeyPairBucketArn:
+    #   Description: The arn of the single use key pair bucket
+    #   Value:
+    #     Fn::GetAtt: [SingleUseKeyPairBucket, Arn]
     ShopifyQueueArn:
       Description: The arn of the shopify sqs queue
       Value:
@@ -415,16 +433,16 @@ resources:
             - '.execute-api.us-east-1.amazonaws.com/'
             - '${self:provider.stage}'
   Resources:
-    GasBucket:
-      Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
-      Properties:
-        BucketName: ${self:custom.gas-bucket-name}
-    SingleUseKeyPairBucket:
-      Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
-      Properties:
-        BucketName: ${self:custom.single-use-bucket-name}
+    # GasBucket:
+    #   Type: AWS::S3::Bucket
+    #   DeletionPolicy: Retain
+    #   Properties:
+    #     BucketName: ${self:custom.gas-bucket-name}
+    # SingleUseKeyPairBucket:
+    #   Type: AWS::S3::Bucket
+    #   DeletionPolicy: Retain
+    #   Properties:
+    #     BucketName: ${self:custom.single-use-bucket-name}
     ShopifyQueue:
       Type: AWS::SQS::Queue
       DeletionPolicy: Retain
@@ -454,13 +472,6 @@ custom:
     httpPort: 4000
     lambdaPort: 4001
     websocketPort: 4009
-  # s3:
-  #   address: 'localhost'
-  #   port: 4569
-  #   directory: './buckets'
-  #   accessKeyId: 'S3RVER'
-  #   secretAccessKey: 'S3RVER'
-
   gas-bucket-name: gas-bucket-${self:provider.stage}
   single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
   gas-object-name: 'gas-kp.json'
