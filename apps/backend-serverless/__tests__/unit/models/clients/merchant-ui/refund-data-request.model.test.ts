@@ -14,13 +14,19 @@ describe('unit testing refund data request model', () => {
         refundStatus: RefundStatusOption.open,
     };
 
-    const wrongTypes = {
+    const validParams2 = {
         pageNumber: '1', // should be a number
         pageSize: '10', // should be a number
-        refundStatus: 'clopen',
+    };
+
+    const wrongTypes = {
+        pageNumber: 'sdf',
+        pageSize: 'sdf',
+        refundStatus: 1,
     };
 
     runValidParameterTest(parseAndValidateRefundDataRequestParameters, validParams);
+    runValidParameterTest(parseAndValidateRefundDataRequestParameters, validParams2);
     runInvalidFieldTypeTests(parseAndValidateRefundDataRequestParameters, validParams, fields, wrongTypes);
     runEmptyFieldTests(parseAndValidateRefundDataRequestParameters, validParams, fields);
 });

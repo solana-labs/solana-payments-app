@@ -1,10 +1,20 @@
-import { InferType, number, object } from 'yup';
+import { InferType, mixed, object } from 'yup';
 import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 
 export const paymentDataRequestParametersSchema = object().shape({
-    pageNumber: number().min(1).default(1),
-    pageSize: number().min(1).default(DEFAULT_PAGINATION_SIZE),
+    pageNumber: mixed()
+        .test('isNumber', 'pageNumber must be a number', value => {
+            const parsedValue = Number(value);
+            return !isNaN(parsedValue) && Number.isInteger(parsedValue) && parsedValue >= 1;
+        })
+        .default(1),
+    pageSize: mixed()
+        .test('isNumber', 'pageSize must be a number', value => {
+            const parsedValue = Number(value);
+            return !isNaN(parsedValue) && Number.isInteger(parsedValue) && parsedValue >= 1;
+        })
+        .default(DEFAULT_PAGINATION_SIZE),
 });
 
 export type PaymentDataRequestParameters = InferType<typeof paymentDataRequestParametersSchema>;

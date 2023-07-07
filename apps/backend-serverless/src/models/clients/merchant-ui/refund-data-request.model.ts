@@ -4,8 +4,18 @@ import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/
 import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 
 export const refundDataRequestParametersSchema = object().shape({
-    pageNumber: number().min(1).default(1),
-    pageSize: number().min(1).default(DEFAULT_PAGINATION_SIZE),
+    pageNumber: number()
+        .min(1)
+        .default(1)
+        .transform((value, originalValue) => {
+            return isNaN(originalValue) ? undefined : value;
+        }),
+    pageSize: number()
+        .min(1)
+        .default(DEFAULT_PAGINATION_SIZE)
+        .transform((value, originalValue) => {
+            return isNaN(originalValue) ? undefined : value;
+        }),
     refundStatus: string().oneOf(Object.values(RefundStatusOption)).default(RefundStatusOption.open),
 });
 
