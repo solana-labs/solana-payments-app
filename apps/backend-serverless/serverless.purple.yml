@@ -119,7 +119,7 @@ functions:
       - httpApi:
           path: /payment-transaction
           method: post
-    iamRoleStatementsName: payment-tx
+    iamRoleStatementsName: payment-tx-${self:provider.stage}-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -147,7 +147,7 @@ functions:
       - httpApi:
           path: /refund-transaction
           method: post
-    iamRoleStatementsName: refund-tx
+    iamRoleStatementsName: refund-tx-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -234,7 +234,7 @@ functions:
       - sqs:
           arn: ${self:resources.Outputs.ShopifyQueueArn.Value}
           batchSize: 1
-    iamRoleStatementsName: sqs-msg-receive
+    iamRoleStatementsName: sqs-msg-receive-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -320,7 +320,7 @@ functions:
           rules:
             - suffix: '.json'
           existing: true
-    iamRoleStatementsName: safety-key-up
+    iamRoleStatementsName: safety-key-up-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:

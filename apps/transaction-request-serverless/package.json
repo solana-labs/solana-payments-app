@@ -17,7 +17,8 @@
         "test": "jest",
         "test:integration": "jest integration",
         "offline": "NODE_ENV=development serverless offline start --stage dev",
-        "deploy:prod": "serverless deploy --stage prod --config serverless.yml"
+        "deploy:production": "serverless deploy --stage production --config serverless.yml",
+        "deploy:staging": "serverless deploy --stage staging --config serverless.yml"
     },
     "keywords": [],
     "author": "@tj_littlejohn",
