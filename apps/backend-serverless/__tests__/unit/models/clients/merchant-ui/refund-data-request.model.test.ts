@@ -9,14 +9,9 @@ import {
 describe('unit testing refund data request model', () => {
     const fields = ['pageNumber', 'pageSize', 'refundStatus'];
     const validParams = {
-        pageNumber: 1,
-        pageSize: 10,
+        pageNumber: '1',
+        pageSize: '10',
         refundStatus: RefundStatusOption.open,
-    };
-
-    const validParams2 = {
-        pageNumber: '1', // should be a number
-        pageSize: '10', // should be a number
     };
 
     const wrongTypes = {
@@ -25,8 +20,14 @@ describe('unit testing refund data request model', () => {
         refundStatus: 1,
     };
 
+    const wrongTypes2 = {
+        pageNumber: 1,
+        pageSize: 1,
+        refundStatus: 1,
+    };
+
     runValidParameterTest(parseAndValidateRefundDataRequestParameters, validParams);
-    runValidParameterTest(parseAndValidateRefundDataRequestParameters, validParams2);
     runInvalidFieldTypeTests(parseAndValidateRefundDataRequestParameters, validParams, fields, wrongTypes);
+    runInvalidFieldTypeTests(parseAndValidateRefundDataRequestParameters, validParams, fields, wrongTypes2);
     runEmptyFieldTests(parseAndValidateRefundDataRequestParameters, validParams, fields);
 });
