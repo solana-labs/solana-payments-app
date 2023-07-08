@@ -1,4 +1,4 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import crypto from 'crypto-js';
 import { parseAndValidateRejectPaymentResponse } from '../models/authorize.models.js';
 
@@ -13,7 +13,7 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
 
     const installParams = {
         shop: 'localhost:4004',
-        host: 'LETSGOPANTHERS',
+        host: 'testhost',
         timestamp: 'timestamp',
     };
 
@@ -21,7 +21,7 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
 
     const authorizeParams = {
         code: 'code',
-        host: 'LETSGOPANTHERS',
+        host: 'testhost',
         shop: 'localhost:4004',
         state: authorizeParameters.state,
         timestamp: 'timestamp',
