@@ -3,6 +3,14 @@ import { RefundStatusOption } from '../../../utilities/clients/merchant-ui/creat
 import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 
+const parseParameters = params => {
+    return {
+        pageNumber: parseInt(params.pageNumber),
+        pageSize: parseInt(params.pageSize),
+        refundStatus: params.refundStatus,
+    };
+};
+
 export const refundDataRequestParametersSchema = object().shape({
     pageNumber: number().min(1).default(1),
     pageSize: number().min(1).default(DEFAULT_PAGINATION_SIZE),
@@ -15,7 +23,7 @@ export const parseAndValidateRefundDataRequestParameters = (
     refundDataRequestParmatersBody: unknown
 ): RefundDataRequestParameters => {
     return parseAndValidateStrict(
-        refundDataRequestParmatersBody,
+        parseParameters(refundDataRequestParmatersBody),
         refundDataRequestParametersSchema,
         'Could not parse the refund data request parameters. Unknown Reason.'
     );

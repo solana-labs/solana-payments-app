@@ -12,12 +12,18 @@ describe('unit testing payment data request model', () => {
         pageSize: 10,
     };
 
+    const validParams2 = {
+        pageNumber: '1',
+        pageSize: '10',
+    };
+
     const wrongTypes = {
-        pageNumber: '1', // should be a number
-        pageSize: '10', // should be a number
+        pageNumber: 'sdf',
+        pageSize: 'sdf',
     };
 
     runValidParameterTest(parseAndValidatePaymentDataRequestParameters, validParams);
+    runValidParameterTest(parseAndValidatePaymentDataRequestParameters, validParams2);
     runInvalidFieldTypeTests(parseAndValidatePaymentDataRequestParameters, validParams, fields, wrongTypes);
     runEmptyFieldTests(parseAndValidatePaymentDataRequestParameters, validParams, fields);
 });
