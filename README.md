@@ -67,7 +67,13 @@ docker-compose up // If you're using our assisted local database
 
 (from /apps/backend-serverless)
 npx prisma migrate dev
+
 ```
+
+If you are using a local database, run
+
+(from /apps/backend-serverless)
+y prisma:seed:dev
 
 7. stand everything up
 
