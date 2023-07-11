@@ -1,24 +1,18 @@
+import { Merchant, PrismaClient, RefundRecord } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import axios from 'axios';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import {
     ShopifyRefundInitiation,
     parseAndValidateShopifyRefundInitiation,
 } from '../../models/shopify/process-refund.request.model.js';
-import { PrismaClient, RefundRecord, Merchant } from '@prisma/client';
-import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { create } from 'lodash';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import axios from 'axios';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
+import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +24,11 @@ Sentry.AWSLambda.init({
 
 export const refund = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        Sentry.captureEvent({
+            message: 'In refund',
+            level: 'info',
+        });
+
         const prisma = new PrismaClient();
         const refundRecordService = new RefundRecordService(prisma);
         const merchantService = new MerchantService(prisma);

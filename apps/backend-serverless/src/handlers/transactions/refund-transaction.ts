@@ -1,39 +1,38 @@
-import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Merchant, PaymentRecord, PrismaClient, RefundRecord, TransactionType } from '@prisma/client';
-import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
+import * as Sentry from '@sentry/serverless';
+import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import axios from 'axios';
+import { DependencyError } from '../../errors/dependency.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
 } from '../../models/transaction-requests/refund-transaction-request.model.js';
-import * as web3 from '@solana/web3.js';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import {
-    encodeBufferToBase58,
-    encodeTransaction,
-} from '../../utilities/transaction-request/encode-transaction.utility.js';
-import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+    TransactionRequestBody,
+    parseAndValidateTransactionRequestBody,
+} from '../../models/transaction-requests/transaction-request-body.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
+import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
+import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import {
     ErrorMessage,
     ErrorType,
     createErrorResponse,
     errorResponse,
 } from '../../utilities/responses/error-response.utility.js';
-import axios from 'axios';
-import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { create } from 'lodash';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { DependencyError } from '../../errors/dependency.error.js';
 import {
-    TransactionRequestBody,
-    parseAndValidateTransactionRequestBody,
-} from '../../models/transaction-requests/transaction-request-body.model.js';
+    encodeBufferToBase58,
+    encodeTransaction,
+} from '../../utilities/transaction-request/encode-transaction.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -45,6 +44,10 @@ Sentry.AWSLambda.init({
 
 export const refundTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        Sentry.captureEvent({
+            message: 'in refund-transaction',
+            level: 'info',
+        });
         let refundRequest: RefundTransactionRequest;
         let refundTransaction: TransactionRequestResponse;
         let transaction: web3.Transaction;

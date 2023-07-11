@@ -15,23 +15,28 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
-export const customersReact = Sentry.AWSLambda.wrapHandler(
+export const customersRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         let webhookHeaders: ShopifyWebhookHeaders;
+
+        Sentry.captureEvent({
+            message: 'In customersRedact gdpr',
+            level: 'info',
+        });
 
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            logSentry(error, 'Customers react wrong webhook');
+            logSentry(error, 'Customers redact wrong webhook');
             return createErrorResponse(error);
         }
 
         if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
-            return createErrorResponse(new InvalidInputError('Customers react wrong topic'));
+            return createErrorResponse(new InvalidInputError('Customers redact wrong topic'));
         }
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('Customers react Missing body'));
+            return createErrorResponse(new InvalidInputError('Customers redact Missing body'));
         }
 
         const customerRedactBodyString = JSON.stringify(event.body);

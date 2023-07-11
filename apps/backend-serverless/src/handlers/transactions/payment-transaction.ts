@@ -1,4 +1,3 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
     Merchant,
     PaymentRecord,
@@ -7,50 +6,47 @@ import {
     PrismaClient,
     TransactionType,
 } from '@prisma/client';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
-import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
+import * as Sentry from '@sentry/serverless';
+import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import axios from 'axios';
+import { DependencyError } from '../../errors/dependency.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
+import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 import {
     PaymentTransactionRequestParameters,
     parseAndValidatePaymentTransactionRequest,
 } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
-import { encodeBufferToBase58 } from '../../utilities/transaction-request/encode-transaction.utility.js';
-import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
-import * as web3 from '@solana/web3.js';
-import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import { TrmService } from '../../services/trm-service.service.js';
-import * as Sentry from '@sentry/serverless';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
-import axios from 'axios';
-import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
-import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
-import {
-    sendPaymentRejectRetryMessage,
-    sendSolanaPayInfoMessage,
-} from '../../services/sqs/sqs-send-message.service.js';
-import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
-import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
-import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { create } from 'lodash';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { DependencyError } from '../../errors/dependency.error.js';
 import {
     TransactionRequestBody,
     parseAndValidateTransactionRequestBody,
 } from '../../models/transaction-requests/transaction-request-body.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
+import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
+import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
+import {
+    sendPaymentRejectRetryMessage,
+    sendSolanaPayInfoMessage,
+} from '../../services/sqs/sqs-send-message.service.js';
+import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
+import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import { TrmService } from '../../services/trm-service.service.js';
+import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import {
+    encodeBufferToBase58,
+    encodeTransaction,
+} from '../../utilities/transaction-request/encode-transaction.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -62,6 +58,10 @@ Sentry.AWSLambda.init({
 
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        Sentry.captureEvent({
+            message: 'in payment transaction handler',
+            level: 'info',
+        });
         let paymentTransaction: TransactionRequestResponse;
         let paymentRequest: PaymentTransactionRequestParameters;
         let transaction: web3.Transaction;

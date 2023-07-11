@@ -29,6 +29,12 @@ Sentry.AWSLambda.init({
 export const shopRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         let webhookHeaders: ShopifyWebhookHeaders;
+
+        Sentry.captureEvent({
+            message: 'In shopRedact gdpr',
+            level: 'info',
+        });
+
         const merchantService = new MerchantService(prisma);
         const gdprService = new GDPRService(prisma);
 

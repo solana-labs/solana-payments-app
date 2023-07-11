@@ -1,9 +1,9 @@
+import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
-import { PrismaClient } from '@prisma/client';
 import pkg from 'aws-sdk';
-import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 const { ApiGatewayManagementApi } = pkg;
 
 const prisma = new PrismaClient();
@@ -16,6 +16,10 @@ Sentry.AWSLambda.init({
 
 export const connect = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyWebsocketEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in websocket connect',
+            level: 'info',
+        });
         const websocketSessionService = new WebsocketSessionService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
 

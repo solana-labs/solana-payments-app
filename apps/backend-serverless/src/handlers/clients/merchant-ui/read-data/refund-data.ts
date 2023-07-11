@@ -32,6 +32,10 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);
 
+        Sentry.captureEvent({
+            message: 'in refund-data',
+            level: 'info',
+        });
         let merchantAuthToken: MerchantAuthToken;
         let refundDataRequestParameters: RefundDataRequestParameters;
 

@@ -1,11 +1,12 @@
 import { Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResult } from 'aws-lambda';
 import { AppInstallQueryParam } from '../../models/shopify/install-query-params.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { logSentry } from '../../utilities/sentry-log.utility.js';
 import {
     createShopifyOAuthGrantRedirectUrl,
     verifyAndParseShopifyInstallRequest,
@@ -20,12 +21,17 @@ Sentry.AWSLambda.init({
 });
 
 export const install = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> => {
+        Sentry.captureEvent({
+            message: 'in install',
+            level: 'info',
+        });
         let parsedAppInstallQuery: AppInstallQueryParam;
 
         try {
             parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
         } catch (error) {
+            logSentry(error, event.queryStringParameters ? String(event.queryStringParameters) : 'empty query');
             return createErrorResponse(error);
         }
 
