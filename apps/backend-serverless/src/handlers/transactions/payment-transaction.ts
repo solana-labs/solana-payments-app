@@ -8,7 +8,7 @@ import {
 } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { DependencyError } from '../../errors/dependency.error.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
@@ -57,7 +57,7 @@ Sentry.AWSLambda.init({
 });
 
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
             message: 'in payment transaction handler',
             level: 'info',
@@ -316,7 +316,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     }
 );
 
-export const paymentMetadata = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const paymentMetadata = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     return {
         statusCode: 200,
         body: JSON.stringify({

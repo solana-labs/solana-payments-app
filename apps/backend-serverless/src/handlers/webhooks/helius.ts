@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
@@ -25,7 +25,7 @@ Sentry.AWSLambda.init({
 });
 
 export const helius = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
             message: 'in helius',
             level: 'info',

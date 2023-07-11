@@ -1,6 +1,6 @@
 import { Merchant, PrismaClient, RefundRecord } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
@@ -23,7 +23,7 @@ Sentry.AWSLambda.init({
 });
 
 export const refund = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
             message: 'In refund',
             level: 'info',

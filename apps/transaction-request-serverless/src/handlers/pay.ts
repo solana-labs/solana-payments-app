@@ -1,14 +1,13 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     PaymentTransactionBuilder,
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js';
-import { decode } from '../utils/strings.util.js';
 import { createConnection } from '../utils/connection.util.js';
-import * as web3 from '@solana/web3.js';
 
-export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const pay = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     let paymentTransactionRequest: PaymentTransactionRequest;
 
     if (event.body == null) {
@@ -42,16 +41,16 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     try {
         paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return {
             statusCode: 503,
             body: JSON.stringify({ message: 'bufff' }, null, 2),
         };
     }
 
-    console.log(paymentTransactionRequest);
-    console.log(paymentTransactionRequest.receiverTokenAddress);
-    console.log(paymentTransactionRequest.receiverWalletAddress);
+    // console.log(paymentTransactionRequest);
+    // console.log(paymentTransactionRequest.receiverTokenAddress);
+    // console.log(paymentTransactionRequest.receiverWalletAddress);
 
     const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
@@ -62,7 +61,7 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     try {
         transaction = await transactionBuilder.buildPaymentTransaction(connection);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return {
             statusCode: 504,
             body: JSON.stringify({ message: 'ahhh' }, null, 2),

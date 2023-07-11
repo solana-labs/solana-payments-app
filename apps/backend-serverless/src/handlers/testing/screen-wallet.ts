@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { TrmService } from '../../services/trm-service.service.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
-export const screenWallet = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const screenWallet = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     Sentry.captureEvent({
         message: 'in screen wallet testing',
         level: 'info',
