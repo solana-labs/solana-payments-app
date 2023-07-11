@@ -6,6 +6,7 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { logSentry } from '../sentry-log.utility.js';
 
 export enum ErrorType {
     badRequest = 400,
@@ -46,29 +47,30 @@ export const errorResponse = (errorType: ErrorType, errorMessage: string) => {
 
 export const createErrorResponse = (error: unknown) => {
     if (error instanceof MissingEnvError) {
-        return fooBar(ErrorType.internalServerError, error.message);
+        return fooBar(error, ErrorType.internalServerError, error.message);
     } else if (error instanceof UnauthorizedRequestError) {
-        return fooBar(ErrorType.unauthorized, error.message);
+        return fooBar(error, ErrorType.unauthorized, error.message);
     } else if (error instanceof MissingExpectedDatabaseRecordError) {
-        return fooBar(ErrorType.notFound, error.message);
+        return fooBar(error, ErrorType.notFound, error.message);
     } else if (error instanceof ConflictingStateError) {
-        return fooBar(ErrorType.conflict, error.message);
+        return fooBar(error, ErrorType.conflict, error.message);
     } else if (error instanceof DependencyError) {
-        return fooBar(ErrorType.internalServerError, error.message);
+        return fooBar(error, ErrorType.internalServerError, error.message);
     } else if (error instanceof InvalidInputError) {
-        return fooBar(ErrorType.badRequest, error.message);
+        return fooBar(error, ErrorType.badRequest, error.message);
     } else if (error instanceof MissingExpectedDatabaseValueError) {
-        return fooBar(ErrorType.notFound, error.message);
+        return fooBar(error, ErrorType.notFound, error.message);
     } else if (error instanceof RiskyWalletError) {
-        return fooBar(ErrorType.unauthorized, error.message);
+        return fooBar(error, ErrorType.unauthorized, error.message);
     } else if (error instanceof Error) {
-        return fooBar(ErrorType.internalServerError, error.message);
+        return fooBar(error, ErrorType.internalServerError, error.message);
     } else {
-        return fooBar(ErrorType.internalServerError, 'Unknown error. Please contact support.');
+        return fooBar(error, ErrorType.internalServerError, 'Unknown error. Please contact support.');
     }
 };
 
-const fooBar = (statusCode: number, message: string) => {
+const fooBar = (error: unknown, statusCode: number, message: string) => {
+    logSentry(error, message);
     return {
         statusCode,
         body: JSON.stringify({

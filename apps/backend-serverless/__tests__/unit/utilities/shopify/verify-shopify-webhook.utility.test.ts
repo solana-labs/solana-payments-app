@@ -1,11 +1,10 @@
-import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-shopify-webhook-header.utility.js';
 import * as crypto from 'crypto-js';
+import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-shopify-webhook-header.utility.js';
 
 describe('unit testing the verify shopify webhook utility', () => {
+    const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
+    process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
     it('valid webhook', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
-
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',
@@ -23,9 +22,6 @@ describe('unit testing the verify shopify webhook utility', () => {
     });
 
     it('invalid webhook, wrong secret key for hash', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
-
         const mockInvalidShopifySecret = 'this-is-not-the-key-you-are-looking-for';
 
         // Create my mock body
@@ -45,9 +41,6 @@ describe('unit testing the verify shopify webhook utility', () => {
     });
 
     it('invalid webhook, different value in body', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
-
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',
