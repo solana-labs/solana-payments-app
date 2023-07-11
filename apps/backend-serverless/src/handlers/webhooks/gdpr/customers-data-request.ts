@@ -18,7 +18,7 @@ Sentry.AWSLambda.init({
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In customersDataRequest gdpr',
+            message: 'In customersDataRequest gdpr' + JSON.stringify(event.headers),
             level: 'info',
         });
         let webhookHeaders: ShopifyWebhookHeaders;
@@ -26,25 +26,25 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            logSentry(error, 'Customer Data wrong webhook');
+            logSentry(error, 'Customer Data wrong webhook ' + JSON.stringify(event.headers));
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-            return createErrorResponse(new InvalidInputError('Customer Data wrong topic'));
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerData) {
+            return createErrorResponse(
+                new InvalidInputError('Customer Data wrong topic ' + JSON.stringify(webhookHeaders))
+            );
         }
 
         if (event.body == null) {
-            const error = new InvalidInputError('Customer data Missing body');
+            const error = new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers));
             return createErrorResponse(error);
         }
 
-        const customerDataStringBody = JSON.stringify(event.body);
-
         try {
-            verifyShopifyWebhook(customerDataStringBody, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
         } catch (error) {
-            logSentry(error, 'Customer Data wrong hmac');
+            logSentry(error, 'Customer Data wrong hmac' + ' ' + JSON.stringify(webhookHeaders));
             return createErrorResponse(error);
         }
 

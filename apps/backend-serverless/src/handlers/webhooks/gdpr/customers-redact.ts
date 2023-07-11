@@ -31,7 +31,7 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerRedact) {
             return createErrorResponse(new InvalidInputError('Customers redact wrong topic'));
         }
 
@@ -39,10 +39,8 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('Customers redact Missing body'));
         }
 
-        const customerRedactBodyString = JSON.stringify(event.body);
-
         try {
-            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }
