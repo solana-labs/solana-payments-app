@@ -34,6 +34,22 @@ const paymentMethodSchema = object().shape({
     data: paymentMethodDataSchema.required(),
 });
 
+const parseParameters = params => {
+    return {
+        id: params.id,
+        gid: params.gid,
+        group: params.group,
+        amount: parseFloat(params.amount), // convert amount string to number
+        currency: params.currency,
+        test: params.test === 'true', // convert 'true' or 'false' string to boolean
+        merchant_locale: params.merchant_locale,
+        payment_method: params.payment_method, // assuming paymentMethodSchema will handle this
+        proposed_at: params.proposed_at,
+        kind: params.kind,
+        customer: params.customer, // assuming shopifyPaymentInitiationCustomerScheme will handle this
+    };
+};
+
 export const shopifyPaymentInitiationScheme = object().shape({
     id: string().required(),
     gid: string().required(),
@@ -54,7 +70,7 @@ export const parseAndValidateShopifyPaymentInitiation = (
     paymentInitiationRequestBody: unknown
 ): ShopifyPaymentInitiation => {
     return parseAndValidateStrict(
-        paymentInitiationRequestBody,
+        parseParameters(paymentInitiationRequestBody),
         shopifyPaymentInitiationScheme,
         'Could not parse the Shopify payment initiation request. Unknown Reason.'
     );
