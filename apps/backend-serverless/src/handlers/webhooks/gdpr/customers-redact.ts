@@ -1,18 +1,14 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 import {
     ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify/shopify-webhook-headers.model.js';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { logSentry } from '../../../utilities/sentry-log.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../../utilities/responses/error-response.utility.js';
-import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -26,15 +22,16 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
+            logSentry(error, 'Customers react wrong webhook');
             return createErrorResponse(error);
         }
 
         if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
-            return createErrorResponse(new InvalidInputError('incorrect topic for customer redact'));
+            return createErrorResponse(new InvalidInputError('Customers react wrong topic'));
         }
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('mising body'));
+            return createErrorResponse(new InvalidInputError('Customers react Missing body'));
         }
 
         const customerRedactBodyString = JSON.stringify(event.body);
