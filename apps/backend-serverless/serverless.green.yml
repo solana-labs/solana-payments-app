@@ -52,6 +52,12 @@ functions:
       - httpApi:
           path: /shop/redact
           method: post
+  error-green:
+    handler: src/handlers/testing/error.error
+    events:
+      - httpApi:
+          path: /error
+          method: get
 
 plugins:
   - serverless-plugin-typescript

@@ -82,7 +82,7 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
-  error:
+  error-purple:
     handler: src/handlers/testing/error.error
     events:
       - httpApi:
