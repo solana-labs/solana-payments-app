@@ -50,23 +50,14 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        console.log(
-            'in 2',
-            webhookHeaders['x-shopify-topic'],
-            ShopifyWebhookTopic.shopRedact,
-            webhookHeaders['x-shopify-topic'] === ShopifyWebhookTopic.shopRedact
-        );
-
-        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.shopRedact) {
-            return createErrorResponse(new InvalidInputError('Shop Redact: wrong topic'));
+        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
+            return createErrorResponse(new InvalidInputError('incorrect topic for shop redact'));
         }
 
         Sentry.captureEvent({
             message: 'In shopRedact gdpr correct topic',
             level: 'info',
         });
-
-        console.log('in 3', event.body);
 
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('Shop Redact: Missing body'));
@@ -76,15 +67,12 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             message: 'In shopRedact gdpr valid body',
             level: 'info',
         });
-        console.log(`Is event.body a Buffer?: ${Buffer.isBuffer(event.body)}`);
-        console.log('Type of event.body:', typeof event.body);
 
-        console.log('3.5');
+        const shopRedactBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
+            verifyShopifyWebhook(Buffer.from(shopRedactBodyString), webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
-            logSentry(error, 'shop redact invalid hmac');
             return createErrorResponse(error);
         }
 
@@ -93,14 +81,11 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             level: 'info',
         });
 
-        console.log('in 4', JSON.parse(event.body));
         let shopRedactRequest: ShopRedactRequest;
 
         try {
             shopRedactRequest = parseAndValidateShopRedactRequestBody(JSON.parse(event.body));
         } catch (error) {
-            console.log('failed to parse body', error);
-            logSentry(error, 'shop redact wrong request body');
             return createErrorResponse(error);
         }
 
@@ -112,11 +97,10 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             },
         });
 
-        console.log('in 5');
         const merchant = await merchantService.getMerchant({ shop: shopRedactRequest.shop_domain });
 
         if (merchant == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('Shop redact merchant'));
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         Sentry.captureEvent({
@@ -127,11 +111,9 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             },
         });
 
-        console.log('in 6');
         try {
             await gdprService.createGDPRRequest(merchant.id);
         } catch (error) {
-            logSentry(error, 'shop redact gdpr service');
             return createErrorResponse(error);
         }
 
@@ -140,7 +122,6 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             level: 'info',
         });
 
-        console.log('in 7');
         return {
             statusCode: 200,
             body: JSON.stringify({}),
