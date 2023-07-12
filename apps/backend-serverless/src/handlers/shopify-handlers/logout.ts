@@ -13,7 +13,10 @@ Sentry.AWSLambda.init({
 
 export const logout = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        console.log('hitting logout');
+        Sentry.captureEvent({
+            message: 'in logout',
+            level: 'info',
+        });
         const merchantCookie = deleteMerchantAuthCookieHeader();
         const nonceCookie = `nonce=; HttpOnly; Secure; SameSite=Lax; Max-age=0;`;
 

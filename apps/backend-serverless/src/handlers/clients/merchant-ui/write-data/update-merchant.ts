@@ -35,6 +35,11 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);
 
+        Sentry.captureEvent({
+            message: 'in update-merchant',
+            level: 'info',
+        });
+
         let merchantAuthToken: MerchantAuthToken;
         let merchantUpdateRequest: MerchantUpdateRequest;
 

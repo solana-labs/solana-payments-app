@@ -1,6 +1,7 @@
 import { Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import {
     PaymentDataRequestParameters,
@@ -18,7 +19,6 @@ import {
 import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 
 const prisma = new PrismaClient();
 
@@ -31,6 +31,11 @@ Sentry.AWSLambda.init({
 export const paymentData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);
+
+        Sentry.captureEvent({
+            message: 'in payment-data',
+            level: 'info',
+        });
 
         let merchantAuthToken: MerchantAuthToken;
         let paymentDataRequestParameters: PaymentDataRequestParameters;

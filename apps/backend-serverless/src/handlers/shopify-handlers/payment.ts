@@ -1,23 +1,23 @@
+import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import axios from 'axios';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import {
     ShopifyPaymentInitiation,
     parseAndValidateShopifyPaymentInitiation,
 } from '../../models/shopify/process-payment-request.model.js';
-import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import {
     ShopifyRequestHeaders,
     parseAndValidateShopifyRequestHeaders,
 } from '../../models/shopify/shopify-request-headers.model.js';
-import axios from 'axios';
+import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -29,6 +29,11 @@ Sentry.AWSLambda.init({
 
 export const payment = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'In Payment',
+            level: 'info',
+        });
+
         const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);
         const paymentUiUrl = process.env.PAYMENT_UI_URL;

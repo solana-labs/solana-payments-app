@@ -1,14 +1,13 @@
 import axios from 'axios';
+import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../configs/trm.config.js';
+import { DependencyError } from '../errors/dependency.error.js';
+import { MissingEnvError } from '../errors/missing-env.error.js';
+import { RiskyWalletError } from '../errors/risky-wallet.error.js';
 import {
     TrmWalletScreenResponse,
     parseAndValidateTrmWalletScreenResponse,
 } from '../models/dependencies/trm-wallet-screen-response.model.js';
-import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../configs/trm.config.js';
 import { retry } from '../utilities/shopify-retry/shopify-retry.utility.js';
-import { DependencyError } from '../errors/dependency.error.js';
-import { RiskyWalletError } from '../errors/risky-wallet.error.js';
-import { errorResponse } from '../utilities/responses/error-response.utility.js';
-import { MissingEnvError } from '../errors/missing-env.error.js';
 
 export class TrmService {
     constructor() {}
@@ -41,22 +40,18 @@ export class TrmService {
         }, maxAttempts);
 
         if (attempts == maxAttempts) {
-            throw new DependencyError('trm');
+            throw new DependencyError('trm attempts hit');
         }
 
         if (trmResponse == null) {
-            throw new DependencyError('trm');
+            throw new DependencyError('trm null');
         }
 
         this.validateRiskLevelBelowMax(trmResponse);
 
-        try {
-            const response = await axios.post(TRM_SCREEN_URL, body, { headers });
-            const parsedResponse: TrmWalletScreenResponse = parseAndValidateTrmWalletScreenResponse(response.data);
-            this.validateRiskLevelBelowMax(parsedResponse);
-        } catch (error) {
-            throw error;
-        }
+        const response = await axios.post(TRM_SCREEN_URL, body, { headers });
+        const parsedResponse: TrmWalletScreenResponse = parseAndValidateTrmWalletScreenResponse(response.data);
+        this.validateRiskLevelBelowMax(parsedResponse);
     }
 
     private validateRiskLevelBelowMax(response: TrmWalletScreenResponse) {

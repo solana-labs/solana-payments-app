@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
 import { InvalidInputError } from '../../../errors/invalid-input.error.js';
+import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -10,6 +10,10 @@ Sentry.AWSLambda.init({
 
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in sqs message receive',
+            level: 'info',
+        });
         // Theses queues are set t
         for (const record of event.Records) {
             console.log(record);

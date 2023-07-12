@@ -1,23 +1,16 @@
+import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
-import {
-    ProcessTransactionMessage,
-    parseAndValidateProcessTransactionMessage,
-} from '../../../models/sqs/process-transaction-message.model.js';
-import { WebSocketService } from '../../../services/websocket/send-websocket-message.service.js';
 import { MissingEnvError } from '../../../errors/missing-env.error.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
-import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { PrismaClient } from '@prisma/client';
-import { processTransaction } from '../../../services/business-logic/process-transaction.service.js';
-import axios from 'axios';
 import {
     SolanaPayInfoMessage,
     parseAndValidateSolanaPayInfoMessage,
 } from '../../../models/sqs/solana-pay-info-message.model.js';
+import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { WebsocketSessionService } from '../../../services/database/websocket.database.service.js';
 import { fetchUsdcSize } from '../../../services/helius.service.js';
+import { WebSocketService } from '../../../services/websocket/send-websocket-message.service.js';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -29,6 +22,10 @@ Sentry.AWSLambda.init({
 
 export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in solana-pay-info-message',
+            level: 'info',
+        });
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         const paymentRecordService = new PaymentRecordService(prisma);

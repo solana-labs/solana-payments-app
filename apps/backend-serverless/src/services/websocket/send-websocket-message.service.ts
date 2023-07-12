@@ -1,7 +1,5 @@
-import { PrismaClient, WebsocketSession } from '@prisma/client';
+import { WebsocketSession } from '@prisma/client';
 import pkg from 'aws-sdk';
-import { WebsocketSessionQuery, WebsocketSessionService } from '../database/websocket.database.service.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 const { ApiGatewayManagementApi } = pkg;
 
 export interface WebSocketSessionFetcher<WebsocketQuery> {

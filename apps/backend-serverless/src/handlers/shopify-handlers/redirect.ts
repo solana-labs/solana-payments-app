@@ -29,6 +29,10 @@ Sentry.AWSLambda.init({
 
 export const redirect = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in redirect',
+            level: 'info',
+        });
         const merchantService = new MerchantService(prisma);
 
         let parsedAppRedirectQuery: AppRedirectQueryParam;

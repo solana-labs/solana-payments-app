@@ -1,20 +1,20 @@
 import * as Sentry from '@sentry/serverless';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
 } from '../../models/dependencies/helius-enhanced-transaction.model.js';
 
 import { PrismaClient, TransactionRecord } from '@prisma/client';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { HeliusHeader, parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { sendProcessTransactionMessage } from '../../services/sqs/sqs-send-message.service.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -25,7 +25,11 @@ Sentry.AWSLambda.init({
 });
 
 export const helius = Sentry.AWSLambda.wrapHandler(
-    async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in helius',
+            level: 'info',
+        });
         let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
         let heliusHeaders: HeliusHeader;
         const paymentRecordService = new PaymentRecordService(prisma);
@@ -100,7 +104,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             };
         }
 
-        let failedTransactionRecordMessages: { error: unknown; transactionRecord: TransactionRecord }[] = [];
+        const failedTransactionRecordMessages: { error: unknown; transactionRecord: TransactionRecord }[] = [];
 
         for (const transactionRecord of transactionRecords) {
             // send a message to the queue, even better if we can send an array of messages to the queue

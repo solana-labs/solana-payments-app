@@ -9,6 +9,10 @@ Sentry.AWSLambda.init({
 
 export const queue = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in queue test',
+            level: 'info',
+        });
         try {
             sendPaymentResolveRetryMessage('test');
         } catch (error) {

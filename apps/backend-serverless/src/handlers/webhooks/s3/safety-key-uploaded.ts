@@ -4,6 +4,10 @@ import { startExecutionOfSafetySweep } from '../../../services/step-function/sta
 
 export const safetyKeyUploaded = Sentry.AWSLambda.wrapHandler(
     async (event: S3Event): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in safety key uploaded',
+            level: 'info',
+        });
         for (const record of event.Records) {
             try {
                 await startExecutionOfSafetySweep(record.s3.object.key);
