@@ -50,7 +50,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerData) {
             return createErrorResponse(new InvalidInputError('incorrect topic for shop redact'));
         }
 
@@ -60,7 +60,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         });
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('Shop Redact: Missing body'));
+            return createErrorResponse(new InvalidInputError('Shop redact Missing body'));
         }
 
         Sentry.captureEvent({
@@ -71,7 +71,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         const shopRedactBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(shopRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }
