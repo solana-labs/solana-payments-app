@@ -12,6 +12,8 @@ provider:
         - https://merchant.solanapay.com
         - https://shopify-payment-ui.vercel.app
         - https://pay.solanapay.com
+        - https://pay-staging.solanapay.com
+        - https://shopify-payment-glrgbx7fa-solana-labs.vercel.app
       allowedHeaders:
         - Content-Type
         - Authorization
