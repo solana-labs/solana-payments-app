@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../../store';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { RootState } from '../../store';
 
 interface WalletState {
     pubkey: string | null;
@@ -63,11 +63,9 @@ const walletSlice = createSlice({
     initialState: initalState,
     reducers: {
         setWalletConnected: (state, action: PayloadAction<string>) => {
-            console.log(action.payload);
             state.pubkey = action.payload;
         },
         setWalletDisconnected: state => {
-            console.log('DISCONNECTED WALLET');
             state.pubkey = null;
         },
         setWalletLoading: state => {
