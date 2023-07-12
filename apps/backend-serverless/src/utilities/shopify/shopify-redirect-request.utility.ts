@@ -1,10 +1,11 @@
-import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
-import crypto from 'crypto-js';
-import { stringifyParams } from './stringify-params.utility.js';
 import { PrismaClient } from '@prisma/client';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import crypto from 'crypto';
+
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { stringifyParams } from './stringify-params.utility.js';
 
 export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);
@@ -32,10 +33,9 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
         throw new MissingEnvError('shopify secret');
     }
 
-    const digest = crypto.HmacSHA256(queryStringAfterRemoving, secret);
-    const digestString = digest.toString();
-
-    if (digestString != hmac) {
+    const hmacGenerated = crypto.createHmac('sha256', secret).update(queryStringAfterRemoving).digest('hex');
+    // Verify the HMAC value
+    if (hmacGenerated != hmac) {
         throw new UnauthorizedRequestError('hmac did not match.');
     }
 

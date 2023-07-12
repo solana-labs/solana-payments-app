@@ -1,4 +1,4 @@
-import * as crypto from 'crypto-js';
+import * as crypto from 'crypto';
 import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-shopify-webhook-header.utility.js';
 
 describe('unit testing the verify shopify webhook utility', () => {
@@ -13,11 +13,10 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockShopifyPayloadString = JSON.stringify(mockShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(mockShopifyPayloadString).digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), hmac);
         }).not.toThrow();
     });
 
@@ -32,11 +31,13 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockShopifyPayloadString = JSON.stringify(mockShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockInvalidShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto
+            .createHmac('sha256', mockInvalidShopifySecret)
+            .update(mockShopifyPayloadString)
+            .digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), hmac);
         }).toThrow();
     });
 
@@ -54,11 +55,10 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockInvalidShopifyPayloadString = JSON.stringify(mockInvalidShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(mockShopifyPayloadString).digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockInvalidShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockInvalidShopifyPayloadString), hmac);
         }).toThrow();
     });
 });
