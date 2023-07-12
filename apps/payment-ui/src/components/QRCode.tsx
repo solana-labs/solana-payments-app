@@ -1,9 +1,9 @@
+import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
+import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import QRCodeStyling from '@solana/qr-code-styling';
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { createQROptions } from './SolanaPayQRCode';
-import { buildPaymentTransactionRequestEndpoint } from '@/utility/endpoints.utility';
-import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 
 export const QRCode: FC = () => {
     // const [size, setSize] = useState(() =>
@@ -18,7 +18,7 @@ export const QRCode: FC = () => {
     // }, []);
 
     // TODO: make sure there is a payment id and if not show a different image than QR Code
-    const endpoint = buildPaymentTransactionRequestEndpoint(paymentId ?? '');
+    const endpoint = buildTransactionRequestEndpoint(paymentId ?? '');
     const url = `solana:${encodeURIComponent(endpoint)}`;
     const options = useMemo(() => createQROptions(url, 200, 'transparent', 'black'), [url, 200]);
 

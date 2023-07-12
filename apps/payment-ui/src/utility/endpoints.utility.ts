@@ -1,4 +1,4 @@
-export const buildPaymentTransactionRequestEndpoint = (paymentId: string): string => {
+export const buildTransactionRequestEndpoint = (paymentId: string): string => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (backendUrl == null) {
