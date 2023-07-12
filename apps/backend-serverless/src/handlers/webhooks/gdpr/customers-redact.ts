@@ -14,9 +14,17 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
-export const customersReact = Sentry.AWSLambda.wrapHandler(
+export const customersRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         let webhookHeaders: ShopifyWebhookHeaders;
+
+        Sentry.captureEvent({
+            message: 'In customersRedact gdpr',
+            level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
+        });
 
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
@@ -24,18 +32,16 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
-            return createErrorResponse(new InvalidInputError('incorrect topic for customer redact'));
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerRedact) {
+            return createErrorResponse(new InvalidInputError('Customers redact wrong topic'));
         }
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('mising body'));
+            return createErrorResponse(new InvalidInputError('Customers redact Missing body'));
         }
 
-        const customerRedactBodyString = JSON.stringify(event.body);
-
         try {
-            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }

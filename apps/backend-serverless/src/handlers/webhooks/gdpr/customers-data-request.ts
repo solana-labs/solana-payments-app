@@ -16,6 +16,13 @@ Sentry.AWSLambda.init({
 
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'In customersDataRequest gdpr',
+            level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
+        });
         let webhookHeaders: ShopifyWebhookHeaders;
 
         try {
@@ -24,18 +31,19 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-            return createErrorResponse(new InvalidInputError('incorrect topic for customer data'));
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerData) {
+            return createErrorResponse(
+                new InvalidInputError('Customer Data wrong topic ' + JSON.stringify(webhookHeaders))
+            );
         }
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('mising body'));
+            const error = new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers));
+            return createErrorResponse(error);
         }
-        // cusomterDataBodyString;
-        const customerDataBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(customerDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }
