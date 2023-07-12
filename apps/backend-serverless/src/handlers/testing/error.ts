@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { deleteMerchantAuthCookieHeader } from '../../utilities/clients/merchant-ui/delete-cookie-header.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -11,24 +11,27 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
-export const logout = Sentry.AWSLambda.wrapHandler(
+export const error = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'in logout',
-            level: 'info',
+            message: 'In error handler',
         });
-        const merchantCookie = deleteMerchantAuthCookieHeader();
-        const nonceCookie = `nonce=; HttpOnly; Secure; SameSite=Lax; Max-age=0;`;
+
+        try {
+            throw new Error('Test error for Sentry');
+        } catch (error) {
+            return createErrorResponse(error);
+        }
 
         return {
             statusCode: 200,
             headers: {
-                'Access-Control-Allow-Credentials': true,
                 'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'text/html',
+                'Access-Control-Allow-Credentials': true,
             },
-            cookies: [merchantCookie, nonceCookie],
-            body: JSON.stringify({ message: 'Logged out' }),
         };
+    },
+    {
+        rethrowAfterCapture: false,
     }
 );

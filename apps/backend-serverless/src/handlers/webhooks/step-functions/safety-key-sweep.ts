@@ -12,6 +12,10 @@ import { createSweepingTransaction, sendTransaction } from '../../../utilities/t
 
 export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in safety key sweep',
+            level: 'info',
+        });
         let safetyKeyMessage: SafetyKeyMessage;
         let gasKeypair: web3.Keypair;
         let singleUseKeypair: web3.Keypair;

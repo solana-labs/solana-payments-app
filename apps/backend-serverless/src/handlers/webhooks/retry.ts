@@ -1,20 +1,20 @@
+import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
+import axios from 'axios';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import {
     ShopifyMutationRetry,
     ShopifyMutationRetryType,
     parseAndValidateShopifyMutationRetry,
 } from '../../models/sqs/shopify-mutation-retry.model.js';
-import { PrismaClient } from '@prisma/client';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
-import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service.js';
-import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service.js';
-import { retryRefundReject } from '../../services/shopify-retry/retry-refund-reject.service.js';
 import { retryAppConfigure } from '../../services/shopify-retry/retry-app-configure.service.js';
-import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
+import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service.js';
+import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
+import { retryRefundReject } from '../../services/shopify-retry/retry-refund-reject.service.js';
+import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service.js';
 import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
-import axios from 'axios';
+import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -26,6 +26,10 @@ Sentry.AWSLambda.init({
 
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'in retry',
+            level: 'info',
+        });
         let shopifyMutationRetry: ShopifyMutationRetry;
 
         try {

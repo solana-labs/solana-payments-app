@@ -1,8 +1,13 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import * as Sentry from '@sentry/serverless';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+    Sentry.captureEvent({
+        message: 'in login testing',
+        level: 'info',
+    });
     const testingMerchantId = 'testing-merchant-id';
 
     let merchantAuthCookieHeader: string;
