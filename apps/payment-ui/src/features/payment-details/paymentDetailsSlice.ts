@@ -99,9 +99,6 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
         const paymentId = state.paymentDetails.paymentId;
         const backendUrl = state.env.backendUrl;
 
-        console.log(paymentId);
-        console.log(backendUrl);
-
         if (backendUrl == null || paymentId == null) {
             return {
                 paymentDetails: null,
@@ -116,18 +113,12 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
         let paymentDetails: PaymentDetails | null;
         let errorDetails: ErrorDetails | null;
 
-        // const headers = {
-        //     'Access-Control-Allow-Origin': 'localhost',
-        // };
-
         try {
             const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
             const response = await axios.get(url);
-            console.log(response.data);
             paymentDetails = response.data.paymentStatus;
             errorDetails = response.data.error;
         } catch (error) {
-            console.log(error);
             return {
                 // TODO: Figure something out other than crashing lol
                 paymentDetails: null,
