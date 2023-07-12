@@ -44,20 +44,16 @@ const BuyButton = () => {
             return;
         }
 
-        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId);
+        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId, publicKey.toString());
 
         dispatch(setWalletLoading());
 
         try {
-            const response = await axios.post(
-                transactionRequestEndpoint,
-                { account: publicKey },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const response = await axios.post(transactionRequestEndpoint, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
             const transactionString = response.data.transaction;
             if (!transactionString) {

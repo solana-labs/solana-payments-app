@@ -1,8 +1,7 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
-import { USDC_MINT } from '../../configs/tokens.config.js';
-import * as web3 from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
-import { HeliusEnhancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
+import * as web3 from '@solana/web3.js';
+import { USDC_MINT } from '../../configs/tokens.config.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 
@@ -138,9 +137,9 @@ export const verifyAppCreatedTheTransaction = (transaction: web3.Transaction) =>
 
     const feePayers = historicalFeePayers();
 
-    console.log(feePayer.toBase58());
+    console.log('feepayer', feePayer.toBase58());
 
-    console.log(feePayers.includes(feePayer.toBase58()));
+    console.log('feePayers', feePayers, feePayers.includes(feePayer.toBase58()));
 
     if (!feePayers.includes(feePayer.toBase58())) {
         throw new Error('The transaction was not created by the app');

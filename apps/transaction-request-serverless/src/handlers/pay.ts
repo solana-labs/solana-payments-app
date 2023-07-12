@@ -75,6 +75,11 @@ export const pay = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
+        Sentry.captureEvent({
+            message: 'PAY TRS about to return',
+            level: 'info',
+        });
+
         return {
             statusCode: 200,
             body: JSON.stringify(

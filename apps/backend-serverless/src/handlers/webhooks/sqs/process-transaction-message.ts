@@ -31,8 +31,6 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
         const paymentRecordService = new PaymentRecordService(prisma);
 
         if (websocketUrl == null) {
-            const error = new MissingEnvError('websocket url');
-            Sentry.captureException(error);
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 
@@ -75,7 +73,7 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: 'Successfully process transaction.',
+                message: 'Successfully processed transaction.',
             }),
         };
     },
