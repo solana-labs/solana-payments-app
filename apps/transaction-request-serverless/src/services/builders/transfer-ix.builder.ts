@@ -1,7 +1,7 @@
+import { createTransferCheckedInstruction } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
-import { findAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '../../utils/ata.util.js';
-import { createTransferCheckedInstruction, createAccount } from '@solana/spl-token';
 import { TokenInformation } from '../../configs/token-list.config.js';
+import { createAssociatedTokenAccountInstruction, findAssociatedTokenAddress } from '../../utilities/ata.utility.js';
 
 export const createTransferIx = async (
     sender: web3.PublicKey,
@@ -16,7 +16,7 @@ export const createTransferIx = async (
 
     const senderTokenAddress: web3.PublicKey = await findAssociatedTokenAddress(sender, token.pubkey);
 
-    let finalReceiverTokenAddress: web3.PublicKey = await getFinalReceiverTokenAddress(
+    const finalReceiverTokenAddress: web3.PublicKey = await getFinalReceiverTokenAddress(
         receiverWalletAddress,
         receiverTokenAddress,
         token

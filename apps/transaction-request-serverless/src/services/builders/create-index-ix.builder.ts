@@ -1,10 +1,6 @@
 import * as web3 from '@solana/web3.js';
-import { findAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '../../utils/ata.util.js';
-import { createTransferCheckedInstruction } from '@solana/spl-token';
-import { TokenInformation } from '../../configs/token-list.config.js';
-import { create } from 'domain';
-import { createIndexPubkey } from '../../utils/create-index-pubkey.util.js';
 import { MEMO_PROGRAM_ID } from '../../configs/pubkeys.config.js';
+import { createIndexPubkey } from '../../utilities/create-index-pubkey.utility.js';
 
 // This will be a function to create the instruction to create a memo and add on index pubkeys. This is a utility
 // instruction that can be used when you're using API based transaction fetching and you want to include some pubkeys on
@@ -23,7 +19,7 @@ export const createIndexingIx = async (
         })
     );
 
-    var ixKeys = [
+    const ixKeys = [
         {
             pubkey: signer,
             isSigner: true,

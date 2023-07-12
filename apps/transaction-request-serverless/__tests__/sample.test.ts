@@ -1,8 +1,7 @@
-import * as web3 from '@solana/web3.js';
 import * as token from '@solana/spl-token';
+import * as web3 from '@solana/web3.js';
 import { USDC_PUBKEY } from '../src/configs/pubkeys.config.js';
-import { getMinimumBalanceForRentExemptMint, MINT_SIZE } from '@solana/spl-token';
-import { findAssociatedTokenAddress } from '../src/utils/ata.util.js';
+import { findAssociatedTokenAddress } from '../src/utilities/ata.utility.js';
 
 describe('Sample test', () => {
     beforeEach((): void => {
@@ -24,7 +23,7 @@ describe('Sample test', () => {
     it('create a mint.', async () => {
         const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
         const blockhash = await connection.getLatestBlockhash();
-        let tx = new web3.Transaction({
+        const tx = new web3.Transaction({
             feePayer: keypair.publicKey,
             blockhash: blockhash.blockhash,
             lastValidBlockHeight: blockhash.lastValidBlockHeight,
@@ -101,7 +100,7 @@ describe('Sample test', () => {
 
         const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
         const blockhash = await connection.getLatestBlockhash();
-        let tx = new web3.Transaction({
+        const tx = new web3.Transaction({
             feePayer: keypair.publicKey,
             blockhash: blockhash.blockhash,
             lastValidBlockHeight: blockhash.lastValidBlockHeight,
@@ -135,7 +134,7 @@ describe('Sample test', () => {
         const blockhash = await connection.getLatestBlockhash();
         const ata = await findAssociatedTokenAddress(newGuy!.publicKey, USDC_PUBKEY!);
 
-        let tx = new web3.Transaction({
+        const tx = new web3.Transaction({
             feePayer: keypair.publicKey,
             blockhash: blockhash.blockhash,
             lastValidBlockHeight: blockhash.lastValidBlockHeight,

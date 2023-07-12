@@ -1,38 +1,25 @@
-import { object, string, InferType, boolean, number } from 'yup';
-import { parseAndValidate } from '../utils/yup.util.js';
 import * as web3 from '@solana/web3.js';
+import { InferType, boolean, number, object, string } from 'yup';
 import { TokenInformation } from '../configs/token-list.config.js';
-import { createSwapIx } from '../services/swaps/create-swap-ix.service.js';
-import { createTransferIx } from '../services/builders/transfer-ix.builder.js';
-import { USDC_PUBKEY } from '../configs/pubkeys.config.js';
 import { createAccountIx } from '../services/builders/create-account-ix.builder.js';
 import { createIndexingIx } from '../services/builders/create-index-ix.builder.js';
+import { createTransferIx } from '../services/builders/transfer-ix.builder.js';
+import { createSwapIx } from '../services/swaps/create-swap-ix.service.js';
+import { parseAndValidate } from '../utilities/yup.utility.js';
 
-const optionalPublicKeySchema = string().test('is-public-key', 'Invalid public key', value => {
-    if (value === undefined || value === null) {
-        return true;
-    }
-
-    try {
-        new web3.PublicKey(value);
-        return true;
-    } catch (err) {
-        return false;
-    }
-});
-
-const publicKeySchema = string().test('is-public-key', 'Invalid public key', value => {
-    if (value === undefined) {
-        return false;
-    }
-
-    try {
-        new web3.PublicKey(value);
-        return true;
-    } catch (err) {
-        return false;
-    }
-});
+const publicKeySchema = string()
+    .required()
+    .test('is-public-key', 'Invalid public key', value => {
+        try {
+            if (value === undefined || value === null) {
+                return false;
+            }
+            new web3.PublicKey(value);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    });
 
 export enum TransactionType {
     blockhash = 'blockhash',
@@ -60,21 +47,6 @@ export const paymentTransactionRequestScheme = object().shape({
     singleUseNewAcc: publicKeySchema.nullable(),
     singleUsePayer: publicKeySchema.nullable(),
     indexInputs: string().nullable(),
-    // .required()
-    // .test(
-    //     'is-comma-separated-no-spaces',
-    //     'indexInputs must be a comma separated string with no spaces in individual strings',
-    //     value => {
-    //         if (typeof value !== 'string') return false;
-
-    //         // TODO: There is some limit to what these input strings can be, figure out what it is
-    //         // and validate that constraint here
-    //         // Check if every part of the split string is non-empty and does not contain spaces
-    //         return value.split(',').every(substring => {
-    //             return substring.length > 0 && !substring.includes(' ');
-    //         });
-    //     }
-    // ),
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
@@ -105,8 +77,8 @@ export class PaymentTransactionBuilder {
     private indexInputs: string[] | null;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
-        console.log(paymentTransactionRequest);
-        console.log(paymentTransactionRequest.receiverWalletAddress);
+        // console.log(paymentTransactionRequest);
+        // console.log(paymentTransactionRequest.receiverWalletAddress);
 
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
         this.receiverWalletAddress = paymentTransactionRequest.receiverWalletAddress
@@ -136,15 +108,12 @@ export class PaymentTransactionBuilder {
     public async buildPaymentTransaction(connection: web3.Connection): Promise<web3.Transaction> {
         let transaction: web3.Transaction;
         let receivingQuantity: number;
-        var swapIxs: web3.TransactionInstruction[] = [];
-        var transferIxs: web3.TransactionInstruction[] = [];
-        var createIxs: web3.TransactionInstruction[] = [];
-        var indexIxs: web3.TransactionInstruction[] = [];
+        let swapIxs: web3.TransactionInstruction[] = [];
+        let transferIxs: web3.TransactionInstruction[] = [];
+        let createIxs: web3.TransactionInstruction[] = [];
+        let indexIxs: web3.TransactionInstruction[] = [];
 
         const blockhash = await connection.getLatestBlockhash();
-
-        console.log(this.receiverWalletAddress);
-        console.log(this.receiverTokenAddress);
 
         switch (this.transactionType) {
             case TransactionType.blockhash:
@@ -153,12 +122,14 @@ export class PaymentTransactionBuilder {
                     blockhash: blockhash.blockhash,
                     lastValidBlockHeight: blockhash.lastValidBlockHeight,
                 });
+                break;
             case TransactionType.nonce:
                 transaction = new web3.Transaction({
                     feePayer: this.feePayer,
                     blockhash: blockhash.blockhash,
                     lastValidBlockHeight: blockhash.lastValidBlockHeight,
                 });
+                break;
         }
 
         const receivingTokenInformation = await TokenInformation.queryTokenInformationFromPubkey(
