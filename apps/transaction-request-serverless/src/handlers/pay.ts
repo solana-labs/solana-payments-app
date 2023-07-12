@@ -7,8 +7,8 @@ import {
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js';
 import { TransactionRequestBody, parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
+import { createConnection } from '../utilities/connection.utility.js';
 import { createErrorResponse } from '../utilities/error-response.utility.js';
-import { createConnection } from '../utils/connection.util.js';
 
 export const pay = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     let paymentTransactionRequest: PaymentTransactionRequest;
@@ -40,10 +40,6 @@ export const pay = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProx
         return createErrorResponse(error);
     }
 
-    // console.log(paymentTransactionRequest);
-    // console.log(paymentTransactionRequest.receiverTokenAddress);
-    // console.log(paymentTransactionRequest.receiverWalletAddress);
-
     const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
     const connection = createConnection();
@@ -53,11 +49,7 @@ export const pay = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProx
     try {
         transaction = await transactionBuilder.buildPaymentTransaction(connection);
     } catch (error) {
-        // console.log(error);
-        return {
-            statusCode: 504,
-            body: JSON.stringify({ message: 'ahhh' }, null, 2),
-        };
+        return createErrorResponse(error);
     }
 
     let base: string;
