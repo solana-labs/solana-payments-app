@@ -6,6 +6,7 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { logSentry } from '../sentry-log.utility.js';
 
 export enum ErrorType {
     badRequest = 400,
@@ -35,44 +36,46 @@ export enum ErrorMessage {
     unauthorizedMerchant = 'Merchant is not authorized.',
 }
 
-export const errorResponse = (errorType: ErrorType, errorMessage: string) => {
-    return {
-        statusCode: errorType.valueOf(),
-        body: JSON.stringify({
-            error: errorMessage,
-        }),
-    };
-};
-
 export const createErrorResponse = (error: unknown) => {
-    if (error instanceof MissingEnvError) {
-        return fooBar(ErrorType.internalServerError, error.message);
-    } else if (error instanceof UnauthorizedRequestError) {
-        return fooBar(ErrorType.unauthorized, error.message);
-    } else if (error instanceof MissingExpectedDatabaseRecordError) {
-        return fooBar(ErrorType.notFound, error.message);
-    } else if (error instanceof ConflictingStateError) {
-        return fooBar(ErrorType.conflict, error.message);
-    } else if (error instanceof DependencyError) {
-        return fooBar(ErrorType.internalServerError, error.message);
-    } else if (error instanceof InvalidInputError) {
-        return fooBar(ErrorType.badRequest, error.message);
-    } else if (error instanceof MissingExpectedDatabaseValueError) {
-        return fooBar(ErrorType.notFound, error.message);
-    } else if (error instanceof RiskyWalletError) {
-        return fooBar(ErrorType.unauthorized, error.message);
-    } else if (error instanceof Error) {
-        return fooBar(ErrorType.internalServerError, error.message);
-    } else {
-        return fooBar(ErrorType.internalServerError, 'Unknown error. Please contact support.');
-    }
-};
+    let statusCode: ErrorType;
+    let message: string;
 
-const fooBar = (statusCode: number, message: string) => {
+    if (error instanceof MissingEnvError) {
+        statusCode = ErrorType.internalServerError;
+        message = error.message;
+    } else if (error instanceof UnauthorizedRequestError) {
+        statusCode = ErrorType.unauthorized;
+        message = error.message;
+    } else if (error instanceof MissingExpectedDatabaseRecordError) {
+        statusCode = ErrorType.notFound;
+        message = error.message;
+    } else if (error instanceof ConflictingStateError) {
+        statusCode = ErrorType.conflict;
+        message = error.message;
+    } else if (error instanceof DependencyError) {
+        statusCode = ErrorType.internalServerError;
+        message = error.message;
+    } else if (error instanceof InvalidInputError) {
+        statusCode = ErrorType.badRequest;
+        message = error.message;
+    } else if (error instanceof MissingExpectedDatabaseValueError) {
+        statusCode = ErrorType.notFound;
+        message = error.message;
+    } else if (error instanceof RiskyWalletError) {
+        statusCode = ErrorType.unauthorized;
+        message = error.message;
+    } else if (error instanceof Error) {
+        statusCode = ErrorType.internalServerError;
+        message = error.message;
+    } else {
+        statusCode = ErrorType.internalServerError;
+        message = 'Unknown error. Please contact support.';
+    }
+
+    logSentry(error, message);
+
     return {
         statusCode,
-        body: JSON.stringify({
-            error: message,
-        }),
+        body: JSON.stringify({ error: message }),
     };
 };
