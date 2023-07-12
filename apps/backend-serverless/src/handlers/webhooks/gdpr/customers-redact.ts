@@ -13,23 +13,26 @@ Sentry.AWSLambda.init({
     tracesSampleRate: 1.0,
 });
 
-export const customersReact = Sentry.AWSLambda.wrapHandler(
+export const customersRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('mising body'));
+            return createErrorResponse(new InvalidInputError('Customers redact Missing body'));
         }
 
-        const customerRedactBodyString = JSON.stringify(event.body);
+        Sentry.captureEvent({
+            message: 'In customersRedact gdpr',
+            level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
+        });
 
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
-            if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
-                throw new InvalidInputError('incorrect topic for customer redact');
+            if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerRedact) {
+                throw new InvalidInputError('Customers redact wrong topic');
             }
-
-            verifyShopifyWebhook(customerRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
-            // Verified hook, return 200 since not storing data
-            // If we need to delete PaymentRecords, neeed to save more data
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
             return {
                 statusCode: 200,
                 body: JSON.stringify({}),

@@ -10,7 +10,7 @@ provider:
         - http://localhost:3005
         - http://localhost:3001
         - https://merchant.solanapay.com
-        - https://shopify-payment-ui.vercel.app
+        - https://merchant-staging.solanapay.com
         - https://pay.solanapay.com
         - https://pay-staging.solanapay.com
       allowedHeaders:
@@ -43,8 +43,6 @@ provider:
     HELIUS_API_KEY: ${env:HELIUS_API_KEY}
     PERSONA_API_KEY: ${env:PERSONA_API_KEY}
     NODE_ENV: ${env:NODE_ENV}
-    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
-
     AWS_BUCKET_OBJECT_NAME: ${self:custom.gas-object-name}
     AWS_BUCKET_NAME: ${self:custom.gas-bucket-name}
     AWS_BUCKET_REGION: ${self:provider.region}
@@ -54,6 +52,7 @@ provider:
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
+    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:
   excludeDevDependencies: true

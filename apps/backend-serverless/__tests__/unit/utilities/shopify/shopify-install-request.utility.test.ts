@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
     ShopifyScope,
     createScopeString,
@@ -5,7 +6,6 @@ import {
     verifyAndParseShopifyInstallRequest,
 } from '../../../../src/utilities/shopify/shopify-install-request.utility.js';
 import { stringifyParams } from '../../../../src/utilities/shopify/stringify-params.utility.js';
-import crypto from 'crypto-js';
 
 describe('unit testing shopify install request utilities', () => {
     it('testing createShopifyOAuthGrantRedirectUrl', () => {
@@ -61,7 +61,7 @@ describe('unit testing shopify install request utilities', () => {
         };
 
         const stringifiedParams = stringifyParams(installParams);
-        const hmac = crypto.HmacSHA256(stringifiedParams, mockShopifySecret);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('base64');
 
         installParams['hmac'] = hmac.toString();
 
@@ -82,7 +82,7 @@ describe('unit testing shopify install request utilities', () => {
         };
 
         const stringifiedParams = stringifyParams(installParams);
-        const hmac = crypto.HmacSHA256(stringifiedParams, incorrectShopifySecret);
+        const hmac = crypto.createHmac('sha256', incorrectShopifySecret).update(stringifiedParams).digest('hex');
 
         installParams['hmac'] = hmac.toString();
 

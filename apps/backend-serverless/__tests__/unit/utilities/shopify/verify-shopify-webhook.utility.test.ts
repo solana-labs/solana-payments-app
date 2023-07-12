@@ -1,11 +1,10 @@
+import * as crypto from 'crypto';
 import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-shopify-webhook-header.utility.js';
-import * as crypto from 'crypto-js';
 
 describe('unit testing the verify shopify webhook utility', () => {
+    const mockShopifySecret = 'ec4d61947aac7ff89d4ee1c703bdc548';
+    process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
     it('valid webhook', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
-
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',
@@ -14,18 +13,28 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockShopifyPayloadString = JSON.stringify(mockShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(mockShopifyPayloadString).digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), hmac);
         }).not.toThrow();
     });
 
-    it('invalid webhook, wrong secret key for hash', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
+    it('another valid hook', () => {
+        const mockShopifyPayload = { shop_id: 60225617942, shop_domain: 'app-security.myshopify.com' };
+        const mockShopifyPayloadString = JSON.stringify(mockShopifyPayload);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(mockShopifyPayloadString).digest('base64');
+        const webhookHeaders = {
+            'x-shopify-hmac-sh256': hmac,
+        };
+        console.log('webhookHeaders, and hmac', webhookHeaders, hmac);
 
+        expect(() => {
+            verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), webhookHeaders['x-shopify-hmac-sha256']);
+        });
+    });
+
+    it('invalid webhook, wrong secret key for hash', () => {
         const mockInvalidShopifySecret = 'this-is-not-the-key-you-are-looking-for';
 
         // Create my mock body
@@ -36,18 +45,17 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockShopifyPayloadString = JSON.stringify(mockShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockInvalidShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto
+            .createHmac('sha256', mockInvalidShopifySecret)
+            .update(mockShopifyPayloadString)
+            .digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), hmac);
         }).toThrow();
     });
 
     it('invalid webhook, different value in body', () => {
-        const mockShopifySecret = 'this-is-a-mock-shopify-secret-key';
-        process.env.SHOPIFY_SECRET = mockShopifySecret;
-
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',
@@ -61,11 +69,10 @@ describe('unit testing the verify shopify webhook utility', () => {
         const mockInvalidShopifyPayloadString = JSON.stringify(mockInvalidShopifyPayload);
 
         // Create the HMAC value
-        const hash = crypto.HmacSHA256(mockShopifyPayloadString, mockShopifySecret);
-        const mockHmacValue = crypto.enc.Base64.stringify(hash);
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(mockShopifyPayloadString).digest('base64');
 
         expect(() => {
-            verifyShopifyWebhook(mockInvalidShopifyPayloadString, mockHmacValue);
+            verifyShopifyWebhook(Buffer.from(mockInvalidShopifyPayloadString), hmac);
         }).toThrow();
     });
 });

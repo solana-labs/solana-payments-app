@@ -30,21 +30,21 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             },
         });
 
+        if (event.body == null) {
+            return createErrorResponse(new InvalidInputError('Shop redact Missing body'));
+        }
+
         const merchantService = new MerchantService(prisma);
         const gdprService = new GDPRService(prisma);
-
-        if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('Shop Redact: Missing body'));
-        }
-        const shopRedactBodyString = JSON.stringify(event.body);
 
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
             if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
                 throw new InvalidInputError('incorrect topic for shop redact');
             }
-            verifyShopifyWebhook(shopRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
             const shopRedactRequest = parseAndValidateShopRedactRequestBody(JSON.parse(event.body));
+
             const merchant = await merchantService.getMerchant({ shop: shopRedactRequest.shop_domain });
 
             await gdprService.createGDPRRequest(merchant.id);

@@ -1,8 +1,8 @@
-import { InferType, object, string } from 'yup';
+import { InferType, number, object, string } from 'yup';
 import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export const shopRedactRequestScheme = object().shape({
-    shop_id: string().required(),
+    shop_id: number().required(),
     shop_domain: string().required(),
 });
 
