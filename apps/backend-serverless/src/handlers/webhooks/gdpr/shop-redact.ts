@@ -50,7 +50,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerData) {
+        if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.shopRedact) {
             return createErrorResponse(new InvalidInputError('incorrect topic for shop redact'));
         }
 
