@@ -82,6 +82,12 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
+  error-purple:
+    handler: src/handlers/testing/error.error
+    events:
+      - httpApi:
+          path: /error
+          method: get
   helius:
     handler: src/handlers/webhooks/helius.helius
     timeout: 60 # Increase the timeout to 60 seconds
