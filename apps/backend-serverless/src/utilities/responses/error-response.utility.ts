@@ -1,5 +1,6 @@
 import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
 import { DependencyError } from '../../errors/dependency.error.js';
+import { ForbiddenError } from '../../errors/forbidden.error.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
@@ -11,6 +12,7 @@ import { logSentry } from '../sentry-log.utility.js';
 export enum ErrorType {
     badRequest = 400,
     unauthorized = 401,
+    forbidden = 403,
     notFound = 404,
     conflict = 409,
     internalServerError = 500,
@@ -22,6 +24,7 @@ export enum ErrorMessage {
     missingBody = 'Missing body from request.',
     missingEnv = 'Missing internal configuration.',
     missingHeader = 'Missing header from request.',
+    forbidden = 'Invalid cookie. Your cookie may have expired or is not valid.',
     unknownMerchant = 'Merchant not found.',
     unknownPaymentRecord = 'Payment record not found.',
     unknownRefundRecord = 'Refund record not found.',
@@ -48,6 +51,9 @@ export const createErrorResponse = (error: unknown) => {
         message = error.message;
     } else if (error instanceof MissingExpectedDatabaseRecordError) {
         statusCode = ErrorType.notFound;
+        message = error.message;
+    } else if (error instanceof ForbiddenError) {
+        statusCode = ErrorType.forbidden;
         message = error.message;
     } else if (error instanceof ConflictingStateError) {
         statusCode = ErrorType.conflict;
