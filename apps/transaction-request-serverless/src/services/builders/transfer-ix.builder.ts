@@ -16,6 +16,8 @@ export const createTransferIx = async (
 
     const senderTokenAddress: web3.PublicKey = await findAssociatedTokenAddress(sender, token.pubkey);
 
+    console.log('receiver final address info', receiverWalletAddress, receiverTokenAddress, token);
+
     const finalReceiverTokenAddress: web3.PublicKey = await getFinalReceiverTokenAddress(
         receiverWalletAddress,
         receiverTokenAddress,
@@ -71,6 +73,7 @@ const getFinalReceiverTokenAddress = async (
         if (receiverTokenAddress.toBase58() != tempAssociatedTokenAddress.toBase58()) {
             throw new Error('Receiver wallet address and receiver token address do not match.');
         }
+        finalReceiverTokenAddress = receiverTokenAddress;
     }
 
     if (finalReceiverTokenAddress == null) {
