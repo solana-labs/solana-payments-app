@@ -44,7 +44,7 @@ const BuyButton = () => {
             return;
         }
 
-        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId, publicKey.toString());
+        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId);
 
         dispatch(setWalletLoading());
 
