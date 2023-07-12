@@ -1,57 +1,43 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import * as web3 from '@solana/web3.js';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
 import {
     PaymentTransactionBuilder,
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js';
-import { decode } from '../utils/strings.util.js';
-import { createConnection } from '../utils/connection.util.js';
-import * as web3 from '@solana/web3.js';
+import { TransactionRequestBody, parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
+import { createConnection } from '../utilities/connection.utility.js';
+import { createErrorResponse } from '../utilities/error-response.utility.js';
 
 export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let paymentTransactionRequest: PaymentTransactionRequest;
 
     if (event.body == null) {
-        return {
-            statusCode: 501,
-            body: JSON.stringify({ error: 'fuck' }, null, 2),
-        };
+        return createErrorResponse(new InvalidInputError('Missing body in request'));
     }
 
-    const body = JSON.parse(event.body);
-    const account = body['account'] as string | null;
-
-    if (account == null) {
-        return {
-            statusCode: 507,
-            body: JSON.stringify({ error: 'fuck' }, null, 2),
-        };
-    }
-
-    if (event.queryStringParameters == null) {
-        return {
-            statusCode: 509,
-            body: JSON.stringify({ message: 'damn' }, null, 2),
-        };
-    }
-
-    const queryParameters = event.queryStringParameters;
-
-    queryParameters['sender'] = account;
+    let transactionRequestBody: TransactionRequestBody;
 
     try {
-        paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
+        transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
     } catch (error) {
-        console.log(error);
-        return {
-            statusCode: 503,
-            body: JSON.stringify({ message: 'bufff' }, null, 2),
-        };
+        return createErrorResponse(error);
+    }
+    const account = transactionRequestBody.account;
+
+    if (account == null) {
+        return createErrorResponse(new InvalidInputError('missing account in body'));
     }
 
-    console.log(paymentTransactionRequest);
-    console.log(paymentTransactionRequest.receiverTokenAddress);
-    console.log(paymentTransactionRequest.receiverWalletAddress);
+    try {
+        const queryParameters = {
+            ...event.queryStringParameters,
+            sender: account,
+        };
+        paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
+    } catch (error) {
+        return createErrorResponse(error);
+    }
 
     const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
@@ -62,22 +48,15 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     try {
         transaction = await transactionBuilder.buildPaymentTransaction(connection);
     } catch (error) {
-        console.log(error);
-        return {
-            statusCode: 504,
-            body: JSON.stringify({ message: 'ahhh' }, null, 2),
-        };
+        return createErrorResponse(error);
     }
 
     let base: string;
 
     try {
         base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
-    } catch {
-        return {
-            statusCode: 505,
-            body: JSON.stringify({ message: 'grrr' }, null, 2),
-        };
+    } catch (error) {
+        return createErrorResponse(error);
     }
 
     return {
@@ -85,7 +64,7 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
         body: JSON.stringify(
             {
                 transaction: base,
-                message: 'message sent',
+                message: 'Tranasction created successfully',
             },
             null,
             2

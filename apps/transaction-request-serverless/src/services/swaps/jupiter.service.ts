@@ -1,6 +1,6 @@
-import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utils/jupiter.util.js';
-import axios from 'axios';
 import * as web3 from '@solana/web3.js';
+import axios from 'axios';
+import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utilities/jupiter.util.js';
 import { SwapIxConfig } from './create-swap-ix.service.js';
 
 const NO_QUOTE_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for your swap.';
@@ -10,7 +10,7 @@ const NO_SWAP_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for you
 const JUPITER_SWAP_REQUEST_URL = `${JUPITER_URL}/swap`;
 
 export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<web3.TransactionInstruction[]> => {
-    var { data } = await axios.get(createJupiterQuoteRequestUrl(config.quantity, config.fromMint, config.toMint));
+    const { data } = await axios.get(createJupiterQuoteRequestUrl(config.quantity, config.fromMint, config.toMint));
 
     if (data == null || data == undefined || data.data == null || data.data == undefined) {
         throw new Error(NO_QUOTE_FROM_JUPITER_ERROR_MESSAGE);
