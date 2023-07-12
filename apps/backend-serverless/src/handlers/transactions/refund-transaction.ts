@@ -10,10 +10,6 @@ import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
 } from '../../models/transaction-requests/refund-transaction-request.model.js';
-import {
-    TransactionRequestBody,
-    parseAndValidateTransactionRequestBody,
-} from '../../models/transaction-requests/transaction-request-body.model.js';
 import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
@@ -53,36 +49,12 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
 
         const trmService = new TrmService();
 
-        if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('request body'));
-        }
-
-        const body = JSON.parse(event.body);
-
-        let transactionRequestBody: TransactionRequestBody;
-
-        try {
-            transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-        const account = transactionRequestBody.account;
-
-        if (account == null) {
-            return createErrorResponse(new InvalidInputError('account is missing from body'));
-        }
-
-        try {
-            new web3.PublicKey(account);
-        } catch (error) {
-            return createErrorResponse(new InvalidInputError('account is not a valid public key'));
-        }
-
         try {
             refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
         } catch (error) {
             return createErrorResponse(error);
         }
+        const account = refundRequest.account;
 
         let gasKeypair: web3.Keypair;
 

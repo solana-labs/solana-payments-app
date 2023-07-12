@@ -106,6 +106,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
+        const account = paymentRequest.account;
+
         let gasKeypair: web3.Keypair;
 
         let paymentRecord: PaymentRecord | null;
@@ -195,6 +197,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         // TODO: Clean this up
         if (paymentRecord.test == false) {
+            Sentry.captureEvent({
+                message: 'Payment-tx: Finsihed fetching tx, about to trm',
+                level: 'info',
+            });
             const trmService = new TrmService();
 
             try {
@@ -252,6 +258,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 return createErrorResponse(error);
             }
         }
+
+        Sentry.captureEvent({
+            message: 'payment-tx finsihed trm, about to encode sign send',
+            level: 'info',
+        });
 
         try {
             transaction = encodeTransaction(paymentTransaction.transaction);

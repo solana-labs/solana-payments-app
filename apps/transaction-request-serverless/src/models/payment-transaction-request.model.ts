@@ -48,6 +48,7 @@ export const paymentTransactionRequestScheme = object().shape({
     singleUseNewAcc: publicKeySchema.nullable(),
     singleUsePayer: publicKeySchema.nullable(),
     indexInputs: string().nullable(),
+    account: publicKeySchema.required(),
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
@@ -179,6 +180,11 @@ export class PaymentTransactionBuilder {
             this.createAta,
             connection
         );
+
+        Sentry.captureEvent({
+            message: 'PAY TRS after createTransferIx',
+            level: 'info',
+        });
 
         if (this.singleUseNewAcc && this.singleUsePayer) {
             createIxs = await createAccountIx(this.singleUseNewAcc, this.singleUsePayer, connection);

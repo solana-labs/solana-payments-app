@@ -48,8 +48,8 @@ export const fetchPaymentTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    console.log('endpoint', endpoint, 'headers', headers, 'account', account);
-    const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
+    console.log('endpoint', endpoint, 'headers', headers);
+    const response = await axiosInstance.post(endpoint, { headers: headers });
 
     if (response.status != 200) {
         throw new Error('Error fetching payment transaction.');

@@ -40,6 +40,7 @@ export const buildTransactionRequestEndpoint = (
         singleUseNewAcc,
         singleUsePayer,
         indexInputs,
+        account: sender,
     };
 
     const queryString = Object.entries(params)
