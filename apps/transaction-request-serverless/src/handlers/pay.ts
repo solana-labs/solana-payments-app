@@ -1,4 +1,5 @@
 import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../errors/invalid-input.error.js';
 import {
     PaymentTransactionBuilder,
@@ -6,10 +7,10 @@ import {
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js';
 import { TransactionRequestBody, parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
-import { createConnection } from '../utilities/connection.utility.js';
 import { createErrorResponse } from '../utilities/error-response.utility.js';
+import { createConnection } from '../utils/connection.util.js';
 
-export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const pay = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     let paymentTransactionRequest: PaymentTransactionRequest;
 
     if (event.body == null) {
@@ -39,6 +40,10 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
         return createErrorResponse(error);
     }
 
+    // console.log(paymentTransactionRequest);
+    // console.log(paymentTransactionRequest.receiverTokenAddress);
+    // console.log(paymentTransactionRequest.receiverWalletAddress);
+
     const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
     const connection = createConnection();
@@ -48,7 +53,11 @@ export const pay = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyR
     try {
         transaction = await transactionBuilder.buildPaymentTransaction(connection);
     } catch (error) {
-        return createErrorResponse(error);
+        // console.log(error);
+        return {
+            statusCode: 504,
+            body: JSON.stringify({ message: 'ahhh' }, null, 2),
+        };
     }
 
     let base: string;
