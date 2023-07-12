@@ -1,7 +1,7 @@
 import * as token from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_PUBKEY } from '../src/configs/pubkeys.config.js';
-import { findAssociatedTokenAddress } from '../src/utils/ata.util.js';
+import { findAssociatedTokenAddress } from '../src/utilities/ata.utility.js';
 
 describe('Sample test', () => {
     beforeEach((): void => {

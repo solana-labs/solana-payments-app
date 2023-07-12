@@ -1,6 +1,6 @@
 import * as web3 from '@solana/web3.js';
 import { MEMO_PROGRAM_ID } from '../../configs/pubkeys.config.js';
-import { createIndexPubkey } from '../../utilities/create-index-pubkey.util.js';
+import { createIndexPubkey } from '../../utilities/create-index-pubkey.utility.js';
 
 // This will be a function to create the instruction to create a memo and add on index pubkeys. This is a utility
 // instruction that can be used when you're using API based transaction fetching and you want to include some pubkeys on
