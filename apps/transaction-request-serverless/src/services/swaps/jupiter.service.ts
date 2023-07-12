@@ -1,6 +1,6 @@
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
-import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utilities/jupiter.util.js';
+import { JUPITER_URL, createJupiterQuoteRequestUrl } from '../../utilities/jupiter.utility.js';
 import { SwapIxConfig } from './create-swap-ix.service.js';
 
 const NO_QUOTE_FROM_JUPITER_ERROR_MESSAGE = 'There was no quote availible for your swap.';
