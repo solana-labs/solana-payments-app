@@ -274,6 +274,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         transaction.partialSign(gasKeypair);
+        // transaction.partialSign(singleUseKeypair);
 
         try {
             verifyTransactionWithRecord(paymentRecord, transaction, true);
