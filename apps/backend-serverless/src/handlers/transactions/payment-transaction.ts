@@ -59,8 +59,11 @@ Sentry.AWSLambda.init({
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'in payment transaction handler',
+            message: 'In payment transaction handler',
             level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
         });
         let paymentTransaction: TransactionRequestResponse;
         let paymentRequest: PaymentTransactionRequestParameters;
@@ -139,7 +142,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
-            console.log('no gas');
+            console.log('no gas keypair');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
@@ -151,20 +154,17 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 id: paymentRecord.merchantId,
             });
         } catch (error) {
-            console.log('failed fetching merchant');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
 
         if (merchant == null) {
-            console.log('no merchant');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         if (merchant.accessToken == null) {
             await websocketService.sendTransactionRequestFailedMessage();
-            console.log('no access token');
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant access token'));
         }
 
@@ -178,6 +178,18 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             // CRITIAL: This should work, but losing the rent here isn't the end of the world but we want to know
         }
 
+        Sentry.captureEvent({
+            message: 'Payment transaction, about to fetch paymentTx',
+            level: 'info',
+            extra: {
+                paymentRecord: JSON.stringify(paymentRecord),
+                merchant: JSON.stringify(merchant),
+                account: JSON.stringify(account),
+                gasKeypair: JSON.stringify(gasKeypair),
+                singleUseKeypair: JSON.stringify(singleUseKeypair),
+            },
+        });
+
         try {
             paymentTransaction = await fetchPaymentTransaction(
                 paymentRecord,
@@ -189,7 +201,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 axios
             );
         } catch (error) {
-            console.log(error);
             console.log('failed fetching payment transaction, prob lol');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);

@@ -11,13 +11,6 @@ export const fetchGasKeypair = async (): Promise<web3.Keypair> => {
         throw new Error('AWS credentials not found');
     }
 
-    // if (localGas != null) {
-    //     console.log('where tfffff');
-    //     const seed = Uint8Array.from(JSON.parse(localGas));
-    //     const keypair = web3.Keypair.fromSecretKey(seed);
-    //     return keypair;
-    // }
-
     const s3 = new S3({
         region: region,
     });
@@ -33,17 +26,11 @@ export const fetchGasKeypair = async (): Promise<web3.Keypair> => {
         throw new Error('AWS output not found');
     }
 
-    console.log(output.Body.toString('ascii'));
     const seedString = output.Body.toString('ascii');
-    console.log(seedString);
     const seedArray = JSON.parse(seedString);
-    console.log(seedArray);
 
     const seed = Uint8Array.from(seedArray);
-    console.log(seed);
     const keypair = web3.Keypair.fromSecretKey(seed);
-    console.log(keypair);
-    console.log(keypair.secretKey);
 
     return keypair;
 };

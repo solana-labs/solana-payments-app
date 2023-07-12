@@ -22,6 +22,9 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'In customersRedact gdpr',
             level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
         });
 
         try {

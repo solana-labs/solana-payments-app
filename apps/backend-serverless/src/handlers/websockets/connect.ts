@@ -2,8 +2,11 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
 import pkg from 'aws-sdk';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
+import { ConnectParameters, parseAndValidateConnectSchema } from '../../models/websockets/connect.model.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 const { ApiGatewayManagementApi } = pkg;
 
 const prisma = new PrismaClient();
@@ -19,20 +22,27 @@ export const connect = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in websocket connect',
             level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
         });
         const websocketSessionService = new WebsocketSessionService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
 
-        console.log(event);
+        let connectParameters: ConnectParameters;
 
-        const paymentId = (event as any).queryStringParameters.paymentId;
+        try {
+            connectParameters = parseAndValidateConnectSchema((event as any).queryStringParameters);
+        } catch (error) {
+            return createErrorResponse(error);
+        }
+
         const connectionId = event.requestContext.connectionId;
 
-        const paymentRecord = await paymentRecordService.getPaymentRecord({ id: paymentId });
+        const paymentRecord = await paymentRecordService.getPaymentRecord({ id: connectParameters.paymentId });
 
         if (paymentRecord == null) {
-            // need a payment record or we dont care about you
-            throw new Error('Payment record not found');
+            return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
         }
 
         await websocketSessionService.createWebsocketSession(paymentRecord.id, connectionId);

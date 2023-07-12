@@ -1,15 +1,3 @@
-import { CoreUseCase, HandlerTaskChain, InputValidationUseCase } from '../use-cases-and-task-chain.wip.js';
-import { ParseAndValidateUseCase } from '../use-cases-and-task-chain.wip.js';
-import {
-    parseAndValidateTransactionRequestBody,
-    TransactionRequestBody,
-} from '../../models/transaction-requests/transaction-request-body.model.js';
-import {
-    parseAndValidatePaymentTransactionRequest,
-    PaymentTransactionRequestParameters,
-} from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
-import { APIGatewayProxyResultV2 } from 'aws-lambda';
-import * as web3 from '@solana/web3.js';
 import {
     Merchant,
     PaymentRecord,
@@ -18,28 +6,44 @@ import {
     PrismaClient,
     TransactionType,
 } from '@prisma/client';
+import * as web3 from '@solana/web3.js';
+import { APIGatewayProxyResultV2 } from 'aws-lambda';
+import axios from 'axios';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
+import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+import {
+    PaymentTransactionRequestParameters,
+    parseAndValidatePaymentTransactionRequest,
+} from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
+import {
+    TransactionRequestBody,
+    parseAndValidateTransactionRequestBody,
+} from '../../models/transaction-requests/transaction-request-body.model.js';
+import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
-import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
-import axios from 'axios';
-import { TrmService } from '../../services/trm-service.service.js';
-import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { makePaymentSessionReject } from '../../services/shopify/payment-session-reject.service.js';
 import { validatePaymentSessionRejected } from '../../services/shopify/validate-payment-session-rejected.service.js';
 import { sendPaymentRejectRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
+import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
+import { TrmService } from '../../services/trm-service.service.js';
+import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
+import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import {
     encodeBufferToBase58,
     encodeTransaction,
 } from '../../utilities/transaction-request/encode-transaction.utility.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
+import {
+    CoreUseCase,
+    HandlerTaskChain,
+    InputValidationUseCase,
+    ParseAndValidateUseCase,
+} from '../use-cases-and-task-chain.wip.js';
 
 export const paymentTransactionCoreUseCaseMethod = async (
     _: {},
@@ -62,12 +66,12 @@ export const paymentTransactionCoreUseCaseMethod = async (
             id: queryParameter.paymentId,
         });
     } catch (error) {
-        console.log('error fetching payment record');
+        // console.log('error fetching payment record');
         throw new Error('error fetching payment record');
     }
 
     if (paymentRecord == null) {
-        console.log('payment record is null');
+        // console.log('payment record is null');
         throw new Error('error fetching payment record');
     }
 
@@ -90,7 +94,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
     try {
         gasKeypair = await fetchGasKeypair();
     } catch (error) {
-        console.log('error fetching gas keypair', error, error.message);
+        // console.log('error fetching gas keypair', error, error.message);
         throw new Error('error fetching gas keypair');
     }
 
@@ -101,18 +105,18 @@ export const paymentTransactionCoreUseCaseMethod = async (
             id: paymentRecord.merchantId,
         });
     } catch (error) {
-        console.log('error fetching merchant');
+        // console.log('error fetching merchant');
         throw new Error('error fetching merchant');
     }
 
     if (merchant == null) {
         // Not sure if this should be 500 or 404, will do 404 for now
-        console.log('merchant is null');
+        // console.log('merchant is null');
         throw new Error('merchant is null');
     }
 
     if (merchant.accessToken == null) {
-        console.log('merchant access token is null');
+        // console.log('merchant access token is null');
         throw new Error('merchant access token is null');
     }
 
@@ -121,7 +125,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
     try {
         await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
     } catch (error) {
-        console.log('could not upload single use keypair');
+        // console.log('could not upload single use keypair');
         // TODO: Log this error in sentry
         // TODO: Prob dont crash here, fail ez, nbd
     }
@@ -137,7 +141,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
             dependencies.axiosInstance
         );
     } catch (error) {
-        console.log('error fetching payment transaction', error.message);
+        // console.log('error fetching payment transaction', error.message);
         throw new Error('error fetching payment transaction');
     }
 
@@ -206,7 +210,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
     try {
         transaction = encodeTransaction(paymentTransaction.transaction);
     } catch (error) {
-        console.log('error encoding transaction');
+        // console.log('error encoding transaction');
         throw new Error('error encoding transaction');
     }
 
@@ -224,7 +228,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
     const transactionSignature = transaction.signature;
 
     if (transactionSignature == null) {
-        console.log('transaction signature is null');
+        // console.log('transaction signature is null');
         throw new Error('transaction signature is null');
     }
 
@@ -242,7 +246,7 @@ export const paymentTransactionCoreUseCaseMethod = async (
             null
         );
     } catch (error) {
-        console.log('error creating transaction record');
+        // console.log('error creating transaction record');
         throw new Error('error creating transaction record');
     }
 

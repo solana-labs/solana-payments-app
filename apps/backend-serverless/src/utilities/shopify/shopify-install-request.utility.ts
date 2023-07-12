@@ -34,7 +34,7 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
         throw new MissingEnvError('shopify secret');
     }
 
-    const hmacGenerated = crypto.createHmac('sha256', secret).update(queryStringAfterRemoving).digest('hex');
+    const hmacGenerated = crypto.createHmac('sha256', secret).update(queryStringAfterRemoving).digest('base64');
 
     if (hmacGenerated != hmac) {
         throw new UnauthorizedRequestError('hmac did not match.');

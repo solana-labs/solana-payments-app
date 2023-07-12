@@ -23,12 +23,7 @@ import { fetchRefundTransaction } from '../../services/transaction-request/fetch
 import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import { generateSingleUseKeypairFromRefundRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import {
     encodeBufferToBase58,
     encodeTransaction,
@@ -86,7 +81,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
         } catch (error) {
-            return errorResponse(ErrorType.badRequest, ErrorMessage.invalidRequestParameters);
+            return createErrorResponse(error);
         }
 
         let gasKeypair: web3.Keypair;

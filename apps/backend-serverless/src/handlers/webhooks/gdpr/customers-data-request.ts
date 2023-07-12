@@ -18,8 +18,11 @@ Sentry.AWSLambda.init({
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In customersDataRequest gdpr' + JSON.stringify(event.headers),
+            message: 'In customersDataRequest gdpr',
             level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
         });
         let webhookHeaders: ShopifyWebhookHeaders;
 

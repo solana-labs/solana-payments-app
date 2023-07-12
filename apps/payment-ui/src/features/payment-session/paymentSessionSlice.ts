@@ -1,11 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../store';
-import WebSocket from 'ws';
-import { stat } from 'fs';
-import { SocketConnectedWithoutPaymentIdError } from '@/errors/socket-connected-without-payment-id.error';
-import { PaymentDetailsMessageWithoutDetailsError } from '@/errors/payment-details-message-without-details.error';
-import { SocketMessageWithNoTypeError } from '@/errors/socket-message-with-no-type.error';
 
 /**
  * SessionState - The state of the payment session, agnostic to how the user is paying
@@ -133,7 +127,7 @@ const paymentSessionSlice = createSlice({
             // Do transaction request failing stuff here
         },
         setTransactionDelivered: state => {
-            console.log('state should be set');
+            // console.log('state should be set');
             // state.solanaPayState = SolanaPayState.transactionDelivered;
             state.mergedState = MergedState.approving;
             // state.sessionState = SessionState.approving;

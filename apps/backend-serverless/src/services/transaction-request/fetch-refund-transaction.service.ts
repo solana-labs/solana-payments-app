@@ -1,18 +1,13 @@
-import axios from 'axios';
-import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { PaymentRecord, RefundRecord } from '@prisma/client';
+import axios from 'axios';
+import { USDC_MINT } from '../../configs/tokens.config.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
 } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility.js';
+import { buildTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
-import {
-    findPayingTokenAddressFromTransaction,
-    findPayingWalletFromTransaction,
-} from '../../utilities/transaction-inspection.utility.js';
-import { USDC_MINT } from '../../configs/tokens.config.js';
-import { ref } from 'yup';
-import { send } from 'process';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,
@@ -35,7 +30,7 @@ export const fetchRefundTransaction = async (
     const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
     const payingCustomerTokenAddress = await findPayingTokenAddressFromTransaction(transaction);
 
-    let senderWalletAddress = account;
+    const senderWalletAddress = account;
     let receiverWalletAddress: string | null = null;
     let receiverTokenAddress: string | null = payingCustomerTokenAddress.toBase58();
 
@@ -44,7 +39,7 @@ export const fetchRefundTransaction = async (
         receiverTokenAddress = null;
     }
 
-    const endpoint = buildRefundTransactionRequestEndpoint(
+    const endpoint = buildTransactionRequestEndpoint(
         receiverWalletAddress,
         receiverTokenAddress,
         senderWalletAddress,
