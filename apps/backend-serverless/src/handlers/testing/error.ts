@@ -20,8 +20,6 @@ export const error = Sentry.AWSLambda.wrapHandler(
         try {
             throw new Error('Test error for Sentry');
         } catch (error) {
-            Sentry.captureException(error);
-            await Sentry.flush(2000);
             return createErrorResponse(error);
         }
 
