@@ -58,20 +58,13 @@ export const fetchRefundTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    console.log(endpoint);
-
     const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
-
-    console.log(response.status);
 
     if (response.status != 200) {
         throw new Error('Error fetching refund transaction.');
     }
 
-    console.log(response.status);
-
     const transactionRequestResponse = parseAndValidateTransactionRequestResponse(response.data);
 
-    console.log(transactionRequestResponse);
     return transactionRequestResponse;
 };
