@@ -27,8 +27,7 @@ describe('unit testing the verify shopify webhook utility', () => {
         const webhookHeaders = {
             'x-shopify-hmac-sh256': hmac,
         };
-        console.log('webhookHeaders', webhookHeaders);
-        console.log('hmac', hmac);
+        console.log('webhookHeaders, and hmac', webhookHeaders, hmac);
 
         expect(() => {
             verifyShopifyWebhook(Buffer.from(mockShopifyPayloadString), webhookHeaders['x-shopify-hmac-sha256']);
