@@ -16,7 +16,7 @@ import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import { parseAndValidatePaymentRequest } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
+import { parseAndValidatePaymentRequest } from '../../models/transaction-requests/payment-request-parameters.model.js';
 import {
     TransactionRequestBody,
     parseAndValidateTransactionRequestBody,
