@@ -27,6 +27,9 @@ export const refund = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'In refund',
             level: 'info',
+            extra: {
+                event,
+            },
         });
 
         const prisma = new PrismaClient();

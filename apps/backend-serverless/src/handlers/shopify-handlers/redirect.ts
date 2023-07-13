@@ -32,6 +32,9 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in redirect',
             level: 'info',
+            extra: {
+                event,
+            },
         });
         const merchantService = new MerchantService(prisma);
 

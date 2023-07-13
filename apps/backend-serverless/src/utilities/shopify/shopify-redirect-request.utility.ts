@@ -33,7 +33,7 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
     const hmacGenerated = crypto
         .createHmac('sha256', secret)
         .update(Buffer.from(stringifyParams(redirectParams)))
-        .digest('base64');
+        .digest('hex');
 
     if (hmacGenerated != hmac) {
         throw new UnauthorizedRequestError('hmac did not match.');
