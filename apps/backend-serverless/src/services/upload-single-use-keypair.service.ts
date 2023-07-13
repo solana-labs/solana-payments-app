@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import pkg from 'aws-sdk';
 import { ShopifyRecord } from './database/record-service.database.service.js';
@@ -10,8 +11,6 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, rec
     const bucket = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME;
     const region = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION;
 
-    console.log(bucket);
-
     if (bucket == null || region == null) {
         throw new Error('AWS credentials not found');
     }
@@ -20,16 +19,9 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, rec
         region: region,
     });
 
-    console.log(singleUseKeypair);
-
-    console.log(singleUseKeypair.secretKey);
-
     const seedString = JSON.stringify(singleUseKeypair.secretKey);
 
-    console.log(seedString);
-
     try {
-        // TODO: Log the successful upload in sentry
         await s3
             .upload({
                 Bucket: bucket,
@@ -38,6 +30,11 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, rec
                 ContentType: 'application/json',
             })
             .promise();
+
+        Sentry.captureEvent({
+            message: 'Single Use Keypair uploaded to s3',
+            level: 'info',
+        });
     } catch (error) {
         if (error instanceof Error) {
             throw error;
