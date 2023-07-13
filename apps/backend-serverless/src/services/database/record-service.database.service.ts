@@ -2,9 +2,9 @@
 // import { PaymentRecordService } from './payment-record-service.database.service.js';
 
 import { PaymentRecord, PrismaClient, RefundRecord, TransactionRecord } from '@prisma/client';
+import axios from 'axios';
 import { PaymentRecordService } from './payment-record-service.database.service.js';
 import { RefundRecordService } from './refund-record-service.database.service.js';
-import axios from 'axios';
 
 export type ShopifyRecord = PaymentRecord | RefundRecord;
 export type PaymentRejectResponse = {};

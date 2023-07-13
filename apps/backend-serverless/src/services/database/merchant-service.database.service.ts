@@ -74,17 +74,15 @@ export class MerchantService {
     }
 
     async updateMerchantWalletAddress(merchant: Merchant, inputPubkeyString: string): Promise<Merchant> {
-        console.log('updating');
-
         const accountType = await getPubkeyType(inputPubkeyString);
         const inputPubkey = new web3.PublicKey(inputPubkeyString);
+        const usdcAddress = await findAssociatedTokenAddress(inputPubkey, USDC_MINT);
 
         let updatedWalletAddress: string | null = null;
         let updatedTokenAddress: string | null = null;
 
         switch (accountType) {
             case PubkeyType.native:
-                const usdcAddress = await findAssociatedTokenAddress(inputPubkey, USDC_MINT);
                 updatedWalletAddress = inputPubkey.toBase58();
                 updatedTokenAddress = usdcAddress.toBase58();
                 break;
