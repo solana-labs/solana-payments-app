@@ -1,17 +1,17 @@
-import { PrismaClient, WebsocketSession } from '@prisma/client';
-import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
+import { PrismaClient } from '@prisma/client';
+import * as web3 from '@solana/web3.js';
+import axios from 'axios';
+import { delay } from '../../utilities/delay.utility.js';
+import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 import {
     PaymentResolveResponse,
     ShopifyResolveResponse,
     getRecordServiceForTransaction,
 } from '../database/record-service.database.service.js';
-import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
-import * as web3 from '@solana/web3.js';
-import { delay } from '../../utilities/delay.utility.js';
+import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
+import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { WebSocketService } from '../websocket/send-websocket-message.service.js';
-import axios from 'axios';
-import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 
 export const processTransaction = async (
     signature: string,
