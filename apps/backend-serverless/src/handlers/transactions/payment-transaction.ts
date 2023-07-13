@@ -16,10 +16,7 @@ import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import {
-    PaymentTransactionRequestParameters,
-    parseAndValidatePaymentTransactionRequest,
-} from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
+import { parseAndValidatePaymentRequest } from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
 import {
     TransactionRequestBody,
     parseAndValidateTransactionRequestBody,
@@ -100,7 +97,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
-            paymentRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
+            paymentRequest = parseAndValidatePaymentRequest(event.queryStringParameters);
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -111,7 +108,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         try {
             paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: paymentRequest.paymentId,
+                id: paymentRequest.id,
             });
         } catch (error) {
             return createErrorResponse(error);

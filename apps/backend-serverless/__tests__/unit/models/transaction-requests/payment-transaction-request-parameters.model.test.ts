@@ -1,4 +1,4 @@
-import { parseAndValidatePaymentTransactionRequest } from '../../../../src/models/transaction-requests/payment-transaction-request-parameters.model.js';
+import { parseAndValidatePaymentRequest } from '../../../../src/models/transaction-requests/payment-transaction-request-parameters.model.js';
 import {
     runEmptyFieldTests,
     runInvalidFieldTypeTests,
@@ -17,8 +17,8 @@ describe('unit testing the payment transaction request parameters model', () => 
         paymentId: 123,
     };
 
-    runValidParameterTest(parseAndValidatePaymentTransactionRequest, validParams);
-    runMissingFieldTests(parseAndValidatePaymentTransactionRequest, validParams, fields);
-    runInvalidFieldTypeTests(parseAndValidatePaymentTransactionRequest, validParams, fields, wrongTypes);
-    runEmptyFieldTests(parseAndValidatePaymentTransactionRequest, validParams, fields);
+    runValidParameterTest(parseAndValidatePaymentRequest, validParams);
+    runMissingFieldTests(parseAndValidatePaymentRequest, validParams, fields);
+    runInvalidFieldTypeTests(parseAndValidatePaymentRequest, validParams, fields, wrongTypes);
+    runEmptyFieldTests(parseAndValidatePaymentRequest, validParams, fields);
 });
