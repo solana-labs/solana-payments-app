@@ -38,7 +38,7 @@ import { verifyTransactionWithRecord } from '../../services/transaction-validati
 import { TrmService } from '../../services/trm-service.service.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import { generateSingleUseKeypairFromRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import {
     encodeBufferToBase58,
@@ -165,12 +165,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant access token'));
         }
 
-        const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
+        const singleUseKeypair = await generateSingleUseKeypairFromRecord(paymentRecord);
 
         try {
             await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
         } catch (error) {
-            console.log(error);
             Sentry.captureException(error);
             // CRITIAL: This should work, but losing the rent here isn't the end of the world but we want to know
         }
