@@ -2,7 +2,7 @@ import { InferType, object, string } from 'yup';
 import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 
 export const paymentRequestParametersScheme = object().shape({
-    id: string().required(),
+    paymentId: string().required(),
 });
 
 export type PaymentRequestParameters = InferType<typeof paymentRequestParametersScheme>;
