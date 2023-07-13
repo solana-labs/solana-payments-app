@@ -15,7 +15,6 @@ import {
 import { GDPRService } from '../../../services/database/gdpr-service.database.service.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
-import { logSentry } from '../../../utilities/sentry-log.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
 
 const prisma = new PrismaClient();
@@ -44,7 +43,6 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         try {
             webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
         } catch (error) {
-            logSentry(error, 'shop redact wrong webhook');
             return createErrorResponse(error);
         }
 
