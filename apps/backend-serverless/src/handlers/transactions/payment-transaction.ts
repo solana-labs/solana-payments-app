@@ -112,7 +112,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         try {
             paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: paymentRequest.id,
+                id: paymentRequest.paymentId,
             });
         } catch (error) {
             return createErrorResponse(error);

@@ -8,13 +8,13 @@ import {
 
 describe('unit testing the payment transaction request parameters model', () => {
     const validParams = {
-        id: 'some-id',
+        paymentId: 'some-id',
     };
 
     const fields = ['paymentId'];
 
     const wrongTypes = {
-        id: 123,
+        paymentId: 123,
     };
 
     runValidParameterTest(parseAndValidatePaymentRequest, validParams);
