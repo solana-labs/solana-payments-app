@@ -62,7 +62,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             message: 'In payment transaction handler',
             level: 'info',
             extra: {
-                event: JSON.stringify(event),
+                event,
             },
         });
 
