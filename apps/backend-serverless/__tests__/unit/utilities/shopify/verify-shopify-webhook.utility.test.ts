@@ -4,7 +4,7 @@ import { verifyShopifyWebhook } from '../../../../src/utilities/shopify/verify-s
 describe('unit testing the verify shopify webhook utility', () => {
     const mockShopifySecret = 'ec4d61947aac7ff89d4ee1c703bdc548';
     process.env.SHOPIFY_SECRET_KEY = mockShopifySecret;
-    it.skip('valid webhook', () => {
+    it('valid webhook', () => {
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',
@@ -35,7 +35,7 @@ describe('unit testing the verify shopify webhook utility', () => {
         });
     });
 
-    it.skip('invalid webhook, wrong secret key for hash', () => {
+    it('invalid webhook, wrong secret key for hash', () => {
         const mockInvalidShopifySecret = 'this-is-not-the-key-you-are-looking-for';
 
         // Create my mock body
@@ -56,7 +56,7 @@ describe('unit testing the verify shopify webhook utility', () => {
         }).toThrow();
     });
 
-    it.skip('invalid webhook, different value in body', () => {
+    it('invalid webhook, different value in body', () => {
         // Create my mock body
         const mockShopifyPayload = {
             foo: 'Anatoly',

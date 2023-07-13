@@ -61,7 +61,7 @@ describe('unit testing shopify install request utilities', () => {
         };
 
         const stringifiedParams = stringifyParams(installParams);
-        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('hex');
+        const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('base64');
 
         installParams['hmac'] = hmac.toString();
 
