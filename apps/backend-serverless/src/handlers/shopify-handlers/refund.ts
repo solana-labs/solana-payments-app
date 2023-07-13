@@ -77,7 +77,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                 let usdcSize: number;
 
                 if (refundInitiation.test) {
-                    usdcSize = 0.000001;
+                    usdcSize = 0;
                 } else {
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         refundInitiation.amount,
