@@ -1,10 +1,8 @@
-import { PrismaClient, Merchant, KybState } from '@prisma/client';
-import { makePaymentAppConfigure } from '../../services/shopify/payment-app-configure.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { getKybState } from './get-kyb-state.js';
-import { DependencyError } from '../../errors/dependency.error.js';
+import { Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { getKybState } from './get-kyb-state.js';
 
 export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);
@@ -18,9 +16,7 @@ export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Pr
         const kybState = await getKybState(merchant.kybInquiry);
         merchant = await merchantService.updateMerchant(merchant, { kybState });
     } catch (error) {
-        console.log(error);
-        Sentry.captureException(error);
-        throw error;
+        createErrorResponse(error);
     }
 
     return merchant;

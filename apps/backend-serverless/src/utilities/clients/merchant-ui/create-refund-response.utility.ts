@@ -1,6 +1,6 @@
+import { PaymentRecord, PrismaClient, RefundRecord } from '@prisma/client';
 import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
-import { PaymentRecord, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { Pagination } from './database-services.utility.js';
 import { RefundDataResponse, createRefundDataResponseFromRefundRecord } from './refund-record.utility.js';
 
