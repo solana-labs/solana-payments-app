@@ -94,7 +94,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         if (account != null) {
             try {
-                const accountPubkey = new web3.PublicKey(account);
+                new web3.PublicKey(account);
             } catch (error) {
                 return createErrorResponse(new InvalidInputError('invalid account in body. needs to be a pubkey'));
             }
@@ -143,7 +143,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
-            console.log('no gas keypair');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
