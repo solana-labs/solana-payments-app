@@ -41,7 +41,7 @@ const parseParameters = params => {
         group: params.group,
         amount: parseFloat(params.amount), // convert amount string to number
         currency: params.currency,
-        test: params.test === 'true', // convert 'true' or 'false' string to boolean
+        test: params.test, // convert 'true' or 'false' string to boolean
         merchant_locale: params.merchant_locale,
         payment_method: params.payment_method, // assuming paymentMethodSchema will handle this
         proposed_at: params.proposed_at,
