@@ -22,8 +22,16 @@ const BuyButton = () => {
     const isLoading = useSelector(getIsWalletLoading);
 
     const fetchAndSendTransaction = async () => {
-        const headers = {
-            'Content-Type': 'application/json',
+        const getErrorType = (error: any) => {
+            if (error instanceof Error) {
+                const message = error.message.toLowerCase();
+                if (message.includes('user rejected')) return Notification.declined;
+                if (message.includes('0x0') && message.includes('instruction 0')) return Notification.duplicatePayment;
+                if (message.includes('0x1') && message.includes('instruction 1')) return Notification.insufficentFunds;
+                if (message === 'Transaction string is null') return Notification.transactionRequestFailed;
+                if (message === 'Failed to parse transaction string') return Notification.transactionRequestFailed;
+            }
+            return Notification.simulatingIssue;
         };
 
         if (paymentId == null) {
@@ -38,104 +46,47 @@ const BuyButton = () => {
 
         const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId);
 
-        let transactionString: string;
-
         dispatch(setWalletLoading());
 
         try {
-            const response = await axios.post(transactionRequestEndpoint, { account: publicKey }, { headers: headers });
-
-            transactionString = response.data.transaction;
-        } catch (error) {
-            dispatch(stopWalletLoading());
-            dispatch(resetSession());
-            dispatch(
-                setNotification({
-                    notification: Notification.transactionRequestFailed,
-                    type: NotificationType.connectWallet,
-                })
+            const response = await axios.post(
+                transactionRequestEndpoint,
+                { account: publicKey.toBase58() },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
             );
-            return;
-        }
 
-        if (transactionString == null) {
-            dispatch(stopWalletLoading());
-            dispatch(resetSession());
-            dispatch(
-                setNotification({
-                    notification: Notification.transactionRequestFailed,
-                    type: NotificationType.connectWallet,
-                })
-            );
-            return;
-        }
+            const transactionString = response.data.transaction;
+            if (!transactionString) {
+                throw new Error('Transaction string is null');
+            }
 
-        let transaction: web3.Transaction;
+            let transaction: web3.Transaction;
 
-        try {
-            const buffer = Buffer.from(transactionString, 'base64');
-            transaction = web3.Transaction.from(buffer);
-        } catch (error) {
-            dispatch(stopWalletLoading());
-            dispatch(resetSession());
-            dispatch(
-                setNotification({
-                    notification: Notification.transactionRequestFailed,
-                    type: NotificationType.connectWallet,
-                })
-            );
-            return;
-        }
+            try {
+                const buffer = Buffer.from(transactionString, 'base64');
+                transaction = web3.Transaction.from(buffer);
+            } catch (error) {
+                throw new Error('Failed to parse transaction string');
+            }
 
-        try {
-            // TODO: Use default RPC from wallet adapter
             const connection = new web3.Connection(
                 'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
-            const declined = error instanceof Error && error.message.toLowerCase().includes('user rejected');
-            const duplicatePayment =
-                error instanceof Error &&
-                error.message.toLowerCase().includes('0x0') &&
-                error.message.toLowerCase().includes('instruction 0');
-            const insufficientFunds =
-                error instanceof Error &&
-                error.message.toLowerCase().includes('0x1') &&
-                error.message.toLowerCase().includes('instruction 1');
-
-            if (declined) {
-                // The most important check, we can't detect this any other way
-                dispatch(
-                    setNotification({ notification: Notification.declined, type: NotificationType.connectWallet })
-                );
-            } else if (duplicatePayment) {
-                // Could also be handled by a transaction simulation webhook message
-                dispatch(
-                    setNotification({
-                        notification: Notification.duplicatePayment,
-                        type: NotificationType.connectWallet,
-                    })
-                );
-            } else if (insufficientFunds) {
-                // Shouldn't happen. We shouldn't let them submit a transaction if they don't have enough funds.
-                dispatch(
-                    setNotification({
-                        notification: Notification.insufficentFunds,
-                        type: NotificationType.connectWallet,
-                    })
-                );
-            } else {
-                dispatch(
-                    setNotification({
-                        notification: Notification.simulatingIssue,
-                        type: NotificationType.connectWallet,
-                    })
-                );
-            }
-
-            dispatch(resetSession());
+            const errorType = getErrorType(error);
             dispatch(stopWalletLoading());
+            dispatch(resetSession());
+            dispatch(
+                setNotification({
+                    notification: errorType,
+                    type: NotificationType.connectWallet,
+                })
+            );
             return;
         }
     };

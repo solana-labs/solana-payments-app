@@ -84,10 +84,10 @@ export const heliusTransactionErrorSchema = object()
     .nullable();
 
 export const heliusTokenBalanceChangeSchema = object().shape({
-    userAccount: string().optional(),
-    tokenAccount: string().optional(),
     mint: string().optional(),
     rawTokenAmount: heliusRawTokenAmountSchema.optional(),
+    tokenAccount: string().optional(),
+    userAccount: string().optional(),
 });
 
 export const heliusAccountTransferSchema = object().shape({
@@ -103,6 +103,7 @@ export const heliusTokenTransferSchema = object().shape({
     toTokenAccount: string().optional(),
     tokenAmount: number().optional(),
     mint: string().optional(),
+    tokenStandard: string().optional(),
 });
 
 export const heliusNativeTransferSchema = object().shape({
@@ -115,7 +116,7 @@ export const heliusEnhancedTransactionModelSchema = object().shape({
     description: string().optional(),
     type: string().optional(),
     source: string().optional(),
-    fee: string().optional(),
+    fee: number().optional(),
     feePayer: string().optional(),
     signature: string().required(),
     slot: number().optional(),

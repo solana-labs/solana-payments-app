@@ -71,6 +71,7 @@ const getFinalReceiverTokenAddress = async (
         if (receiverTokenAddress.toBase58() != tempAssociatedTokenAddress.toBase58()) {
             throw new Error('Receiver wallet address and receiver token address do not match.');
         }
+        finalReceiverTokenAddress = receiverTokenAddress;
     }
 
     if (finalReceiverTokenAddress == null) {

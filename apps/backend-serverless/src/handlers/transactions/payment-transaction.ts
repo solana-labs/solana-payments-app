@@ -178,18 +178,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             // CRITIAL: This should work, but losing the rent here isn't the end of the world but we want to know
         }
 
-        Sentry.captureEvent({
-            message: 'Payment transaction, about to fetch paymentTx',
-            level: 'info',
-            extra: {
-                paymentRecord: JSON.stringify(paymentRecord),
-                merchant: JSON.stringify(merchant),
-                account: JSON.stringify(account),
-                gasKeypair: JSON.stringify(gasKeypair),
-                singleUseKeypair: JSON.stringify(singleUseKeypair),
-            },
-        });
-
         try {
             paymentTransaction = await fetchPaymentTransaction(
                 paymentRecord,
@@ -274,6 +262,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         transaction.partialSign(gasKeypair);
+        // transaction.partialSign(singleUseKeypair);
 
         try {
             verifyTransactionWithRecord(paymentRecord, transaction, true);

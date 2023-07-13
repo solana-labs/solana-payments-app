@@ -75,8 +75,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
 
         const signatures = heliusEnhancedTransactions.map(transaction => transaction.signature);
 
-        console.log(signatures);
-
         const websocketService = new WebSocketService(
             websocketUrl,
             {
@@ -109,7 +107,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
         for (const transactionRecord of transactionRecords) {
             // send a message to the queue, even better if we can send an array of messages to the queue
             try {
-                console.log('sending message to queue');
                 await sendProcessTransactionMessage(transactionRecord.signature);
             } catch (error) {
                 failedTransactionRecordMessages.push({ error: error, transactionRecord: transactionRecord });
