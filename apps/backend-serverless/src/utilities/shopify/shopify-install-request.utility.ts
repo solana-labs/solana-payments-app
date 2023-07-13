@@ -30,7 +30,7 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
 
     const hmacGenerated = crypto
         .createHmac('sha256', secret)
-        .update(stringifyParams(parsedAppInstallQuery))
+        .update(Buffer.from(stringifyParams(parsedAppInstallQuery)))
         .digest('base64');
 
     if (hmacGenerated != hmac) {

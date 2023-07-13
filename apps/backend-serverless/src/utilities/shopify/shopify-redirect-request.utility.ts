@@ -17,24 +17,24 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
     }
 
     // Save the hmac, remove it from the object, get the query string after removing
-    const hmac = redirectParams.hmac;
 
-    if (hmac == undefined) {
+    if (redirectParams.hmac == undefined) {
         throw new UnauthorizedRequestError('missing hmac from request.');
     }
 
+    const hmac = redirectParams.hmac;
     delete redirectParams['hmac'];
-    const queryStringAfterRemoving = stringifyParams(redirectParams);
 
     const secret = process.env.SHOPIFY_SECRET_KEY;
-
-    // Check for a secret key to decode with
     if (secret == undefined) {
         throw new MissingEnvError('shopify secret');
     }
 
-    const hmacGenerated = crypto.createHmac('sha256', secret).update(queryStringAfterRemoving).digest('base64');
-    // Verify the HMAC value
+    const hmacGenerated = crypto
+        .createHmac('sha256', secret)
+        .update(Buffer.from(stringifyParams(redirectParams)))
+        .digest('base64');
+
     if (hmacGenerated != hmac) {
         throw new UnauthorizedRequestError('hmac did not match.');
     }
