@@ -6,7 +6,6 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { createSignedShopifyCookie } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { logSentry } from '../../utilities/sentry-log.utility.js';
 import {
     createShopifyOAuthGrantRedirectUrl,
     verifyAndParseShopifyInstallRequest,
@@ -25,13 +24,15 @@ export const install = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in install',
             level: 'info',
+            extra: {
+                event: event,
+            },
         });
         let parsedAppInstallQuery: AppInstallQueryParam;
 
         try {
             parsedAppInstallQuery = await verifyAndParseShopifyInstallRequest(event.queryStringParameters);
         } catch (error) {
-            logSentry(error, event.queryStringParameters ? String(event.queryStringParameters) : 'empty query');
             return createErrorResponse(error);
         }
 

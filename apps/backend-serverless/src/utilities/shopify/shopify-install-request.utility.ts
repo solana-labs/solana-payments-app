@@ -8,7 +8,6 @@ import {
 import { stringifyParams } from './stringify-params.utility.js';
 
 export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): AppInstallQueryParam => {
-    // Verify that the object passed in can be parsed into an AppInstallQueryParam object
     let parsedAppInstallQuery: AppInstallQueryParam;
 
     try {
@@ -17,24 +16,22 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
         throw new UnauthorizedRequestError('could not parse the query parameters.');
     }
 
-    // Save the hmac, remove it from the object, get the query string after removing
-    const hmac = parsedAppInstallQuery.hmac;
-
-    if (hmac == undefined) {
-        throw new UnauthorizedRequestError('request did not include hmac.');
+    if (!parsedAppInstallQuery.hmac) {
+        throw new UnauthorizedRequestError('Request did not include hmac.');
     }
 
+    const hmac = parsedAppInstallQuery.hmac;
     delete parsedAppInstallQuery['hmac'];
-    const queryStringAfterRemoving = stringifyParams(parsedAppInstallQuery);
 
     const secret = process.env.SHOPIFY_SECRET_KEY;
-
-    // Check for a secret key to decode with
     if (secret == undefined) {
         throw new MissingEnvError('shopify secret');
     }
 
-    const hmacGenerated = crypto.createHmac('sha256', secret).update(queryStringAfterRemoving).digest('base64');
+    const hmacGenerated = crypto
+        .createHmac('sha256', secret)
+        .update(stringifyParams(parsedAppInstallQuery))
+        .digest('base64');
 
     if (hmacGenerated != hmac) {
         throw new UnauthorizedRequestError('hmac did not match.');
