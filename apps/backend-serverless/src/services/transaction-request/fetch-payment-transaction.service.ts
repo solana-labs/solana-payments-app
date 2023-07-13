@@ -48,7 +48,6 @@ export const fetchPaymentTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    console.log('endpoint', endpoint, 'headers', headers, 'account', account);
     const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
 
     if (response.status != 200) {

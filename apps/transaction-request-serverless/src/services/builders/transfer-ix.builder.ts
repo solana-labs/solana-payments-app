@@ -16,8 +16,6 @@ export const createTransferIx = async (
 
     const senderTokenAddress: web3.PublicKey = await findAssociatedTokenAddress(sender, token.pubkey);
 
-    console.log('receiver final address info', receiverWalletAddress, receiverTokenAddress, token);
-
     const finalReceiverTokenAddress: web3.PublicKey = await getFinalReceiverTokenAddress(
         receiverWalletAddress,
         receiverTokenAddress,
