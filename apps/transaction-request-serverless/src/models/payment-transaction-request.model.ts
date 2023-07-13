@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { InferType, boolean, number, object, string } from 'yup';
 import { TokenInformation } from '../configs/token-list.config.js';
@@ -156,19 +155,6 @@ export class PaymentTransactionBuilder {
                 swapingWallet: this.sender,
             });
         }
-
-        Sentry.captureEvent({
-            message: 'PAY TRS createTransferIx',
-            level: 'info',
-            extra: {
-                sender: this.sender.toBase58(),
-                receiverWalletAddress: this.receiverWalletAddress?.toBase58(),
-                receiverTokenAddress: this.receiverTokenAddress?.toBase58(),
-                receivingTokenInformation: receivingTokenInformation,
-                receivingQuantity: receivingQuantity,
-                createAta: this.createAta,
-            },
-        });
 
         transferIxs = await createTransferIx(
             this.sender,
