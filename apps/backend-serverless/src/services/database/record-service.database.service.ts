@@ -2,19 +2,30 @@
 // import { PaymentRecordService } from './payment-record-service.database.service.js';
 
 import { PaymentRecord, PrismaClient, RefundRecord, TransactionRecord } from '@prisma/client';
+import axios from 'axios';
 import { PaymentRecordService } from './payment-record-service.database.service.js';
 import { RefundRecordService } from './refund-record-service.database.service.js';
-import axios from 'axios';
 
 export type ShopifyRecord = PaymentRecord | RefundRecord;
+export type PaymentRejectResponse = {};
+export type RefundRejectResponse = {};
+export type ShopifyRejectResponse = PaymentRejectResponse | RefundRejectResponse;
 export type PaymentResolveResponse = {
     redirectUrl: string;
 };
 export type RefundResolveResponse = {};
 export type ShopifyResolveResponse = PaymentResolveResponse | RefundResolveResponse;
 
+export type TransactionRecordRecordQuery = {
+    transactionRecord: TransactionRecord;
+};
+export type RecordIdRecordQuery = {
+    recordId: string;
+};
+export type RecordQuery = TransactionRecordRecordQuery | RecordIdRecordQuery;
+
 export interface RecordService<RecordType, ResolveResponse> {
-    getRecord: (transactionRecord: TransactionRecord) => Promise<RecordType | null>;
+    getRecordFromTransactionRecord: (transactionRecord: TransactionRecord) => Promise<RecordType | null>;
     updateRecordToPaid: (recordId: string, transactionSignature: string) => Promise<RecordType>;
     updateRecordToCompleted: (recordId: string, resolveResponse: ResolveResponse) => Promise<RecordType>;
     resolveSession: (record: RecordType, axiosInstance: typeof axios) => Promise<ResolveResponse>;

@@ -15,7 +15,7 @@ import { validatePaymentSessionResolved } from '../shopify/validate-payment-sess
 import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
 import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
 import { MerchantService } from './merchant-service.database.service.js';
-import { PaymentResolveResponse, RecordService } from './record-service.database.service.js';
+import { PaymentRejectResponse, PaymentResolveResponse, RecordService } from './record-service.database.service.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidUpdate = {
@@ -81,7 +81,7 @@ export class PaymentRecordService
         this.merchantService = new MerchantService(prismaClient);
     }
 
-    async getRecord(transactionRecord: TransactionRecord): Promise<PaymentRecord | null> {
+    async getRecordFromTransactionRecord(transactionRecord: TransactionRecord): Promise<PaymentRecord | null> {
         if (transactionRecord.paymentRecordId == null) {
             throw new Error('Transaction record does not have a payment record id');
         }
@@ -90,6 +90,16 @@ export class PaymentRecordService
             this.prisma.paymentRecord.findFirst({
                 where: {
                     id: transactionRecord.paymentRecordId,
+                },
+            })
+        );
+    }
+
+    async getRecordFromId(id: string): Promise<PaymentRecord | null> {
+        return prismaErrorHandler(
+            this.prisma.paymentRecord.findFirst({
+                where: {
+                    id,
                 },
             })
         );
@@ -108,6 +118,10 @@ export class PaymentRecordService
                 },
             })
         );
+    }
+
+    async rejectRecord(record: PaymentRecord): Promise<PaymentRejectResponse> {
+        return {};
     }
 
     async updateRecordToCompleted(recordId: string, resolveResponse: PaymentResolveResponse): Promise<PaymentRecord> {

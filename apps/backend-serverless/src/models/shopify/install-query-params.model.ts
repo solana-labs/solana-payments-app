@@ -8,10 +8,8 @@ export const appInstallQueryParmSchema = object().shape({
             if (typeof value === 'undefined') {
                 return false;
             } else if (process.env.NODE_ENV === 'development') {
-                console.log('in devleopment node env shop');
                 return value === 'localhost:4004';
             } else {
-                console.log('in not development node env shop');
                 return /[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com\/?/.test(value);
             }
         })

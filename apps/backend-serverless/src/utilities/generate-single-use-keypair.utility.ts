@@ -1,16 +1,8 @@
-import { PaymentRecord, RefundRecord } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
+import { ShopifyRecord } from '../services/database/record-service.database.service.js';
 
-export const generateSingleUseKeypairFromPaymentRecord = async (paymentRecord: PaymentRecord) => {
-    const shopifyStrings = ['shopify', paymentRecord.shopId];
-    const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
-    const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
-    const keypair = web3.Keypair.fromSeed(seed);
-    return keypair;
-};
-
-export const generateSingleUseKeypairFromRefundRecord = async (refundRecord: RefundRecord) => {
-    const shopifyStrings = ['shopify', refundRecord.shopId];
+export const generateSingleUseKeypairFromRecord = async (record: ShopifyRecord) => {
+    const shopifyStrings = ['shopify', record.shopId];
     const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
     const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
     const keypair = web3.Keypair.fromSeed(seed);

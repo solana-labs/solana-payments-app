@@ -1,16 +1,15 @@
-import { PaymentRecord } from '@prisma/client';
+import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import pkg from 'aws-sdk';
+import { ShopifyRecord } from './database/record-service.database.service.js';
 const { S3 } = pkg;
 
 // This service method should upload the keypair to an encrypted s3 bucket for rent collection
 // at a later time.
 
-export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, paymentRecord: PaymentRecord) => {
+export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, record: ShopifyRecord) => {
     const bucket = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME;
     const region = process.env.AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION;
-
-    console.log(bucket);
 
     if (bucket == null || region == null) {
         throw new Error('AWS credentials not found');
@@ -20,24 +19,22 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, pay
         region: region,
     });
 
-    console.log(singleUseKeypair);
-
-    console.log(singleUseKeypair.secretKey);
-
     const seedString = JSON.stringify(singleUseKeypair.secretKey);
 
-    console.log(seedString);
-
     try {
-        // TODO: Log the successful upload in sentry
         await s3
             .upload({
                 Bucket: bucket,
-                Key: `${paymentRecord.id}.json`,
+                Key: `${record.id}.json`,
                 Body: seedString,
                 ContentType: 'application/json',
             })
             .promise();
+
+        Sentry.captureEvent({
+            message: 'Single Use Keypair uploaded to s3',
+            level: 'info',
+        });
     } catch (error) {
         if (error instanceof Error) {
             throw error;

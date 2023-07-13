@@ -1,17 +1,17 @@
-import { PrismaClient, WebsocketSession } from '@prisma/client';
-import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
+import { PrismaClient } from '@prisma/client';
+import * as web3 from '@solana/web3.js';
+import axios from 'axios';
+import { delay } from '../../utilities/delay.utility.js';
+import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 import {
     PaymentResolveResponse,
     ShopifyResolveResponse,
     getRecordServiceForTransaction,
 } from '../database/record-service.database.service.js';
-import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
-import * as web3 from '@solana/web3.js';
-import { delay } from '../../utilities/delay.utility.js';
+import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
+import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { WebSocketService } from '../websocket/send-websocket-message.service.js';
-import axios from 'axios';
-import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 
 export const processTransaction = async (
     signature: string,
@@ -34,7 +34,7 @@ export const processTransaction = async (
     // TODO: Make this a factory class
     const recordService = await getRecordServiceForTransaction(transactionRecord, prisma);
 
-    const record = await recordService.getRecord(transactionRecord);
+    const record = await recordService.getRecordFromTransactionRecord(transactionRecord);
 
     // This shouldn't happen, like ever. We should eventually map out what situations this could happen.
     // And if it doesn, is that bad for a customer or are we throwing too much this way?
@@ -74,12 +74,7 @@ export const processTransaction = async (
             await websocketService.sendShopifyRetryMessage();
         }
 
-        try {
-            await recordService.sendResolveRetry(record);
-        } catch (error) {
-            // if we throw then sqs should retry, maybe we rely on that?
-            throw error;
-        }
+        await recordService.sendResolveRetry(record);
 
         return;
     }

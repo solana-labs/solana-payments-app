@@ -1,13 +1,11 @@
+import * as Sentry from '@sentry/node';
 import axios from 'axios';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import {
     PaymentAppConfigureResponse,
     parseAndValidatePaymentAppConfigureResponse,
 } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
-import * as Sentry from '@sentry/node';
-import { parseAndValidateRejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
-import { response } from 'express';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
@@ -59,10 +57,9 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                     paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
                     break;
                 default:
-                    const shopifyResponseError = new ShopifyResponseError(
+                    throw new ShopifyResponseError(
                         'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
                     );
-                    throw shopifyResponseError;
             }
         } catch (error) {
             console.log(error);

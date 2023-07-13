@@ -16,7 +16,7 @@ export const screenWallet = async (event: APIGatewayProxyEventV2): Promise<APIGa
         return requestErrorResponse(new Error('Failed to update merchant.'));
     }
 
-    const trmService = new TrmService(TRM_API_KEY);
+    const trmService = new TrmService();
 
     try {
         await trmService.screenAddress(address);

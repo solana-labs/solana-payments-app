@@ -17,9 +17,9 @@ import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expecte
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 import {
-    PaymentTransactionRequestParameters,
-    parseAndValidatePaymentTransactionRequest,
-} from '../../models/transaction-requests/payment-transaction-request-parameters.model.js';
+    PaymentRequestParameters,
+    parseAndValidatePaymentRequest,
+} from '../../models/transaction-requests/payment-request-parameters.model.js';
 import {
     TransactionRequestBody,
     parseAndValidateTransactionRequestBody,
@@ -41,7 +41,7 @@ import { verifyTransactionWithRecord } from '../../services/transaction-validati
 import { TrmService } from '../../services/trm-service.service.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { generateSingleUseKeypairFromPaymentRecord } from '../../utilities/generate-single-use-keypair.utility.js';
+import { generateSingleUseKeypairFromRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import {
     encodeBufferToBase58,
@@ -65,8 +65,9 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 event: JSON.stringify(event),
             },
         });
+
         let paymentTransaction: TransactionRequestResponse;
-        let paymentRequest: PaymentTransactionRequestParameters;
+        let paymentRequest: PaymentRequestParameters;
         let transaction: web3.Transaction;
 
         const transactionRecordService = new TransactionRecordService(prisma);
@@ -93,14 +94,14 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         if (account != null) {
             try {
-                const accountPubkey = new web3.PublicKey(account);
+                new web3.PublicKey(account);
             } catch (error) {
                 return createErrorResponse(new InvalidInputError('invalid account in body. needs to be a pubkey'));
             }
         }
 
         try {
-            paymentRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
+            paymentRequest = parseAndValidatePaymentRequest(event.queryStringParameters);
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -111,7 +112,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
         try {
             paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: paymentRequest.paymentId,
+                id: paymentRequest.id,
             });
         } catch (error) {
             return createErrorResponse(error);
@@ -142,7 +143,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             gasKeypair = await fetchGasKeypair();
         } catch (error) {
-            console.log('no gas keypair');
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
         }
@@ -168,12 +168,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant access token'));
         }
 
-        const singleUseKeypair = await generateSingleUseKeypairFromPaymentRecord(paymentRecord);
+        const singleUseKeypair = await generateSingleUseKeypairFromRecord(paymentRecord);
 
         try {
             await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
         } catch (error) {
-            console.log(error);
             Sentry.captureException(error);
             // CRITIAL: This should work, but losing the rent here isn't the end of the world but we want to know
         }

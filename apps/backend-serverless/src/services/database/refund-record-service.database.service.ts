@@ -1,21 +1,21 @@
 import {
-    PrismaClient,
     Merchant,
-    RefundRecord,
     PaymentRecord,
     PaymentRecordStatus,
+    PrismaClient,
+    RefundRecord,
     RefundRecordStatus,
     TransactionRecord,
 } from '@prisma/client';
+import axios from 'axios';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
-import { prismaErrorHandler } from './shared.database.service.js';
-import { RecordService, RefundResolveResponse } from './record-service.database.service.js';
-import axios from 'axios';
-import { MerchantService } from './merchant-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
 import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
+import { MerchantService } from './merchant-service.database.service.js';
+import { RecordService, RefundRejectResponse, RefundResolveResponse } from './record-service.database.service.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -72,7 +72,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         this.merchantService = new MerchantService(prismaClient);
     }
 
-    async getRecord(transactionRecord: TransactionRecord): Promise<RefundRecord | null> {
+    async getRecordFromTransactionRecord(transactionRecord: TransactionRecord): Promise<RefundRecord | null> {
         if (transactionRecord.refundRecordId == null) {
             throw new Error('Transaction record does not have a refund record id');
         }
@@ -81,6 +81,16 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
             this.prisma.refundRecord.findFirst({
                 where: {
                     id: transactionRecord.refundRecordId,
+                },
+            })
+        );
+    }
+
+    async getRecordFromId(id: string): Promise<RefundRecord | null> {
+        return prismaErrorHandler(
+            this.prisma.refundRecord.findFirst({
+                where: {
+                    id,
                 },
             })
         );
@@ -132,6 +142,10 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
 
         validateRefundSessionResolved(resolveRefundResponse);
 
+        return {};
+    }
+
+    async rejectRecord(record: RefundRecord): Promise<RefundRejectResponse> {
         return {};
     }
 

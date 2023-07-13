@@ -71,7 +71,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
         const shopRedactBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(Buffer.from(shopRedactBodyString), webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(shopRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }
