@@ -78,6 +78,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
 
         let paymentInitiation: ShopifyPaymentInitiation;
 
+        console.log('about to parse, but checking test', JSON.parse(event.body).test);
         try {
             paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
         } catch (error) {
@@ -97,6 +98,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         try {
             if (paymentRecord == null) {
                 let usdcSize: number;
+                console.log('test?', paymentInitiation.test);
                 if (paymentInitiation.test) {
                     usdcSize = 0;
                 } else {
