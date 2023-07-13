@@ -49,11 +49,15 @@ const BuyButton = () => {
         dispatch(setWalletLoading());
 
         try {
-            const response = await axios.post(transactionRequestEndpoint, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.post(
+                transactionRequestEndpoint,
+                { account: publicKey.toBase58() },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             const transactionString = response.data.transaction;
             if (!transactionString) {

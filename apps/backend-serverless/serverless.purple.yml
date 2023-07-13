@@ -13,7 +13,7 @@ provider:
         - https://shopify-payment-ui.vercel.app
         - https://pay.solanapay.com
         - https://pay-staging.solanapay.com
-        - https://shopify-payment-glrgbx7fa-solana-labs.vercel.app
+        - https://shopify-payment-ui-git-payment-flow-fixes-solana-labs.vercel.app
       allowedHeaders:
         - Content-Type
         - Authorization
