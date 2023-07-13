@@ -1,18 +1,13 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 import {
     ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify/shopify-webhook-headers.model.js';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
-import {
-    ErrorMessage,
-    ErrorType,
-    createErrorResponse,
-    errorResponse,
-} from '../../../utilities/responses/error-response.utility.js';
-import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -36,11 +31,11 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('mising body'));
         }
-
-        const cusomterDataBodyString = JSON.stringify(event.body);
+        // cusomterDataBodyString;
+        const customerDataBodyString = JSON.stringify(event.body);
 
         try {
-            verifyShopifyWebhook(cusomterDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(customerDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }

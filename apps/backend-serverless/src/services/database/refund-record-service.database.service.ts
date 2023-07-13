@@ -1,23 +1,21 @@
 import {
-    PrismaClient,
     Merchant,
-    RefundRecord,
     PaymentRecord,
     PaymentRecordStatus,
+    PrismaClient,
+    RefundRecord,
     RefundRecordStatus,
     TransactionRecord,
 } from '@prisma/client';
+import axios from 'axios';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
-import { prismaErrorHandler } from './shared.database.service.js';
-import { RecordService, RefundRejectResponse, RefundResolveResponse } from './record-service.database.service.js';
-import axios from 'axios';
-import { MerchantService } from './merchant-service.database.service.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
 import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
 import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
-import { CreateTransactionRecordServiceInterface } from '../../wip/transactions/payment-transaction.wip.js';
-import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { MerchantService } from './merchant-service.database.service.js';
+import { RecordService, RefundRejectResponse, RefundResolveResponse } from './record-service.database.service.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -65,11 +63,7 @@ export type RefundRecordQuery =
     | MerchantAndStatusQuery
     | RefundIdMerchantIdQuery;
 
-export class RefundRecordService
-    implements
-        RecordService<RefundRecord, RefundResolveResponse>,
-        CreateTransactionRecordServiceInterface<RefundRecord, RefundRejectResponse>
-{
+export class RefundRecordService implements RecordService<RefundRecord, RefundResolveResponse> {
     private prisma: PrismaClient;
     private merchantService: MerchantService;
 

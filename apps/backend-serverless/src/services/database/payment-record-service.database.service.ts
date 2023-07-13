@@ -71,10 +71,7 @@ export type TransactionSignatureQuery = {
 export type PaymentRecordQuery = ShopIdQuery | IdQuery | MerchantIdQuery;
 
 export class PaymentRecordService
-    implements
-        RecordService<PaymentRecord, PaymentResolveResponse>,
-        WebSocketSessionFetcher<TransactionSignatureQuery>,
-        CreateTransactionRecordServiceInterface<PaymentRecord, PaymentRejectResponse>
+    implements RecordService<PaymentRecord, PaymentResolveResponse>, WebSocketSessionFetcher<TransactionSignatureQuery>
 {
     private prisma: PrismaClient;
     private merchantService: MerchantService;

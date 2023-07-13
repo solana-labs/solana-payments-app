@@ -74,12 +74,7 @@ export const processTransaction = async (
             await websocketService.sendShopifyRetryMessage();
         }
 
-        try {
-            await recordService.sendResolveRetry(record);
-        } catch (error) {
-            // if we throw then sqs should retry, maybe we rely on that?
-            throw error;
-        }
+        await recordService.sendResolveRetry(record);
 
         return;
     }
