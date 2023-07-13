@@ -49,26 +49,3 @@ export const buildTransactionRequestEndpoint = (
 
     return `${TRANSACTION_REQUEST_SERVER_URL}/pay?${queryString}`;
 };
-
-export const buildTransactionRequestEndpoint = (
-    receiver: string,
-    sender: string,
-    receivingToken: string,
-    sendingToken: string,
-    feePayer: string,
-    receivingAmount: string,
-    amountType: string,
-    transactionType: string,
-    createAta: string,
-    singleUseNewAcc: string,
-    singleUsePayer: string,
-    indexInputs: string
-) => {
-    const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
-
-    if (TRANSACTION_REQUEST_SERVER_URL == null) {
-        throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
-    }
-
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?receiver=${receiver}&sender=${sender}&receivingToken=${receivingToken}&sendingToken=${sendingToken}&feePayer=${feePayer}&receivingAmount=${receivingAmount}&amountType=${amountType}&transactionType=${transactionType}&createAta=${createAta}&singleUseNewAcc=${singleUseNewAcc}&singleUsePayer=${singleUsePayer}&indexInputs=${indexInputs}`;
-};
