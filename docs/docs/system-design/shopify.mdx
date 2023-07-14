@@ -62,7 +62,7 @@ Each of these get deployed to their own API gateway where we can map the respect
 
 ## [HMAC verification](https://shopify.dev/docs/apps/auth/oauth/getting-started#verify-a-request)
 
-HMAC verifiication is one of the security methods shopify uses alongside [mTLS]() and [access tokens](). It is used during the auth flow with Shopify that happens while installing that app to a merchan't Shopify store. We implent this for both the [install]() and [redirect] handlers. It happens in the [install verify]() and [redirect verify]() methods respectivly. There is also a testing suite for the [install verify]() and [redirect verify]() methods.
+HMAC verifiication is one of the security methods shopify uses alongside MTLS and access tokens. It is used during the auth flow with Shopify that happens while installing that app to a merchan't Shopify store. We implent this for both the install and redirect handlers. It happens in the install verify and redirect verify methods respectivly. There is also a testing suite for the install verify and redirect verify methods.
 
 ## [Rate limiting](https://shopify.dev/docs/apps/payments/implementation#rate-limiting)
 

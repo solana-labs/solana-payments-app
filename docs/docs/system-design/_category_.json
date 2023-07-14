@@ -1,0 +1,8 @@
+{
+    "label": "System Design Overview",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "description": "Understand the Solana Payments App Architecture"
+    }
+}
