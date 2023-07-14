@@ -32,7 +32,7 @@ const config = {
         navbar: {
             title: 'Solana Payments App',
             logo: {
-                alt: 'My Site Logo',
+                alt: 'Solana Logo',
                 src: 'img/logo.png',
             },
             items: [
