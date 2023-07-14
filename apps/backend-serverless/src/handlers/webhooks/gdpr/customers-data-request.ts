@@ -18,7 +18,6 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('mising body'));
         }
-        const customerDataBodyString = JSON.stringify(event.body);
 
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
@@ -26,7 +25,7 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
             if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
                 throw new InvalidInputError('incorrect topic for customer data');
             }
-            verifyShopifyWebhook(customerDataBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(JSON.stringify(event.body), webhookHeaders['X-Shopify-Hmac-Sha256']);
         } catch (error) {
             return createErrorResponse(error);
         }

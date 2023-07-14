@@ -24,25 +24,19 @@ export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
 
         try {
             safetyKeyMessage = parseAndValidateSafetyKeyMessage(event);
-        } catch (error) {
-            return createErrorResponse(new Error('Could not parse and validate the safety key message'));
-        }
-
-        try {
             gasKeypair = await fetchGasKeypair();
             singleUseKeypair = await fetchSingleUseKeypair(safetyKeyMessage.key);
             transaction = await createSweepingTransaction(singleUseKeypair.publicKey, gasKeypair.publicKey);
             transaction.partialSign(singleUseKeypair);
             transaction.partialSign(gasKeypair);
             await sendTransaction(transaction);
+            try {
+                await deleteSingleUseKeypair(safetyKeyMessage.key);
+            } catch (error) {
+                Sentry.captureException(error);
+            }
         } catch (error) {
             return createErrorResponse(error);
-        }
-
-        try {
-            await deleteSingleUseKeypair(safetyKeyMessage.key);
-        } catch (error) {
-            Sentry.captureException(error);
         }
 
         return {

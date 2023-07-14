@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { parseAndValidateShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -47,21 +48,30 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                 await refundRecordService.getRefundRecord({
                     shopId: refundInitiation.id,
                 });
-            } catch {
-                let usdcSize: number;
+            } catch (error) {
+                if (error instanceof MissingExpectedDatabaseRecordError) {
+                    let usdcSize: number;
 
-                if (refundInitiation.test) {
-                    usdcSize = 0;
-                } else {
-                    usdcSize = await convertAmountAndCurrencyToUsdcSize(
-                        refundInitiation.amount,
-                        refundInitiation.currency,
-                        axios
+                    if (refundInitiation.test) {
+                        usdcSize = 0;
+                    } else {
+                        usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                            refundInitiation.amount,
+                            refundInitiation.currency,
+                            axios
+                        );
+                    }
+
+                    const newRefundRecordId = await generatePubkeyString();
+                    await refundRecordService.createRefundRecord(
+                        newRefundRecordId,
+                        refundInitiation,
+                        merchant,
+                        usdcSize
                     );
+                } else {
+                    throw error;
                 }
-
-                const newRefundRecordId = await generatePubkeyString();
-                await refundRecordService.createRefundRecord(newRefundRecordId, refundInitiation, merchant, usdcSize);
             }
             // We return 201 status code here per shopify's documentation:: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
             return {

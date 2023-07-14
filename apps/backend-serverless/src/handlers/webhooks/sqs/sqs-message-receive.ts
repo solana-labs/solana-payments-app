@@ -29,7 +29,6 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
 
             if (messageType == null) {
                 // Right now we are not likely to get here as all of our messages should have a messageType attribute
-                // Let's log and flag this as a critical error
                 return createErrorResponse(new Error('No message type'));
             }
 

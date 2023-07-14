@@ -72,6 +72,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
             const transactionRecords = await transactionRecordService.getTransactionRecords(signatures);
 
             if (transactionRecords == null) {
+                // Think message isn't gonna find anyone, if it did, we would have transaction records since the websocket service
+                // has a dependency on the transaction record service. Here for safety
                 await websocketService.sendFailedProcessingTransactionMessage();
                 return {
                     statusCode: 200,
