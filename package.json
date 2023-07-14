@@ -33,8 +33,6 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@shopify/app": "^3.47.5",
-    "@shopify/cli": "^3.47.5",
     "typescript": "^5.0.3"
   },
   "packageManager": "yarn@1.22.17",
