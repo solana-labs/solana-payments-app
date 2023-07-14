@@ -3,10 +3,7 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
-import {
-    MerchantUpdateRequest,
-    parseAndValidatePaymentAddressRequestBody,
-} from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
+import { parseAndValidatePaymentAddressRequestBody } from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
@@ -25,23 +22,21 @@ Sentry.AWSLambda.init({
 
 export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        const merchantService = new MerchantService(prisma);
-
         Sentry.captureEvent({
             message: 'in update-merchant',
             level: 'info',
         });
+
+        const merchantService = new MerchantService(prisma);
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }
-
-        let merchantUpdateRequest: MerchantUpdateRequest;
 
         try {
             const merchantAuthToken = withAuth(event.cookies);
             let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
-            merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
+            const merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
 
             if (
                 merchantUpdateRequest.name == null &&
