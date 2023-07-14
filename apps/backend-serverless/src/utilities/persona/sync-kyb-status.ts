@@ -1,5 +1,4 @@
 import { Merchant, PrismaClient } from '@prisma/client';
-import * as Sentry from '@sentry/serverless';
 import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { createErrorResponse } from '../responses/error-response.utility.js';
@@ -10,9 +9,7 @@ export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Pr
 
     try {
         if (merchant.kybInquiry == null) {
-            const noInquiryError = new ConflictingStateError('merchant has no kyn inquiry. merchant: ' + merchant.id);
-            Sentry.captureException(noInquiryError);
-            throw noInquiryError;
+            throw new ConflictingStateError('merchant has no kyn inquiry. merchant: ' + merchant.id);
         }
         const kybState = await getKybState(merchant.kybInquiry);
         merchant = await merchantService.updateMerchant(merchant, { kybState });

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 import pkg from 'aws-sdk';
 const { S3 } = pkg;
 
@@ -17,18 +18,18 @@ export const deleteSingleUseKeypair = async (key: string) => {
     });
 
     try {
-        // TODO: Log the successful upload in sentry
         await s3
             .deleteObject({
                 Bucket: bucket,
                 Key: key,
             })
             .promise();
+
+        Sentry.captureEvent({
+            message: 'Deleted single use',
+            level: 'info',
+        });
     } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error('Couldnt delete keypair in s3. Unknown reason.');
-        }
+        throw new Error('Couldnt delete keypair in s3. Unknown reason.');
     }
 };

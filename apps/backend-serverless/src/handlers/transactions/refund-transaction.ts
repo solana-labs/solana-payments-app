@@ -177,9 +177,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             try {
                 await trmService.screenAddress(account);
             } catch (error) {
-                Sentry.captureException(new Error('Bad address for merchant: ' + merchant.id + ' ' + account));
                 return createErrorResponse(
-                    new InvalidInputError('wallet address in not able to be used. contact the solana pay team.')
+                    new InvalidInputError('Bad address for merchant: ' + merchant.id + ' ' + account)
                 );
             }
         }

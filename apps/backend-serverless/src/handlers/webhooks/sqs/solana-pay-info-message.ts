@@ -32,8 +32,6 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
         const websocketSessionService = new WebsocketSessionService(prisma);
 
         if (websocketUrl == null) {
-            const error = new MissingEnvError('websocket url');
-            Sentry.captureException(error);
             return createErrorResponse(new MissingEnvError('websocket url'));
         }
 

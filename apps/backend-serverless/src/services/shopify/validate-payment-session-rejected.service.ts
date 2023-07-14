@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import { RejectPaymentResponse } from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
 import {
@@ -5,7 +6,6 @@ import {
     PaymentSessionStateCode,
     PaymentSessionStateRejected,
 } from '../../models/shopify-graphql-responses/shared.model.js';
-import * as Sentry from '@sentry/serverless';
 
 export const validatePaymentSessionRejected = (
     paymentSessionRejectResponse: RejectPaymentResponse

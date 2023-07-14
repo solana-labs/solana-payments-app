@@ -67,8 +67,6 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 await websocketService.sendProcessingTransactionMessage();
             } catch (error) {
                 Sentry.captureException(error);
-                // Log error and continue execution
-                console.error('Failed to send processing transaction message, but continuing execution.', error);
             }
 
             const transactionRecords = await transactionRecordService.getTransactionRecords(signatures);
@@ -115,10 +113,8 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 await failedWebsocketService.sendFailedProcessingTransactionMessage();
             } catch (error) {
                 Sentry.captureException(error);
-                console.error('Failed to send failed processing transaction message, but continuing execution.', error);
             }
         } catch (error) {
-            Sentry.captureException(error);
             return createErrorResponse(error);
         }
 
