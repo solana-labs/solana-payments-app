@@ -20,10 +20,6 @@ export const retryRefundResolve = async (
 
     const refundRecord = await refundRecordService.getRefundRecord({ id: refundResolveInfo.refundId });
 
-    if (refundRecord == null) {
-        throw new Error('Could not find refund record.');
-    }
-
     if (refundRecord.shopGid == null) {
         throw new Error('Could not find shop gid.');
     }

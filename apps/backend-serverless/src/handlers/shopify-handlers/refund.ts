@@ -42,10 +42,12 @@ export const refund = Sentry.AWSLambda.wrapHandler(
         try {
             const merchant = await merchantService.getMerchant({ shop: shop });
             const refundInitiation = parseAndValidateShopifyRefundInitiation(JSON.parse(event.body));
-            let refundRecord = await refundRecordService.getRefundRecord({
-                shopId: refundInitiation.id,
-            });
-            if (refundRecord == null) {
+
+            try {
+                await refundRecordService.getRefundRecord({
+                    shopId: refundInitiation.id,
+                });
+            } catch {
                 let usdcSize: number;
 
                 if (refundInitiation.test) {
@@ -59,12 +61,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                 }
 
                 const newRefundRecordId = await generatePubkeyString();
-                refundRecord = await refundRecordService.createRefundRecord(
-                    newRefundRecordId,
-                    refundInitiation,
-                    merchant,
-                    usdcSize
-                );
+                await refundRecordService.createRefundRecord(newRefundRecordId, refundInitiation, merchant, usdcSize);
             }
             // We return 201 status code here per shopify's documentation:: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
             return {

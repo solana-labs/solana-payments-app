@@ -8,6 +8,7 @@ import {
     TransactionRecord,
 } from '@prisma/client';
 import axios from 'axios';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
@@ -149,18 +150,24 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         await sendRefundResolveRetryMessage(record.id);
     }
 
-    async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord | null> {
-        return prismaErrorHandler(
+    async getRefundRecord(query: RefundRecordQuery): Promise<RefundRecord> {
+        const refundRecord = await prismaErrorHandler(
             this.prisma.refundRecord.findFirst({
                 where: query,
             })
         );
+        if (refundRecord == null) {
+            throw new MissingExpectedDatabaseRecordError(
+                'Could not find refund record ' + JSON.stringify(query) + ' in database'
+            );
+        }
+        return refundRecord;
     }
 
     async getRefundRecordWithPayment(
         query: RefundRecordQuery
-    ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null }) | null> {
-        return prismaErrorHandler(
+    ): Promise<RefundRecord & { paymentRecord: PaymentRecord | null }> {
+        const refundRecord = await prismaErrorHandler(
             this.prisma.refundRecord.findFirst({
                 where: query,
                 include: {
@@ -168,6 +175,13 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 },
             })
         );
+
+        if (refundRecord == null) {
+            throw new MissingExpectedDatabaseRecordError(
+                'Could not find refund record ' + JSON.stringify(query) + ' in database'
+            );
+        }
+        return refundRecord;
     }
 
     async getOpenRefundRecordsForMerchantWithPagination(

@@ -4,7 +4,6 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { ConflictingStateError } from '../../../../errors/conflicting-state.error.js';
 import { DependencyError } from '../../../../errors/dependency.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { UnauthorizedRequestError } from '../../../../errors/unauthorized-request.error.js';
 import { parseAndValidateRejectRefundRequest } from '../../../../models/clients/merchant-ui/reject-refund-request.model.js';
 import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
@@ -41,21 +40,18 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
             const refundRecord = await refundRecordService.getRefundRecord({
                 shopId: rejectRefundRequest.refundId,
             });
-            if (refundRecord == null) {
-                throw new MissingExpectedDatabaseRecordError('refund record');
-            }
             if (merchant.id !== refundRecord.merchantId) {
-                throw new UnauthorizedRequestError('merchant does not own the refund');
+                throw new UnauthorizedRequestError('Merchant does not own the refund');
             }
 
             if (refundRecord.status !== RefundRecordStatus.pending) {
-                throw new ConflictingStateError('refund is not pending');
+                throw new ConflictingStateError('Refund is not pending');
             }
 
             const shop = merchant.shop;
             const accessToken = merchant.accessToken;
             if (accessToken == null) {
-                throw new UnauthorizedRequestError('merchant is missing valid access token');
+                throw new UnauthorizedRequestError('Merchant is missing valid access token');
             }
 
             let rejectRefundResponse: RejectRefundResponse;
