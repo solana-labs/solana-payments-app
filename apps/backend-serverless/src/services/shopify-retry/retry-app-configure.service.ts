@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
+import axios from 'axios';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { ShopifyMutationAppConfigure } from '../../models/sqs/shopify-mutation-retry.model.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
-import axios from 'axios';
 import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 
 export const retryAppConfigure = async (
     appConfigureInfo: ShopifyMutationAppConfigure | null,
@@ -18,10 +18,6 @@ export const retryAppConfigure = async (
     }
 
     const merchant = await merchantService.getMerchant({ id: appConfigureInfo.merchantId });
-
-    if (merchant == null) {
-        throw new MissingExpectedDatabaseRecordError('merchant record: ' + appConfigureInfo.merchantId);
-    }
 
     if (merchant.accessToken == null) {
         throw new MissingExpectedDatabaseRecordError('merchant access token');

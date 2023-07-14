@@ -8,6 +8,7 @@ import {
 import { fetchGasKeypair } from '../../../services/fetch-gas-keypair.service.js';
 import { fetchSingleUseKeypair } from '../../../services/fetch-single-use-keypair.service.js';
 import { deleteSingleUseKeypair } from '../../../services/s3/delete-single-use-keypair.service.js';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 import { createSweepingTransaction, sendTransaction } from '../../../utilities/transaction.utility.js';
 
 export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
@@ -23,44 +24,19 @@ export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
 
         try {
             safetyKeyMessage = parseAndValidateSafetyKeyMessage(event);
-        } catch (error) {
-            console.log(error);
-            Sentry.captureException(error);
-            throw new Error('Could not parse and validate the safety key message');
-        }
-
-        try {
             gasKeypair = await fetchGasKeypair();
             singleUseKeypair = await fetchSingleUseKeypair(safetyKeyMessage.key);
-        } catch (error) {
-            Sentry.captureException(error);
-            console.log(error);
-            throw error;
-        }
-
-        try {
             transaction = await createSweepingTransaction(singleUseKeypair.publicKey, gasKeypair.publicKey);
             transaction.partialSign(singleUseKeypair);
             transaction.partialSign(gasKeypair);
-        } catch (error) {
-            console.log(error);
-            Sentry.captureException(error);
-            throw error;
-        }
-
-        try {
             await sendTransaction(transaction);
+            try {
+                await deleteSingleUseKeypair(safetyKeyMessage.key);
+            } catch (error) {
+                Sentry.captureException(error);
+            }
         } catch (error) {
-            console.log(error);
-            Sentry.captureException(error);
-            throw error;
-        }
-
-        try {
-            await deleteSingleUseKeypair(safetyKeyMessage.key);
-        } catch (error) {
-            console.log(error);
-            Sentry.captureException(error);
+            return createErrorResponse(error);
         }
 
         return {

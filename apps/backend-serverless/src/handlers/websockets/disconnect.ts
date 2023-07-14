@@ -17,7 +17,6 @@ export const disconnect = Sentry.AWSLambda.wrapHandler(
             message: 'in websocket disconnect',
             level: 'info',
         });
-        console.log('GOODBYE WEBSOCKET');
 
         const websocketSessionService = new WebsocketSessionService(prisma);
 

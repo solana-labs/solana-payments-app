@@ -1,10 +1,10 @@
 import { KybState, Merchant, PrismaClient } from '@prisma/client';
-import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
-import axios from 'axios';
-import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service.js';
 import * as Sentry from '@sentry/serverless';
+import axios from 'axios';
+import { MerchantService } from '../database/merchant-service.database.service.js';
+import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
+import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
+import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service.js';
 
 export const contingentlyHandleAppConfigure = async (
     merchant: Merchant,
@@ -21,7 +21,6 @@ export const contingentlyHandleAppConfigure = async (
 
     const canBeActive = addedWallet && acceptedTermsAndConditions && kybIsFinished;
 
-    console.log('can be active: ' + canBeActive);
     if (merchant.accessToken != null && canBeActive) {
         try {
             const appConfigureResponse = await paymentAppConfigure(
@@ -38,7 +37,6 @@ export const contingentlyHandleAppConfigure = async (
             try {
                 await sendAppConfigureRetryMessage(merchant.id, canBeActive);
             } catch (error) {
-                console.log(error);
                 Sentry.captureException(error);
                 // CRITICAL: Add to critical database
             }

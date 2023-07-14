@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 // These are the intervals I want to retry at
 enum RetryTime {
     ZeroSeconds = 0,
@@ -50,8 +51,10 @@ export const retry = async (fn: () => Promise<unknown>, maxAttempts: number): Pr
             await fn();
             break;
         } catch (error) {
-            console.log(error);
-            // TODO: Log the error with sentry every time we hit this
+            Sentry.captureException({
+                message: 'Failed retry ' + attempts,
+                level: 'info',
+            });
             attempts += 1;
         }
     }

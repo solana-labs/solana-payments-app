@@ -1,9 +1,9 @@
+import { PrismaClient, RefundRecordStatus } from '@prisma/client';
+import axios from 'axios';
 import { ShopifyMutationRefundReject } from '../../models/sqs/shopify-mutation-retry.model.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { RefundRecordService } from '../database/refund-record-service.database.service.js';
-import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import { makeRefundSessionReject } from '../shopify/refund-session-reject.service.js';
-import axios from 'axios';
 import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service.js';
 
 export const retryRefundReject = async (
@@ -20,19 +20,11 @@ export const retryRefundReject = async (
 
     const refundRecord = await refundRecordService.getRefundRecord({ id: refundRejectInfo.refundId });
 
-    if (refundRecord == null) {
-        throw new Error('Could not find refund record.');
-    }
-
     if (refundRecord.shopGid == null) {
         throw new Error('Could not find shop gid.');
     }
 
     const merchant = await merchantService.getMerchant({ id: refundRecord.merchantId });
-
-    if (merchant == null) {
-        throw new Error('Could not find merchant.');
-    }
 
     if (merchant.accessToken == null) {
         throw new Error('Could not find access token.');

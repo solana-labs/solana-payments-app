@@ -202,11 +202,8 @@ export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
 //     // }
 // };
 
-// TODO: Make this return a sting of pubkeys
 export const historicalFeePayers = (): string[] => {
     const historicalFeePayersString = process.env.HISTORICAL_FEE_PAYERS;
-
-    console.log(historicalFeePayersString);
 
     if (historicalFeePayersString == null) {
         throw new MissingEnvError('historical fee payers');

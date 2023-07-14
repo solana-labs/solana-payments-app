@@ -118,10 +118,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(error);
         }
 
-        if (paymentRecord == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
-        }
-
         const websocketUrl = process.env.WEBSOCKET_URL;
 
         if (websocketUrl == null) {
@@ -156,11 +152,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             await websocketService.sendTransactionRequestFailedMessage();
             return createErrorResponse(error);
-        }
-
-        if (merchant == null) {
-            await websocketService.sendTransactionRequestFailedMessage();
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
         }
 
         if (merchant.accessToken == null) {

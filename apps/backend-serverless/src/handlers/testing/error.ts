@@ -22,14 +22,6 @@ export const error = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        return {
-            statusCode: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            },
-        };
     },
     {
         rethrowAfterCapture: false,

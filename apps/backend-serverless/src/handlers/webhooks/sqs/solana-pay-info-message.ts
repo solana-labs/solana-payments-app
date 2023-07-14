@@ -27,15 +27,12 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
             level: 'info',
         });
         const websocketUrl = process.env.WEBSOCKET_URL;
+        if (websocketUrl == null) {
+            return createErrorResponse(new MissingEnvError('websocket url'));
+        }
 
         const paymentRecordService = new PaymentRecordService(prisma);
         const websocketSessionService = new WebsocketSessionService(prisma);
-
-        if (websocketUrl == null) {
-            const error = new MissingEnvError('websocket url');
-            Sentry.captureException(error);
-            return createErrorResponse(new MissingEnvError('websocket url'));
-        }
 
         for (const record of event.Records) {
             const solanaPayInfoMessageBody = JSON.parse(record.body);
@@ -45,7 +42,6 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
             try {
                 solanaPayInfoMessage = parseAndValidateSolanaPayInfoMessage(solanaPayInfoMessageBody);
             } catch (error) {
-                console.log(error);
                 Sentry.captureException(error);
                 // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now.
                 continue;
@@ -59,12 +55,14 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
                 websocketSessionService
             );
 
-            const paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: solanaPayInfoMessage.paymentRecordId,
-            });
+            let paymentRecord;
 
-            if (paymentRecord == null) {
-                // we dont actually have a payment record but we dont wana throw an error or else this will retry
+            try {
+                paymentRecord = await paymentRecordService.getPaymentRecord({
+                    id: solanaPayInfoMessage.paymentRecordId,
+                });
+                // we dont actually have a payment record but we dont want to retry by throwing error
+            } catch {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
@@ -73,18 +71,13 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
                 };
             }
 
-            let usdcSize: number;
-
             try {
-                usdcSize = await fetchUsdcSize(solanaPayInfoMessage.account);
+                const usdcSize = await fetchUsdcSize(solanaPayInfoMessage.account);
+                if (paymentRecord.usdcAmount > usdcSize) {
+                    await websocketService.sendInsufficientFundsMessage();
+                }
             } catch (error) {
-                // we dont have the alpha
                 return createErrorResponse(error);
-            }
-
-            if (paymentRecord.usdcAmount > usdcSize) {
-                // this is alpha, we want to tell them that they dont got it like that
-                await websocketService.sendInsufficientFundsMessage();
             }
         }
 
