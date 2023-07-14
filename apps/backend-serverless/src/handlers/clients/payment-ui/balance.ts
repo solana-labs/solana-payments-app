@@ -1,10 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import {
-    BalanceRequestParameters,
-    parseAndValidateBalanceParameters,
-} from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
+import { parseAndValidateBalanceParameters } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
 import { fetchUsdcSize } from '../../../services/helius.service.js';
 import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 
@@ -18,14 +15,12 @@ Sentry.AWSLambda.init({
 
 export const balance = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        let balanceRequestParameters: BalanceRequestParameters;
-
         Sentry.captureEvent({
             message: 'in balance',
             level: 'info',
         });
         try {
-            balanceRequestParameters = await parseAndValidateBalanceParameters(event.queryStringParameters);
+            const balanceRequestParameters = await parseAndValidateBalanceParameters(event.queryStringParameters);
             const usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
             return {
                 statusCode: 200,
