@@ -4,7 +4,6 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { parseAndValidateShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { parseAndValidateShopifyRequestHeaders } from '../../models/shopify/shopify-request-headers.model.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
@@ -50,12 +49,12 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 throw new InvalidInputError('shopify domain header');
             }
             const merchant = await merchantService.getMerchant({ shop: shop });
-            if (merchant == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-            }
             const paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
-            let paymentRecord = await paymentRecordService.getPaymentRecord({ shopId: paymentInitiation.id });
-            if (paymentRecord == null) {
+
+            let paymentRecord;
+            try {
+                paymentRecord = await paymentRecordService.getPaymentRecord({ shopId: paymentInitiation.id });
+            } catch {
                 let usdcSize: number;
                 if (paymentInitiation.test) {
                     usdcSize = 0;
@@ -75,6 +74,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize
                 );
             }
+
             return {
                 statusCode: 201,
                 body: JSON.stringify({

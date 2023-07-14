@@ -128,10 +128,6 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
     async resolveSession(record: RefundRecord, axiosInstance: typeof axios): Promise<RefundResolveResponse> {
         const merchant = await this.merchantService.getMerchant({ id: record.merchantId });
 
-        if (merchant == null) {
-            throw new Error('Merchant not found');
-        }
-
         if (merchant.accessToken == null) {
             throw new Error('Merchant access token not found');
         }

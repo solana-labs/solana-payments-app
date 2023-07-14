@@ -32,15 +32,16 @@ export const install = Sentry.AWSLambda.wrapHandler(
 
             const shop = parsedAppInstallQuery.shop;
             const newNonce = await generatePubkeyString();
-            let merchant = await merchantService.getMerchant({ shop: shop });
-            if (merchant == null) {
-                const newMerchantId = await generatePubkeyString();
-                merchant = await merchantService.createMerchant(newMerchantId, shop, newNonce);
-            } else {
-                merchant = await merchantService.updateMerchant(merchant, {
+            try {
+                const merchant = await merchantService.getMerchant({ shop: shop });
+                await merchantService.updateMerchant(merchant, {
                     lastNonce: newNonce,
                 });
+            } catch {
+                const newMerchantId = await generatePubkeyString();
+                await merchantService.createMerchant(newMerchantId, shop, newNonce);
             }
+
             const signedCookie = createSignedShopifyCookie(newNonce);
             const cookieValue = `nonce=${signedCookie}; HttpOnly; Secure; SameSite=Lax`;
 

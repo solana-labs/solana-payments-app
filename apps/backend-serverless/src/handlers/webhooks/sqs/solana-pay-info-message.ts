@@ -58,12 +58,13 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
                 websocketSessionService
             );
 
-            const paymentRecord = await paymentRecordService.getPaymentRecord({
-                id: solanaPayInfoMessage.paymentRecordId,
-            });
+            let paymentRecord;
 
-            if (paymentRecord == null) {
-                // we dont actually have a payment record but we dont wana throw an error or else this will retry
+            try {
+                paymentRecord = await paymentRecordService.getPaymentRecord({
+                    id: solanaPayInfoMessage.paymentRecordId,
+                });
+            } catch {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({

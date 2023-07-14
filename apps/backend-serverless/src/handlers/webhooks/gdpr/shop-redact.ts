@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../../errors/missing-expected-database-record.error.js';
 import { parseAndValidateShopRedactRequestBody } from '../../../models/shopify/shop-redact-request.model.js';
 import {
     ShopifyWebhookTopic,
@@ -48,9 +47,6 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
             const shopRedactRequest = parseAndValidateShopRedactRequestBody(JSON.parse(event.body));
             const merchant = await merchantService.getMerchant({ shop: shopRedactRequest.shop_domain });
 
-            if (merchant == null) {
-                throw new MissingExpectedDatabaseRecordError('merchant');
-            }
             await gdprService.createGDPRRequest(merchant.id);
 
             return {

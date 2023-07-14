@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { parseAndValidateShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -42,9 +41,6 @@ export const refund = Sentry.AWSLambda.wrapHandler(
 
         try {
             const merchant = await merchantService.getMerchant({ shop: shop });
-            if (merchant == null) {
-                throw new MissingExpectedDatabaseRecordError('merchant');
-            }
             const refundInitiation = parseAndValidateShopifyRefundInitiation(JSON.parse(event.body));
             let refundRecord = await refundRecordService.getRefundRecord({
                 shopId: refundInitiation.id,

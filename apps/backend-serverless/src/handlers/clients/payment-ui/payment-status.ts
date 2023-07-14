@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { MissingExpectedDatabaseRecordError } from '../../../errors/missing-expected-database-record.error.js';
 import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/payment-ui/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
@@ -36,14 +35,7 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
                 id: parsedPaymentStatusQuery.paymentId,
             });
 
-            if (paymentRecord == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
-            }
-
             const merchant = await merchantService.getMerchant({ id: paymentRecord.merchantId });
-            if (merchant == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-            }
             const paymentStatusResponse = createPaymentStatusResponse(
                 paymentRecord,
                 merchant,

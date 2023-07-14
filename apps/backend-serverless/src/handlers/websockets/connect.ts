@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
 import pkg from 'aws-sdk';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { parseAndValidateConnectSchema } from '../../models/websockets/connect.model.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
@@ -34,10 +33,6 @@ export const connect = Sentry.AWSLambda.wrapHandler(
             const connectionId = event.requestContext.connectionId;
 
             const paymentRecord = await paymentRecordService.getPaymentRecord({ id: connectParameters.paymentId });
-            if (paymentRecord == null) {
-                throw new MissingExpectedDatabaseRecordError('payment record');
-            }
-
             await websocketSessionService.createWebsocketSession(paymentRecord.id, connectionId);
 
             return {

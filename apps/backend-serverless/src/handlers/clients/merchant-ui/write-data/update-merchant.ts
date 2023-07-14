@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import {
     MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
@@ -32,18 +31,15 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             message: 'in update-merchant',
             level: 'info',
         });
+        if (event.body == null) {
+            return createErrorResponse(new InvalidInputError('missing body in request'));
+        }
 
         let merchantUpdateRequest: MerchantUpdateRequest;
 
         try {
             const merchantAuthToken = withAuth(event.cookies);
             let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-            if (merchant == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-            }
-            if (event.body == null) {
-                return createErrorResponse(new InvalidInputError('missing body in request'));
-            }
 
             merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
 

@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
 import { parseAndValidateAppRedirectQueryParams } from '../../models/shopify/redirect-query-params.model.js';
 import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
@@ -54,9 +53,6 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
 
             accessTokenResponse = await fetchAccessToken(shop, code);
             let merchant = await merchantService.getMerchant({ shop: shop });
-            if (merchant == null) {
-                throw new MissingExpectedDatabaseRecordError('merchant');
-            }
 
             verifyShopifySignedCookie(event.cookies, merchant.lastNonce);
 

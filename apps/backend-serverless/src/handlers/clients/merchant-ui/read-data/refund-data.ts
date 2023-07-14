@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import {
     RefundDataRequestParameters,
     parseAndValidateRefundDataRequestParameters,
@@ -34,10 +33,6 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-
-            if (merchant == null) {
-                throw new MissingExpectedDatabaseRecordError('merchant');
-            }
 
             refundDataRequestParameters = parseAndValidateRefundDataRequestParameters(event.queryStringParameters);
 

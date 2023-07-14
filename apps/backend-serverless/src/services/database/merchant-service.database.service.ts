@@ -1,6 +1,7 @@
 import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
 import { PubkeyType, getPubkeyType } from '../helius.service.js';
@@ -40,12 +41,19 @@ export class MerchantService {
         this.prisma = prismaClient;
     }
 
-    async getMerchant(query: MerchantQuery): Promise<Merchant | null> {
-        return prismaErrorHandler(
+    async getMerchant(query: MerchantQuery): Promise<Merchant> {
+        const merchant = await prismaErrorHandler(
             this.prisma.merchant.findUnique({
                 where: query,
             })
         );
+
+        if (merchant == null) {
+            throw new MissingExpectedDatabaseRecordError(
+                'Could not find merchant ' + JSON.stringify(query) + ' in database'
+            );
+        }
+        return merchant;
     }
 
     async createMerchant(id: string, shop: string, lastNonce: string): Promise<Merchant> {

@@ -37,9 +37,6 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-            if (merchant == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-            }
             const rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
             const refundRecord = await refundRecordService.getRefundRecord({
                 shopId: rejectRefundRequest.refundId,

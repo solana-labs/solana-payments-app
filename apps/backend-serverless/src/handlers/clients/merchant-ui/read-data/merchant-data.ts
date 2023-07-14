@@ -2,7 +2,6 @@ import { KybState, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
@@ -31,9 +30,6 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         try {
             const merchantAuthToken = withAuth(event.cookies);
             let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-            if (merchant == null) {
-                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-            }
 
             if (
                 merchant.kybInquiry &&

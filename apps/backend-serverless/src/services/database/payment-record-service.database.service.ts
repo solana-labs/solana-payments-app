@@ -8,6 +8,7 @@ import {
     WebsocketSession,
 } from '@prisma/client';
 import axios from 'axios';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
 import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
 import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
@@ -142,10 +143,6 @@ export class PaymentRecordService
     async resolveSession(record: PaymentRecord, axiosInstance: typeof axios): Promise<PaymentResolveResponse> {
         const merchant = await this.merchantService.getMerchant({ id: record.merchantId });
 
-        if (merchant == null) {
-            throw new Error('Merchant not found');
-        }
-
         if (merchant.accessToken == null) {
             throw new Error('Merchant access token not found');
         }
@@ -165,12 +162,17 @@ export class PaymentRecordService
         await sendPaymentResolveRetryMessage(record.id);
     }
 
-    async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord | null> {
-        return prismaErrorHandler(
+    async getPaymentRecord(query: PaymentRecordQuery): Promise<PaymentRecord> {
+        const paymentRecord = await prismaErrorHandler(
             this.prisma.paymentRecord.findFirst({
                 where: query,
             })
         );
+
+        if (paymentRecord == null) {
+            throw new MissingExpectedDatabaseRecordError('Could not find paymentRecord ' + JSON.stringify(query));
+        }
+        return paymentRecord;
     }
 
     async getPaymentRecordsForMerchantWithPagination(
