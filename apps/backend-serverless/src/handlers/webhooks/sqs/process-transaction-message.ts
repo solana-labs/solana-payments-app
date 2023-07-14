@@ -38,8 +38,6 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
 
         // We have this configured for a batch of one, we look just in case but this should only return once
         for (const record of event.Records) {
-            console.log(record);
-
             const processTransactionMessageBody = JSON.parse(record.body);
 
             let processTransactionMessage: ProcessTransactionMessage;
@@ -47,7 +45,6 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
             try {
                 processTransactionMessage = parseAndValidateProcessTransactionMessage(processTransactionMessageBody);
             } catch (error) {
-                console.log(error);
                 Sentry.captureException(error);
                 failedProcessingRecords.push(processTransactionMessageBody);
                 // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now.

@@ -14,6 +14,7 @@ import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-
 import { retryRefundReject } from '../../services/shopify-retry/retry-refund-reject.service.js';
 import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service.js';
 import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 
 const prisma = new PrismaClient();
@@ -35,10 +36,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
         try {
             shopifyMutationRetry = parseAndValidateShopifyMutationRetry(event);
         } catch (error) {
-            // CRITICAL: Add to the critical error queue
-            console.log(error);
-            Sentry.captureException(error);
-            throw new InvalidInputError('shopify mutation retry body');
+            return createErrorResponse(new InvalidInputError('Shopify Mutation retry body'));
         }
 
         try {
@@ -91,9 +89,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                     nextStep
                 );
             } catch (error) {
-                // CRITICAL: Add to critical database
-                // We should log the error underneath so no need to do it here
-                throw error;
+                return createErrorResponse(error);
             }
         }
 

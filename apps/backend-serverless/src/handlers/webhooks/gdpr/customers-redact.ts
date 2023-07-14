@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../../errors/invalid-input.error.js';
 import {
-    ShopifyWebhookHeaders,
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
 } from '../../../models/shopify/shopify-webhook-headers.model.js';
@@ -16,18 +15,6 @@ Sentry.AWSLambda.init({
 
 export const customersReact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        let webhookHeaders: ShopifyWebhookHeaders;
-
-        try {
-            webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
-            return createErrorResponse(new InvalidInputError('incorrect topic for customer redact'));
-        }
-
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('mising body'));
         }
@@ -35,20 +22,21 @@ export const customersReact = Sentry.AWSLambda.wrapHandler(
         const customerRedactBodyString = JSON.stringify(event.body);
 
         try {
+            const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
+            if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerRedact) {
+                throw new InvalidInputError('incorrect topic for customer redact');
+            }
+
             verifyShopifyWebhook(customerRedactBodyString, webhookHeaders['X-Shopify-Hmac-Sha256']);
+            // Verified hook, return 200 since not storing data
+            // If we need to delete PaymentRecords, neeed to save more data
+            return {
+                statusCode: 200,
+                body: JSON.stringify({}),
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        // At this point we would have verified the webhook. We do not store any customer
-        // data so we can just return a 200. If for some reason, we need to delete PaymentRecords
-        // related to a customer, we would need to start saving more data but i wouldnt think
-        // this is the case.
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({}),
-        };
     },
     {
         rethrowAfterCapture: false,

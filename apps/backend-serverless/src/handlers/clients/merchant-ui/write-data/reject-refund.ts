@@ -1,4 +1,4 @@
-import { Merchant, PrismaClient, RefundRecord, RefundRecordStatus } from '@prisma/client';
+import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
@@ -6,11 +6,7 @@ import { ConflictingStateError } from '../../../../errors/conflicting-state.erro
 import { DependencyError } from '../../../../errors/dependency.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
 import { UnauthorizedRequestError } from '../../../../errors/unauthorized-request.error.js';
-import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
-import {
-    RejectRefundRequest,
-    parseAndValidateRejectRefundRequest,
-} from '../../../../models/clients/merchant-ui/reject-refund-request.model.js';
+import { parseAndValidateRejectRefundRequest } from '../../../../models/clients/merchant-ui/reject-refund-request.model.js';
 import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
 import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
@@ -38,102 +34,72 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
         const refundRecordService = new RefundRecordService(prisma);
         const merchantService = new MerchantService(prisma);
 
-        let merchantAuthToken: MerchantAuthToken;
-        let rejectRefundRequest: RejectRefundRequest;
-
         try {
-            merchantAuthToken = withAuth(event.cookies);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        try {
-            rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        let refundRecord: RefundRecord | null;
-
-        try {
-            refundRecord = await refundRecordService.getRefundRecord({
+            const merchantAuthToken = withAuth(event.cookies);
+            const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+            if (merchant == null) {
+                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
+            }
+            const rejectRefundRequest = parseAndValidateRejectRefundRequest(event.queryStringParameters);
+            const refundRecord = await refundRecordService.getRefundRecord({
                 shopId: rejectRefundRequest.refundId,
             });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (refundRecord == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('refund record'));
-        }
-
-        let merchant: Merchant | null;
-
-        try {
-            merchant = await merchantService.getMerchant({
-                id: merchantAuthToken.id,
-            });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (merchant == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-        }
-
-        if (merchant.id !== refundRecord.merchantId) {
-            return createErrorResponse(new UnauthorizedRequestError('merchant does not own the refund'));
-        }
-
-        if (refundRecord.status !== RefundRecordStatus.pending) {
-            return createErrorResponse(new ConflictingStateError('refund is not pending'));
-        }
-
-        const shop = merchant.shop;
-        const accessToken = merchant.accessToken;
-
-        if (accessToken == null) {
-            return createErrorResponse(new UnauthorizedRequestError('merchant is missing valid access token'));
-        }
-
-        let rejectRefundResponse: RejectRefundResponse;
-        const refundSessionReject = makeRefundSessionReject(axios);
-
-        try {
-            rejectRefundResponse = await refundSessionReject(
-                refundRecord.shopGid,
-                RefundSessionStateRejectedReason.processingError,
-                rejectRefundRequest.merchantReason,
-                shop,
-                accessToken
-            );
-
-            validateRefundSessionRejected(rejectRefundResponse);
-        } catch (error) {
-            try {
-                await sendRefundRejectRetryMessage(
-                    refundRecord.id,
-                    RefundSessionStateRejectedReason.processingError,
-                    rejectRefundRequest.merchantReason
-                );
-            } catch (sendMessageError) {
-                return createErrorResponse(new DependencyError('failed to send refund reject retry message'));
+            if (refundRecord == null) {
+                throw new MissingExpectedDatabaseRecordError('refund record');
             }
-        }
+            if (merchant.id !== refundRecord.merchantId) {
+                throw new UnauthorizedRequestError('merchant does not own the refund');
+            }
 
-        try {
-            await refundRecordService.updateRefundRecord(refundRecord, {
-                status: RefundRecordStatus.rejected,
-            });
+            if (refundRecord.status !== RefundRecordStatus.pending) {
+                throw new ConflictingStateError('refund is not pending');
+            }
+
+            const shop = merchant.shop;
+            const accessToken = merchant.accessToken;
+            if (accessToken == null) {
+                throw new UnauthorizedRequestError('merchant is missing valid access token');
+            }
+
+            let rejectRefundResponse: RejectRefundResponse;
+            const refundSessionReject = makeRefundSessionReject(axios);
+
+            try {
+                rejectRefundResponse = await refundSessionReject(
+                    refundRecord.shopGid,
+                    RefundSessionStateRejectedReason.processingError,
+                    rejectRefundRequest.merchantReason,
+                    shop,
+                    accessToken
+                );
+
+                validateRefundSessionRejected(rejectRefundResponse);
+            } catch (error) {
+                try {
+                    await sendRefundRejectRetryMessage(
+                        refundRecord.id,
+                        RefundSessionStateRejectedReason.processingError,
+                        rejectRefundRequest.merchantReason
+                    );
+                } catch (sendMessageError) {
+                    throw new DependencyError('failed to send refund reject retry message');
+                }
+            }
+
+            try {
+                await refundRecordService.updateRefundRecord(refundRecord, {
+                    status: RefundRecordStatus.rejected,
+                });
+            } catch {
+                throw new DependencyError('Failed to update internal record. Please retry.');
+            }
+            return {
+                statusCode: 204,
+                body: JSON.stringify({}),
+            };
         } catch (error) {
-            // CRITICAL: Send to critical database error queue
-            return createErrorResponse(new DependencyError('failed to update internal record. please retry.'));
+            return createErrorResponse(error);
         }
-
-        return {
-            statusCode: 204,
-            body: JSON.stringify({}),
-        };
     },
     {
         rethrowAfterCapture: false,

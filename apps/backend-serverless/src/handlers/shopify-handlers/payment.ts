@@ -1,18 +1,12 @@
-import { Merchant, PaymentRecord, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import {
-    ShopifyPaymentInitiation,
-    parseAndValidateShopifyPaymentInitiation,
-} from '../../models/shopify/process-payment-request.model.js';
-import {
-    ShopifyRequestHeaders,
-    parseAndValidateShopifyRequestHeaders,
-} from '../../models/shopify/shopify-request-headers.model.js';
+import { parseAndValidateShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
+import { parseAndValidateShopifyRequestHeaders } from '../../models/shopify/shopify-request-headers.model.js';
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
@@ -49,52 +43,18 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('request body'));
         }
 
-        let shopifyHeader: ShopifyRequestHeaders;
         try {
-            shopifyHeader = parseAndValidateShopifyRequestHeaders(event.headers);
-        } catch (error) {
-            console.log(error);
-            Sentry.captureException(error);
-            return createErrorResponse(error);
-        }
-
-        const shop = shopifyHeader['shopify-shop-domain'];
-
-        if (shop == null) {
-            return createErrorResponse(new InvalidInputError('shopify domain header'));
-        }
-
-        let merchant: Merchant | null;
-
-        try {
-            merchant = await merchantService.getMerchant({ shop: shop });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (merchant == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-        }
-
-        let paymentInitiation: ShopifyPaymentInitiation;
-
-        try {
-            paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        let paymentRecord: PaymentRecord | null;
-
-        try {
-            paymentRecord = await paymentRecordService.getPaymentRecord({
-                shopId: paymentInitiation.id,
-            });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        try {
+            const shopifyHeader = parseAndValidateShopifyRequestHeaders(event.headers);
+            const shop = shopifyHeader['shopify-shop-domain'];
+            if (shop == null) {
+                throw new InvalidInputError('shopify domain header');
+            }
+            const merchant = await merchantService.getMerchant({ shop: shop });
+            if (merchant == null) {
+                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
+            }
+            const paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
+            let paymentRecord = await paymentRecordService.getPaymentRecord({ shopId: paymentInitiation.id });
             if (paymentRecord == null) {
                 let usdcSize: number;
                 if (paymentInitiation.test) {
@@ -115,16 +75,15 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize
                 );
             }
+            return {
+                statusCode: 201,
+                body: JSON.stringify({
+                    redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
+                }),
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        return {
-            statusCode: 201,
-            body: JSON.stringify({
-                redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
-            }),
-        };
     },
     {
         rethrowAfterCapture: false,

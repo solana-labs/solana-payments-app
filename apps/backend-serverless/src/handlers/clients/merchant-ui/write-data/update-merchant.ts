@@ -1,24 +1,17 @@
-import { KybState, Merchant, PrismaClient } from '@prisma/client';
+import { KybState, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../../../errors/missing-expected-database-record.error.js';
-import { MerchantAuthToken } from '../../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import {
     MerchantUpdateRequest,
     parseAndValidatePaymentAddressRequestBody,
 } from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
-import {
-    GeneralResponse,
-    createGeneralResponse,
-} from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import {
-    OnboardingResponse,
-    createOnboardingResponse,
-} from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
+import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
+import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
@@ -40,138 +33,106 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             level: 'info',
         });
 
-        let merchantAuthToken: MerchantAuthToken;
         let merchantUpdateRequest: MerchantUpdateRequest;
 
-        console.log('hello merchant');
-
         try {
-            merchantAuthToken = withAuth(event.cookies);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
+            const merchantAuthToken = withAuth(event.cookies);
+            let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+            if (merchant == null) {
+                return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
+            }
+            if (event.body == null) {
+                return createErrorResponse(new InvalidInputError('missing body in request'));
+            }
 
-        if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('missing body in request'));
-        }
-
-        try {
             merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
-        } catch (error) {
-            return createErrorResponse(error);
-        }
 
-        console.log(merchantUpdateRequest);
+            if (
+                merchantUpdateRequest.name == null &&
+                merchantUpdateRequest.paymentAddress == null &&
+                merchantUpdateRequest.acceptedTermsAndConditions == null &&
+                merchantUpdateRequest.acceptedPrivacyPolicy == null &&
+                merchantUpdateRequest.dismissCompleted == null &&
+                merchantUpdateRequest.kybInquiry == null
+            ) {
+                throw new InvalidInputError('no relevant fields in request body');
+            }
 
-        if (
-            merchantUpdateRequest.name == null &&
-            merchantUpdateRequest.paymentAddress == null &&
-            merchantUpdateRequest.acceptedTermsAndConditions == null &&
-            merchantUpdateRequest.acceptedPrivacyPolicy == null &&
-            merchantUpdateRequest.dismissCompleted == null &&
-            merchantUpdateRequest.kybInquiry == null
-        ) {
-            return createErrorResponse(new InvalidInputError('no relevant fields in request body'));
-        }
+            const merchantUpdateQuery = {};
 
-        let merchant: Merchant | null;
+            if (merchantUpdateRequest.name != null) {
+                merchantUpdateQuery['name'] = merchantUpdateRequest.name;
+            }
 
-        try {
-            merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
+            if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
+                merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
+            }
 
-        if (merchant == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-        }
+            if (merchantUpdateRequest.acceptedPrivacyPolicy != null) {
+                merchantUpdateQuery['acceptedPrivacyPolicy'] = merchantUpdateRequest.acceptedPrivacyPolicy;
+            }
 
-        const merchantUpdateQuery = {};
+            if (merchantUpdateRequest.dismissCompleted != null) {
+                merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
+            }
 
-        if (merchantUpdateRequest.name != null) {
-            merchantUpdateQuery['name'] = merchantUpdateRequest.name;
-        }
+            if (merchantUpdateRequest.kybInquiry != null) {
+                merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
+            }
 
-        if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
-            merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
-        }
-
-        if (merchantUpdateRequest.acceptedPrivacyPolicy != null) {
-            merchantUpdateQuery['acceptedPrivacyPolicy'] = merchantUpdateRequest.acceptedPrivacyPolicy;
-        }
-
-        if (merchantUpdateRequest.dismissCompleted != null) {
-            merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
-        }
-
-        if (merchantUpdateRequest.kybInquiry != null) {
-            merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
-        }
-
-        if (merchantUpdateRequest.paymentAddress != null) {
-            try {
+            if (merchantUpdateRequest.paymentAddress != null) {
                 merchant = await merchantService.updateMerchantWalletAddress(
                     merchant,
                     merchantUpdateRequest.paymentAddress
                 );
-            } catch (error) {
-                return createErrorResponse(error);
             }
-        }
-
-        try {
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
+            if (
+                merchant.kybInquiry &&
+                merchant.kybState !== KybState.finished &&
+                merchant.kybState !== KybState.failed
+            ) {
+                try {
+                    merchant = await syncKybState(merchant, prisma);
+                } catch {
+                    // it's unlikely that this will throw but we should catch and record all errors underneath this
+                    // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
+                    // we don't wana disrupt the flow, they'll just get blocked elsewhere
+                }
+            }
+
+            if (merchant.kybState === KybState.finished) {
+                try {
+                    merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
+                } catch {
+                    // It's possible for this to throw but we should capture and log alll errors underneath this
+                    // It's better if we just return the merchant data here and handle the issue elsewhere
+                }
+            }
+            const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
+            const onboardingResponse = createOnboardingResponse(merchant);
+
+            const responseBodyData = {
+                merchantData: {
+                    name: merchant.name,
+                    paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
+                    onboarding: onboardingResponse,
+                },
+                general: generalResponse,
+            };
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify(responseBodyData),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                    'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+                },
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        if (merchant.kybInquiry && merchant.kybState !== KybState.finished && merchant.kybState !== KybState.failed) {
-            try {
-                merchant = await syncKybState(merchant, prisma);
-            } catch {
-                // it's unlikely that this will throw but we should catch and record all errors underneath this
-                // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
-                // we don't wana disrupt the flow, they'll just get blocked elsewhere
-            }
-        }
-
-        if (merchant.kybState === KybState.finished) {
-            try {
-                merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
-            } catch {
-                // It's possible for this to throw but we should capture and log alll errors underneath this
-                // It's better if we just return the merchant data here and handle the issue elsewhere
-            }
-        }
-
-        let generalResponse: GeneralResponse;
-        let onboardingResponse: OnboardingResponse;
-
-        try {
-            generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
-            onboardingResponse = createOnboardingResponse(merchant);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        const responseBodyData = {
-            merchantData: {
-                name: merchant.name,
-                paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
-                onboarding: onboardingResponse,
-            },
-            general: generalResponse,
-        };
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(responseBodyData),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
-            },
-        };
     },
     {
         rethrowAfterCapture: false,

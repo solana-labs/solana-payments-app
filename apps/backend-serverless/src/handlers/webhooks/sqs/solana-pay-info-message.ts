@@ -45,7 +45,6 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
             try {
                 solanaPayInfoMessage = parseAndValidateSolanaPayInfoMessage(solanaPayInfoMessageBody);
             } catch (error) {
-                console.log(error);
                 Sentry.captureException(error);
                 // How can we make this single one retry? We can set the batch to 0 so this doesnt happen for now.
                 continue;

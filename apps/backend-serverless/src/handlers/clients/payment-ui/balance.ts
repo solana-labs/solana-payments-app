@@ -26,23 +26,15 @@ export const balance = Sentry.AWSLambda.wrapHandler(
         });
         try {
             balanceRequestParameters = await parseAndValidateBalanceParameters(event.queryStringParameters);
+            const usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    usdcBalance: usdcSize,
+                }),
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        let usdcSize: number;
-
-        try {
-            usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                usdcBalance: usdcSize,
-            }),
-        };
     }
 );
