@@ -3,13 +3,13 @@ import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { AccessTokenResponse } from '../../models/shopify/access-token-response.model.js';
 import { parseAndValidateAppRedirectQueryParams } from '../../models/shopify/redirect-query-params.model.js';
 import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { makeAdminData } from '../../services/shopify/admin-data.service.js';
 import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import { createOnboardingResponse } from '../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
@@ -30,19 +30,12 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         });
         const merchantService = new MerchantService(prisma);
 
-        let accessTokenResponse: AccessTokenResponse;
-
         const redirectUrl = process.env.MERCHANT_UI_URL;
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
         if (redirectUrl == null || jwtSecretKey == null) {
             return createErrorResponse(new MissingEnvError('merchant ui url or jwt secret key'));
         }
-
-        const redirectHeaders = {
-            Location: `${redirectUrl}/merchant`,
-            'Content-Type': 'text/html',
-        };
 
         try {
             const parsedAppRedirectQuery = await parseAndValidateAppRedirectQueryParams(event.queryStringParameters);
@@ -51,8 +44,15 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             const shop = parsedAppRedirectQuery.shop;
             const code = parsedAppRedirectQuery.code;
 
-            accessTokenResponse = await fetchAccessToken(shop, code);
+            const accessTokenResponse = await fetchAccessToken(shop, code);
             let merchant = await merchantService.getMerchant({ shop: shop });
+
+            const redirectHeaders = {
+                Location: `${redirectUrl}/${
+                    createOnboardingResponse(merchant).completed ? 'merchant' : 'getting-started'
+                }'}`,
+                'Content-Type': 'text/html',
+            };
 
             verifyShopifySignedCookie(event.cookies, merchant.lastNonce);
 
