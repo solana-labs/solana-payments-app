@@ -172,6 +172,7 @@ export function OpenRefunds(props: Props) {
             while (denyPendingRef.current) {
                 const statusResponse = await fetch(`${API_ENDPOINTS.refundStatus}?shopId=${refundId}`, {
                     headers: headers,
+                    credentials: 'include',
                 });
                 const statusData = await statusResponse.json();
                 if (!statusResponse.ok) {
