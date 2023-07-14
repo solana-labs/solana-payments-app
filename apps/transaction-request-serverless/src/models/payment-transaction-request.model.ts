@@ -163,7 +163,8 @@ export class PaymentTransactionBuilder {
             receivingTokenInformation,
             receivingQuantity,
             this.createAta,
-            connection
+            connection,
+            this.feePayer
         );
 
         if (this.singleUseNewAcc && this.singleUsePayer) {

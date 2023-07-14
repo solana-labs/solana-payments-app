@@ -10,7 +10,8 @@ export const createTransferIx = async (
     token: TokenInformation,
     quantity: number,
     createAta: boolean,
-    connection: web3.Connection
+    connection: web3.Connection,
+    feePayer: web3.PublicKey | null
 ): Promise<web3.TransactionInstruction[]> => {
     const transferIxs: web3.TransactionInstruction[] = [];
 
@@ -29,9 +30,13 @@ export const createTransferIx = async (
             throw new Error('Receiver wallet address cannot be null if you need to create the ata.');
         }
 
+        if (feePayer == null) {
+            throw new Error('Fee payer cannot be null');
+        }
+
         const createAssociatedInstruction = createAssociatedTokenAccountInstruction(
             finalReceiverTokenAddress,
-            sender,
+            feePayer,
             receiverWalletAddress,
             token.pubkey
         );
