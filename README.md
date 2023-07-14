@@ -75,7 +75,7 @@ If you are using a local database, run
 (from /apps/backend-serverless)
 y prisma:seed:dev
 
-7. stand everything up
+7. Stand everything up
 
 If you've done everything correctly to this point, standing up the app should be a single command
 
