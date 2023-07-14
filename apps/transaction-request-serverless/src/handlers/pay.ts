@@ -22,7 +22,7 @@ export const pay = Sentry.AWSLambda.wrapHandler(
             message: 'In PAY TRS',
             level: 'info',
             extra: {
-                event: JSON.stringify(event),
+                event: event,
             },
         });
 

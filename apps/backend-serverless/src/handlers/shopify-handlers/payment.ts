@@ -32,6 +32,9 @@ export const payment = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'In Payment',
             level: 'info',
+            extra: {
+                event,
+            },
         });
 
         const paymentRecordService = new PaymentRecordService(prisma);
@@ -95,7 +98,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             if (paymentRecord == null) {
                 let usdcSize: number;
                 if (paymentInitiation.test) {
-                    usdcSize = 0.000001;
+                    usdcSize = 0;
                 } else {
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         paymentInitiation.amount,
