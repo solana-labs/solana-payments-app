@@ -2,6 +2,7 @@ import { Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { createErrorResponse } from '../responses/error-response.utility.js';
 import { getKybState } from './get-kyb-state.js';
 
 export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Promise<Merchant> => {
