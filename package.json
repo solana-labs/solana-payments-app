@@ -3,7 +3,6 @@
     "version": "0.0.0",
     "private": true,
     "workspaces": [
-        "docs",
         "apps/payment-ui",
         "apps/merchant-ui",
         "apps/backend-serverless",
