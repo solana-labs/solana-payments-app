@@ -1,8 +1,8 @@
-import { cloneElement } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { useRouter } from 'next/router';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { cloneElement } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 interface Props {
     className?: string;
@@ -21,7 +21,6 @@ export function DefaultLayoutNavigationLink(props: Props) {
             <NavigationMenu.Link asChild>
                 <Link
                     className={twMerge(
-                        'gap-x-4',
                         'gap-x-3',
                         'group',
                         'grid',

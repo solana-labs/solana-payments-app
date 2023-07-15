@@ -56,7 +56,6 @@ export function DefaultLayoutNavigation(props: Props) {
                 'flex-col',
                 'flex',
                 'h-full',
-                'justify-between',
                 'left-0',
                 'max-w-xs',
                 'px-6',
@@ -100,7 +99,7 @@ export function DefaultLayoutNavigation(props: Props) {
                 {isOk(merchantInfo) && (
                     <>
                         {merchantInfo.data.completed ? (
-                            <div className="mt-6">
+                            <div className="border-b mt-3 pb-3">
                                 <DefaultLayoutNavigationLink href="/payments" icon={<ReceiptLong />} text="Payments" />
                                 <DefaultLayoutNavigationLink
                                     href="/refunds"
@@ -112,7 +111,7 @@ export function DefaultLayoutNavigation(props: Props) {
                                 <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
                             </div>
                         ) : (
-                            <div className="mt-6">
+                            <div className="mt-3 pb-3">
                                 <DefaultLayoutNavigationLink
                                     href="/getting-started"
                                     icon={<Flag />}
@@ -124,8 +123,7 @@ export function DefaultLayoutNavigation(props: Props) {
                     </>
                 )}
             </NavigationMenu.List>
-            <NavigationMenu.List className="pr-6">
-                <DefaultLayoutNavigationExternalLink href="/docs" icon={<Folder />} text="Documentation" />
+            <NavigationMenu.List className="pr-6 border-b mt-3 pb-3">
                 <DefaultLayoutNavigationExternalLink
                     className="bg-slate-600"
                     href="/termsofservice"
@@ -138,10 +136,17 @@ export function DefaultLayoutNavigation(props: Props) {
                     icon={<RuleDataQuality />}
                     text="Privacy Policy"
                 />
+                <DefaultLayoutNavigationExternalLink
+                    href="https://shopifydocs.solanapay.com"
+                    icon={<Folder />}
+                    text="Documentation"
+                />
+            </NavigationMenu.List>
+            <NavigationMenu.List className="pr-6 mt-3 mb-3">
                 <button
                     onClick={logout}
                     className={twMerge(
-                        'gap-x-4',
+                        'gap-x-3',
                         'group',
                         'grid',
                         'items-center',

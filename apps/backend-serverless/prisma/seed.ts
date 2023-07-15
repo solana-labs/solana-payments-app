@@ -50,6 +50,7 @@ function generateMerchantRecords(count = 1): any[] {
                 kybInquiry: `inq_${i}`,
                 kybState: 'finished',
                 acceptedTermsAndConditions: true,
+                // acceptedPrivacyPolicy: true,
                 dismissCompleted: false,
                 active: true,
             };
