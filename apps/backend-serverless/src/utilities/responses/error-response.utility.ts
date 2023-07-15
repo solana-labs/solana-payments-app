@@ -35,7 +35,6 @@ export const createErrorResponse = (error: unknown) => {
     let message: string;
 
     if (error instanceof Error) {
-        console.log(`if ${error.name}`);
         switch (error.name) {
             case 'MissingEnvError':
                 statusCode = ErrorType.internalServerError;
