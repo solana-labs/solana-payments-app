@@ -13,7 +13,7 @@
         "build": "turbo run build",
         "dev": "docker-compose up & turbo run dev",
         "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mdx}\""
+        "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {
         "@shopify/app": "^3.47.5",
