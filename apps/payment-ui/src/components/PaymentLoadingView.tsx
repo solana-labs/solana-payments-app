@@ -1,9 +1,8 @@
-import Checkmark from '@carbon/icons-react/lib/Checkmark';
-import { ReactNode } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { RiCheckFill } from 'react-icons/ri'
-import { useSelector } from 'react-redux';
 import { getMergedState } from '@/features/payment-session/paymentSessionSlice';
+import { ReactNode } from 'react';
+import { RiCheckFill } from 'react-icons/ri';
+import { useSelector } from 'react-redux';
+import { twMerge } from 'tailwind-merge';
 
 const StepBar = ({ completed, include }: { completed: boolean; include: boolean }) => (
     <div
@@ -42,7 +41,7 @@ const PendingStep = () => (
 
 const WaitingStep = () => (
     <div>
-        <Circle color="bg-white border border-4" children={undefined}></Circle>
+        <Circle color="bg-white border border-4">{}</Circle>
     </div>
 );
 
@@ -77,12 +76,11 @@ const getStepStatus = ({ index, currentStep }: { index: number; currentStep: num
 };
 
 export const PaymentLoadingView = () => {
-
     const mergedState = useSelector(getMergedState);
 
     const currentStep = mergedState - 1;
 
-    console.log(currentStep, 'currentStep')
+    console.log(currentStep, 'currentStep');
 
     return (
         <div className="flex flex-col items-center">

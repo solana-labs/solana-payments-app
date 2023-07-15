@@ -29,7 +29,7 @@ export function Refunds(props: Props) {
                                 <div className="flex items-center space-x-2.5">
                                     <Info className="h-5 w-5 fill-slate-900" />
                                     <div className="text-black font-medium text-xs">
-                                        In order to process a refund, you'll need a self-custodial wallet
+                                        In order to process a refund, you&apos;ll need a self-custodial wallet
                                     </div>
                                 </div>
                                 <div className="my-2.5 text-xs text-neutral-600">
@@ -37,7 +37,7 @@ export function Refunds(props: Props) {
                                     <br />• Refunds cannot be processed with a Coinbase account
                                 </div>
                                 <Link className="font-semibold text-indigo-700 text-xs" href="/support">
-                                    What's a self-custodial wallet?
+                                    What&apos;s a self-custodial wallet?
                                 </Link>
                             </div>
                             <button onClick={() => setShowNotification(false)} className="absolute right-2 top-2 p-2">
