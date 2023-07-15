@@ -27,16 +27,12 @@ export const createMechantAuthCookieHeader = (id: string): string => {
 
     const token = jwt.sign(payload, jwtSecretKey, {});
 
-    console.log(token);
-
-    console.log(process.env.NODE_ENV);
-
-    const domain = process.env.NODE_ENV === 'production' ? '.solanapay.com' : 'localhost';
+    const domain = process.env.NODE_ENV === 'development' ? 'localhost' : '.solanapay.com';
 
     const cookieOptions: CookieOptions = {
         maxAge: 24 * 60 * 60, // 1 day in seconds
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV != 'development',
         sameSite: 'strict',
         path: '/',
         domain: domain,

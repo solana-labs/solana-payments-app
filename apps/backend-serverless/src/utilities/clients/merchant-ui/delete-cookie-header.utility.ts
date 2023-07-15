@@ -1,12 +1,12 @@
 import { CookieOptions } from './create-cookie-header.utility.js';
 
 export const deleteMerchantAuthCookieHeader = (): string => {
-    const domain = process.env.NODE_ENV === 'production' ? '.solanapay.com' : 'localhost';
+    const domain = process.env.NODE_ENV === 'development' ? 'localhost' : '.solanapay.com';
 
     const cookieOptions: CookieOptions = {
         maxAge: 0,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV != 'development',
         sameSite: 'strict',
         path: '/',
         domain: domain,

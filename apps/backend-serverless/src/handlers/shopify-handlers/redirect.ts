@@ -53,7 +53,7 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             const redirectHeaders = {
                 Location: `${redirectUrl}/${
                     createOnboardingResponse(merchant).completed ? 'merchant' : 'getting-started'
-                }'}`,
+                }`,
                 'Content-Type': 'text/html',
             };
 
