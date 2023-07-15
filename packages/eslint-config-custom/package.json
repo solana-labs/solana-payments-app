@@ -3,18 +3,18 @@
     "main": "index.js",
     "version": "1.0.0",
     "dependencies": {
-        "eslint": "latest",
+        "eslint": "^8.0.0",
         "eslint-config-next": "latest",
         "eslint-config-prettier": "latest",
         "eslint-plugin-react": "latest",
         "eslint-config-turbo": "latest",
         "eslint-plugin-require-extensions": "latest",
         "eslint-plugin-jest": "latest",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "eslint-plugin-simple-import-sort": "^10.0.0",
-        "eslint-plugin-sort-keys-fix": "^1.1.2",
+        "eslint-plugin-react-hooks": "latest",
+        "eslint-plugin-simple-import-sort": "latest",
+        "eslint-plugin-sort-keys-fix": "latest",
         "eslint-plugin-jsonc": "latest",
-        "@solana/eslint-config-solana": "latest",
+        "@solana/eslint-config-solana": "^1.0.2",
         "@typescript-eslint/parser": "latest",
         "@typescript-eslint/eslint-plugin": "latest"
     }

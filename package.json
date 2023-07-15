@@ -7,12 +7,8 @@
     },
     "packageManager": "yarn@1.22.17",
     "workspaces": [
-        "apps/payment-ui",
-        "apps/merchant-ui",
-        "apps/backend-serverless",
-        "apps/transaction-request-serverless",
-        "apps/mock-shopify-serverless",
-        "apps/docs"
+        "apps/*",
+        "packages/*"
     ],
     "scripts": {
         "build": "turbo run build",
