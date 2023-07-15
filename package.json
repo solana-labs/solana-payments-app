@@ -3,8 +3,12 @@
     "version": "0.0.0",
     "private": true,
     "workspaces": [
-        "apps/*",
-        "packages/*"
+        "apps/payment-ui",
+        "apps/merchant-ui",
+        "apps/backend-serverless",
+        "apps/transaction-request-serverless",
+        "apps/mock-shopify-serverless",
+        "apps/docs"
     ],
     "scripts": {
         "build": "turbo run build",
