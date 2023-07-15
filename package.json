@@ -7,8 +7,7 @@
         "apps/merchant-ui",
         "apps/backend-serverless",
         "apps/transaction-request-serverless",
-        "apps/mock-shopify-serverless",
-        "apps/docs"
+        "apps/mock-shopify-serverless"
     ],
     "scripts": {
         "build": "turbo run build",
