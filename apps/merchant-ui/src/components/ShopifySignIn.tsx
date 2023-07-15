@@ -6,7 +6,6 @@ interface Props {
 
 // TODO: Implement the sign in flow
 export function ShopifySignIn(props: Props) {
-    console.log('node env', process.env.NODE_ENV);
     return (
         <button
             onClick={() => {
@@ -30,7 +29,7 @@ export function ShopifySignIn(props: Props) {
             )}
         >
             <img className="h-7 w-7" src="/shopify-logo.svg" alt="Shopify Logo" />
-            <p> Sign in with Shopify</p>
+            <p>Sign in with Shopify</p>
         </button>
     );
 }

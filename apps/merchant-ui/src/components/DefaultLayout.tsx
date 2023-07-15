@@ -1,11 +1,12 @@
-import { twMerge } from 'tailwind-merge';
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
+import EnvLabel from '@/components/EnvLabel';
+import { DefaultLayoutNavigation } from './DefaultLayoutNavigation';
+import { SolanaPayMark } from './SolanaPayMark';
 import { Close } from './icons/Close';
 import { Menu } from './icons/Menu';
-import { SolanaPayMark } from './SolanaPayMark';
-import { DefaultLayoutNavigation } from './DefaultLayoutNavigation';
 
 interface Props {
     className?: string;
@@ -49,8 +50,9 @@ export function DefaultLayout(props: Props) {
                     'md:hidden'
                 )}
             >
-                <Link href="/">
+                <Link href="/" className="flex flex-row space-x-2">
                     <SolanaPayMark className="h-6" />
+                    <EnvLabel />
                 </Link>
                 <button onClick={() => setNavIsOpen(cur => !cur)}>
                     {navIsOpen ? <Close className="fill-black h-6 w-6" /> : <Menu className="fill-black h-6 w-6" />}

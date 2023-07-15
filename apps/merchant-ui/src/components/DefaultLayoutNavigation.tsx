@@ -1,3 +1,4 @@
+import EnvLabel from '@/components/EnvLabel';
 import { LoadingDots } from '@/components/LoadingDots';
 import { isFailed, isOk, isPending } from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
@@ -78,8 +79,9 @@ export function DefaultLayoutNavigation(props: Props) {
             <NavigationMenu.List className="pr-6">
                 <NavigationMenu.Item>
                     <NavigationMenu.Link asChild>
-                        <Link href="/">
+                        <Link href="/" className="flex flex-row space-x-2">
                             <SolanaPayMark className="h-7" />
+                            <EnvLabel />
                         </Link>
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
