@@ -1,34 +1,36 @@
 {
-  "name": "solana-payments-app",
-  "version": "0.0.0",
-  "private": true,
-  "workspaces": [
-    "apps/payment-ui",
-    "apps/merchant-ui",
-    "apps/backend-serverless",
-    "apps/transaction-request-serverless",
-    "apps/mock-shopify-serverless",
-    "apps/docs"
-  ],
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "docker-compose up & turbo run dev",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mdx}\""
-  },
-  "devDependencies": {
-    "eslint-config-custom": "*",
-    "prettier": "latest",
-    "turbo": "latest"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "dependencies": {
-    "@shopify/app": "^3.47.5",
-    "@shopify/cli": "^3.47.5",
-    "typescript": "^5.0.3"
-  },
-  "packageManager": "yarn@1.22.17"
+    "name": "solana-payments-app",
+    "version": "1.0.0",
+    "private": true,
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "packageManager": "yarn@1.22.17",
+    "workspaces": [
+        "apps/payment-ui",
+        "apps/merchant-ui",
+        "apps/backend-serverless",
+        "apps/transaction-request-serverless",
+        "apps/mock-shopify-serverless",
+        "apps/docs"
+    ],
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "docker-compose up & turbo run dev",
+        "lint": "turbo run lint",
+        "lint:fix": "turbo run lint:fix",
+        "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mdx}\""
+    },
+    "dependencies": {
+        "@shopify/app": "^3.47.5",
+        "@shopify/cli": "^3.47.5",
+        "typescript": "^5.0.3"
+    },
+    "devDependencies": {
+        "eslint-config-custom": "*",
+        "prettier": "latest",
+        "turbo": "latest",
+        "@solana/prettier-config-solana": "^0.0.2"
+    },
+    "prettier": "@solana/prettier-config-solana"
 }

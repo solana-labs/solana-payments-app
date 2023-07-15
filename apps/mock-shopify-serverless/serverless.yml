@@ -53,4 +53,4 @@ custom:
   serverless-offline:
     httpPort: 4004
     lambdaPort: 4005
-    httpsProtocol: "dev-certs"
+    httpsProtocol: 'dev-certs'
