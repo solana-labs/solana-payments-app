@@ -15,28 +15,32 @@ Sentry.AWSLambda.init({
 
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+        Sentry.captureEvent({
+            message: 'In customersDataRequest gdpr',
+            level: 'info',
+            extra: {
+                event: JSON.stringify(event),
+            },
+        });
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('mising body'));
+            return createErrorResponse(
+                new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers))
+            );
         }
 
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
-
-            if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
-                throw new InvalidInputError('incorrect topic for customer data');
+            if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerData) {
+                new InvalidInputError('Customer Data wrong topic ' + JSON.stringify(webhookHeaders));
             }
-            verifyShopifyWebhook(JSON.stringify(event.body), webhookHeaders['X-Shopify-Hmac-Sha256']);
+            verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({}),
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        // Verified hook, return 200 since not storing data
-        // If we need to delete PaymentRecords, neeed to save more data
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({}),
-        };
     },
     {
         rethrowAfterCapture: false,

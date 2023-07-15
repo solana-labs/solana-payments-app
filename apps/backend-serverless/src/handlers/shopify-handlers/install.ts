@@ -23,6 +23,9 @@ export const install = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in install',
             level: 'info',
+            extra: {
+                event: event,
+            },
         });
 
         const merchantService = new MerchantService(prisma);

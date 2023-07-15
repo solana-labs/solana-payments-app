@@ -16,6 +16,9 @@ export const logout = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in logout',
             level: 'info',
+            extra: {
+                event,
+            },
         });
         const merchantCookie = deleteMerchantAuthCookieHeader();
         const nonceCookie = `nonce=; HttpOnly; Secure; SameSite=Lax; Max-age=0;`;
