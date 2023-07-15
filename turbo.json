@@ -1,29 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local"
-  ],
+  "globalDependencies": ["**/.env.*local"],
   "pipeline": {
     "build:payment-ui": {
-      "outputs": [
-        "./apps/payment-ui/.next/**"
-      ]
+      "outputs": ["./apps/payment-ui/.next/**"]
     },
     "build:merchant-ui": {
-      "outputs": [
-        "./apps/merchant-ui/.next/**"
-      ]
+      "outputs": ["./apps/merchant-ui/.next/**"]
     },
     "build": {
-      "dependsOn": [
-        "build:payment-ui",
-        "build:merchant-ui"
-      ],
+      "dependsOn": ["build:payment-ui", "build:merchant-ui"],
       "outputs": []
     },
-    "lint": {
-      "outputs": []
-    },
+    "lint": {},
     "dev": {
       "cache": false
     }

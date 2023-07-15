@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+    "apps/merchant-ui",
+    "apps/backend-serverless",
+    "apps/mock-shopify-serverless",
+    "apps/payment-ui"
+  ]
+}

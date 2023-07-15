@@ -3,9 +3,9 @@ const nextConfig = {
   reactStrictMode: false,
   exportPathMap: function () {
     return {
-      '/': { page: '/' },
-      '/404': { page: '/404' },
-      '/500': { page: '/500' },
+      "/": { page: "/" },
+      "/404": { page: "/404" },
+      "/500": { page: "/500" },
     };
   },
 };

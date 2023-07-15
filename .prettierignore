@@ -1,0 +1,47 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+**/node_modules
+.pnp
+.pnp.js
+**/package-lock.json
+**/yarn.lock
+
+# testing
+**/coverage
+
+# next.js
+**/.next
+**/out
+**/build
+**/.build
+
+# misc
+*.pem
+.DS_Store
+
+# debug
+*debug.log*
+*error.log*
+
+# local env files
+**/.env*
+
+# turbo
+.turbo
+
+# apps and packages
+**/dist
+**/.serverless
+
+#packages-dist
+
+# General ignore rules for monorepos
+**/.cache
+**/.pnp
+**/.pnp.js
+**/coverage
+**/.DS_Store
+
+# Working notes
+working-notes.md
