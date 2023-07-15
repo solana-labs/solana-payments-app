@@ -14,7 +14,7 @@ This is the serverless backend for the Solana Payments App. It plays a large rol
 
 Make sure mysql is installed, and your database is running (run yarn dev in root folder to get dockerized database up)
 
-Then, run 
+Then, run
 
 ```
 npx prisma db seed
