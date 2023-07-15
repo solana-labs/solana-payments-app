@@ -2,7 +2,7 @@
 
 ## Learn More
 
-Right now the overall documentation is federated to respective directories. Overall overview documentation coming soon..
+Right now the overall documentation is federated to respective directories. Overall overview documentation coming soon.
 
 [Payment App Backend](apps/backend-serverless/README.md) - Server that handles communication and orchestration of payments, merchant experience, and customer experience.<br>
 [Transaction Request Server](apps/transaction-request-serverless/README.md) - Server for building transaction for payments.<br>
