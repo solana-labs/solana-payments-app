@@ -19,7 +19,7 @@
         "dev": "docker-compose up & turbo run dev",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
-        "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mdx}\""
+        "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {
         "@shopify/app": "^3.47.5",
