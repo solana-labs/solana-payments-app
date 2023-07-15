@@ -3,34 +3,28 @@
     "version": "0.0.0",
     "private": true,
     "workspaces": [
-        "apps/payment-ui",
-        "apps/merchant-ui",
-        "apps/backend-serverless",
-        "apps/transaction-request-serverless",
-        "apps/mock-shopify-serverless"
+        "apps/*",
+        "packages/*"
     ],
     "scripts": {
         "build": "turbo run build",
         "dev": "docker-compose up & turbo run dev",
         "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+        "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mdx}\""
+    },
+    "dependencies": {
+        "@shopify/app": "^3.47.5",
+        "@shopify/cli": "^3.47.5",
+        "typescript": "^5.0.3"
     },
     "devDependencies": {
-        "@solana/eslint-config-solana": "^1.0.1",
         "@solana/prettier-config-solana": "^0.0.2",
-        "@typescript-eslint/eslint-plugin": "^5.57.1",
-        "@typescript-eslint/parser": "^5.57.1",
         "eslint-config-custom": "*",
         "prettier": "^2.8.7",
         "turbo": "latest"
     },
     "engines": {
         "node": ">=14.0.0"
-    },
-    "dependencies": {
-        "@shopify/app": "^3.47.5",
-        "@shopify/cli": "^3.47.5",
-        "typescript": "^5.0.3"
     },
     "packageManager": "yarn@1.22.17",
     "prettier": "@solana/prettier-config-solana"
