@@ -39,7 +39,7 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
 
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
-            if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.customerData) {
+            if (webhookHeaders['X-Shopify-Topic'] != ShopifyWebhookTopic.shopRedact) {
                 throw new InvalidInputError('incorrect topic for shop redact');
             }
             verifyShopifyWebhook(Buffer.from(event.body), webhookHeaders['x-shopify-hmac-sha256']);
