@@ -46,6 +46,7 @@
         "zustand": "^4.3.8"
     },
     "devDependencies": {
+        "eslint": "^8.0.0",
         "@types/carbon__icons-react": "^11.20.0",
         "@types/jest": "^29.5.2",
         "@types/node": "^18.16.1",
