@@ -1,9 +1,9 @@
+import * as Button from '@/components/Button';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import { FC, MouseEventHandler, useCallback, useMemo, useState } from 'react';
-import type { ButtonProps } from './Button';
 
-export const WalletCopyButton: FC<ButtonProps> = ({ children, disabled, onClick, ...props }) => {
+export const WalletCopyButton: FC<Button.TjButtonProps> = ({ children, disabled, onClick, ...props }) => {
     const { publicKey, wallet, disconnect } = useWallet();
     const [copied, setCopied] = useState(false);
 

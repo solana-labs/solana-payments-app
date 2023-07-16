@@ -1,16 +1,15 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { FC, useMemo } from 'react';
-// import { WalletMultiButton } from './WalletMultiButton';
 import {
     SolanaMobileWalletAdapter,
     createDefaultAddressSelector,
     createDefaultAuthorizationResultCache,
     createDefaultWalletNotFoundHandler,
 } from '@solana-mobile/wallet-adapter-mobile';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
+import { FC, useMemo } from 'react';
 import WalletSection from './WalletSection';
 
 // Default styles that can be overridden by your app
