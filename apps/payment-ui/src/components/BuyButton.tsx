@@ -56,7 +56,7 @@ const BuyButton = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                }
+                },
             );
 
             const transactionString = response.data.transaction;
@@ -74,7 +74,7 @@ const BuyButton = () => {
             }
 
             const connection = new web3.Connection(
-                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
+                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e',
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
@@ -85,7 +85,7 @@ const BuyButton = () => {
                 setNotification({
                     notification: errorType,
                     type: NotificationType.connectWallet,
-                })
+                }),
             );
             return;
         }

@@ -61,7 +61,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                         usdcSize = await convertAmountAndCurrencyToUsdcSize(
                             refundInitiation.amount,
                             refundInitiation.currency,
-                            axios
+                            axios,
                         );
                     }
 
@@ -70,7 +70,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                         newRefundRecordId,
                         refundInitiation,
                         merchant,
-                        usdcSize
+                        usdcSize,
                     );
                 } else {
                     throw error;
@@ -87,5 +87,5 @@ export const refund = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

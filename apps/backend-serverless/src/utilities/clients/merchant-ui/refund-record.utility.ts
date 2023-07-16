@@ -10,7 +10,7 @@ export interface RefundDataResponse {
 }
 
 export const createRefundDataResponseFromRefundRecord = (
-    refundRecord: RefundRecord & { paymentRecord: PaymentRecord | null }
+    refundRecord: RefundRecord & { paymentRecord: PaymentRecord | null },
 ): RefundDataResponse => {
     return {
         shopifyOrder: refundRecord.shopId,

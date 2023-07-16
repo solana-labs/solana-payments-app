@@ -1,11 +1,11 @@
-import {
-    verifyTransferInstructionIsCorrect,
-    verifyTransactionWithRecord,
-    verifySingleUseInstruction,
-} from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
+import {
+    verifySingleUseInstruction,
+    verifyTransactionWithRecord,
+    verifyTransferInstructionIsCorrect,
+} from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 import { createMockPaymentRecord } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 
@@ -32,7 +32,7 @@ describe('unit testing validating discovered payment transactions', () => {
             transferQuantity,
             6,
             [],
-            TOKEN_PROGRAM_ID
+            TOKEN_PROGRAM_ID,
         );
         const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
 
@@ -60,7 +60,7 @@ describe('unit testing validating discovered payment transactions', () => {
             transferQuantity,
             6,
             [],
-            TOKEN_PROGRAM_ID
+            TOKEN_PROGRAM_ID,
         );
         const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
 
@@ -89,7 +89,7 @@ describe('unit testing validating discovered payment transactions', () => {
             transferQuantity,
             6,
             [],
-            TOKEN_PROGRAM_ID
+            TOKEN_PROGRAM_ID,
         );
         const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
 
@@ -136,7 +136,7 @@ describe('unit testing validating discovered payment transactions', () => {
             transferQuantity,
             6,
             [],
-            TOKEN_PROGRAM_ID
+            TOKEN_PROGRAM_ID,
         );
         const ix = web3.SystemProgram.createAccount({
             fromPubkey: aliceKeypair.publicKey,

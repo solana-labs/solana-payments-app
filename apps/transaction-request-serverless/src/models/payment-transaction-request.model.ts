@@ -52,12 +52,12 @@ export const paymentTransactionRequestScheme = object().shape({
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentTransactionRequestParams: unknown
+    paymentTransactionRequestParams: unknown,
 ): PaymentTransactionRequest => {
     return parseAndValidate(
         paymentTransactionRequestParams,
         paymentTransactionRequestScheme,
-        'Invalid payment transaction request'
+        'Invalid payment transaction request',
     );
 };
 
@@ -134,7 +134,7 @@ export class PaymentTransactionBuilder {
 
         const receivingTokenInformation = await TokenInformation.queryTokenInformationFromPubkey(
             this.receivingToken,
-            connection
+            connection,
         );
 
         switch (this.amountType) {
@@ -164,7 +164,7 @@ export class PaymentTransactionBuilder {
             receivingQuantity,
             this.createAta,
             connection,
-            this.feePayer
+            this.feePayer,
         );
 
         if (this.singleUseNewAcc && this.singleUsePayer) {

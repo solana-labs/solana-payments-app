@@ -1,4 +1,4 @@
-import { getAccountInfo, getPubkeyType } from '../../src/services/helius.service.js';
+import { getPubkeyType } from '../../src/services/helius.service.js';
 
 describe('Wallet', () => {
     it('should create a wallet', async () => {

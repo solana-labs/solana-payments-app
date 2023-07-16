@@ -21,6 +21,6 @@ export const parseAndValidateBalanceParameters = (balanceRequestParameters: unkn
     return parseAndValidateStrict(
         balanceRequestParameters,
         balanceRequestParametersScheme,
-        'Can not parse balance parameters. Unkownn reason.'
+        'Can not parse balance parameters. Unkownn reason.',
     );
 };

@@ -1,5 +1,5 @@
-import { startExecutionOfShopifyMutationRetry } from '../../../../src/services/step-function/start-execution-shopify-retry.service.js';
 import { StepFunctions } from 'aws-sdk';
+import { startExecutionOfShopifyMutationRetry } from '../../../../src/services/step-function/start-execution-shopify-retry.service.js';
 
 describe('unit testing start execution shopify retry', () => {
     it('should execute succesfully', async () => {

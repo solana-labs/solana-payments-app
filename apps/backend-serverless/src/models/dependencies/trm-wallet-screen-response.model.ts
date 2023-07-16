@@ -43,6 +43,6 @@ export const parseAndValidateTrmWalletScreenResponse = (walletScreenResponse: un
     return parseAndValidateStrict(
         walletScreenResponse,
         trmWalletScreenResponseSchema,
-        'Failed to parse and validate TRM wallet screen response. Unknown reason.'
+        'Failed to parse and validate TRM wallet screen response. Unknown reason.',
     );
 };

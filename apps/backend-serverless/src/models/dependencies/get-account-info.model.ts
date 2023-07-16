@@ -70,6 +70,6 @@ export const parseAndValidateGetAccountInfo = (getAccountInfoResponseBody: unkno
     return parseAndValidateStrict(
         getAccountInfoResponseBody,
         getAccountInfoResponseSchema,
-        'Could not parse the get account info response body. Unknown Reason.'
+        'Could not parse the get account info response body. Unknown Reason.',
     );
 };

@@ -1,6 +1,6 @@
 import * as Accordion from '@radix-ui/react-accordion';
-import { twMerge } from 'tailwind-merge';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { ArrowDropDownCircle } from './icons/ArrowDropDownCircle';
 
@@ -33,7 +33,7 @@ export function FAQ(props: Props) {
                                         'h-6',
                                         'w-6',
                                         'transition-transform',
-                                        open.includes(qa.question) && '-rotate-180'
+                                        open.includes(qa.question) && '-rotate-180',
                                     )}
                                 />
                             </Accordion.Trigger>

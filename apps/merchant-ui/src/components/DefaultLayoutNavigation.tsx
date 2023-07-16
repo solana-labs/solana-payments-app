@@ -71,7 +71,7 @@ export function DefaultLayoutNavigation(props: Props) {
                 'md:relative',
                 'md:top-auto',
                 'md:translate-x-0',
-                props.className
+                props.className,
             )}
             orientation="vertical"
         >
@@ -153,7 +153,7 @@ export function DefaultLayoutNavigation(props: Props) {
                         'px-3',
                         'py-2',
                         'rounded-md',
-                        'grid-cols-[24px,1fr,max-content]'
+                        'grid-cols-[24px,1fr,max-content]',
                     )}
                 >
                     {cloneElement(<Logout />, {

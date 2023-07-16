@@ -11,7 +11,7 @@ describe('unit testing refund session reject', () => {
         const mockRefundSessionReject = makeRefundSessionReject(axios);
 
         await expect(
-            mockRefundSessionReject('mock-id', 'REJECTED', 'mock-message', 'mock-shop', 'mock-token')
+            mockRefundSessionReject('mock-id', 'REJECTED', 'mock-message', 'mock-shop', 'mock-token'),
         ).resolves.not.toThrow();
     });
 

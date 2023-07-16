@@ -1,5 +1,4 @@
 import type { CSSProperties, FC, MouseEvent, PropsWithChildren, ReactElement } from 'react';
-import React from 'react';
 
 export type ButtonProps = PropsWithChildren<{
     className?: string;
@@ -11,7 +10,7 @@ export type ButtonProps = PropsWithChildren<{
     tabIndex?: number;
 }>;
 
-export const Button: FC<ButtonProps> = (props) => {
+export const Button: FC<ButtonProps> = props => {
     return (
         <button
             className={`wallet-adapter-button ${props.className || ''}`}

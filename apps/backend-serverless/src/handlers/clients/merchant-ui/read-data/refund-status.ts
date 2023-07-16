@@ -50,5 +50,5 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

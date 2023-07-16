@@ -129,7 +129,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             {
                 paymentRecordId: paymentRecord.id,
             },
-            websocketSessionService
+            websocketSessionService,
         );
 
         await websocketService.sendTransacationRequestStartedMessage();
@@ -176,7 +176,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
-                axios
+                axios,
             );
         } catch (error) {
             console.log('failed fetching payment transaction, prob lol');
@@ -206,7 +206,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                         paymentRecord.shopGid,
                         rejectionReason,
                         merchant.shop,
-                        merchant.accessToken
+                        merchant.accessToken,
                     );
 
                     paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
@@ -277,7 +277,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 signatureString,
                 TransactionType.payment,
                 paymentRecord.id,
-                null
+                null,
             );
         } catch (error) {
             await websocketService.sendTransactionRequestFailedMessage();
@@ -303,7 +303,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     {
         captureTimeoutWarning: false,
         rethrowAfterCapture: false,
-    }
+    },
 );
 
 export const paymentMetadata = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {

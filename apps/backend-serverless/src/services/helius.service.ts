@@ -153,7 +153,7 @@ export const getPubkeyTypeForProgramOwner = (owner: PubkeyOwner): PubkeyType => 
             return PubkeyType.token;
         default:
             throw new InvalidInputError(
-                'Invalid payment address input. You must enter a wallet address or USDC token account address.'
+                'Invalid payment address input. You must enter a wallet address or USDC token account address.',
             );
     }
 };

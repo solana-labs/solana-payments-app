@@ -11,6 +11,6 @@ export const parseAndValidateSafetyKeyMessage = (safetyKeyMessageBody: unknown):
     return parseAndValidateStrict(
         safetyKeyMessageBody,
         safetyKeyMessageSchema,
-        'Could not parse the safety key message. Unknown Reason.'
+        'Could not parse the safety key message. Unknown Reason.',
     );
 };

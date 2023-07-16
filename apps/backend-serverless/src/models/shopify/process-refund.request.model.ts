@@ -28,11 +28,11 @@ export const shopifyRefundInitiationScheme = object().shape({
 export type ShopifyRefundInitiation = InferType<typeof shopifyRefundInitiationScheme>;
 
 export const parseAndValidateShopifyRefundInitiation = (
-    shopifyRefundInitiationBody: unknown
+    shopifyRefundInitiationBody: unknown,
 ): ShopifyRefundInitiation => {
     return parseAndValidateStrict<ShopifyRefundInitiation>(
         parseParameters(shopifyRefundInitiationBody),
         shopifyRefundInitiationScheme,
-        'Could not parse the shopify refund initiation body. Unknown Reason.'
+        'Could not parse the shopify refund initiation body. Unknown Reason.',
     );
 };

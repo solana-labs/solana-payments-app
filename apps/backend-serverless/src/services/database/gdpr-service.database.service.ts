@@ -15,7 +15,7 @@ export class GDPRService {
                     merchantId: merchantId,
                     completed: false,
                 },
-            })
+            }),
         );
     }
 }

@@ -9,11 +9,11 @@ export const transactionRequestResponseScheme = object().shape({
 export type TransactionRequestResponse = InferType<typeof transactionRequestResponseScheme>;
 
 export const parseAndValidateTransactionRequestResponse = (
-    transactionRequestResponseBody: unknown
+    transactionRequestResponseBody: unknown,
 ): TransactionRequestResponse => {
     return parseAndValidateStrict<TransactionRequestResponse>(
         transactionRequestResponseBody,
         transactionRequestResponseScheme,
-        'Could not parse the transaction request response. Unknown Reason.'
+        'Could not parse the transaction request response. Unknown Reason.',
     );
 };

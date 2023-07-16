@@ -10,7 +10,7 @@ import { validatePaymentSessionResolved } from '../shopify/validate-payment-sess
 export const retryPaymentResolve = async (
     paymentResolveInfo: ShopifyMutationPaymentResolve | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
@@ -36,7 +36,7 @@ export const retryPaymentResolve = async (
     const resolvePaymentResponse = await paymentSessionResolve(
         paymentRecord.shopGid,
         merchant.shop,
-        merchant.accessToken
+        merchant.accessToken,
     );
 
     const resolvePaymentData = validatePaymentSessionResolved(resolvePaymentResponse);

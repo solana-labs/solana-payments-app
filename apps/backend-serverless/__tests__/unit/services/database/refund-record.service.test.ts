@@ -1,6 +1,6 @@
-import { RefundRecordService } from '../../../../src/services/database/refund-record-service.database.service.js';
-import { prismaMock } from '../../../../prisma-singleton.js';
 import { RefundRecordStatus } from '@prisma/client';
+import { prismaMock } from '../../../../prisma-singleton.js';
+import { RefundRecordService } from '../../../../src/services/database/refund-record-service.database.service.js';
 
 describe('Refund Record Testing Suite', () => {
     let refundRecordService: RefundRecordService;

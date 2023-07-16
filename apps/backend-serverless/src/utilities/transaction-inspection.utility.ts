@@ -1,7 +1,7 @@
-import * as web3 from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
-import { USDC_MINT } from '../configs/tokens.config.js';
 import * as Sentry from '@sentry/serverless';
+import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
+import * as web3 from '@solana/web3.js';
+import { USDC_MINT } from '../configs/tokens.config.js';
 /**
  *
  * @param transaction the transaction to inspect

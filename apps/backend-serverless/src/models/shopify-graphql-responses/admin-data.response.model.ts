@@ -23,6 +23,6 @@ export const parseAndValidateAdminDataResponse = (adminDataResponeBody: unknown)
     return parseAndValidateStrict(
         adminDataResponeBody,
         adminDataResponseSchema,
-        'Could not parse the admin data response. Unknown Reason.'
+        'Could not parse the admin data response. Unknown Reason.',
     );
 };

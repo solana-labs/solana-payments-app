@@ -72,7 +72,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
                 onWalletNotFound: createDefaultWalletNotFoundHandler(),
             }),
         ],
-        []
+        [],
     );
 
     return (

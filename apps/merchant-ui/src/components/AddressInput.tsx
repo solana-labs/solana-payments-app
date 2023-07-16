@@ -35,7 +35,7 @@ export function AddressInput(props: Props) {
                     'grid-cols-[max-content,1fr]',
                     'grid',
                     'overflow-hidden',
-                    'rounded-lg'
+                    'rounded-lg',
                 )}
             >
                 <Tooltip.Root open={copied}>
@@ -48,7 +48,7 @@ export function AddressInput(props: Props) {
                             'w-11',
                             'disabled:opacity-50',
                             'hover:bg-gray-50',
-                            'disabled:hover:bg-transparent'
+                            'disabled:hover:bg-transparent',
                         )}
                         disabled={props.addressIsInvalid}
                         onClick={async () => {

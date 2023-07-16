@@ -78,5 +78,5 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

@@ -31,7 +31,7 @@ export function FinishAccountSetupPromptListItem(props: Props) {
                 'grid',
                 'grid-cols-[max-content,1fr,max-content]',
                 'items-center',
-                props.className
+                props.className,
             )}
         >
             {/* <img src={props.img} > */}
@@ -56,7 +56,7 @@ export function FinishAccountSetupPromptListItem(props: Props) {
                             'items-center',
                             'space-x-2.5',
                             'text-emerald-700',
-                            'text-sm'
+                            'text-sm',
                         )}
                     >
                         <div>Complete</div>

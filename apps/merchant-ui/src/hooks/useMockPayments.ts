@@ -60,7 +60,7 @@ export function useMockPayments(page: number): RE.Result<{
                 RE.ok({
                     payments: MOCK_paymentS.slice(page * PAGE_SIZE, PAGE_SIZE + page * PAGE_SIZE),
                     totalPages: 10,
-                })
+                }),
             );
         }, 500);
     }, [page]);

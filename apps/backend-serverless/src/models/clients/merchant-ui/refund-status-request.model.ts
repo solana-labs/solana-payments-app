@@ -11,6 +11,6 @@ export const parseAndValidateRefundStatusRequest = (refundStatusRequestParameter
     return parseAndValidateStrict<RefundStatusRequest>(
         refundStatusRequestParameters,
         refundStatusRequestScheme,
-        'Could not parse the refund status request parameters. Unknown Reason.'
+        'Could not parse the refund status request parameters. Unknown Reason.',
     );
 };

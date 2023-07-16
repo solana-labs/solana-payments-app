@@ -1,7 +1,7 @@
+import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 
 const FinishHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -11,7 +11,7 @@ const FinishHandler: React.FC = () => {
         const interval = 3000; // 3 seconds
 
         const timer = setInterval(() => {
-            if ( redirectUrl != null ) {
+            if (redirectUrl != null) {
                 window.location.href = redirectUrl;
             }
         }, interval);

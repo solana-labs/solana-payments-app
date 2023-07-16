@@ -1,10 +1,10 @@
+import * as Sentry from '@sentry/serverless';
 import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import { ResolveRefundResponse } from '../../models/shopify-graphql-responses/resolve-refund-response.model.js';
 import {
     RefundSessionStateCode,
     RefundSessionStateResolved,
 } from '../../models/shopify-graphql-responses/shared.model.js';
-import * as Sentry from '@sentry/serverless';
 
 export const validateRefundSessionResolved = (refundSessionResolveResponse: ResolveRefundResponse) => {
     const userErrors = refundSessionResolveResponse.data.refundSessionResolve.userErrors;
@@ -20,7 +20,7 @@ export const validateRefundSessionResolved = (refundSessionResolveResponse: Reso
 
     if (refundSession == null) {
         const error = new ShopifyResponseError(
-            'Refund session is null. ' + JSON.stringify(refundSessionResolveResponse.data)
+            'Refund session is null. ' + JSON.stringify(refundSessionResolveResponse.data),
         );
         console.log(error);
         Sentry.captureException(error);
@@ -31,7 +31,7 @@ export const validateRefundSessionResolved = (refundSessionResolveResponse: Reso
 
     if (refundSessionStateTestResolved.code != RefundSessionStateCode.resolved) {
         const error = new ShopifyResponseError(
-            'Refund session state is not resolved. ' + refundSessionStateTestResolved.code
+            'Refund session state is not resolved. ' + refundSessionStateTestResolved.code,
         );
         console.log(error);
         Sentry.captureException(error);

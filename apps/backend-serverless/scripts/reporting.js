@@ -57,7 +57,7 @@ async function generateReport() {
     const body = data
         .map(
             d =>
-                `$${d.totalSalesVolume},${d.totalTransactions},$${d.averageTransactionSize},$${d.totalRefundVolume},${d.totalRefunds},${d.activeMerchants}`
+                `$${d.totalSalesVolume},${d.totalTransactions},$${d.averageTransactionSize},$${d.totalRefundVolume},${d.totalRefunds},${d.activeMerchants}`,
         )
         .join('\n');
 
@@ -92,7 +92,7 @@ async function generateReport() {
     const merchantBody = merchantData
         .map(
             d =>
-                `${d.merchantId},$${d.totalSalesVolume},${d.totalTransactions},$${d.averageTransactionSize},$${d.totalRefundVolume},${d.totalRefunds}`
+                `${d.merchantId},$${d.totalSalesVolume},${d.totalTransactions},$${d.averageTransactionSize},$${d.totalRefundVolume},${d.totalRefunds}`,
         )
         .join('\n');
 

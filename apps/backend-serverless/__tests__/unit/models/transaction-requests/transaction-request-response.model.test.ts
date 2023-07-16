@@ -23,12 +23,12 @@ describe('unit testing the transation request response model', () => {
     runMissingFieldTests(
         parseAndValidateTransactionRequestResponse,
         validParams,
-        fields.filter(field => field !== 'message')
+        fields.filter(field => field !== 'message'),
     );
     runInvalidFieldTypeTests(parseAndValidateTransactionRequestResponse, validParams, fields, wrongTypes);
     runEmptyFieldTests(
         parseAndValidateTransactionRequestResponse,
         validParams,
-        fields.filter(field => field !== 'message')
+        fields.filter(field => field !== 'message'),
     );
 });

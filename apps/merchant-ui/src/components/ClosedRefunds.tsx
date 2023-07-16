@@ -143,7 +143,7 @@ export function ClosedRefunds(props: Props) {
                                     'text-slate-700',
                                     'text-sm',
                                     'font-medium',
-                                    'bg-slate-50'
+                                    'bg-slate-50',
                                 )}
                             >
                                 Refunded
@@ -159,7 +159,7 @@ export function ClosedRefunds(props: Props) {
                                     'text-red-700',
                                     'text-sm',
                                     'font-medium',
-                                    'bg-red-50'
+                                    'bg-red-50',
                                 )}
                             >
                                 Refund Denied

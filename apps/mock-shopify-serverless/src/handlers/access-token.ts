@@ -1,4 +1,4 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export const accessToken = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     return {

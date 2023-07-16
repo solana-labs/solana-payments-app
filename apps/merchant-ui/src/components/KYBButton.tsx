@@ -56,7 +56,7 @@ export function KYBButton(props: Props) {
                         'place-items-center',
                         'right-0',
                         'top-0',
-                        'z-10'
+                        'z-10',
                     )}
                 >
                     <Dialog.Content

@@ -11,6 +11,6 @@ export const parseAndValidateTransactionRequestBody = (transactionRequestBody: u
     return parseAndValidateStrict<TransactionRequestBody>(
         transactionRequestBody,
         transactionRequestSchema,
-        'Could not parse the transaction request body. Unknown Reason.'
+        'Could not parse the transaction request body. Unknown Reason.',
     );
 };

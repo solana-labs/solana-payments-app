@@ -1,6 +1,6 @@
 import pkg from 'aws-sdk';
-import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
 const { StepFunctions } = pkg;
 
 /**
@@ -12,7 +12,7 @@ const { StepFunctions } = pkg;
 // Dependency injection is used here for easier testing
 export const startExecutionOfShopifyMutationRetry = async (
     input: string,
-    stepFunctions: pkg.StepFunctions = new StepFunctions()
+    stepFunctions: pkg.StepFunctions = new StepFunctions(),
 ) => {
     const retryMachineArn = process.env.RETRY_ARN;
 
@@ -30,7 +30,7 @@ export const startExecutionOfShopifyMutationRetry = async (
                     input: input,
                 })
                 .promise(),
-        maxNumberOfExecutionAttempts
+        maxNumberOfExecutionAttempts,
     );
 
     if (attempts === maxNumberOfExecutionAttempts) {

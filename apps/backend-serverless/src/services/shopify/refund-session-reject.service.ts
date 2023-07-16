@@ -34,7 +34,7 @@ export const makeRefundSessionReject =
         code: string,
         merchantMessage: string | undefined,
         shop: string,
-        token: string
+        token: string,
     ): Promise<RejectRefundResponse> => {
         const headers = {
             'content-type': 'application/json',
@@ -77,7 +77,7 @@ export const makeRefundSessionReject =
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
                     );
             }
         } catch (error) {

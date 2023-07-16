@@ -17,6 +17,6 @@ export const parseAndValidateRejectPaymentResponse = (rejectPaymentResponeBody: 
     return parseAndValidateStrict(
         rejectPaymentResponeBody,
         paymentSessionRejectResponseSchema,
-        'Could not parse the reject payment response. Unknown Reason.'
+        'Could not parse the reject payment response. Unknown Reason.',
     );
 };

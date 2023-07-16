@@ -8,11 +8,11 @@ export const processTransactionMessageSchema = object().shape({
 export type ProcessTransactionMessage = InferType<typeof processTransactionMessageSchema>;
 
 export const parseAndValidateProcessTransactionMessage = (
-    processTransctionMessageBody: unknown
+    processTransctionMessageBody: unknown,
 ): ProcessTransactionMessage => {
     return parseAndValidateStrict(
         processTransctionMessageBody,
         processTransactionMessageSchema,
-        'Could not parse the process transaction message body. Unknown Reason.'
+        'Could not parse the process transaction message body. Unknown Reason.',
     );
 };

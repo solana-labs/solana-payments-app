@@ -39,7 +39,7 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
             const paymentStatusResponse = createPaymentStatusResponse(
                 paymentRecord,
                 merchant,
-                parsedPaymentStatusQuery.language
+                parsedPaymentStatusQuery.language,
             );
             const paymentErrorResponse = createPaymentErrorResponse(paymentRecord);
             const responseBodyData = {
@@ -54,5 +54,5 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return createErrorResponse(error);
         }
-    }
+    },
 );

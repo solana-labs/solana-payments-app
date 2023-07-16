@@ -56,7 +56,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
             {
                 signatures: signatures,
             },
-            paymentRecordService
+            paymentRecordService,
         );
 
         await websocketService.sendProcessingTransactionMessage();
@@ -77,5 +77,5 @@ export const cron = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

@@ -10,7 +10,7 @@ import { validatePaymentSessionRejected } from '../shopify/validate-payment-sess
 export const retryPaymentReject = async (
     paymentRejectInfo: ShopifyMutationPaymentReject | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
@@ -37,7 +37,7 @@ export const retryPaymentReject = async (
         paymentRecord.shopGid,
         paymentRejectInfo.reason,
         merchant.shop,
-        merchant.accessToken
+        merchant.accessToken,
     );
 
     validatePaymentSessionRejected(rejectPaymentResponse);

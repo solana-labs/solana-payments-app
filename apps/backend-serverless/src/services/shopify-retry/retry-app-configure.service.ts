@@ -9,7 +9,7 @@ import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-co
 export const retryAppConfigure = async (
     appConfigureInfo: ShopifyMutationAppConfigure | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ) => {
     const merchantService = new MerchantService(prisma);
 
@@ -30,7 +30,7 @@ export const retryAppConfigure = async (
             merchant.id,
             appConfigureInfo.state,
             merchant.shop,
-            merchant.accessToken
+            merchant.accessToken,
         );
 
         validatePaymentAppConfigured(configureAppResponse, merchant);

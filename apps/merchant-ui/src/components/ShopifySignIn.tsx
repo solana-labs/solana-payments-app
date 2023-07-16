@@ -25,7 +25,7 @@ export function ShopifySignIn(props: Props) {
                 'items-center',
                 'justify-center',
                 'space-x-2',
-                props.className
+                props.className,
             )}
         >
             <img className="h-7 w-7" src="/shopify-logo.svg" alt="Shopify Logo" />

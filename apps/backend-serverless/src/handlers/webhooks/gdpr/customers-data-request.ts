@@ -24,7 +24,7 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
         });
         if (event.body == null) {
             return createErrorResponse(
-                new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers))
+                new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers)),
             );
         }
 
@@ -44,5 +44,5 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

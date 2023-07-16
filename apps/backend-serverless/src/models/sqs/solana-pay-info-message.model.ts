@@ -12,6 +12,6 @@ export const parseAndValidateSolanaPayInfoMessage = (solanaPayInfoMessageBody: u
     return parseAndValidateStrict(
         solanaPayInfoMessageBody,
         solanaPayInfoMessageSchema,
-        'Could not parse the solana pay info message body. Unknown Reason.'
+        'Could not parse the solana pay info message body. Unknown Reason.',
     );
 };

@@ -1,6 +1,6 @@
-import { TransactionRecordService } from '../../../../src/services/database/transaction-record-service.database.service.js';
 import { TransactionType } from '@prisma/client';
 import { prismaMock } from '../../../../prisma-singleton.js';
+import { TransactionRecordService } from '../../../../src/services/database/transaction-record-service.database.service.js';
 
 describe('Transaction Record Testing Suite', () => {
     let transactionRecordService: TransactionRecordService;
@@ -44,7 +44,7 @@ describe('Transaction Record Testing Suite', () => {
             '1234',
             TransactionType.payment,
             'abcd',
-            null
+            null,
         );
 
         expect(transactionRecord).toEqual(mockTransactionRecord);
@@ -66,7 +66,7 @@ describe('Transaction Record Testing Suite', () => {
             '1234',
             TransactionType.refund,
             null,
-            'abcd'
+            'abcd',
         );
 
         expect(transactionRecord).toEqual(mockTransactionRecord);

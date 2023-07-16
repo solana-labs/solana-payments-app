@@ -34,7 +34,7 @@ export interface RecordService<RecordType, ResolveResponse> {
 
 export const getRecordServiceForTransaction = async (
     transactionRecord: TransactionRecord,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ): Promise<RecordService<ShopifyRecord, ShopifyResolveResponse>> => {
     switch (transactionRecord.type) {
         case 'payment':

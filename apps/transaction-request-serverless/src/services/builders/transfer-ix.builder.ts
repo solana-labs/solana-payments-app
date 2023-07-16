@@ -11,7 +11,7 @@ export const createTransferIx = async (
     quantity: number,
     createAta: boolean,
     connection: web3.Connection,
-    feePayer: web3.PublicKey | null
+    feePayer: web3.PublicKey | null,
 ): Promise<web3.TransactionInstruction[]> => {
     const transferIxs: web3.TransactionInstruction[] = [];
 
@@ -20,7 +20,7 @@ export const createTransferIx = async (
     const finalReceiverTokenAddress: web3.PublicKey = await getFinalReceiverTokenAddress(
         receiverWalletAddress,
         receiverTokenAddress,
-        token
+        token,
     );
 
     const info = await connection.getAccountInfo(finalReceiverTokenAddress);
@@ -38,7 +38,7 @@ export const createTransferIx = async (
             finalReceiverTokenAddress,
             feePayer,
             receiverWalletAddress,
-            token.pubkey
+            token.pubkey,
         );
 
         transferIxs.push(createAssociatedInstruction);
@@ -50,7 +50,7 @@ export const createTransferIx = async (
         finalReceiverTokenAddress,
         sender,
         quantity,
-        token.decimals
+        token.decimals,
     );
 
     transferIxs.push(transfer);
@@ -61,7 +61,7 @@ export const createTransferIx = async (
 const getFinalReceiverTokenAddress = async (
     receiverWalletAddress: web3.PublicKey | null,
     receiverTokenAddress: web3.PublicKey | null,
-    token: TokenInformation
+    token: TokenInformation,
 ): Promise<web3.PublicKey> => {
     let finalReceiverTokenAddress: web3.PublicKey | null = null;
 

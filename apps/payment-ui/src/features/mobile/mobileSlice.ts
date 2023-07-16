@@ -1,6 +1,5 @@
 import { RootState } from '@/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { number } from 'yup';
 
 const mobileSlice = createSlice({
     name: 'mobile',

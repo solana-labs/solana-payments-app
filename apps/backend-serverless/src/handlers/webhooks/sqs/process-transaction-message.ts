@@ -56,7 +56,7 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: [processTransactionMessage.signature],
                 },
-                paymentRecordService
+                paymentRecordService,
             );
 
             try {
@@ -76,5 +76,5 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

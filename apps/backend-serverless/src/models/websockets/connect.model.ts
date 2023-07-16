@@ -11,6 +11,6 @@ export const parseAndValidateConnectSchema = (connectSchemaBody: unknown): Conne
     return parseAndValidateStrict(
         connectSchemaBody,
         connectSchema,
-        'Could not parse the merchant auth token body. Unknown Reason.'
+        'Could not parse the merchant auth token body. Unknown Reason.',
     );
 };

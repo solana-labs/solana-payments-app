@@ -46,5 +46,5 @@ export const safetyKeySweep = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

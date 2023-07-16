@@ -8,7 +8,7 @@ import {
 } from '../../models/shopify-graphql-responses/shared.model.js';
 
 export const validatePaymentSessionRejected = (
-    paymentSessionRejectResponse: RejectPaymentResponse
+    paymentSessionRejectResponse: RejectPaymentResponse,
 ): { redirectUrl: string } => {
     const userErrors = paymentSessionRejectResponse.data.paymentSessionReject.userErrors;
 
@@ -23,7 +23,7 @@ export const validatePaymentSessionRejected = (
 
     if (paymentSession == null) {
         const error = new ShopifyResponseError(
-            'payment session is null. ' + JSON.stringify(paymentSessionRejectResponse.data)
+            'payment session is null. ' + JSON.stringify(paymentSessionRejectResponse.data),
         );
         console.log(error);
         Sentry.captureException(error);
@@ -44,7 +44,7 @@ export const validatePaymentSessionRejected = (
 
     if (paymentSessionNextAction == null) {
         const error = new ShopifyResponseError(
-            'payment session next action is nukk. ' + JSON.stringify(paymentSession)
+            'payment session next action is nukk. ' + JSON.stringify(paymentSession),
         );
         console.log(error);
         Sentry.captureException(error);

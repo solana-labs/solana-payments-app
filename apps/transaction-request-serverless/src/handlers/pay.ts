@@ -83,12 +83,12 @@ export const pay = Sentry.AWSLambda.wrapHandler(
                     message: 'Tranasction created successfully',
                 },
                 null,
-                2
+                2,
             ),
         };
     },
     {
         captureTimeoutWarning: false,
         rethrowAfterCapture: false,
-    }
+    },
 );

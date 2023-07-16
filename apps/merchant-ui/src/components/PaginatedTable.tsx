@@ -86,7 +86,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                         className={twMerge(
                                             STYLES.CELL,
                                             typeof props.rowHeight === 'string' && props.rowHeight,
-                                            'pr-6'
+                                            'pr-6',
                                         )}
                                         key={i}
                                         style={{
@@ -104,7 +104,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                         className={twMerge(
                                             STYLES.CELL,
                                             typeof props.rowHeight === 'string' && props.rowHeight,
-                                            'pr-6'
+                                            'pr-6',
                                         )}
                                         key={i}
                                         style={{
@@ -125,7 +125,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                             className={twMerge(
                                                 STYLES.CELL,
                                                 typeof props.rowHeight === 'string' && props.rowHeight,
-                                                'pr-6'
+                                                'pr-6',
                                             )}
                                             key={i}
                                             style={{
@@ -138,7 +138,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                     );
                                 })}
                             </>
-                        )
+                        ),
                     )}
                 </div>
                 <div className="overflow-x-auto">
@@ -163,7 +163,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                 className={twMerge(
                                                     STYLES.CELL,
                                                     typeof props.rowHeight === 'string' && props.rowHeight,
-                                                    ci > 0 ? 'pl-12' : 'pl-6'
+                                                    ci > 0 ? 'pl-12' : 'pl-6',
                                                 )}
                                                 key={`${ri}-${ci}`}
                                                 style={{
@@ -173,7 +173,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                             : undefined,
                                                 }}
                                             />
-                                        ))
+                                        )),
                                     )}
                                 </>
                             ),
@@ -190,7 +190,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                 className={twMerge(
                                                     STYLES.CELL,
                                                     typeof props.rowHeight === 'string' && props.rowHeight,
-                                                    ci > 0 ? 'pl-12' : 'pl-6'
+                                                    ci > 0 ? 'pl-12' : 'pl-6',
                                                 )}
                                                 key={`${ri}-${ci}`}
                                                 style={{
@@ -200,7 +200,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                             : undefined,
                                                 }}
                                             />
-                                        ))
+                                        )),
                                     )}
                                 </>
                             ),
@@ -220,7 +220,7 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                     className={twMerge(
                                                         STYLES.CELL,
                                                         typeof props.rowHeight === 'string' && props.rowHeight,
-                                                        ci > 0 ? 'pl-12' : 'pl-6'
+                                                        ci > 0 ? 'pl-12' : 'pl-6',
                                                     )}
                                                     key={`${ri}-${ci}`}
                                                     style={{
@@ -233,10 +233,10 @@ export function PaginatedTable<R extends { [key: string]: any }, CO extends (key
                                                     {props.children[column](data, row)}
                                                 </div>
                                             );
-                                        })
+                                        }),
                                     )}
                                 </>
-                            )
+                            ),
                         )}
                     </div>
                 </div>

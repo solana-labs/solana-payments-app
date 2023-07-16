@@ -8,7 +8,7 @@ export interface GeneralResponse {
 
 export const createGeneralResponse = async (
     merchantAuthToken: MerchantAuthToken,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ): Promise<GeneralResponse> => {
     const refundRecordService = new RefundRecordService(prisma);
     const total = await refundRecordService.getTotalOpenRefundRecordsForMerchant({

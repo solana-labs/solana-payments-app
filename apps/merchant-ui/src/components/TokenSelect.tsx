@@ -75,7 +75,7 @@ export function TokenSelect(props: Props) {
                     !props.disabled && 'hover:bg-slate-50',
                     props.disabled && 'bg-gray-100',
                     props.disabled && 'cursor-not-allowed',
-                    props.className
+                    props.className,
                 )}
                 disabled={props.disabled}
             >
@@ -103,7 +103,7 @@ export function TokenSelect(props: Props) {
                         'border-gray-300',
                         'overflow-hidden',
                         'p-1.5',
-                        'rounded-md'
+                        'rounded-md',
                     )}
                 >
                     <Select.ScrollUpButton />
@@ -122,7 +122,7 @@ export function TokenSelect(props: Props) {
                                     'rounded-md',
                                     'transition-colors',
                                     'hover:bg-slate-50',
-                                    'focus:bg-slate-50'
+                                    'focus:bg-slate-50',
                                 )}
                                 key={token}
                                 value={getTokenSymbol(token)}

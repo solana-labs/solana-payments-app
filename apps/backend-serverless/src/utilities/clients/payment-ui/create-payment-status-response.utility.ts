@@ -19,7 +19,7 @@ export interface PaymentErrrorResponse {
 export const createPaymentStatusResponse = (
     paymentRecord: PaymentRecord,
     merchant: Merchant,
-    language: string
+    language: string,
 ): PaymentStatusResponse => {
     const merchantDisplayName = merchant.name ?? merchant.shop.split('.')[0];
     const totalAmountFiatDisplay = paymentRecord.amount.toLocaleString(language, {

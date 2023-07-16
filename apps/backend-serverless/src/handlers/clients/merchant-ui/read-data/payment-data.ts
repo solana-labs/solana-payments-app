@@ -31,7 +31,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
             const paymentDataRequestParameters = parseAndValidatePaymentDataRequestParameters(
-                event.queryStringParameters
+                event.queryStringParameters,
             );
             const pagination: Pagination = {
                 page: paymentDataRequestParameters.pageNumber,
@@ -59,5 +59,5 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

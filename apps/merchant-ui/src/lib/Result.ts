@@ -103,20 +103,20 @@ export function match<D, R, E extends Error = Error>(
     onFailure: (error: E) => R,
     onPending: () => R,
     onOk: (data: D) => R,
-    onStale: (data: D) => R
-): R;
-export function match<D, R, E extends Error = Error>(
-    result: Result<D, E>,
-    onFailure: (error: E) => R,
-    onPending: () => R,
-    onOk: (data: D, isStale: boolean) => R
+    onStale: (data: D) => R,
 ): R;
 export function match<D, R, E extends Error = Error>(
     result: Result<D, E>,
     onFailure: (error: E) => R,
     onPending: () => R,
     onOk: (data: D, isStale: boolean) => R,
-    onStale?: (data: D) => R
+): R;
+export function match<D, R, E extends Error = Error>(
+    result: Result<D, E>,
+    onFailure: (error: E) => R,
+    onPending: () => R,
+    onOk: (data: D, isStale: boolean) => R,
+    onStale?: (data: D) => R,
 ): R {
     if (isFailed(result)) {
         return onFailure(result.error);

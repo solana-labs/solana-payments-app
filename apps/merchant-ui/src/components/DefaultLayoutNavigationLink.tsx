@@ -30,7 +30,7 @@ export function DefaultLayoutNavigationLink(props: Props) {
                         'rounded-md',
                         'transition-colors',
                         isSelected && 'bg-slate-50',
-                        props.renderInRhs ? 'grid-cols-[24px,1fr,max-content]' : 'grid-cols-[24px,1fr]'
+                        props.renderInRhs ? 'grid-cols-[24px,1fr,max-content]' : 'grid-cols-[24px,1fr]',
                     )}
                     href={props.href}
                 >
@@ -41,14 +41,14 @@ export function DefaultLayoutNavigationLink(props: Props) {
                             'transition-colors',
                             'w-6',
                             isSelected && 'fill-indigo-600',
-                            props.icon.props.className
+                            props.icon.props.className,
                         ),
                     })}
                     <div
                         className={twMerge(
                             'transition-all',
                             'group-hover:font-semibold',
-                            isSelected && 'font-semibold'
+                            isSelected && 'font-semibold',
                         )}
                     >
                         {props.text}

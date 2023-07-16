@@ -24,5 +24,5 @@ export const safetyKeyUploaded = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

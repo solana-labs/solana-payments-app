@@ -67,7 +67,7 @@ const WebsocketHandler: React.FC = () => {
                         setNotification({
                             notification: Notification.insufficentFunds,
                             type: NotificationType.solanaPay,
-                        })
+                        }),
                     );
                 } else if (data.messageType == 'completedDetails') {
                     dispatch(setRedirectUrl(data.payload.completedDetails.redirectUrl));
@@ -82,13 +82,13 @@ const WebsocketHandler: React.FC = () => {
                         setNotification({
                             notification: Notification.transactionRequestFailed,
                             type: NotificationType.solanaPay,
-                        })
+                        }),
                     );
                     dispatch(
                         setNotification({
                             notification: Notification.transactionRequestFailed,
                             type: NotificationType.connectWallet,
-                        })
+                        }),
                     );
                 } else if (data.messageType == 'failedProcessingTransaction') {
                     // this one is starting to feel silly and it could mess up some flows

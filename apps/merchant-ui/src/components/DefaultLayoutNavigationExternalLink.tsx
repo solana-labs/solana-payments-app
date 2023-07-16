@@ -22,7 +22,7 @@ export function DefaultLayoutNavigationExternalLink(props: Props) {
                     'px-3',
                     'py-2',
                     'rounded-md',
-                    'transition-colors'
+                    'transition-colors',
                 )}
                 href={props.href}
                 target="_blank"

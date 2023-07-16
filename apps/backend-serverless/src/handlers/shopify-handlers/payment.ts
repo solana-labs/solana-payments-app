@@ -62,7 +62,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         paymentInitiation.amount,
                         paymentInitiation.currency,
-                        axios
+                        axios,
                     );
                 }
 
@@ -71,14 +71,14 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     newPaymentRecordId,
                     paymentInitiation,
                     merchant,
-                    usdcSize
+                    usdcSize,
                 );
             }
 
             return {
                 statusCode: 201,
                 body: JSON.stringify({
-                    redirect_url: `${paymentUiUrl}?paymentId=${paymentRecord.id}`,
+                    redirect_url: `${paymentUiUrl}/${shop.split('.')[0]}/?paymentId=${paymentRecord.id}`,
                 }),
             };
         } catch (error) {
@@ -87,5 +87,5 @@ export const payment = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

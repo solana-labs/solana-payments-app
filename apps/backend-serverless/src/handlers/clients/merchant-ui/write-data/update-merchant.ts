@@ -74,7 +74,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             if (merchantUpdateRequest.paymentAddress != null) {
                 merchant = await merchantService.updateMerchantWalletAddress(
                     merchant,
-                    merchantUpdateRequest.paymentAddress
+                    merchantUpdateRequest.paymentAddress,
                 );
             }
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
@@ -127,5 +127,5 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

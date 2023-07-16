@@ -64,7 +64,7 @@ export class TransactionRecordService {
         signature: string,
         transactionType: TransactionType,
         paymentRecordId: string | null,
-        refundRecordId: string | null
+        refundRecordId: string | null,
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {
             throw new Error('paymentRecordId and refundRecordId cannot both be null');

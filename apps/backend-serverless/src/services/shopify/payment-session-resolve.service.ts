@@ -70,7 +70,7 @@ export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
                     );
             }
         } catch (error) {

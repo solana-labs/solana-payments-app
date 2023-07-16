@@ -34,7 +34,7 @@ export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary
                 'disabled:bg-zinc-300',
                 'disabled:cursor-not-allowed',
                 !pending && 'hover:border-indigo-300',
-                pending && 'cursor-not-allowed'
+                pending && 'cursor-not-allowed',
             )}
             onClick={e => {
                 if (!pending && !rest.disabled) {
@@ -52,7 +52,7 @@ export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary
                     'text-sm',
                     'transition-all',
                     'group-disabled:text-neutral-400',
-                    pending ? 'opacity-0' : 'opacity-100'
+                    pending ? 'opacity-0' : 'opacity-100',
                 )}
             >
                 {rest.children}

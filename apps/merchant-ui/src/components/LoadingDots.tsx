@@ -17,7 +17,7 @@ export function LoadingDots(props: Props) {
                         'flex-shrink-0',
                         'h-[0.33em]',
                         'rounded-full',
-                        'w-[0.33em]'
+                        'w-[0.33em]',
                     )}
                     key={i}
                     style={{

@@ -1,11 +1,11 @@
 import { Merchant } from '@prisma/client';
+import * as Sentry from '@sentry/serverless';
 import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
-import * as Sentry from '@sentry/serverless';
 
 export const validatePaymentAppConfigured = (
     paymentAppConfiguredResponse: PaymentAppConfigureResponse,
-    merchant: Merchant
+    merchant: Merchant,
 ) => {
     const userErrors = paymentAppConfiguredResponse.data.paymentsAppConfigure.userErrors;
 
@@ -36,7 +36,7 @@ export const validatePaymentAppConfigured = (
             'merchant id does not match external handle. external handler: ' +
                 externalHandle +
                 ' merchant id: ' +
-                merchant.id
+                merchant.id,
         );
         console.log(error);
         Sentry.captureException(error);

@@ -16,7 +16,7 @@ export function CompleteAccountSetupPrompt(props: Props) {
                     'place-items-center',
                     'relative',
                     'rounded-full',
-                    'w-14'
+                    'w-14',
                 )}
             >
                 <div
@@ -36,7 +36,7 @@ export function CompleteAccountSetupPrompt(props: Props) {
                         'rounded-full',
                         'text-slate-600',
                         'text-sm',
-                        'w-12'
+                        'w-12',
                     )}
                 >
                     {props.percentComplete}%

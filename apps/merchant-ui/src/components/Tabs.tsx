@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge';
 import * as Tabs from '@radix-ui/react-tabs';
+import { twMerge } from 'tailwind-merge';
 
 export const Root = Tabs.Root;
 export const Content = Tabs.Content;
@@ -14,7 +14,7 @@ export function List(props: Tabs.TabsListProps) {
                 'flex',
                 'items-center',
                 'space-x-4',
-                props.className
+                props.className,
             )}
         />
     );
@@ -35,7 +35,7 @@ export function Trigger(props: Tabs.TabsTriggerProps) {
                 'data-[state="active"]:border-indigo-600',
                 'data-[state="active"]:text-indigo-600',
                 'data-[state="active"]:font-semibold',
-                props.className
+                props.className,
             )}
         />
     );

@@ -12,6 +12,6 @@ export const parseAndValidateAccessTokenResponse = (accessTokenResponseBody: unk
     return parseAndValidateStrict(
         accessTokenResponseBody,
         accessTokenResponseSchema,
-        'Could not parse the access token response. Unknown Reason.'
+        'Could not parse the access token response. Unknown Reason.',
     );
 };

@@ -9,7 +9,7 @@ import { validateRefundSessionResolved } from '../shopify/validate-refund-sessio
 export const retryRefundResolve = async (
     refundResolveInfo: ShopifyMutationRefundResolve | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);

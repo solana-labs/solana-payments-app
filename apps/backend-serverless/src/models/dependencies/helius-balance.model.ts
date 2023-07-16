@@ -38,6 +38,6 @@ export const parseAndValidateHeliusBalance = (heliusBalanceResponse: unknown): H
     return parseAndValidateStrict(
         heliusBalanceResponse,
         heliusBalanceSchema,
-        'Could not parse the heluis balance response. Unknown Reason.'
+        'Could not parse the heluis balance response. Unknown Reason.',
     );
 };

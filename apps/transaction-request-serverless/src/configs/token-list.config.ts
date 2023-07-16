@@ -1,5 +1,5 @@
-import * as web3 from '@solana/web3.js';
 import { getMint } from '@solana/spl-token';
+import * as web3 from '@solana/web3.js';
 import { USDC_PUBKEY, WSOL_PUBKEY } from './pubkeys.config.js';
 
 export class TokenInformation {
@@ -27,7 +27,7 @@ export class TokenInformation {
 
     static async queryTokenInformationFromPubkey(
         pubkey: web3.PublicKey,
-        connection: web3.Connection
+        connection: web3.Connection,
     ): Promise<TokenInformation> {
         try {
             const mint = await getMint(connection, pubkey, 'confirmed');
@@ -67,7 +67,7 @@ export class TokenRegistry {
 
     static queryTokenInformation = async (
         input: string,
-        connection: web3.Connection | undefined
+        connection: web3.Connection | undefined,
     ): Promise<TokenInformation | undefined> => {
         if (connection != undefined) {
             return await TokenInformation.queryTokenInformationFromPubkey(new web3.PublicKey(input), connection);

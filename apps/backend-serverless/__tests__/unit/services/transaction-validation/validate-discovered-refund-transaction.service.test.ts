@@ -2,8 +2,8 @@ import { RefundRecord, RefundRecordStatus } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, createTransferCheckedInstruction } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../../../src/configs/tokens.config.js';
-import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 import { verifyTransactionWithRecord } from '../../../../src/services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import { findAssociatedTokenAddress } from '../../../../src/utilities/pubkeys.utility.js';
 
 describe('unit testing validating discovered payment transactions', () => {
     process.env.HISTORICAL_FEE_PAYERS = 'historical';
@@ -40,7 +40,7 @@ describe('unit testing validating discovered payment transactions', () => {
             transferQuantity,
             6,
             [],
-            TOKEN_PROGRAM_ID
+            TOKEN_PROGRAM_ID,
         );
         const ix = web3.SystemProgram.createAccount({
             fromPubkey: aliceKeypair.publicKey,

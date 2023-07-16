@@ -13,6 +13,6 @@ export const parseAndValidateMerchantAuthToken = (merchantAuthTokenBody: unknown
     return parseAndValidateStrict(
         merchantAuthTokenBody,
         merchantAuthTokenSchema,
-        'Could not parse the merchant auth token body. Unknown Reason.'
+        'Could not parse the merchant auth token body. Unknown Reason.',
     );
 };
