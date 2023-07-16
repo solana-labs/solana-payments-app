@@ -1,3 +1,4 @@
+import * as Button from '@/components/Button';
 import { setWalletDisconnected } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -5,9 +6,9 @@ import Image from 'next/image';
 import type { FC, MouseEventHandler } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import type { ButtonProps } from './Button';
+import type { TjButtonProps } from './Button';
 
-export const WalletDisconnectButton: FC<ButtonProps> = ({ children, disabled, onClick, ...props }) => {
+export const WalletDisconnectButton: FC<TjButtonProps> = ({ children, disabled, onClick, ...props }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { wallet, disconnect, disconnecting } = useWallet();
 
@@ -37,16 +38,9 @@ export const WalletDisconnectButton: FC<ButtonProps> = ({ children, disabled, on
     }, [children, disconnecting, wallet]);
 
     return (
-        <div className="flex flex-row justify-center">
-            <button
-                className="btn w-full outline-none border-2 border-black hover:bg-white bg-white text-black flex justify-center items-center normal-case"
-                onClick={handleClick}
-            >
-                <div className="flex flex-row items-center justify-center">
-                    <Image className="pr-1" src="/logout.svg" alt="logout icon" width={22} height={22} />
-                    <div className="pl-1 text-lg">Disconnect</div>
-                </div>
-            </button>
-        </div>
+        <Button.Secondary onClick={handleClick} className="w-full border-2 border-black text-lg space-x-2">
+            <Image src="/logout.svg" alt="logout icon" width={22} height={22} />
+            <div className="pl-2 text-lg">Disconnect</div>
+        </Button.Secondary>
     );
 };
