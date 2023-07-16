@@ -1,11 +1,10 @@
+import * as Button from '@/components/Button';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletConnectButton, WalletIcon, WalletModalButton, useWalletModal } from '@solana/wallet-adapter-react-ui';
 import type { FC } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ButtonProps } from './Button';
-import { Button } from './Button';
 
-export const WalletMultiButton: FC<ButtonProps> = ({ children, ...props }) => {
+export const WalletMultiButton: FC<Button.TjButtonProps> = ({ children, ...props }) => {
     const { publicKey, wallet, disconnect } = useWallet();
     const { setVisible } = useWalletModal();
     const [copied, setCopied] = useState(false);
@@ -64,7 +63,7 @@ export const WalletMultiButton: FC<ButtonProps> = ({ children, ...props }) => {
 
     return (
         <div className="wallet-adapter-dropdown">
-            <Button
+            <Button.Tj
                 aria-expanded={active}
                 className="wallet-adapter-button-trigger"
                 style={{ pointerEvents: active ? 'none' : 'auto', ...props.style }}
@@ -73,7 +72,7 @@ export const WalletMultiButton: FC<ButtonProps> = ({ children, ...props }) => {
                 {...props}
             >
                 {content}
-            </Button>
+            </Button.Tj>
             <ul
                 aria-label="dropdown-list"
                 className={`wallet-adapter-dropdown-list ${active && 'wallet-adapter-dropdown-list-active'}`}

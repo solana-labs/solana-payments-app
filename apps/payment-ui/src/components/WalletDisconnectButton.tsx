@@ -5,9 +5,9 @@ import Image from 'next/image';
 import type { FC, MouseEventHandler } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import type { ButtonProps } from './Button';
+import type { TjButtonProps } from './Button';
 
-export const WalletDisconnectButton: FC<ButtonProps> = ({ children, disabled, onClick, ...props }) => {
+export const WalletDisconnectButton: FC<TjButtonProps> = ({ children, disabled, onClick, ...props }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { wallet, disconnect, disconnecting } = useWallet();
 
