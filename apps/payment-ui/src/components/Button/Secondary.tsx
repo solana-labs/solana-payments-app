@@ -31,7 +31,7 @@ export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary
                 !pending && 'active:border-indigo-400',
                 'disabled:bg-zinc-300',
                 'disabled:cursor-not-allowed',
-                !pending && 'hover:border-gray-300',
+                !pending && 'hover:border-gray-700',
                 pending && 'cursor-not-allowed',
             )}
             onClick={e => {

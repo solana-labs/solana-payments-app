@@ -1,3 +1,4 @@
+import * as Button from '@/components/Button';
 import { removeNotification } from '@/features/notification/notificationSlice';
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
 import { AppDispatch } from '@/store';
@@ -15,14 +16,12 @@ export const CancelledTransactionView = () => {
         <div className="flex flex-col mt-8">
             <div className="text-2xl text-black mx-auto">You cancelled the transaction.</div>
             <div className="text-sm text-gray-600 mx-auto pt-2">No funds were withdrawn from your wallet.</div>
-            <div className="flex flex-col items-center">
-                <button
-                    className="btn btn-md w-4/5 outline-none border-2 border-black hover:bg-white bg-white text-black flex justify-center items-center normal-case mt-12"
-                    onClick={retryTransaction}
-                >
-                    <div className="pl-1">Retry the transaction</div>
-                </button>
-            </div>
+            <Button.Primary
+                onClick={retryTransaction}
+                className="bg-black text-white w-full shadow-lg border-2 border-black text-lg space-x-2 mt-12"
+            >
+                Retry the Transaction
+            </Button.Primary>
         </div>
     );
 };
