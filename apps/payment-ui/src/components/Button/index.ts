@@ -1,4 +1,3 @@
-export { Error } from './Error';
 export { Primary } from './Primary';
 export { Secondary } from './Secondary';
 export { Tj } from './Tj';
