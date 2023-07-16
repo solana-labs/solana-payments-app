@@ -4,7 +4,11 @@ class MyDocument extends Document {
     render() {
         return (
             <Html lang="en">
-                <Head />
+                <Head>
+                    <title>Solana Pay Payment Portal</title>
+                    <meta name="description" content="Use Solana Pay for your Shopify Checkout" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
                 <body>
                     <Main />
                     <NextScript />

@@ -1,14 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactNode } from 'react';
 import CheckoutSection from './CheckoutSection';
-
-interface CheckoutWrapperProps {
-    children: ReactNode;
-}
-
-const CheckoutWrapper: React.FC<CheckoutWrapperProps> = ({ children }) => {
-    return <div className="flex flex-grow flex-col h-full">{children}</div>;
-};
 
 const MainSection = () => {
     const router = useRouter();
@@ -18,9 +9,11 @@ const MainSection = () => {
     }
 
     return (
-        <CheckoutWrapper>
-            <CheckoutSection />
-        </CheckoutWrapper>
+        <div className="flex flex-col flex-auto border border-red-600">
+            <div className="flex-grow container mx-auto bg-white rounded-t-2xl max-w-2xl px-4 sm:px-20">
+                <CheckoutSection />
+            </div>
+        </div>
     );
 };
 
