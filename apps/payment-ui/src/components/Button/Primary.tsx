@@ -1,8 +1,6 @@
 import { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { LoadingDots } from '@/components/LoadingDots';
-
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     pending?: boolean;
     disabled?: boolean;
@@ -30,7 +28,7 @@ export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(pro
                 'transition-colors',
                 rest.className,
                 !pending && 'active:bg-indigo-400',
-                'disabled:bg-zinc-300',
+                'disabled:bg-slate-200',
                 'disabled:cursor-not-allowed',
                 !pending && 'hover:bg-indigo-500',
                 pending && 'cursor-not-allowed',
@@ -57,7 +55,10 @@ export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(pro
             >
                 {rest.children}
             </div>
-            {pending && <LoadingDots className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+            {/* {pending && <LoadingDots className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />} */}
+            {pending && (
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 loading loading-spinner loading-sm " />
+            )}
         </button>
     );
 });

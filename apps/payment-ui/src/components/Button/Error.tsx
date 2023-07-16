@@ -5,7 +5,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     pending?: boolean;
 }
 
-export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary(props, ref) {
+export const Error = forwardRef<HTMLButtonElement, Props>(function Error(props, ref) {
     const { pending, ...rest } = props;
 
     return (
@@ -13,25 +13,25 @@ export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary
             {...rest}
             ref={ref}
             className={twMerge(
-                'bg-transparent',
+                'bg-red-100',
                 'border',
-                'border-gray-300',
+                'border-red-900',
                 'flex',
                 'group',
                 'h-10',
                 'items-center',
-                'justify-center',
+                'justify-between',
                 'px-4',
                 'relative',
                 'rounded-lg',
-                'text-black',
+                'text-red-900',
                 'tracking-normal',
                 'transition-colors',
                 rest.className,
                 !pending && 'active:border-indigo-400',
                 'disabled:bg-zinc-300',
                 'disabled:cursor-not-allowed',
-                !pending && 'hover:border-gray-300',
+                !pending && 'hover:border-red-100',
                 pending && 'cursor-not-allowed',
             )}
             onClick={e => {
@@ -44,8 +44,7 @@ export const Secondary = forwardRef<HTMLButtonElement, Props>(function Secondary
                 className={twMerge(
                     'flex',
                     'font-semibold',
-                    'items-center',
-                    'justify-center',
+                    'justify-between',
                     'text-current',
                     'text-sm',
                     'transition-all',
