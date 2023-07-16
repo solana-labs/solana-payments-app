@@ -1,3 +1,4 @@
+import * as Button from '@/components/Button';
 import {
     Notification,
     NotificationType,
@@ -102,19 +103,32 @@ const BuyButton = () => {
     };
 
     return (
-        <button
+        <Button.Primary
             disabled={isDisabled()}
+            pending={isLoading}
             onClick={async () => {
                 await fetchAndSendTransaction();
             }}
-            className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg disabled:shadow-none font-semibold flex justify-center items-center normal-case disabled:bg-slate-200 disabled:text-slate-400"
+            className="bg-black text-white w-full shadow-lg "
         >
-            <div className={`flex flex-row items-center justify-center`}>
-                {isLoading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div />}
-                <div className="ml-1">Buy now</div>
-            </div>
-        </button>
+            Buy now
+        </Button.Primary>
     );
 };
+
+//     return (
+//         <button
+//             disabled={isDisabled()}
+//             onClick={async () => {
+//                 await fetchAndSendTransaction();
+//             }}
+//             className="btn w-full bg-black text-white py-4 pt-3 text-base rounded-md shadow-lg disabled:shadow-none font-semibold flex justify-center items-center normal-case disabled:bg-slate-200 disabled:text-slate-400"
+//         >
+//             <div className={`flex flex-row items-center justify-center`}>
+//                 {isLoading ? <span className="loading loading-spinner loading-sm mr-1" /> : <div />}
+//                 <div className="ml-1">Buy now</div>
+//             </div>
+//         </button>
+//     );
 
 export default BuyButton;
