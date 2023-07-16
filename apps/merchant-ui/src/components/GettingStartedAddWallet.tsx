@@ -1,3 +1,4 @@
+import * as Button from '@/components/Button';
 import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
@@ -5,7 +6,6 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { AddressInput } from './AddressInput';
 import { BackButton } from './BackButton';
-import * as Button from './Button';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { WalletAddressSuggestion } from './WalletAddressSuggestion';
 

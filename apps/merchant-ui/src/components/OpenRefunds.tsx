@@ -1,3 +1,4 @@
+import * as Button from '@/components/Button';
 import { PaginatedTable } from '@/components/PaginatedTable';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,7 +15,6 @@ import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { MdSyncProblem } from 'react-icons/md';
 import { twMerge } from 'tailwind-merge';
-import * as Button from './Button';
 import { Close } from './icons/Close';
 
 interface Props {
