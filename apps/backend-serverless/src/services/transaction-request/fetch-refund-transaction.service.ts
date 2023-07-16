@@ -16,7 +16,7 @@ export const fetchRefundTransaction = async (
     gas: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ): Promise<TransactionRequestResponse> => {
     // We can't refund a payment that doesn't exist
     if (associatedPaymentRecord.transactionSignature == null) {
@@ -52,7 +52,7 @@ export const fetchRefundTransaction = async (
         'true',
         singleUseNewAcc,
         singleUsePayer,
-        'test-one,test-two' // TODO: Update these with real values
+        'test-one,test-two', // TODO: Update these with real values
     );
     const headers = {
         'Content-Type': 'application/json',

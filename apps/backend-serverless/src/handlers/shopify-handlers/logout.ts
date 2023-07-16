@@ -33,5 +33,5 @@ export const logout = Sentry.AWSLambda.wrapHandler(
             cookies: [merchantCookie, nonceCookie],
             body: JSON.stringify({ message: 'Logged out' }),
         };
-    }
+    },
 );

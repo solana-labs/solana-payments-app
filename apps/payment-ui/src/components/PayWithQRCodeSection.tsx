@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import { QRCode } from './QRCode';
 
 const PayWithQRCodeSection = () => {

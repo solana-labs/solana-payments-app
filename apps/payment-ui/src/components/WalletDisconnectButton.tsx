@@ -26,7 +26,7 @@ export const WalletDisconnectButton: FC<ButtonProps> = ({ children, disabled, on
                     })
                     .catch(() => {});
         },
-        [onClick, disconnect]
+        [onClick, disconnect],
     );
 
     const content = useMemo(() => {

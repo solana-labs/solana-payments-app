@@ -1,7 +1,7 @@
+import { getIsCompleting, setCompleted } from '@/features/payment-session/paymentSessionSlice';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getIsCompleting, setCompleted } from '@/features/payment-session/paymentSessionSlice';
 
 const CompletingHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

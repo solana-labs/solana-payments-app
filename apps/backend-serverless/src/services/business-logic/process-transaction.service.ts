@@ -17,7 +17,7 @@ export const processTransaction = async (
     signature: string,
     prisma: PrismaClient,
     websocketService: WebSocketService<TransactionSignatureQuery> | null,
-    axiosInstance: typeof axios
+    axiosInstance: typeof axios,
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
 

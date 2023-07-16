@@ -26,6 +26,6 @@ export const parseAndValidateAppRedirectQueryParams = (appRedirectQuery: unknown
     return parseAndValidateStrict(
         appRedirectQuery,
         appRedirectQueryParmSchema,
-        'Could not parse the app install query. Unknown Reason.'
+        'Could not parse the app install query. Unknown Reason.',
     );
 };

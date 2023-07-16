@@ -7,7 +7,7 @@ module.exports.handler = async event => {
                 input: event,
             },
             null,
-            2
+            2,
         ),
     };
 };

@@ -17,11 +17,11 @@ export const paymentDataRequestParametersSchema = object().shape({
 export type PaymentDataRequestParameters = InferType<typeof paymentDataRequestParametersSchema>;
 
 export const parseAndValidatePaymentDataRequestParameters = (
-    paymentDataRequestParametersBody: any
+    paymentDataRequestParametersBody: any,
 ): PaymentDataRequestParameters => {
     return parseAndValidateStrict(
         parseParameters(paymentDataRequestParametersBody),
         paymentDataRequestParametersSchema,
-        'Could not parse the payment data request parameters. Unknown Reason.'
+        'Could not parse the payment data request parameters. Unknown Reason.',
     );
 };

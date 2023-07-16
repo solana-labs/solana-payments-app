@@ -39,7 +39,7 @@ describe('Sample test', () => {
             {
                 skipPreflight: true,
                 commitment: 'confirmed',
-            }
+            },
         );
 
         console.log(mintPubkey.toBase58());
@@ -90,7 +90,7 @@ describe('Sample test', () => {
     it('create token account.', async () => {
         const random = await web3.PublicKey.findProgramAddressSync(
             [keypair.publicKey.toBuffer(), token.TOKEN_PROGRAM_ID.toBuffer(), mintPubkey!.toBuffer()],
-            token.TOKEN_PROGRAM_ID
+            token.TOKEN_PROGRAM_ID,
         );
         tokenAccount = random[0];
 
@@ -111,8 +111,8 @@ describe('Sample test', () => {
                 newGuy.publicKey,
                 USDC_PUBKEY,
                 token.TOKEN_PROGRAM_ID,
-                token.ASSOCIATED_TOKEN_PROGRAM_ID
-            )
+                token.ASSOCIATED_TOKEN_PROGRAM_ID,
+            ),
         );
 
         tx.partialSign(keypair);
@@ -140,7 +140,7 @@ describe('Sample test', () => {
             lastValidBlockHeight: blockhash.lastValidBlockHeight,
         }).add(
             // create mint account
-            token.createCloseAccountInstruction(ata, keypair.publicKey, newGuy!.publicKey, [], token.TOKEN_PROGRAM_ID)
+            token.createCloseAccountInstruction(ata, keypair.publicKey, newGuy!.publicKey, [], token.TOKEN_PROGRAM_ID),
         );
 
         tx.partialSign(newGuy!);

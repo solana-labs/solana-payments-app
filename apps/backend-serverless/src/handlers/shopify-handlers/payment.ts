@@ -62,7 +62,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     usdcSize = await convertAmountAndCurrencyToUsdcSize(
                         paymentInitiation.amount,
                         paymentInitiation.currency,
-                        axios
+                        axios,
                     );
                 }
 
@@ -71,7 +71,7 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                     newPaymentRecordId,
                     paymentInitiation,
                     merchant,
-                    usdcSize
+                    usdcSize,
                 );
             }
 
@@ -87,5 +87,5 @@ export const payment = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

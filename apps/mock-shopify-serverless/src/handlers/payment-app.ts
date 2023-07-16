@@ -1,5 +1,4 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
-import crypto from 'crypto-js';
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export const paymentApp = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const body = JSON.parse(event.body!);

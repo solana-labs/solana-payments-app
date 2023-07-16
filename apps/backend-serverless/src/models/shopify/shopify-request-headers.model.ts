@@ -13,6 +13,6 @@ export const parseAndValidateShopifyRequestHeaders = (shopifyRequestHeaders: unk
     return parseAndValidateStrict<ShopifyRequestHeaders>(
         shopifyRequestHeaders,
         shopifyRequestHeadersScheme,
-        'Could not parse the shopify request headers. Unknown Reason.'
+        'Could not parse the shopify request headers. Unknown Reason.',
     );
 };

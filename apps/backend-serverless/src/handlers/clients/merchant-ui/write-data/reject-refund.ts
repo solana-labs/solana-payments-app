@@ -63,7 +63,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     RefundSessionStateRejectedReason.processingError,
                     rejectRefundRequest.merchantReason,
                     shop,
-                    accessToken
+                    accessToken,
                 );
 
                 validateRefundSessionRejected(rejectRefundResponse);
@@ -72,7 +72,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     await sendRefundRejectRetryMessage(
                         refundRecord.id,
                         RefundSessionStateRejectedReason.processingError,
-                        rejectRefundRequest.merchantReason
+                        rejectRefundRequest.merchantReason,
                     );
                 } catch (sendMessageError) {
                     throw new DependencyError('failed to send refund reject retry message');
@@ -96,5 +96,5 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

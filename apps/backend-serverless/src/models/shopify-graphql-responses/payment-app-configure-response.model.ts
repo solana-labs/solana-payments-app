@@ -24,11 +24,11 @@ export const paymentAppConfigureResponseSchema = object().shape({
 export type PaymentAppConfigureResponse = InferType<typeof paymentAppConfigureResponseSchema>;
 
 export const parseAndValidatePaymentAppConfigureResponse = (
-    paymentAppConfigureResponseBody: unknown
+    paymentAppConfigureResponseBody: unknown,
 ): PaymentAppConfigureResponse => {
     return parseAndValidateStrict(
         paymentAppConfigureResponseBody,
         paymentAppConfigureResponseSchema,
-        'Could not parse the payment app configure response. Unknown Reason.'
+        'Could not parse the payment app configure response. Unknown Reason.',
     );
 };

@@ -17,7 +17,7 @@ export function Input(props: Props) {
                 'text-slate-800',
                 rest.disabled && 'bg-gray-100',
                 rest.disabled && 'cursor-not-allowed',
-                className
+                className,
             )}
         />
     );

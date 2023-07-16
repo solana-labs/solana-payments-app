@@ -14,7 +14,7 @@ export class WebSocketService<WebsocketQuery> {
     constructor(
         apiGatewayEndpoint: string,
         private query: WebsocketQuery,
-        private websocketSessionService: WebSocketSessionFetcher<WebsocketQuery>
+        private websocketSessionService: WebSocketSessionFetcher<WebsocketQuery>,
     ) {
         this.apiGatewayManagementApi = new ApiGatewayManagementApi({ endpoint: apiGatewayEndpoint });
     }

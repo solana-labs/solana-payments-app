@@ -25,5 +25,5 @@ export const error = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

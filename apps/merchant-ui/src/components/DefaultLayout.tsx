@@ -30,7 +30,7 @@ export function DefaultLayout(props: Props) {
                     'top-0',
                     'z-10',
                     navIsOpen && 'block',
-                    'md:hidden'
+                    'md:hidden',
                 )}
                 onClick={() => setNavIsOpen(false)}
             />
@@ -47,7 +47,7 @@ export function DefaultLayout(props: Props) {
                     'justify-between',
                     'px-3',
                     'py-5',
-                    'md:hidden'
+                    'md:hidden',
                 )}
             >
                 <Link href="/" className="flex flex-row space-x-2">

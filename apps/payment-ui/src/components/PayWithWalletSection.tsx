@@ -1,4 +1,3 @@
-import Wallet from './Wallet';
 import dynamic from 'next/dynamic';
 
 const PayWithWalletSection = () => {

@@ -56,7 +56,7 @@ export class TrmService {
 
     private validateRiskLevelBelowMax(response: TrmWalletScreenResponse) {
         const riskLevelBelow5 = response.every((item: any) =>
-            item.entities.every((entity: any) => entity.riskScoreLevel < TRM_MAX_RISK_LEVEL)
+            item.entities.every((entity: any) => entity.riskScoreLevel < TRM_MAX_RISK_LEVEL),
         );
 
         if (!riskLevelBelow5) {

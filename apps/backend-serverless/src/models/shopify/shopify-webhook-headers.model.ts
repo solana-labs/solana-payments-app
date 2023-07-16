@@ -26,6 +26,6 @@ export const parseAndValidateShopifyWebhookHeaders = (shopifyRequestHeaders: any
     return parseAndValidateStrict<ShopifyWebhookHeaders>(
         headersLowerCased,
         shopifyWebhookHeadersScheme,
-        'Could not parse the Shopify webhook headers. Unknown Reason.'
+        'Could not parse the Shopify webhook headers. Unknown Reason.',
     );
 };

@@ -70,7 +70,7 @@ export function PaymentsHistoryStatus(props: Props) {
                 getBorder(props.status),
                 getBgColor(props.status),
                 getTextColor(props.status),
-                props.className
+                props.className,
             )}
         >
             {getText(props.status)}

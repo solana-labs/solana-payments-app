@@ -1,6 +1,6 @@
 import { PrismaClient, WebsocketSession } from '@prisma/client';
-import { prismaErrorHandler } from './shared.database.service.js';
 import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 export type WebsocketPaymentRecordIdQuery = {
     paymentRecordId: string;
@@ -30,7 +30,7 @@ export class WebsocketSessionService implements WebSocketSessionFetcher<Websocke
                     paymentRecordId: paymentId,
                     connectionId: connectionId,
                 },
-            })
+            }),
         );
     }
 

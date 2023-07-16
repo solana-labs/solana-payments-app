@@ -7,7 +7,7 @@ export const requestErrorResponse = (error: unknown) => {
                     error: error.message,
                 },
                 null,
-                2
+                2,
             ),
         };
     } else {
@@ -18,7 +18,7 @@ export const requestErrorResponse = (error: unknown) => {
                     error: 'Unknown Error',
                 },
                 null,
-                2
+                2,
             ),
         };
     }

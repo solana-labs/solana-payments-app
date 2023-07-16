@@ -1,17 +1,14 @@
-import React, { FC, useEffect, useMemo } from 'react';
-import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useEffect, useMemo } from 'react';
 // import { WalletMultiButton } from './WalletMultiButton';
-import { clusterApiUrl } from '@solana/web3.js';
-import WalletButton from './WalletButton';
-import BuyButton from './BuyButton';
-import Image from 'next/image';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '@/store';
 import { setWalletConnected } from '@/features/wallet/walletSlice';
+import { AppDispatch } from '@/store';
+import Image from 'next/image';
+import { useDispatch } from 'react-redux';
+import BuyButton from './BuyButton';
 import SimpleNotificationView from './SimpleNotificationView';
+import WalletButton from './WalletButton';
 
 const WalletSection = () => {
     const { publicKey, wallet, disconnect } = useWallet();

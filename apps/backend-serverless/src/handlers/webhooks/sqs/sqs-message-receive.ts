@@ -52,5 +52,5 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

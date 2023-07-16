@@ -28,5 +28,5 @@ export const queue = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

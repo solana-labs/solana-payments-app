@@ -31,5 +31,5 @@ export const disconnect = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

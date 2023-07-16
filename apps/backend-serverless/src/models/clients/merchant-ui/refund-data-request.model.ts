@@ -20,11 +20,11 @@ export const refundDataRequestParametersSchema = object().shape({
 export type RefundDataRequestParameters = InferType<typeof refundDataRequestParametersSchema>;
 
 export const parseAndValidateRefundDataRequestParameters = (
-    refundDataRequestParmatersBody: unknown
+    refundDataRequestParmatersBody: unknown,
 ): RefundDataRequestParameters => {
     return parseAndValidateStrict(
         parseParameters(refundDataRequestParmatersBody),
         refundDataRequestParametersSchema,
-        'Could not parse the refund data request parameters. Unknown Reason.'
+        'Could not parse the refund data request parameters. Unknown Reason.',
     );
 };

@@ -6,7 +6,7 @@ import { findAssociatedTokenAddress } from './pubkeys.utility.js';
 
 export const createSweepingTransaction = async (
     sendingKeypair: web3.PublicKey,
-    receivingKeypair: web3.PublicKey
+    receivingKeypair: web3.PublicKey,
 ): Promise<web3.Transaction> => {
     const heliusApiKey = process.env.HELIUS_API_KEY;
 

@@ -16,7 +16,7 @@ export function RefundCount(props: Props) {
                 'rounded-full',
                 'text-indigo-600',
                 'text-xs',
-                props.className
+                props.className,
             )}
         >
             {props.refundCount}

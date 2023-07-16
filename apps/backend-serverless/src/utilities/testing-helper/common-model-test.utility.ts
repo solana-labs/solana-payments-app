@@ -11,7 +11,7 @@ export function runValidParameterTest<T>(parseAndValidateFunction: ParseAndValid
 export function runMissingFieldTests<T>(
     parseAndValidateFunction: ParseAndValidateFn<T>,
     validParams: T,
-    fields: string[]
+    fields: string[],
 ) {
     for (const field of fields) {
         it(`missing required field ${field}`, () => {
@@ -29,7 +29,7 @@ export function runInvalidFieldTypeTests<T>(
     parseAndValidateFunction: ParseAndValidateFn<T>,
     validParams: T,
     fields: string[],
-    wrongTypes: Record<string, any>
+    wrongTypes: Record<string, any>,
 ) {
     for (const field of fields) {
         it(`invalid field type for ${field}`, () => {
@@ -46,7 +46,7 @@ export function runInvalidFieldTypeTests<T>(
 export function runEmptyFieldTests<T>(
     parseAndValidateFunction: ParseAndValidateFn<T>,
     validParams: T,
-    fields: string[]
+    fields: string[],
 ) {
     for (const field of fields) {
         it(`should throw an error when ${field} is empty`, () => {
@@ -64,7 +64,7 @@ export function runMissingFieldTestsInArray<T>(
     validatorFn: ParseAndValidateFn<T>,
     validParams: T,
     arrayFieldName: string,
-    fields: string[]
+    fields: string[],
 ) {
     for (const field of fields) {
         it(`missing ${field} in array field ${arrayFieldName}`, () => {
@@ -87,7 +87,7 @@ export function runInvalidFieldTypeTestsInArray<T>(
     validParams: T,
     arrayFieldName: string,
     fields: string[],
-    wrongTypes: Record<string, any>
+    wrongTypes: Record<string, any>,
 ) {
     for (const field of fields) {
         it(`invalid type for ${field} in array field ${arrayFieldName}`, () => {
@@ -107,7 +107,7 @@ export function runEmptyFieldTestsInArray<T>(
     validatorFn: ParseAndValidateFn<T>,
     validParams: T,
     arrayFieldName: string,
-    fields: string[]
+    fields: string[],
 ) {
     for (const field of fields) {
         it(`empty ${field} in array field ${arrayFieldName}`, () => {

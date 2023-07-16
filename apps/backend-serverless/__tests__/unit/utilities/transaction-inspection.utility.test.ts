@@ -1,6 +1,6 @@
 import * as web3 from '@solana/web3.js';
-import { findPayingWalletFromTransaction } from '../../../src/utilities/transaction-inspection.utility.js';
 import { createMockTransaction } from '../../../src/utilities/testing-helper/create-mock.utility.js';
+import { findPayingWalletFromTransaction } from '../../../src/utilities/transaction-inspection.utility.js';
 
 describe('Transaction Inspection Utility', () => {
     it('should find the paying wallet from a transaction', async () => {

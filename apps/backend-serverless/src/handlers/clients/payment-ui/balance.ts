@@ -31,5 +31,5 @@ export const balance = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return createErrorResponse(error);
         }
-    }
+    },
 );

@@ -33,7 +33,7 @@ export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(pro
                 'disabled:bg-zinc-300',
                 'disabled:cursor-not-allowed',
                 !pending && 'hover:bg-indigo-500',
-                pending && 'cursor-not-allowed'
+                pending && 'cursor-not-allowed',
             )}
             onClick={e => {
                 if (!pending && !disabled) {
@@ -52,7 +52,7 @@ export const Primary = forwardRef<HTMLButtonElement, Props>(function Primary(pro
                     'text-sm',
                     'transition-all',
                     'group-disabled:text-neutral-400',
-                    pending ? 'opacity-0' : 'opacity-100'
+                    pending ? 'opacity-0' : 'opacity-100',
                 )}
             >
                 {rest.children}

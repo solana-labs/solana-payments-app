@@ -1,7 +1,7 @@
+import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
 
 const FinishHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

@@ -1,11 +1,7 @@
-import React, { ReactNode } from 'react';
-import DisplaySection from './DisplaySection';
-import CheckoutSection from './CheckoutSection';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../store';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { BlockedProps } from '@/pages';
+import { useRouter } from 'next/router';
+import React, { ReactNode } from 'react';
+import CheckoutSection from './CheckoutSection';
 
 interface CheckoutWrapperProps {
     children: ReactNode;

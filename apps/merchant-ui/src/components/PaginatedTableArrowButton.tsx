@@ -24,7 +24,7 @@ export function PaginatedTableArrowButton(props: Props) {
                 'disabled:opacity-50',
                 'md:border-none',
                 'md:p-0',
-                className
+                className,
             )}
         >
             {direction === 'left' && <ArrowBack className="h-5 fill-gray-700 w-5" />}

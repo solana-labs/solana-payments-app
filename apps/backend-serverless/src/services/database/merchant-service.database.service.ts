@@ -45,12 +45,12 @@ export class MerchantService {
         const merchant = await prismaErrorHandler(
             this.prisma.merchant.findUnique({
                 where: query,
-            })
+            }),
         );
 
         if (merchant == null) {
             throw new MissingExpectedDatabaseRecordError(
-                'Could not find merchant ' + JSON.stringify(query) + ' in database'
+                'Could not find merchant ' + JSON.stringify(query) + ' in database',
             );
         }
         return merchant;
@@ -64,7 +64,7 @@ export class MerchantService {
                     shop: shop,
                     lastNonce: lastNonce,
                 },
-            })
+            }),
         );
     }
 
@@ -77,7 +77,7 @@ export class MerchantService {
                     id: merchant.id,
                 },
                 data: filteredUpdate,
-            })
+            }),
         );
     }
 
@@ -108,7 +108,7 @@ export class MerchantService {
                     walletAddress: updatedWalletAddress,
                     tokenAddress: updatedTokenAddress,
                 },
-            })
+            }),
         );
     }
 }

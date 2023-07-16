@@ -55,7 +55,7 @@ export const fetchWalletBalance = createAsyncThunk<BalanceResponse, string>(
             usdcBalance: null,
             error: 'There is a fatal error with this app. Please contact the developer.',
         };
-    }
+    },
 );
 
 const walletSlice = createSlice({

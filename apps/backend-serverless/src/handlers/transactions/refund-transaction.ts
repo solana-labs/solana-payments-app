@@ -142,7 +142,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
-                axios
+                axios,
             );
         } catch (error) {
             return createErrorResponse(error);
@@ -178,7 +178,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 await trmService.screenAddress(account);
             } catch (error) {
                 return createErrorResponse(
-                    new InvalidInputError('Bad address for merchant: ' + merchant.id + ' ' + account)
+                    new InvalidInputError('Bad address for merchant: ' + merchant.id + ' ' + account),
                 );
             }
         }
@@ -188,7 +188,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 signatureString,
                 TransactionType.refund,
                 null,
-                refundRecord.id
+                refundRecord.id,
             );
         } catch (error) {
             return createErrorResponse(error);
@@ -208,11 +208,11 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                     message: `Refunding customer ${refundRecord.usdcAmount.toFixed(2)} USDC`,
                 },
                 null,
-                2
+                2,
             ),
         };
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

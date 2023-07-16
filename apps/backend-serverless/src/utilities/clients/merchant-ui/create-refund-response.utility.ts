@@ -20,7 +20,7 @@ export const createRefundResponse = async (
     merchantAuthToken: MerchantAuthToken,
     status: RefundStatusOption,
     pagination: Pagination,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ): Promise<RefundResponse> => {
     const refundRecordService = new RefundRecordService(prisma);
     let refundRecords: (RefundRecord & { paymentRecord: PaymentRecord | null })[] | null;
@@ -29,7 +29,7 @@ export const createRefundResponse = async (
     if (status == RefundStatusOption.open) {
         refundRecords = await refundRecordService.getOpenRefundRecordsForMerchantWithPagination(
             { merchantId: merchantAuthToken.id },
-            pagination
+            pagination,
         );
         total =
             (await refundRecordService.getTotalOpenRefundRecordsForMerchant({
@@ -38,7 +38,7 @@ export const createRefundResponse = async (
     } else {
         refundRecords = await refundRecordService.getClosedRefundRecordsForMerchantWithPagination(
             { merchantId: merchantAuthToken.id },
-            pagination
+            pagination,
         );
         total =
             (await refundRecordService.getTotalClosedRefundRecordsForMerchant({

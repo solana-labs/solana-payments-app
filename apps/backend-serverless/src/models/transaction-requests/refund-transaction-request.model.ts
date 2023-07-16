@@ -8,11 +8,11 @@ export const refundTransactionRequestScheme = object().shape({
 export type RefundTransactionRequest = InferType<typeof refundTransactionRequestScheme>;
 
 export const parseAndValidateRefundTransactionRequest = (
-    refundTransactionRequestBody: unknown
+    refundTransactionRequestBody: unknown,
 ): RefundTransactionRequest => {
     return parseAndValidateStrict<RefundTransactionRequest>(
         refundTransactionRequestBody,
         refundTransactionRequestScheme,
-        'Could not parse the refund transaction request body. Unknown Reason.'
+        'Could not parse the refund transaction request body. Unknown Reason.',
     );
 };

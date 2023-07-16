@@ -11,7 +11,7 @@ describe('unit testing payment session resolve', () => {
         const mockPaymentSessionResolve = makePaymentSessionResolve(axios);
 
         await expect(
-            mockPaymentSessionResolve('mock-id', 'mock-shop.shopify.com', 'mock-token')
+            mockPaymentSessionResolve('mock-id', 'mock-shop.shopify.com', 'mock-token'),
         ).resolves.not.toThrow();
     });
 

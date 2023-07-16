@@ -1,5 +1,5 @@
-import { VscArrowLeft } from 'react-icons/vsc';
 import { ImWarning } from 'react-icons/im';
+import { VscArrowLeft } from 'react-icons/vsc';
 
 export const ErrorGoBack = (props: { top: string; bottom: string; redirect: string | null }) => {
     return (

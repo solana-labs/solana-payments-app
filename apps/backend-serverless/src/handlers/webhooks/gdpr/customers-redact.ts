@@ -43,5 +43,5 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

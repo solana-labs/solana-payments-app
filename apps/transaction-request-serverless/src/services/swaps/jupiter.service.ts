@@ -29,7 +29,7 @@ export const createJupiterSwapIx = async (config: SwapIxConfig): Promise<web3.Tr
             headers: {
                 'Content-Type': 'application/json',
             },
-        }
+        },
     );
 
     const { swapTransaction } = responseTransactions.data;

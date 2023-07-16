@@ -1,5 +1,5 @@
-import axios from 'axios';
 import * as web3 from '@solana/web3.js';
+import axios from 'axios';
 import pkg from 'bs58';
 import { MissingEnvError } from '../errors/missing-env.error.js';
 const { decode } = pkg;

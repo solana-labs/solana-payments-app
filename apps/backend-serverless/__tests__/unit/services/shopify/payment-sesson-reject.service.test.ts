@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
 import { makePaymentSessionReject } from '../../../../src/services/shopify/payment-session-reject.service.js';
 import { createMockSuccessPaymentSessionRejectResponse } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
-import { PaymentSessionStateRejectedReason } from '../../../../src/models/shopify-graphql-responses/shared.model.js';
 
 describe('unit testing payment session reject', () => {
     it('valid response', async () => {
@@ -12,7 +12,7 @@ describe('unit testing payment session reject', () => {
         const mockPaymentSessionReject = makePaymentSessionReject(axios);
 
         await expect(
-            mockPaymentSessionReject('mock-id', PaymentSessionStateRejectedReason.risky, 'mock-shop', 'mock-token')
+            mockPaymentSessionReject('mock-id', PaymentSessionStateRejectedReason.risky, 'mock-shop', 'mock-token'),
         ).resolves.not.toThrow();
     });
 
@@ -45,8 +45,8 @@ describe('unit testing payment session reject', () => {
                 'mock-id',
                 PaymentSessionStateRejectedReason.processingError,
                 'mock-shop',
-                'mock-token'
-            )
+                'mock-token',
+            ),
         ).rejects.toThrow();
     });
 });

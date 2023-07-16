@@ -63,6 +63,6 @@ export const parseAndValidateShopifyMutationRetry = (shopifyMutationRetryBody: u
     return parseAndValidateStrict(
         shopifyMutationRetryBody,
         shopifyMutationRetrySchema,
-        'Could not parse the shopify mutation retry body. Unknown Reason.'
+        'Could not parse the shopify mutation retry body. Unknown Reason.',
     );
 };

@@ -18,7 +18,7 @@ export const buildTransactionRequestEndpoint = (
     createAta: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    indexInputs: string
+    indexInputs: string,
 ) => {
     const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
 

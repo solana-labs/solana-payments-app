@@ -13,7 +13,7 @@ import { findAssociatedTokenAddress } from '../../utilities/ata.utility.js';
 export const createAccountIx = async (
     newAccountPubkey: web3.PublicKey,
     fromPubkey: web3.PublicKey,
-    connection: web3.Connection
+    connection: web3.Connection,
 ): Promise<web3.TransactionInstruction[]> => {
     const rent = await connection.getMinimumBalanceForRentExemption(0);
 
@@ -33,7 +33,7 @@ export const createAccountIx = async (
         newAccountPubkey,
         USDC_PUBKEY,
         TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
+        ASSOCIATED_TOKEN_PROGRAM_ID,
     );
 
     return [ix];

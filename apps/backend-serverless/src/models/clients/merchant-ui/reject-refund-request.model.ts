@@ -12,6 +12,6 @@ export const parseAndValidateRejectRefundRequest = (rejectRefundRequestBody: unk
     return parseAndValidateStrict(
         rejectRefundRequestBody,
         rejectRefundRequestBodySchema,
-        'Could not parse the reject refund request. Unknown Reason.'
+        'Could not parse the reject refund request. Unknown Reason.',
     );
 };

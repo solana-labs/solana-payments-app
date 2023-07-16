@@ -9,7 +9,7 @@ import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service.js
 export const contingentlyHandleAppConfigure = async (
     merchant: Merchant,
     axiosInstance: typeof axios,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);
 
@@ -27,7 +27,7 @@ export const contingentlyHandleAppConfigure = async (
                 merchant.id.slice(0, 10),
                 true,
                 merchant.shop,
-                merchant.accessToken
+                merchant.accessToken,
             );
 
             validatePaymentAppConfigured(appConfigureResponse, merchant);

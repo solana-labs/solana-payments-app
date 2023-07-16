@@ -1,8 +1,8 @@
-import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
 import { PrismaClient } from '@prisma/client';
+import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
+import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { Pagination } from './database-services.utility.js';
 import { PaymentDataResponse, createPaymentDataResponseFromPaymentRecord } from './payment-record.utility.js';
-import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 
 export interface PaymentResponse {
     page: number;
@@ -14,12 +14,12 @@ export interface PaymentResponse {
 export const createPaymentResponse = async (
     merchantAuthToken: MerchantAuthToken,
     pagination: Pagination,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ): Promise<PaymentResponse> => {
     const paymentRecordService = new PaymentRecordService(prisma);
     const paymentsRecords = await paymentRecordService.getPaymentRecordsForMerchantWithPagination(
         { merchantId: merchantAuthToken.id },
-        pagination
+        pagination,
     );
 
     if (paymentsRecords == null || paymentsRecords.length == 0) {

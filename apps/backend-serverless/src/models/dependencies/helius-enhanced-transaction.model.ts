@@ -135,11 +135,11 @@ export type HeliusEnhancedTransaction = InferType<typeof heliusEnhancedTransacti
 export type HeliusEnhancedTransactionArray = InferType<typeof heliusEnhancedTransactionResponseSchema>;
 
 export const parseAndValidateHeliusEnchancedTransaction = (
-    heliusEnhancedTransactionResponseBody: unknown
+    heliusEnhancedTransactionResponseBody: unknown,
 ): HeliusEnhancedTransactionArray => {
     return parseAndValidateStrict(
         heliusEnhancedTransactionResponseBody,
         heliusEnhancedTransactionResponseSchema,
-        'Could not parse the heluis enhanced transaction body. Unknown Reason.'
+        'Could not parse the heluis enhanced transaction body. Unknown Reason.',
     );
 };

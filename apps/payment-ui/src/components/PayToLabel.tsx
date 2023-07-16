@@ -1,19 +1,19 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../store';
-import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
-import PaymentTokenSelector from '@/components/PaymentTokenSelector';
-import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/FeeDisplay';
 import { CartAmountDisplay, CartAmountLoading } from '@/components/CartAmountDisplay';
-import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
+import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/FeeDisplay';
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayAmountTokensDisplay';
+import { PayToDisplay, PayToLoading } from '@/components/PayToDisplay';
+import PaymentTokenSelector from '@/components/PaymentTokenSelector';
+import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
+import { BiInfoCircle } from 'react-icons/bi';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     PaymentMethod,
     getPayingToken,
     getPaymentMethod,
     setPaymentMethod,
 } from '../features/payment-options/paymentOptionsSlice';
-import { BiInfoCircle } from 'react-icons/bi';
+import { AppDispatch } from '../store';
 
 export const PayToLabel = () => {
     const dispatch = useDispatch<AppDispatch>();

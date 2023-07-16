@@ -11,7 +11,7 @@ import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-
 
 // TODO: Update these to marketing strings
 export const paymentSessionRejectionDisplayMessages = (
-    reason: PaymentRecordRejectionReason
+    reason: PaymentRecordRejectionReason,
 ): { errorTitle: string; errorDescription: string } => {
     switch (reason) {
         case PaymentRecordRejectionReason.dependencySafetyReason:
@@ -59,7 +59,7 @@ export const makePaymentSessionReject =
         id: string,
         reason: PaymentSessionStateRejectedReason,
         shop: string,
-        token: string
+        token: string,
     ): Promise<RejectPaymentResponse> => {
         const headers = {
             'content-type': 'application/graphql',
@@ -96,7 +96,7 @@ export const makePaymentSessionReject =
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
                     );
             }
         } catch (error) {

@@ -24,6 +24,6 @@ export const parseAndValidateAppInstallQueryParms = (appInstallQuery: unknown): 
     return parseAndValidateStrict(
         appInstallQuery,
         appInstallQueryParmSchema,
-        'Could not parse the app install query. Unknown Reason.'
+        'Could not parse the app install query. Unknown Reason.',
     );
 };

@@ -23,7 +23,7 @@ export function PaginatedTablePageIndicatorButton(props: Props) {
                 selected && 'bg-gray-50',
                 selected && 'text-slate-800',
                 'w-10',
-                className
+                className,
             )}
         >
             {children}

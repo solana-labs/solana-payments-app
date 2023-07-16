@@ -7,7 +7,7 @@ import { createIndexPubkey } from '../../utilities/create-index-pubkey.utility.j
 // the tx to later use for indexing or searching on chain.
 export const createIndexingIx = async (
     signer: web3.PublicKey,
-    indexInputs: string[]
+    indexInputs: string[],
 ): Promise<web3.TransactionInstruction[]> => {
     // TODO: There is some limit on the input size we can use verify that all of the strings in indexInputs
     // once we figure out that limit, we should validate the inputs here
@@ -16,7 +16,7 @@ export const createIndexingIx = async (
         indexInputs.map(async input => {
             const result = await createIndexPubkey(input);
             return result;
-        })
+        }),
     );
 
     const ixKeys = [

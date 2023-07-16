@@ -68,7 +68,7 @@ const paymentDetailsSlice = createSlice({
                     state.status = PaymentDetailsStatus.fresh;
                     state.paymentDetails = action.payload.paymentDetails;
                     state.errorDetails = action.payload.errorDetails;
-                }
+                },
             );
     },
 });
@@ -130,5 +130,5 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
             paymentDetails: paymentDetails,
             errorDetails: errorDetails,
         };
-    }
+    },
 );

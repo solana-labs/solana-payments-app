@@ -11,7 +11,7 @@ describe('unit testing payment app configure', () => {
         const mockPaymentAppConfigure = makePaymentAppConfigure(axios);
 
         await expect(
-            mockPaymentAppConfigure('mock-external-id', true, 'mock-shop', 'mock-token')
+            mockPaymentAppConfigure('mock-external-id', true, 'mock-shop', 'mock-token'),
         ).resolves.not.toThrow();
     });
 

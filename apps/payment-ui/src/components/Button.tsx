@@ -1,5 +1,4 @@
 import type { CSSProperties, FC, MouseEvent, PropsWithChildren, ReactElement } from 'react';
-import React from 'react';
 
 export type ButtonProps = PropsWithChildren<{
     className?: string;

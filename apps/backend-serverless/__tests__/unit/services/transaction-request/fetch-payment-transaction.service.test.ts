@@ -1,12 +1,12 @@
 import * as web3 from '@solana/web3.js';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { fetchPaymentTransaction } from '../../../../src/services/transaction-request/fetch-payment-transaction.service.js';
 import {
     createMockMerchant,
     createMockPaymentRecord,
     createMockTransactionRequestResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
-import { fetchPaymentTransaction } from '../../../../src/services/transaction-request/fetch-payment-transaction.service.js';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
 
 describe('fetch payment transaction request testing suite', () => {
     it('should fetch a payment transaction request', async () => {
@@ -34,7 +34,7 @@ describe('fetch payment transaction request testing suite', () => {
             mockGasKeypair.publicKey.toBase58(),
             mockSingleUseKeypair.publicKey.toBase58(),
             mockGasKeypair.publicKey.toBase58(),
-            axios
+            axios,
         );
 
         expect(true).toEqual(true);

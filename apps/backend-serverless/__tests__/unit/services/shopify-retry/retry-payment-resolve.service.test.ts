@@ -1,13 +1,13 @@
-import { ShopifyMutationPaymentResolve } from '../../../../src/models/sqs/shopify-mutation-retry.model.js';
-import { prismaMock } from '../../../../prisma-singleton.js';
-import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { prismaMock } from '../../../../prisma-singleton.js';
+import { ShopifyMutationPaymentResolve } from '../../../../src/models/sqs/shopify-mutation-retry.model.js';
+import { retryPaymentResolve } from '../../../../src/services/shopify-retry/retry-payment-resolve.service.js';
 import {
     createMockMerchant,
     createMockPaymentRecord,
     createMockSuccessPaymentSessionResolveResponse,
 } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
-import { retryPaymentResolve } from '../../../../src/services/shopify-retry/retry-payment-resolve.service.js';
 
 describe('Shopify Retry Payment Resolve Testing Suite', () => {
     it('should execute successfully', async () => {

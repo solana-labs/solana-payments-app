@@ -24,7 +24,7 @@ export function StoreStatusBadge(props: Props) {
                 'text-sm',
                 props.status === Status.Active ? 'bg-emerald-50' : 'bg-gray-100',
                 props.status === Status.Active ? 'text-green-600' : 'text-slate-700',
-                props.className
+                props.className,
             )}
         >
             <div
@@ -32,7 +32,7 @@ export function StoreStatusBadge(props: Props) {
                     'h-1.5',
                     'w-1.5',
                     'rounded-full',
-                    props.status === Status.Active ? 'bg-green-600' : 'bg-slate-700'
+                    props.status === Status.Active ? 'bg-green-600' : 'bg-slate-700',
                 )}
             />
             <div>Store {props.status === Status.Active ? 'active' : 'inactive'}</div>

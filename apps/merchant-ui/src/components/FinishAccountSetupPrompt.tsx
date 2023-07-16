@@ -121,7 +121,7 @@ export function FinishAccountSetupPrompt(props: Props) {
                         'space-y-2',
                         'flex-col',
                         'items-center',
-                        props.className
+                        props.className,
                     )}
                 >
                     <div className="font-semibold text-black">🎉 Congrats, Solana Pay is now live!</div>

@@ -13,7 +13,7 @@ export const WalletCopyButton: FC<ButtonProps> = ({ children, disabled, onClick,
             // eslint-disable-next-line
             if (!event.defaultPrevented) disconnect().catch(() => {});
         },
-        [onClick, disconnect]
+        [onClick, disconnect],
     );
 
     const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);

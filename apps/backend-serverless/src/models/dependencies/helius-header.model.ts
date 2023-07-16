@@ -11,6 +11,6 @@ export const parseAndValidateHeliusHeader = (heliusHeaderBody: unknown): HeliusH
     return parseAndValidateStrict(
         heliusHeaderBody,
         heliusHeaderSchema,
-        'Could not parse the heluis header body. Unknown Reason.'
+        'Could not parse the heluis header body. Unknown Reason.',
     );
 };

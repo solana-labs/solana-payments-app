@@ -1,4 +1,4 @@
-import { object, string, array, mixed, number, InferType } from 'yup';
+import { InferType, array, mixed, number, object, string } from 'yup';
 
 enum RefundSessionResolveUserErrorCode {
     invalidState = 'REFUND_SESSION_INVALID_STATE',

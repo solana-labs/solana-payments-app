@@ -17,6 +17,6 @@ export const parseAndValidateResolvePaymentResponse = (resolvePaymentResponeBody
     return parseAndValidateStrict(
         resolvePaymentResponeBody,
         paymentSessionResolveResponseSchema,
-        'Could not parse the resolve payment response. Unknown Reason.'
+        'Could not parse the resolve payment response. Unknown Reason.',
     );
 };

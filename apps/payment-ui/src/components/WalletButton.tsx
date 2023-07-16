@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import * as web3 from '@solana/web3.js';
-import { AppDispatch } from '@/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { WalletDisconnectButton } from './WalletDisconnectButton';
-import { WalletCopyButton } from './WalletCopyButton';
-import Image from 'next/image';
 import { getBalance } from '@/features/wallet/walletSlice';
+import { useWallet } from '@solana/wallet-adapter-react';
+import * as web3 from '@solana/web3.js';
+import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { WalletCopyButton } from './WalletCopyButton';
+import { WalletDisconnectButton } from './WalletDisconnectButton';
 
 const WalletButton = () => {
     const { publicKey, sendTransaction } = useWallet();

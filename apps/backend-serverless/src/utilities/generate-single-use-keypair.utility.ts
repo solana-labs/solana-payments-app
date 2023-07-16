@@ -12,6 +12,6 @@ export const generateSingleUseKeypairFromRecord = async (record: ShopifyRecord) 
 const hashIntoPublicKey = async (inputs: string[]) => {
     return await web3.PublicKey.findProgramAddressSync(
         inputs.map(input => Buffer.from(input)),
-        web3.SystemProgram.programId
+        web3.SystemProgram.programId,
     )[0];
 };

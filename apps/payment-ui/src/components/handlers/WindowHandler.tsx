@@ -1,7 +1,7 @@
+import { getHeight, setIsMobile } from '@/features/mobile/mobileSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { getHeight, setHeight, setIsMobile } from '@/features/mobile/mobileSlice';
 
 const WindowHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

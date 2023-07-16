@@ -16,7 +16,7 @@ export function PlaceholderLogo(props: Props) {
                 'px-2',
                 'py-1',
                 'rounded-lg',
-                props.className
+                props.className,
             )}
         >
             <CoffeeMaker className="fill-slate-800 h-6 mr-2 w-6" />

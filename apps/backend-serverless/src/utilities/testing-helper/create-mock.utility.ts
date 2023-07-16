@@ -98,7 +98,7 @@ export const createMockRefundRecord = (refundRecordData: Partial<RefundRecord> =
  * @returns a mock payment session resolve response to be used for testing only
  */
 export const createMockSuccessPaymentSessionResolveResponse = (
-    paymentSessionResolveResponse: Partial<ResolvePaymentResponse> = {}
+    paymentSessionResolveResponse: Partial<ResolvePaymentResponse> = {},
 ): ResolvePaymentResponse => {
     return {
         data: {
@@ -128,7 +128,7 @@ export const createMockSuccessPaymentSessionResolveResponse = (
  * @returns a mock payment session resolve response to be used for testing only
  */
 export const createMockSuccessPaymentSessionRejectResponse = (
-    paymentSessionRejectResponse: Partial<RejectPaymentResponse> = {}
+    paymentSessionRejectResponse: Partial<RejectPaymentResponse> = {},
 ): RejectPaymentResponse => {
     return {
         data: {
@@ -167,7 +167,7 @@ export const createMockSuccessPaymentSessionRejectResponse = (
  * @returns a mock refund session resolve response to be used for testing only
  */
 export const createMockSuccessRefundSessionResolveResponse = (
-    refundSessionResolveResponse: Partial<ResolveRefundResponse> = {}
+    refundSessionResolveResponse: Partial<ResolveRefundResponse> = {},
 ): ResolveRefundResponse => {
     return {
         data: {
@@ -191,7 +191,7 @@ export const createMockSuccessRefundSessionResolveResponse = (
  * @returns a mock refund session reject response to be used for testing only
  */
 export const createMockSuccessRefundSessionRejectResponse = (
-    refundSessionRejectResponse: Partial<RejectRefundResponse> = {}
+    refundSessionRejectResponse: Partial<RejectRefundResponse> = {},
 ): RejectRefundResponse => {
     return {
         data: {
@@ -217,7 +217,7 @@ export const createMockSuccessRefundSessionRejectResponse = (
  * @returns a mock payment app configure response to be used for testing only
  */
 export const createMockPaymentAppConfigureResponse = (
-    paymentAppConfigureResponse: Partial<PaymentAppConfigureResponse> = {}
+    paymentAppConfigureResponse: Partial<PaymentAppConfigureResponse> = {},
 ): PaymentAppConfigureResponse => {
     return {
         data: {
@@ -281,7 +281,7 @@ export const createMockTransactionRequestResponse = async (
         payer: web3.PublicKey;
         receiver: web3.PublicKey;
         feePayer: web3.PublicKey;
-    }> = {}
+    }> = {},
 ): Promise<TransactionRequestResponse> => {
     // const mockTransaction = await createMockTransaction(transactionResponseResponse);
 
@@ -307,7 +307,7 @@ export const createMockTransaction = async (
         payer: web3.PublicKey | null;
         receiver: web3.PublicKey | null;
         feePayer: web3.PublicKey | null;
-    }> = {}
+    }> = {},
 ): Promise<web3.Transaction> => {
     // Set up the transaction
     const payerPubkey = mockTransactionInputs.payer ?? web3.Keypair.generate().publicKey;
@@ -323,7 +323,7 @@ export const createMockTransaction = async (
         transferQuantity,
         6,
         [],
-        TOKEN_PROGRAM_ID
+        TOKEN_PROGRAM_ID,
     );
     const mockTransaction = new web3.Transaction().add(transferCheckedInstruction).add(transferCheckedInstruction);
     return mockTransaction;

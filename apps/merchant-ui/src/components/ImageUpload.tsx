@@ -48,7 +48,7 @@ export function ImageUpload(props: Props) {
                     'rounded-xl',
                     'transition-colors',
                     isDragActive && 'border-indigo-300',
-                    className
+                    className,
                 )}
                 {...rootProps}
             >

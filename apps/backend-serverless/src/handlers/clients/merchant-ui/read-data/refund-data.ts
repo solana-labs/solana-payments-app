@@ -45,7 +45,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
                 merchantAuthToken,
                 refundDataRequestParameters.refundStatus,
                 pagination,
-                prisma
+                prisma,
             );
             const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
@@ -68,5 +68,5 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

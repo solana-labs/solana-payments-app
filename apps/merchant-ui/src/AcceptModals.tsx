@@ -44,7 +44,7 @@ export function AcceptPolicy({
                         'place-items-center',
                         'right-0',
                         'top-0',
-                        'z-10'
+                        'z-10',
                     )}
                 />
                 <Dialog.Content
@@ -65,7 +65,7 @@ export function AcceptPolicy({
                         'z-20',
                         'flex',
                         'flex-col',
-                        'justify-between'
+                        'justify-between',
                     )}
                 >
                     <div className="flex-grow overflow-auto">

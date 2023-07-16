@@ -52,7 +52,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
                 {
                     paymentRecordId: solanaPayInfoMessage.paymentRecordId,
                 },
-                websocketSessionService
+                websocketSessionService,
             );
 
             let paymentRecord;
@@ -85,7 +85,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );
 
 const successfulMessage = (): APIGatewayProxyResultV2 => {

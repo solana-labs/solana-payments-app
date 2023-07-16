@@ -17,6 +17,6 @@ export const parseAndValidateResolveRefundResponse = (resolveRefundResponeBody: 
     return parseAndValidateStrict<ResolveRefundResponse>(
         resolveRefundResponeBody,
         refundSessionResolveResponseSchema,
-        'Could not parse the resolve refund response body. Unknown Reason.'
+        'Could not parse the resolve refund response body. Unknown Reason.',
     );
 };

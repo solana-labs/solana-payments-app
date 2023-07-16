@@ -1,5 +1,5 @@
-import { MerchantService } from '../../../../src/services/database/merchant-service.database.service.js';
 import { prismaMock } from '../../../../prisma-singleton.js';
+import { MerchantService } from '../../../../src/services/database/merchant-service.database.service.js';
 import { createMockMerchant } from '../../../../src/utilities/testing-helper/create-mock.utility.js';
 describe('Merchant Testing Suite', () => {
     let merchantService: MerchantService;
@@ -41,7 +41,7 @@ describe('Merchant Testing Suite', () => {
         const merchant = await merchantService.createMerchant(
             'abcd',
             'mock-merchant-create.myshopify.com',
-            'abcd-1234'
+            'abcd-1234',
         );
 
         expect(merchant).toEqual(mockMerchant);
@@ -76,7 +76,7 @@ describe('Merchant Testing Suite', () => {
         await expect(
             merchantService.updateMerchant(mockMerchantThatDoesNotExist, {
                 lastNonce: 'efgh-5678',
-            })
+            }),
         ).rejects.toThrow();
     });
 });

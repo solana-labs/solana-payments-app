@@ -12,6 +12,6 @@ export const parseAndValidateShopRedactRequestBody = (shopRedactRequestBody: unk
     return parseAndValidateStrict<ShopRedactRequest>(
         shopRedactRequestBody,
         shopRedactRequestScheme,
-        'Could not parse the shop redact body. Unknown Reason.'
+        'Could not parse the shop redact body. Unknown Reason.',
     );
 };

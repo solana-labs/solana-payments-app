@@ -1,4 +1,4 @@
-import { object, string, InferType, array } from 'yup';
+import { InferType, object, string } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utilities.js';
 
 export const authorizeSchema = object().shape({
@@ -14,6 +14,6 @@ export const parseAndValidateRejectPaymentResponse = (authorizeParameters: any):
     return parseAndValidate(
         authorizeParameters,
         authorizeSchema,
-        'Could not parse the authorize parameters. Unknown Reason.'
+        'Could not parse the authorize parameters. Unknown Reason.',
     );
 };

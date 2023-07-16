@@ -60,7 +60,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: signatures,
                 },
-                paymentRecordService
+                paymentRecordService,
             );
 
             try {
@@ -108,7 +108,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: failedTransactionRecordSignatures,
                 },
-                paymentRecordService
+                paymentRecordService,
             );
 
             try {
@@ -127,5 +127,5 @@ export const helius = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    }
+    },
 );

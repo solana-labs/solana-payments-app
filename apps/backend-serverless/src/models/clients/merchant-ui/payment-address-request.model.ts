@@ -13,11 +13,11 @@ export const merchantUpdateRequestBodySchema = object().shape({
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;
 
 export const parseAndValidatePaymentAddressRequestBody = (
-    merchantUpdateRequestBody: unknown
+    merchantUpdateRequestBody: unknown,
 ): MerchantUpdateRequest => {
     return parseAndValidateStrict(
         merchantUpdateRequestBody,
         merchantUpdateRequestBodySchema,
-        'Could not parse the merchant update request body. Unknown Reason.'
+        'Could not parse the merchant update request body. Unknown Reason.',
     );
 };

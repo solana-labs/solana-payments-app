@@ -1,14 +1,14 @@
+import {
+    Notification,
+    getConnectWalletNotification,
+    getIsSolanaPayNotification,
+} from '@/features/notification/notificationSlice';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { MergedState, getMergedState } from '@/features/payment-session/paymentSessionSlice';
 import { useSelector } from 'react-redux';
-import PayWithWalletSection from './PayWithWalletSection';
 import CancelTransactionButton from './CancelTransactionButton';
+import PayWithWalletSection from './PayWithWalletSection';
 import SolanaPayErrorView from './SolanaPayErrorView';
-import {
-    getConnectWalletNotification,
-    getIsSolanaPayNotification,
-    Notification,
-} from '@/features/notification/notificationSlice';
 
 const FooterSection = () => {
     const paymentMethod = useSelector(getPaymentMethod);

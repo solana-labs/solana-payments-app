@@ -1,12 +1,8 @@
 import { PayToLabel } from '@/components/PayToLabel';
 import { PaymentMethodTab } from '@/components/PaymentMethodTab';
-import { useSelector } from 'react-redux';
-import PayWithWalletSection from './PayWithWalletSection';
-import PayWithQRCodeSection from './PayWithQRCodeSection';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
+import { useSelector } from 'react-redux';
 import { QRCode } from './QRCode';
-import { getHeight } from '@/features/mobile/mobileSlice';
-import { FC, useEffect, useState } from 'react';
 
 export const PaymentView: React.FC = () => {
     const paymentMethod = useSelector(getPaymentMethod);

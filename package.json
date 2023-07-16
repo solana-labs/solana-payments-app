@@ -27,10 +27,11 @@
         "typescript": "^5.0.3"
     },
     "devDependencies": {
+        "@solana/prettier-config-solana": "^0.0.2",
         "eslint-config-custom": "*",
         "prettier": "latest",
-        "turbo": "latest",
-        "@solana/prettier-config-solana": "^0.0.2"
+        "prettier-plugin-organize-imports": "^3.2.3",
+        "turbo": "latest"
     },
     "prettier": "@solana/prettier-config-solana"
 }

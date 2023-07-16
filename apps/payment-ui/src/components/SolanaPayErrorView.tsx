@@ -1,12 +1,11 @@
-import { AppDispatch } from '@/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { FiX } from 'react-icons/fi';
 import {
     getIsSolanaPayNotification,
     getSolanaPayNotification,
     removeNotification,
 } from '@/features/notification/notificationSlice';
-import { resetSession } from '@/features/payment-session/paymentSessionSlice';
+import { AppDispatch } from '@/store';
+import { FiX } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
 
 const SolanaPayErrorView = () => {
     const dispatch = useDispatch<AppDispatch>();

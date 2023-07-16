@@ -30,7 +30,7 @@ describe('unit testing redirect query parameters model', () => {
     runMissingFieldTests(
         parseAndValidateAppRedirectQueryParams,
         validParams,
-        fields.filter(field => field !== 'hmac')
+        fields.filter(field => field !== 'hmac'),
     );
     runInvalidFieldTypeTests(parseAndValidateAppRedirectQueryParams, validParams, fields, wrongTypes);
     runEmptyFieldTests(parseAndValidateAppRedirectQueryParams, validParams, fields);
