@@ -1,4 +1,3 @@
-import { BlockedProps } from '@/pages';
 import { useRouter } from 'next/router';
 import React, { ReactNode } from 'react';
 import CheckoutSection from './CheckoutSection';
@@ -11,7 +10,7 @@ const CheckoutWrapper: React.FC<CheckoutWrapperProps> = ({ children }) => {
     return <div className="flex flex-grow flex-col h-full">{children}</div>;
 };
 
-const MainSection = (props: BlockedProps) => {
+const MainSection = () => {
     const router = useRouter();
 
     if (!router.isReady) {
