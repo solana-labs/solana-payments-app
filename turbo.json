@@ -1,31 +1,24 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local"
-  ],
-  "pipeline": {
-    "build:payment-ui": {
-      "outputs": [
-        "./apps/payment-ui/.next/**"
-      ]
-    },
-    "build:merchant-ui": {
-      "outputs": [
-        "./apps/merchant-ui/.next/**"
-      ]
-    },
-    "build": {
-      "dependsOn": [
-        "build:payment-ui",
-        "build:merchant-ui"
-      ],
-      "outputs": []
-    },
-    "lint": {
-      "outputs": []
-    },
-    "dev": {
-      "cache": false
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": ["**/.env.*local"],
+    "pipeline": {
+        "build:payment-ui": {
+            "env": ["NEXT_PUBLIC_BACKEND_URL", "NEXT_PUBLIC_WEBSOCKET_URL", "NODE_ENV"],
+            "outputs": ["./apps/payment-ui/.next/**"]
+        },
+        "build:merchant-ui": {
+            "env": ["NODE_ENV", "NEXT_PUBLIC_API_BASE_URL"],
+            "outputs": ["./apps/merchant-ui/.next/**"]
+        },
+        "build": {
+            "dependsOn": ["build:payment-ui", "build:merchant-ui"],
+            "outputs": []
+        },
+        "lint": {
+            "outputs": []
+        },
+        "dev": {
+            "cache": false
+        }
     }
-  }
 }
