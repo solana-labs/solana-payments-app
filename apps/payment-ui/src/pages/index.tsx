@@ -34,13 +34,7 @@ export default function Home({ isBlocked, country }: BlockedProps) {
             </Head>
             <React.Fragment>
                 <div className="flex flex-col h-screen bg-black">
-                    <div className="w-full max-w-xl mx-auto">
-                        <div className="container mx-auto">
-                            <div className="block h-16 py-2 font-black text-white text-2xl max-w-xl">
-                                <DisplaySection />
-                            </div>
-                        </div>
-                    </div>
+                    <DisplaySection />
                     <div className="flex flex-col flex-auto bg-black">
                         <div className="flex-grow container mx-auto bg-white rounded-t-2xl max-w-2xl px-4 sm:px-20">
                             <MainSection isBlocked={'false'} country={'usa'} />
