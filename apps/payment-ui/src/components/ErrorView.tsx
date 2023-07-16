@@ -3,19 +3,19 @@ import { ImWarning } from 'react-icons/im';
 import { VscArrowLeft } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
 
-export const ErrorView = () => {
+export const ErrorView = ({ error }: { error?: { top: string; bottom: string; redirect: string | null } }) => {
     const errorDetails = useSelector(getErrorDetails);
-
     const DEFAULT_ERROR_TITLE = 'Unknown Error';
     const DEFAULT_ERROR_DETAIL = 'Something went wrong. Please try again.';
 
+    const top = error?.top ?? errorDetails?.errorTitle ?? DEFAULT_ERROR_TITLE;
+    const bottom = error?.bottom ?? errorDetails?.errorDetail ?? DEFAULT_ERROR_DETAIL;
+    const redirect = error?.redirect ?? errorDetails?.errorRedirect ?? null;
+
     return (
         <div className="flex flex-col">
-            <ErrorDisplay
-                top={errorDetails?.errorTitle ?? DEFAULT_ERROR_TITLE}
-                bottom={errorDetails?.errorDetail ?? DEFAULT_ERROR_DETAIL}
-            />
-            <GoBackButton redirect={errorDetails?.errorRedirect ?? null} />
+            <ErrorDisplay top={top} bottom={bottom} />
+            <GoBackButton redirect={redirect} />
         </div>
     );
 };
