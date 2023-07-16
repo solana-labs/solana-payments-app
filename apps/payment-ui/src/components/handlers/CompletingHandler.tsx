@@ -9,19 +9,16 @@ const CompletingHandler: React.FC = () => {
     let timer = useRef<any | null>(null);
 
     useEffect(() => {
-        
-        if ( isCompleting ) {
+        if (isCompleting) {
             const interval = 2000; // 2 seconds
 
             timer.current = setInterval(() => {
                 clearInterval(timer.current);
-                dispatch(setCompleted())
+                dispatch(setCompleted());
             }, interval);
         }
 
-        return () => {
-            
-        };
+        return () => {};
     }, [dispatch, isCompleting]);
 
     return null;

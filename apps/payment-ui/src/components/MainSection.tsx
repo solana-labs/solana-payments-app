@@ -10,13 +10,9 @@ import { BlockedProps } from '@/pages';
 interface CheckoutWrapperProps {
     children: ReactNode;
 }
-  
+
 const CheckoutWrapper: React.FC<CheckoutWrapperProps> = ({ children }) => {
-    return (
-      <div className='flex flex-grow flex-col h-full'>
-        {children}
-      </div>
-    );
+    return <div className="flex flex-grow flex-col h-full">{children}</div>;
 };
 
 const MainSection = (props: BlockedProps) => {

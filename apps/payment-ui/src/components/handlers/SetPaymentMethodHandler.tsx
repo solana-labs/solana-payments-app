@@ -6,13 +6,13 @@ import { setPaymentMethod } from '@/features/payment-options/paymentOptionsSlice
 
 const SetPaymentMethodHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const isMobile = useSelector(getIsMobile)
+    const isMobile = useSelector(getIsMobile);
 
     useEffect(() => {
-        if ( isMobile ) {
-            dispatch(setPaymentMethod('connect-wallet'))
+        if (isMobile) {
+            dispatch(setPaymentMethod('connect-wallet'));
         }
-    }, [dispatch, isMobile])
+    }, [dispatch, isMobile]);
 
     return null;
 };

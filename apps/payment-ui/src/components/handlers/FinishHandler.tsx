@@ -11,7 +11,7 @@ const FinishHandler: React.FC = () => {
         const interval = 3000; // 3 seconds
 
         const timer = setInterval(() => {
-            if ( redirectUrl != null ) {
+            if (redirectUrl != null) {
                 window.location.href = redirectUrl;
             }
         }, interval);

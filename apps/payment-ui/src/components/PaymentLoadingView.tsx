@@ -10,7 +10,7 @@ const StepBar = ({ completed, include }: { completed: boolean; include: boolean 
             'w-1/2 scale-105',
             'h-1',
             !include ? 'bg-background' : completed ? 'bg-black' : 'bg-gray-200',
-            'self-center',
+            'self-center'
         )}
     />
 );

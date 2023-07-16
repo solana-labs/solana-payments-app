@@ -11,7 +11,7 @@ export type ButtonProps = PropsWithChildren<{
     tabIndex?: number;
 }>;
 
-export const Button: FC<ButtonProps> = (props) => {
+export const Button: FC<ButtonProps> = props => {
     return (
         <button
             className={`wallet-adapter-button ${props.className || ''}`}
