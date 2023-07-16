@@ -75,6 +75,7 @@ export const createErrorResponse = (error: unknown) => {
         message = 'Unknown error. Please contact support.';
     }
 
+    console.log('error', error);
     logSentry(error, message);
 
     return {

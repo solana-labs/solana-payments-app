@@ -15,8 +15,9 @@ export const payment = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             url: 'http://localhost:4006/payment',
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
                 'shopify-shop-domain': 'localhost:4004',
+                'shopify-request-id': '123',
+                'shopify-api-version': '2021-07',
             },
             data: JSON.stringify({
                 id: id,
@@ -29,7 +30,7 @@ export const payment = async (event: APIGatewayProxyEventV2): Promise<APIGateway
                 payment_method: {
                     type: 'type',
                     data: {
-                        cancel_url: 'https://www.apple.com',
+                        cancel_url: 'localhost:4004/processing',
                     },
                 },
                 proposed_at: '2021-08-10T18:02:00.000Z',
