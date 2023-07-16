@@ -16,19 +16,22 @@ const FooterSection = () => {
     const isSolanaPayNotification = useSelector(getIsSolanaPayNotification);
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
 
-    if (paymentMethod == 'connect-wallet' && mergedState == MergedState.start) {
-        return <PayWithWalletSection />;
-    } else if (paymentMethod == 'qr-code' && isSolanaPayNotification) {
-        return <SolanaPayErrorView />;
-    } else if (
+    const isPayWithWalletSection = () => paymentMethod == 'connect-wallet' && mergedState == MergedState.start;
+    const isSolanaPayErrorView = () => paymentMethod == 'qr-code' && isSolanaPayNotification;
+    const isCancelTransactionButton = () =>
         mergedState > MergedState.start &&
         mergedState < MergedState.completed &&
-        connectedWalletNotification != Notification.declined
-    ) {
-        return <CancelTransactionButton />;
-    } else {
-        return <div></div>;
-    }
+        connectedWalletNotification != Notification.declined;
+
+    return (
+        <div className="w-full">
+            <div className="container h-36 mx-auto px-4 sm:px-20 bg-white text-white text-center max-w-2xl">
+                {isPayWithWalletSection() && <PayWithWalletSection />}
+                {isSolanaPayErrorView() && <SolanaPayErrorView />}
+                {isCancelTransactionButton() && <CancelTransactionButton />}
+            </div>
+        </div>
+    );
 };
 
 export default FooterSection;

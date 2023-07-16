@@ -40,11 +40,7 @@ export default function Home({ isBlocked, country }: BlockedProps) {
                             <MainSection isBlocked={'false'} country={'usa'} />
                         </div>
                     </div>
-                    <div className="w-full bg-black">
-                        <div className="container h-36 mx-auto px-4 sm:px-20 bg-white text-white text-center max-w-2xl">
-                            <FooterSection />
-                        </div>
-                    </div>
+                    <FooterSection />
                 </div>
             </React.Fragment>
         </>
