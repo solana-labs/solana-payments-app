@@ -10,22 +10,22 @@ const RouterHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
 
-    if (!router.isReady) {
-        return null;
-    }
-
     const paymentId = router.query.paymentId as string;
     const blockedString = router.query.blocked as string;
     const blocked = blockedString == 'true' ? true : false;
 
     useEffect(() => {
+        if (!router.isReady) {
+            return;
+        }
+
         if (blocked) {
             dispatch(setGeoIsBlocked());
         }
 
         dispatch(setPaymentId(paymentId));
         dispatch(setWebsocketReadyToConnect());
-    }, [dispatch]);
+    }, [router.isReady, blocked, paymentId, dispatch]);
 
     return null;
 };
