@@ -18,7 +18,6 @@ import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
 import { parseAndValidatePaymentRequest } from '../../models/transaction-requests/payment-request-parameters.model.js';
 import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
@@ -59,8 +58,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 event,
             },
         });
-
-        let paymentTransaction: TransactionRequestResponse;
 
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
@@ -193,7 +190,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             }
             gasKeypair = await fetchGasKeypair();
 
-            paymentTransaction = await fetchPaymentTransaction(
+            let paymentTransaction = await fetchPaymentTransaction(
                 paymentRecord,
                 merchant,
                 account,
@@ -205,10 +202,9 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
             let transaction = encodeTransaction(paymentTransaction.transaction);
             transaction.partialSign(gasKeypair);
-            // transaction.partialSign(singleUseKeypair);
             verifyTransactionWithRecord(paymentRecord, transaction, true);
-            const transactionSignature = transaction.signature;
 
+            const transactionSignature = transaction.signature;
             if (transactionSignature == null) {
                 throw new DependencyError('transaction signature');
             }
