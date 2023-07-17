@@ -7,10 +7,6 @@ const { decode } = pkg;
 export const fetchTransaction = async (transactionId: string): Promise<web3.Transaction> => {
     const heliusApiKey = process.env.HELIUS_API_KEY;
 
-    console.log('fetching transaction');
-
-    console.log(heliusApiKey);
-
     if (heliusApiKey == null) {
         throw new MissingEnvError('helius api key');
     }

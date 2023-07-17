@@ -36,7 +36,7 @@ export enum ErrorMessage {
     unauthorizedMerchant = 'Merchant is not authorized.',
 }
 
-export const createErrorResponse = (error: unknown) => {
+export const createErrorResponse = async (error: unknown) => {
     let statusCode: ErrorType;
     let message: string;
 

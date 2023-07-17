@@ -1,4 +1,4 @@
-import { logSentry } from '../sentry-log.utility.js';
+import * as Sentry from '@sentry/serverless';
 
 export enum ErrorType {
     badRequest = 400,
@@ -30,7 +30,7 @@ export enum ErrorMessage {
     unauthorizedMerchant = 'Merchant is not authorized.',
 }
 
-export const createErrorResponse = (error: unknown) => {
+export const createErrorResponse = async (error: unknown) => {
     let statusCode: ErrorType;
     let message: string;
 
@@ -75,8 +75,13 @@ export const createErrorResponse = (error: unknown) => {
         message = 'Unknown error. Please contact support.';
     }
 
-    console.log('error', error);
-    logSentry(error, message);
+    console.log('async error', error);
+    Sentry.captureException(error, {
+        extra: {
+            message,
+        },
+    });
+    await Sentry.flush(2000);
 
     return {
         statusCode,

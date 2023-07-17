@@ -1,4 +1,5 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
+import * as Sentry from '@sentry/serverless';
 import axios from 'axios';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import {
@@ -53,11 +54,18 @@ export const fetchRefundTransaction = async (
         singleUsePayer,
         'test-one,test-two', // TODO: Update these with real values
     );
+    Sentry.captureEvent({
+        message: 'got endpoint: ',
+        level: 'info',
+        extra: {
+            endpoint: endpoint,
+        },
+    });
     const headers = {
         'Content-Type': 'application/json',
     };
 
-    const response = await axiosInstance.post(endpoint, { headers: headers });
+    const response = await axiosInstance.post(endpoint, { account: account }, { headers: headers });
 
     if (response.status != 200) {
         throw new Error('Error fetching refund transaction.');

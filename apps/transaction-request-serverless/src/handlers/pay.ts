@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/serverless';
-import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
 import { parseAndValidatePaymentTransactionRequest } from '../models/payment-transaction-request.model.js';
+import { parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
 import { PaymentTransactionBuilder } from '../services/builders/payment-transaction-ix.builder.js';
 import { createConnection } from '../utilities/connection.utility.js';
 import { createErrorResponse } from '../utilities/error-response.utility.js';
@@ -22,13 +23,25 @@ export const pay = Sentry.AWSLambda.wrapHandler(
         });
 
         try {
-            let paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
+            if (event.body == null) {
+                throw new InvalidInputError('Missing body in request');
+            }
+
+            let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
+
+            const account = transactionRequestBody.account;
+
+            const queryParameters = {
+                ...event.queryStringParameters,
+                sender: account,
+            };
+            let paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
 
             const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
             const connection = createConnection();
 
-            let transaction: web3.Transaction = await transactionBuilder.buildPaymentTransaction(connection);
+            let transaction = await transactionBuilder.buildPaymentTransaction(connection);
 
             // TODO create another transaction that mints points
 
@@ -48,7 +61,7 @@ export const pay = Sentry.AWSLambda.wrapHandler(
                 ),
             };
         } catch (error) {
-            return createErrorResponse(error);
+            return await createErrorResponse(error);
         }
     },
     {
