@@ -1,37 +1,11 @@
 import { BiInfoCircle } from 'react-icons/bi';
 
-const FeePriceDisplayBase = (props: { showFree: boolean }) => {
-    return (
-        <div className="bg-gray-100 w-16 flex justify-center rounded-md h-8 items-center font-bold">
-            {props.showFree ? 'Free' : ''}
-        </div>
-    );
-};
-
-export const FeePriceDisplay = () => {
-    return (
-        <div className="flex flex-row w-full items-center justify-between">
-            <label tabIndex={0} htmlFor="fee-detail-modal">
-                <div className="flex flex-row justify-center items-center">
-                    <div className="label-text text-gray-600">Transaction Fee</div>
-                    <BiInfoCircle className="text-sm ml-2 label-text text-gray-600" />
-                </div>
-            </label>
-            <FeePriceDisplayBase showFree={true} />
-            <TransactionFeeModal />
-        </div>
-    );
-};
-
-export const FeePriceDisplayLoading = () => {
-    return (
-        <div className="flex flex-row w-full items-center justify-between animate-pulse">
-            <div className="label-text text-gray-600">Transaction Fee</div>
-            <FeePriceDisplayBase showFree={false} />
-            <TransactionFeeModal />
-        </div>
-    );
-};
+const TransactionFeeLabel = () => (
+    <div className="flex flex-row justify-center items-center">
+        <div className="label-text text-gray-600">Transaction Fee</div>
+        <BiInfoCircle className="text-sm ml-2 label-text text-gray-600" />
+    </div>
+);
 
 const TransactionFeeModal = () => (
     <>
@@ -59,4 +33,25 @@ const TransactionFeeModal = () => (
             </label>
         </div>
     </>
+);
+
+const FeePriceDisplayBase = ({ showFree }: { showFree: boolean }) => (
+    <div className="bg-gray-100 w-16 flex justify-center rounded-md h-8 items-center font-bold">
+        {showFree ? 'Free' : ''}
+    </div>
+);
+
+export const FeePriceDisplay = () => (
+    <div className="flex flex-row w-full items-center justify-between">
+        <TransactionFeeLabel />
+        <FeePriceDisplayBase showFree={true} />
+        <TransactionFeeModal />
+    </div>
+);
+
+export const FeePriceDisplayLoading = () => (
+    <div className="flex flex-row w-full items-center justify-between animate-pulse">
+        <TransactionFeeLabel />
+        <FeePriceDisplayBase showFree={false} />
+    </div>
 );
