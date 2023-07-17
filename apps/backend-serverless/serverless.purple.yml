@@ -469,6 +469,7 @@ plugins:
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
+  - serverless-prune-versions
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
@@ -481,3 +482,7 @@ custom:
   gas-bucket-name: gas-bucket-${self:provider.stage}
   single-use-bucket-name: single-use-key-pair-bucket-${self:provider.stage}
   gas-object-name: 'gas-kp.json'
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 3

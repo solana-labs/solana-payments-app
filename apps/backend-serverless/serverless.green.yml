@@ -64,6 +64,7 @@ plugins:
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
+  - serverless-prune-versions
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
@@ -72,3 +73,7 @@ custom:
   serverless-offline:
     httpPort: 4006
     lambdaPort: 4007
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 3

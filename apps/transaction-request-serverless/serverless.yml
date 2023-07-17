@@ -21,9 +21,15 @@ plugins:
   - serverless-plugin-typescript
   - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
   - serverless-plugin-include-dependencies
+  - serverless-prune-plugin
+  - serverless-prune-versions
   - serverless-offline
 
 custom:
   serverless-offline:
     httpPort: 4002
     lambdaPort: 4003
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 3

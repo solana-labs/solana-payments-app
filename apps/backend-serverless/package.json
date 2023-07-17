@@ -62,13 +62,13 @@
         "yup": "1.2.0"
     },
     "devDependencies": {
-        "eslint-config-custom": "*",
         "@ngrok/ngrok": "^0.5.2",
         "@types/aws-lambda": "^8.10.101",
         "@types/jest": "^29.5.1",
         "@types/winston": "^2.4.4",
         "axios-mock-adapter": "^1.21.4",
         "dotenv-cli": "^7.2.1",
+        "eslint-config-custom": "*",
         "jest": "^29.5.0",
         "jest-mock-extended": "2.0.4",
         "rimraf": "^5.0.1",
@@ -80,6 +80,7 @@
         "serverless-plugin-include-dependencies": "^5.1.0",
         "serverless-plugin-typescript": "2.1.4",
         "serverless-prune-plugin": "^2.0.2",
+        "serverless-prune-versions": "^1.0.4",
         "serverless-s3-local": "^0.7.2",
         "serverless-step-functions": "^3.13.1",
         "ts-jest": "^29.1.0",
