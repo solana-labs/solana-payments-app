@@ -76,6 +76,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                     throw error;
                 }
             }
+
             // We return 201 status code here per shopify's documentation:: https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow
             return {
                 statusCode: 201,

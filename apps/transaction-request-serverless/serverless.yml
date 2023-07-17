@@ -6,6 +6,7 @@ provider:
   runtime: nodejs18.x
   environment:
     RPC_URL: ${env:RPC_URL}
+    SENTRY_DSN: ${env:SENTRY_DSN}
 package:
   excludeDevDependencies: false
 functions:

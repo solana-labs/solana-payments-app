@@ -14,8 +14,6 @@ export const findPayingWalletFromTransaction = async (transaction: web3.Transact
 
     const transferInstruction = transaction.instructions[transaction.instructions.length - 2];
 
-    console.log(transferInstruction.programId.toBase58());
-    console.log(TOKEN_PROGRAM_ID.toBase58());
     if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
         throw new Error('Invalid transaction');
     }
