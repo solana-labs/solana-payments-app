@@ -3,19 +3,10 @@ import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import QRCodeStyling from '@solana/qr-code-styling';
 import { FC, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { createQROptions } from './SolanaPayQRCode';
+import { createQROptions } from '../SolanaPayQRCode';
 
 export const QRCode: FC = () => {
-    // const [size, setSize] = useState(() =>
-    //     typeof window === 'undefined' ? 400 : Math.min(window.screen.availWidth - 48, 400)
-    // );
     const paymentId = useSelector(getPaymentId);
-
-    // useEffect(() => {
-
-    //     window.addEventListener('resize', listener);
-    //     return () => window.removeEventListener('resize', listener);
-    // }, []);
 
     // TODO: make sure there is a payment id and if not show a different image than QR Code
     const endpoint = buildTransactionRequestEndpoint(paymentId ?? '');

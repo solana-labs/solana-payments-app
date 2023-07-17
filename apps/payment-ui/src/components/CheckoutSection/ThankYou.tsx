@@ -1,5 +1,5 @@
+import FinishHandler from '@/components/handlers/FinishHandler';
 import Image from 'next/image';
-import FinishHandler from '../handlers/FinishHandler';
 
 export const ThankYouView = () => {
     return (

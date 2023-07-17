@@ -2,7 +2,7 @@ import { PayToLabel } from '@/components/PayToLabel';
 import { PaymentMethodTab } from '@/components/PaymentMethodTab';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { useSelector } from 'react-redux';
-import { QRCode } from '../QRCode';
+import { QRCode } from './QRCode';
 
 export const PaymentView: React.FC = () => {
     const paymentMethod = useSelector(getPaymentMethod);
@@ -15,15 +15,13 @@ export const PaymentView: React.FC = () => {
                 </div>
                 <PayToLabel />
             </div>
-            {paymentMethod == 'qr-code' ? (
+            {paymentMethod == 'qr-code' && (
                 <div className="w-full h-full flex flex-col items-center">
                     <div className="flex flex-col items-center">
                         <QRCode />
                         <div className="text-gray-600 text-xs pt-4">Scan this code to pay with your Solana wallet</div>
                     </div>
                 </div>
-            ) : (
-                <div></div>
             )}
         </div>
     );
