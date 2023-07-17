@@ -213,11 +213,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 throw new DependencyError('transaction signature');
             }
 
-            const signatureBuffer = transactionSignature;
-
-            const signatureString = encodeBufferToBase58(signatureBuffer);
             await transactionRecordService.createTransactionRecord(
-                signatureString,
+                encodeBufferToBase58(transactionSignature),
                 TransactionType.payment,
                 paymentRecord.id,
                 null,
@@ -226,14 +223,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 verifySignatures: false,
                 requireAllSignatures: false,
             });
-            const transactionString = transactionBuffer.toString('base64');
 
             await websocketService.sendTransactionDeliveredMessage();
 
             return {
                 statusCode: 200,
                 body: JSON.stringify({
-                    transaction: transactionString,
+                    transaction: transactionBuffer.toString('base64'),
                     message: `Paying ${merchant.name} ${paymentRecord.usdcAmount.toFixed(6)} USDC`,
                 }),
             };
