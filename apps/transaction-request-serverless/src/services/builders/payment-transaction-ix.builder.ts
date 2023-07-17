@@ -5,10 +5,10 @@ import {
     PaymentTransactionRequest,
     TransactionType,
 } from '../../models/payment-transaction-request.model.js';
-import { createAccountIx } from '../../services/builders/create-account-ix.builder.js';
-import { createIndexingIx } from '../../services/builders/create-index-ix.builder.js';
-import { createTransferIx } from '../../services/builders/transfer-ix.builder.js';
-import { createSwapIx } from '../../services/swaps/create-swap-ix.service.js';
+import { createSwapIx } from '../swaps/create-swap-ix.service.js';
+import { createAccountIx } from './create-account-ix.builder.js';
+import { createIndexingIx } from './create-index-ix.builder.js';
+import { createTransferIx } from './transfer-ix.builder.js';
 
 export class PaymentTransactionBuilder {
     private sender: web3.PublicKey;
