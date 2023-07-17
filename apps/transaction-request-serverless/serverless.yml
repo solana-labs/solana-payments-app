@@ -19,8 +19,6 @@ functions:
 
 plugins:
   - serverless-plugin-typescript
-  - serverless-plugin-common-excludes # this should go before serverless-plugin-include-dependencies
-  - serverless-plugin-include-dependencies
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-offline

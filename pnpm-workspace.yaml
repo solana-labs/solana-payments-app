@@ -1,0 +1,8 @@
+packages:
+  - 'apps/payment-ui'
+  - 'apps/merchant-ui'
+  - 'apps/backend-serverless'
+  - 'apps/transaction-request-serverless'
+  - 'apps/mock-shopify-serverless'
+  - 'apps/docs'
+

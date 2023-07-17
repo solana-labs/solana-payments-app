@@ -1,7 +1,8 @@
 import dynamic from 'next/dynamic';
+import { FC } from 'react';
 
-const PayWithWalletSection = () => {
-    const DynamicWallet = dynamic(() => import('./Wallet'), { ssr: false });
+const PayWithWalletSection: FC = () => {
+    const DynamicWallet = dynamic(() => import('./Wallet'), { ssr: false }) as FC;
 
     return (
         <div className="flex flex-col justify-end h-full">

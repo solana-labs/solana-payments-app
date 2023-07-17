@@ -36,8 +36,9 @@
         "@types/jest": "^29.5.1",
         "esbuild": "^0.17.18",
         "eslint-config-custom": "*",
-        "jest": "^29.5.0",
+        "jest": "^27.0.0",
         "jest-mock-extended": "2.0.4",
+        "@types/node": "^18.16.1",
         "serverless": "^3.21.0",
         "serverless-esbuild": "^1.43.1",
         "serverless-offline": "^12.0.4",
@@ -45,7 +46,7 @@
         "serverless-plugin-include-dependencies": "^5.1.0",
         "serverless-plugin-typescript": "2.1.4",
         "serverless-prune-versions": "^1.0.4",
-        "ts-jest": "^29.1.0",
+        "ts-jest": "^27.0.0",
         "typescript": "^4.7.4"
     }
 }
