@@ -1,12 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { InvalidInputError } from '../errors/invalid-input.error.js';
-import {
-    PaymentTransactionRequest,
-    parseAndValidatePaymentTransactionRequest,
-} from '../models/payment-transaction-request.model.js';
-import { TransactionRequestBody, parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
+import { parseAndValidatePaymentTransactionRequest } from '../models/payment-transaction-request.model.js';
 import { PaymentTransactionBuilder } from '../services/builders/payment-transaction-ix.builder.js';
 import { createConnection } from '../utilities/connection.utility.js';
 import { createErrorResponse } from '../utilities/error-response.utility.js';
@@ -26,66 +21,35 @@ export const pay = Sentry.AWSLambda.wrapHandler(
             },
         });
 
-        let paymentTransactionRequest: PaymentTransactionRequest;
-
-        if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('Missing body in request'));
-        }
-
-        let transactionRequestBody: TransactionRequestBody;
-
         try {
-            transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-        const account = transactionRequestBody.account;
+            let paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
 
-        if (account == null) {
-            return createErrorResponse(new InvalidInputError('missing account in body'));
-        }
+            const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
 
-        try {
-            const queryParameters = {
-                ...event.queryStringParameters,
-                sender: account,
+            const connection = createConnection();
+
+            let transaction: web3.Transaction = await transactionBuilder.buildPaymentTransaction(connection);
+
+            // TODO create another transaction that mints points
+
+            let base = transaction
+                .serialize({ requireAllSignatures: false, verifySignatures: false })
+                .toString('base64');
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify(
+                    {
+                        transaction: base,
+                        message: 'Tranasction created successfully',
+                    },
+                    null,
+                    2,
+                ),
             };
-            paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(queryParameters);
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
-
-        const connection = createConnection();
-
-        let transaction: web3.Transaction;
-
-        try {
-            transaction = await transactionBuilder.buildPaymentTransaction(connection);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        let base: string;
-
-        try {
-            base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(
-                {
-                    transaction: base,
-                    message: 'Tranasction created successfully',
-                },
-                null,
-                2,
-            ),
-        };
     },
     {
         captureTimeoutWarning: false,
