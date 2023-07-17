@@ -278,7 +278,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         );
     }
 
-    async getPaymentRecordForRefund(query: RefundRecordQuery): Promise<PaymentRecord | null> {
+    async getPaymentRecordForRefund(query: RefundRecordQuery): Promise<PaymentRecord> {
         const refundRecord = await prismaErrorHandler(
             this.prisma.refundRecord.findFirst({
                 where: query,
@@ -287,8 +287,13 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 },
             }),
         );
+        if (refundRecord == null) {
+            throw new MissingExpectedDatabaseRecordError(
+                'Could not find refund record ' + JSON.stringify(query) + ' in database',
+            );
+        }
 
-        return refundRecord ? refundRecord.paymentRecord : null;
+        return refundRecord.paymentRecord;
     }
 
     async createRefundRecord(
