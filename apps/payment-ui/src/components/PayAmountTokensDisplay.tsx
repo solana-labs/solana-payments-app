@@ -1,5 +1,5 @@
 export const PayAmountTokensDisplay = (props: { displayAmoumt: string }) => {
-    return <div className="text-black text-lg w-1/3">{props.displayAmoumt}</div>;
+    return <div className="text-lg w-1/3">{props.displayAmoumt}</div>;
 };
 
 export const PayAmountTokensLoading = () => {

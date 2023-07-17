@@ -1,5 +1,5 @@
 export const PayToDisplay = (props: { merchantName: string }) => {
-    return <div className="text-2xl text-black">{'Pay to ' + props.merchantName}</div>;
+    return <div className="text-2xl">{'Pay to ' + props.merchantName}</div>;
 };
 
 export const PayToLoading = () => {

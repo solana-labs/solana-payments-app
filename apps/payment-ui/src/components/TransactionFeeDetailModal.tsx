@@ -1,7 +1,7 @@
 const TransactionFeeDetailModal = () => {
     return (
         <div className="w-full">
-            <label tabIndex={0} className="text-black" htmlFor="fee-detail-modal">
+            <label tabIndex={0} htmlFor="fee-detail-modal">
                 Hello World
             </label>
             <input type="checkbox" id="fee-detail-modal" className="modal-toggle" />
@@ -16,7 +16,7 @@ const TransactionFeeDetailModal = () => {
                                 ✕
                             </label>
                         </div>
-                        <div className="text-black text-xl font-semibold mb-2">Transaction Fee</div>
+                        <div className=" text-xl font-semibold mb-2">Transaction Fee</div>
                         <div className="text-gray-600">
                             Solana Pay covers the transaction fee so that all you need is USDC to complete your
                             transaction. Your wallet may still show this as part of your transaction.

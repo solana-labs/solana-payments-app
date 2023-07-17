@@ -1,5 +1,5 @@
 export const PayAmountDisplay = (props: { displayAmoumt: string }) => {
-    return <div className="text-5xl text-black">{props.displayAmoumt}</div>;
+    return <div className="text-5xl">{props.displayAmoumt}</div>;
 };
 
 export const PayAmountLoading = () => {

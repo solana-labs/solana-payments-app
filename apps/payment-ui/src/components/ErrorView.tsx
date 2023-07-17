@@ -38,7 +38,7 @@ const ErrorDisplay = (props: { top: string; bottom: string }) => {
 const GoBackButton = (props: { redirect: string | null }) => {
     return (
         <button
-            className="btn btn-ghost outline-none border-2 border-black hover:bg-white text-black normal-case mt-4"
+            className="btn btn-ghost outline-none border-2 border-black hover:bg-white normal-case mt-4"
             onClick={() => {
                 if (props.redirect != null) {
                     window.location.href = props.redirect;
