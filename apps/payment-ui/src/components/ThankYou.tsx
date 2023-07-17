@@ -12,7 +12,7 @@ export const ThankYouView = () => {
                 width={10}
                 height={10}
             />
-            <div className="text-3xl text-black mx-auto">Thanks for your order.</div>
+            <div className="text-3xl  mx-auto">Thanks for your order.</div>
             <div className="text-1xl text-gray-600 mx-auto pt-4">Your payment was successful.</div>
             <div className="divider w-full" />
             <div className="text-sm text-gray-400 font-light mx-auto">

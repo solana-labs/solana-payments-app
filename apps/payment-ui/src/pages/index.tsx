@@ -1,27 +1,17 @@
-import FooterSection from '@/components/FooterSection';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import React from 'react';
-import DisplaySection from '../components/DisplaySection';
-import MainSection from '../components/MainSection';
-
-export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-    const { query } = context;
-
-    return {
-        props: query,
-    };
-};
+import { DefaultLayout } from '@/components/DefaultLayout';
+import Link from 'next/link';
 
 export default function Home() {
     return (
-        <>
-            <React.Fragment>
-                <div className="flex flex-col h-screen bg-black">
-                    <DisplaySection />
-                    <MainSection />
-                    <FooterSection />
-                </div>
-            </React.Fragment>
-        </>
+        <DefaultLayout>
+            <div className="flex flex-col  h-full">
+                <h1 className="text-4xl font-bold mb-4">Welcome to SolanaPay</h1>
+                <p className="text-lg mb-4">Checkout from Shopify using SolanaPay</p>
+                <p className="text-lg mb-8">Earn Rewards from your crypto payments</p>
+                <Link href="/solanatest3" className="px-4 py-2 bg-blue-500 text-white rounded">
+                    Visit a Sample Shop rewards
+                </Link>
+            </div>
+        </DefaultLayout>
     );
 }

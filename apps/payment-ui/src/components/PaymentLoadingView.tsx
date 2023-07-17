@@ -84,7 +84,7 @@ export const PaymentLoadingView = () => {
 
     return (
         <div className="flex flex-col items-center">
-            <h2 className="text-black text-center text-xl mt-16 mb-9">Transaction in progress</h2>
+            <h2 className="text-center text-xl mt-16 mb-9">Transaction in progress</h2>
             <div className="grid grid-cols-4 place-items-stretch text-sm w-96 text-center gap-y-3">
                 {stepLabels.map((label, index) => {
                     const status = getStepStatus({ index, currentStep });
@@ -97,7 +97,7 @@ export const PaymentLoadingView = () => {
                     );
                 })}
                 {stepLabels.map((label, index) => (
-                    <p key={index} className={currentStep >= index ? 'text-black' : 'text-gray-400'}>
+                    <p key={index} className={currentStep < index ? 'text-gray-400' : ''}>
                         {currentStep > index ? stepLabelsPast[index] : label}
                     </p>
                 ))}

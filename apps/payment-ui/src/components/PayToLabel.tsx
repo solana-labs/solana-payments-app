@@ -73,7 +73,7 @@ export const PayToLabel = () => {
                 )}
             </div>
             <div className="flex flex-row w-full items-center justify-between">
-                <label tabIndex={0} className="text-black" htmlFor="fee-detail-modal">
+                <label tabIndex={0} htmlFor="fee-detail-modal">
                     <div className="flex flex-row justify-center items-center">
                         <div className="label-text text-gray-600">Transaction Fee</div>
                         <BiInfoCircle className="text-sm ml-2 label-text text-gray-600" />
@@ -91,7 +91,7 @@ export const PayToLabel = () => {
                                     ✕
                                 </label>
                             </div>
-                            <div className="text-black text-xl font-semibold mb-2">Transaction Fee</div>
+                            <div className="text-xl font-semibold mb-2">Transaction Fee</div>
                             <div className="text-gray-600">
                                 Solana Pay covers the transaction fee so that all you need is USDC to complete your
                                 transaction. Your wallet may still show this as part of your transaction.

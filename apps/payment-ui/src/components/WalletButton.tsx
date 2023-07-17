@@ -23,13 +23,13 @@ const WalletButton = () => {
         <div className="w-full">
             <label
                 tabIndex={0}
-                className="btn border-2 border-black outline-none bg-white w-full justify-start text-black hover:bg-white"
+                className="btn border-2 border-black outline-none bg-white w-full justify-start hover:bg-white"
                 htmlFor="wallet_modal"
             >
                 <div className="flex flex-row items-center justify-between w-full">
                     <div className="flex flex-row items-center justify-between">
                         <Image className="mr-2" src="/electric_bolt.svg" alt="Electric Bolt" width={15} height={15} />
-                        <div className="normal-case text-black text-md">{walletDisplayString(publicKey)}</div>
+                        <div className="normal-case text-md">{walletDisplayString(publicKey)}</div>
                     </div>
                     <Image className="mr-2" src="/expand.svg" alt="Electric Bolt" width={15} height={15} />
                 </div>
@@ -47,9 +47,7 @@ const WalletButton = () => {
                                     width={56}
                                     height={56}
                                 />
-                                <div className="pt-5 text-black text-3xl font-medium">
-                                    {walletDisplayString(publicKey)}
-                                </div>
+                                <div className="pt-5 text-3xl font-medium">{walletDisplayString(publicKey)}</div>
                                 <div className="pt-2 text-gray-700 text-md font-normal">{usdcBalance}</div>
                             </div>
                         </div>

@@ -14,7 +14,7 @@ export const CancelledTransactionView = () => {
 
     return (
         <div className="flex flex-col mt-8">
-            <div className="text-2xl text-black mx-auto">You cancelled the transaction.</div>
+            <div className="text-2xl mx-auto">You cancelled the transaction.</div>
             <div className="text-sm text-gray-600 mx-auto pt-2">No funds were withdrawn from your wallet.</div>
             <Button.Primary
                 onClick={retryTransaction}

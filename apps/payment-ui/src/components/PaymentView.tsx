@@ -9,7 +9,7 @@ export const PaymentView: React.FC = () => {
 
     return (
         <div className="flex flex-col justify-between h-full">
-            <div className="w-full flex flex-col pt-16 relative">
+            <div className="w-full flex flex-col relative">
                 <div className="relative pb-8 flex-col hidden sm:flex">
                     <PaymentMethodTab />
                 </div>
