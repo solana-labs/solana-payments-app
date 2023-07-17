@@ -3,11 +3,11 @@ import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../errors/invalid-input.error.js';
 import {
-    PaymentTransactionBuilder,
     PaymentTransactionRequest,
     parseAndValidatePaymentTransactionRequest,
 } from '../models/payment-transaction-request.model.js';
 import { TransactionRequestBody, parseAndValidateTransactionRequestBody } from '../models/transaction-body.model.js';
+import { PaymentTransactionBuilder } from '../services/builders/payment-transaction-ix.builder.js';
 import { createConnection } from '../utilities/connection.utility.js';
 import { createErrorResponse } from '../utilities/error-response.utility.js';
 
