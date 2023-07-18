@@ -4,11 +4,6 @@
     "private": true,
     "description": "",
     "main": "handler.js",
-    "workspaces": {
-        "nohoist": [
-            "**"
-        ]
-    },
     "type": "module",
     "scripts": {
         "dev": "NODE_ENV=development serverless offline start --stage dev",
@@ -25,7 +20,6 @@
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.101",
-        "@types/crypto-js": "4.1.1",
         "esbuild": "^0.17.18",
         "serverless": "^3.21.0",
         "eslint-config-custom": "*",

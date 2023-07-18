@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/serverless';
 import { ConflictingStateError } from '../errors/conflicting-state.error.js';
 import { DependencyError } from '../errors/dependency.error.js';
 import { InvalidInputError } from '../errors/invalid-input.error.js';
@@ -6,7 +7,6 @@ import { MissingExpectedDatabaseRecordError } from '../errors/missing-expected-d
 import { MissingExpectedDatabaseValueError } from '../errors/missing-expected-database-value.error.js';
 import { RiskyWalletError } from '../errors/risky-wallet.error.js';
 import { UnauthorizedRequestError } from '../errors/unauthorized-request.error.js';
-import { logSentry } from './sentry-log.utility.js';
 
 export enum ErrorType {
     badRequest = 400,
@@ -36,7 +36,7 @@ export enum ErrorMessage {
     unauthorizedMerchant = 'Merchant is not authorized.',
 }
 
-export const createErrorResponse = (error: unknown) => {
+export const createErrorResponse = async (error: unknown) => {
     let statusCode: ErrorType;
     let message: string;
 
@@ -72,7 +72,12 @@ export const createErrorResponse = (error: unknown) => {
         message = 'Unknown error. Please contact support.';
     }
 
-    logSentry(error, message);
+    Sentry.captureException(error, {
+        extra: {
+            message,
+        },
+    });
+    await Sentry.flush(2000);
 
     return {
         statusCode,

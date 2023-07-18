@@ -4,6 +4,8 @@ useDotenv: true
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    NODE_TLS_REJECT_UNAUTHORIZED: ${env:NODE_TLS_REJECT_UNAUTHORIZED}
 package:
   excludeDevDependencies: false
 functions:

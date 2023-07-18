@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import crypto from 'crypto-js';
+import crypto from 'crypto';
 import { parseAndValidateRejectPaymentResponse } from '../models/authorize.models.js';
 
 export const stringifyParams = (params: { [key: string]: string }): string => {
@@ -9,7 +9,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'MOCK_SHOPIFY_SECRET';
+    const mockShopifySecret = 'MOCK_SHOPIFY_KEY';
 
     const installParams = {
         shop: 'localhost:4004',
@@ -27,14 +27,17 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
         timestamp: 'timestamp',
     };
 
-    const stringifiedParams = stringifyParams(authorizeParams);
-    const hmac = crypto.HmacSHA256(stringifiedParams, mockShopifySecret);
+    const hmac = crypto
+        .createHmac('sha256', mockShopifySecret)
+        .update(Buffer.from(stringifyParams(authorizeParams)))
+        .digest('hex');
+
     const hmacString = hmac.toString();
 
     return {
         statusCode: 302,
         headers: {
-            Location: `http://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
+            Location: `https://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
             'Content-Type': 'text/html',
         },
         body: JSON.stringify({}),

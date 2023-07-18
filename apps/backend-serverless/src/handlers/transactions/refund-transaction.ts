@@ -5,16 +5,11 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { DependencyError } from '../../errors/dependency.error.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
 } from '../../models/transaction-requests/refund-transaction-request.model.js';
-import {
-    TransactionRequestBody,
-    parseAndValidateTransactionRequestBody,
-} from '../../models/transaction-requests/transaction-request-body.model.js';
-import { TransactionRequestResponse } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
 import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
@@ -42,10 +37,11 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in refund-transaction',
             level: 'info',
+            extra: {
+                event,
+            },
         });
         let refundRequest: RefundTransactionRequest;
-        let refundTransaction: TransactionRequestResponse;
-        let transaction: web3.Transaction;
 
         const transactionRecordService = new TransactionRecordService(prisma);
         const refundRecordService = new RefundRecordService(prisma);
@@ -57,120 +53,38 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('request body'));
         }
 
-        const body = JSON.parse(event.body);
-
-        let transactionRequestBody: TransactionRequestBody;
-
-        try {
-            transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-        const account = transactionRequestBody.account;
-
-        if (account == null) {
-            return createErrorResponse(new InvalidInputError('account is missing from body'));
-        }
-
-        try {
-            new web3.PublicKey(account);
-        } catch (error) {
-            return createErrorResponse(new InvalidInputError('account is not a valid public key'));
-        }
-
-        try {
-            refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
+        let account: string;
         let gasKeypair: web3.Keypair;
-
-        try {
-            gasKeypair = await fetchGasKeypair();
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        let refundRecord: RefundRecord | null;
-
-        try {
-            refundRecord = await refundRecordService.getRefundRecord({
-                shopId: refundRequest.refundId,
-            });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (refundRecord == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('refund record'));
-        }
-
-        let paymentRecord: PaymentRecord | null;
-
-        try {
-            paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        if (paymentRecord == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('payment record'));
-        }
-
+        let refundRecord: RefundRecord;
+        let paymentRecord: PaymentRecord;
         let merchant: Merchant | null;
 
         try {
+            let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
+            account = transactionRequestBody.account;
+
+            if (account == null) {
+                throw new InvalidInputError('missing account in body');
+            } else {
+                try {
+                    new web3.PublicKey(account);
+                } catch (error) {
+                    throw new InvalidInputError('invalid account in body. needs to be a pubkey');
+                }
+            }
+
+            refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
+
+            refundRecord = await refundRecordService.getRefundRecord({
+                shopId: refundRequest.refundId,
+            });
+            paymentRecord = await refundRecordService.getPaymentRecordForRefund({ id: refundRecord.id });
             merchant = await merchantService.getMerchant({
                 id: refundRecord.merchantId,
             });
         } catch (error) {
             return createErrorResponse(error);
         }
-
-        if (merchant == null) {
-            return createErrorResponse(new MissingExpectedDatabaseRecordError('merchant'));
-        }
-
-        const singleUseKeypair = await generateSingleUseKeypairFromRecord(refundRecord);
-
-        try {
-            refundTransaction = await fetchRefundTransaction(
-                refundRecord,
-                paymentRecord,
-                account,
-                gasKeypair.publicKey.toBase58(),
-                singleUseKeypair.publicKey.toBase58(),
-                gasKeypair.publicKey.toBase58(),
-                axios,
-            );
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        try {
-            transaction = encodeTransaction(refundTransaction.transaction);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        transaction.partialSign(gasKeypair);
-
-        const transactionSignature = transaction.signature;
-
-        if (transactionSignature == null) {
-            return createErrorResponse(new DependencyError('transaction signature null'));
-        }
-
-        try {
-            verifyTransactionWithRecord(refundRecord, transaction, true);
-        } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        const signatureBuffer = transactionSignature;
-
-        const signatureString = encodeBufferToBase58(signatureBuffer);
 
         // We're gonna return bad for transactions here but we should probably just log it and handle this with the merchant in the backend
         if (refundRecord.test == false) {
@@ -184,33 +98,73 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
+            const singleUseKeypair = await generateSingleUseKeypairFromRecord(refundRecord);
+            gasKeypair = await fetchGasKeypair();
+
+            let refundTransaction = await fetchRefundTransaction(
+                refundRecord,
+                paymentRecord,
+                account,
+                gasKeypair.publicKey.toBase58(),
+                singleUseKeypair.publicKey.toBase58(),
+                gasKeypair.publicKey.toBase58(),
+                axios,
+            );
+
+            Sentry.captureEvent({
+                message: 'fetched refund',
+                level: 'info',
+            });
+
+            let transaction = encodeTransaction(refundTransaction.transaction);
+            transaction.partialSign(gasKeypair);
+            verifyTransactionWithRecord(refundRecord, transaction, true);
+
+            const transactionSignature = transaction.signature;
+            if (transactionSignature == null) {
+                throw new DependencyError('transaction signature null');
+            }
+
+            Sentry.captureEvent({
+                message: 'in refund-transaction verify tx w record',
+                level: 'info',
+            });
             await transactionRecordService.createTransactionRecord(
-                signatureString,
+                encodeBufferToBase58(transactionSignature),
                 TransactionType.refund,
                 null,
                 refundRecord.id,
             );
+            const transactionBuffer = transaction.serialize({
+                verifySignatures: false,
+                requireAllSignatures: false,
+            });
+
+            Sentry.captureEvent({
+                message: 'refund-tx about to finalize',
+                level: 'info',
+            });
+            return {
+                statusCode: 200,
+                body: JSON.stringify(
+                    {
+                        transaction: transactionBuffer.toString('base64'),
+                        message: `Refunding customer ${refundRecord.usdcAmount.toFixed(2)} USDC`,
+                    },
+                    null,
+                    2,
+                ),
+            };
         } catch (error) {
-            return createErrorResponse(error);
-        }
-
-        const transactionBuffer = transaction.serialize({
-            verifySignatures: false,
-            requireAllSignatures: false,
-        });
-        const transactionString = transactionBuffer.toString('base64');
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(
-                {
-                    transaction: transactionString,
-                    message: `Refunding customer ${refundRecord.usdcAmount.toFixed(2)} USDC`,
+            Sentry.captureEvent({
+                message: 'in refund-transaction pt2 error',
+                level: 'error',
+                extra: {
+                    error,
                 },
-                null,
-                2,
-            ),
-        };
+            });
+            return await createErrorResponse(error);
+        }
     },
     {
         rethrowAfterCapture: false,

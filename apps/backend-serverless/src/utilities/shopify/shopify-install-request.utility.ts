@@ -34,7 +34,7 @@ export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): A
         .digest('hex');
 
     if (hmacGenerated != hmac) {
-        throw new UnauthorizedRequestError('hmac did not match.');
+        throw new UnauthorizedRequestError('hmac did not match. install ' + JSON.stringify(parsedAppInstallQuery));
     }
 
     return parsedAppInstallQuery;

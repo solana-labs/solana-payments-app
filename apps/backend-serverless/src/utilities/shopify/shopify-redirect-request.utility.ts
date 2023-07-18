@@ -31,7 +31,7 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
         .digest('hex');
 
     if (hmacGenerated != hmac) {
-        throw new UnauthorizedRequestError('hmac did not match.');
+        throw new UnauthorizedRequestError('hmac did not match. redirect' + JSON.stringify(redirectParams));
     }
 
     const nonce = redirectParams.state;

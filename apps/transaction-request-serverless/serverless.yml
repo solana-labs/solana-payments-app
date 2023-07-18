@@ -22,6 +22,8 @@ plugins:
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-offline
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
 
 custom:
   serverless-offline:
