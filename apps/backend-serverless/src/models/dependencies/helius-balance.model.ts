@@ -1,30 +1,12 @@
-import { PublicKey } from '@solana/web3.js';
-import { InferType, array, number, object, string } from 'yup';
+import { InferType, array, number, object } from 'yup';
 import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { publicKeySchema } from '../public-key-schema.model.js';
 
 export const heliusTokenSchema = object().shape({
-    mint: string()
-        .required()
-        .test('is-solana-mint', 'Invalid Solana Mint', value => {
-            try {
-                new PublicKey(value);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        }),
+    mint: publicKeySchema.required(),
     amount: number().required(),
     decimals: number().required(),
-    tokenAccount: string()
-        .required()
-        .test('is-solana-token-account', 'Invalid Solana token account', value => {
-            try {
-                new PublicKey(value);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        }),
+    tokenAccount: publicKeySchema.required(),
 });
 
 export const heliusBalanceSchema = object().shape({
@@ -38,6 +20,6 @@ export const parseAndValidateHeliusBalance = (heliusBalanceResponse: unknown): H
     return parseAndValidateStrict(
         heliusBalanceResponse,
         heliusBalanceSchema,
-        'Could not parse the heluis balance response. Unknown Reason.',
+        'Could not parse the heluis balance response. Unknown Reason.'
     );
 };

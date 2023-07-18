@@ -1,8 +1,9 @@
-import { InferType, object, string } from 'yup';
+import { InferType, object } from 'yup';
 import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { publicKeySchema } from '../public-key-schema.model.js';
 
 export const transactionRequestBodySchema = object().shape({
-    account: string().required(),
+    account: publicKeySchema.required(),
 });
 
 export type TransactionRequestBody = InferType<typeof transactionRequestBodySchema>;
@@ -11,6 +12,6 @@ export const parseAndValidateTransactionRequestBody = (transactionRequestBody: u
     return parseAndValidateStrict<TransactionRequestBody>(
         transactionRequestBody,
         transactionRequestBodySchema,
-        'Could not parse the transaction request body. Unknown Reason.',
+        'Could not parse the transaction request body. Unknown Reason.'
     );
 };

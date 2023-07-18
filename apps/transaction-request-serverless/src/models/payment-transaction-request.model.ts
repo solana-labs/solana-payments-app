@@ -1,20 +1,6 @@
-import * as web3 from '@solana/web3.js';
 import { InferType, boolean, number, object, string } from 'yup';
 import { parseAndValidate } from '../utilities/yup.utility.js';
-
-const publicKeySchema = string()
-    .required()
-    .test('is-public-key', 'Invalid public key', value => {
-        try {
-            if (value === undefined || value === null) {
-                return false;
-            }
-            new web3.PublicKey(value);
-            return true;
-        } catch (err) {
-            return false;
-        }
-    });
+import { publicKeySchema } from './public-key-schema.model.js';
 
 export enum TransactionType {
     blockhash = 'blockhash',
@@ -48,11 +34,11 @@ export const paymentTransactionRequestScheme = object().shape({
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
 
 export const parseAndValidatePaymentTransactionRequest = (
-    paymentTransactionRequestParams: unknown,
+    paymentTransactionRequestParams: unknown
 ): PaymentTransactionRequest => {
     return parseAndValidate(
         paymentTransactionRequestParams,
         paymentTransactionRequestScheme,
-        'Invalid payment transaction request',
+        'Invalid payment transaction request'
     );
 };
