@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
     refund: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund`,
     paymentTransaction: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-transaction`,
     refundTransaction: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-transaction`,
+    pointsSetupTransaction: `${process.env.NEXT_PUBLIC_API_BASE_URL}/points-setup-transaction`,
     rejectRefund: `${process.env.NEXT_PUBLIC_API_BASE_URL}/reject-refund`,
     merchantData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/merchant-data`,
     refundData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-data`,

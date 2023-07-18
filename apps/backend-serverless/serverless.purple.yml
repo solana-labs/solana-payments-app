@@ -164,7 +164,7 @@ functions:
           - s3:PutObject
         Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
   points-setup-transaction:
-    handler: src/handlers/clients/merchant-ui/write-data/points-setup-transaction.pointsSetupTransaction
+    handler: src/handlers/transactions/points-setup-transaction.pointsSetupTransaction
     events:
       - httpApi:
           path: /points-setup-transaction
