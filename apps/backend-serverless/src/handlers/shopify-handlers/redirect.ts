@@ -43,11 +43,13 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
         try {
             const parsedAppRedirectQuery = await parseAndValidateAppRedirectQueryParams(event.queryStringParameters);
             await verifyRedirectParams(parsedAppRedirectQuery, prisma);
+            console.log('after verifying redirect');
 
             const shop = parsedAppRedirectQuery.shop;
             const code = parsedAppRedirectQuery.code;
 
             const accessTokenResponse = await fetchAccessToken(shop, code);
+            console.log('redirect shop', shop);
             let merchant = await merchantService.getMerchant({ shop: shop });
 
             const redirectHeaders = {
@@ -99,5 +101,5 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

@@ -35,6 +35,8 @@ export const install = Sentry.AWSLambda.wrapHandler(
 
             const shop = parsedAppInstallQuery.shop;
             const newNonce = await generatePubkeyString();
+            console.log('got through parsed');
+            console.log('merchant shop?', shop);
             try {
                 const merchant = await merchantService.getMerchant({ shop: shop });
                 await merchantService.updateMerchant(merchant, {
@@ -50,6 +52,7 @@ export const install = Sentry.AWSLambda.wrapHandler(
 
             const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
+            console.log('about to redirect');
             return {
                 statusCode: 302,
                 headers: {
@@ -65,5 +68,5 @@ export const install = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

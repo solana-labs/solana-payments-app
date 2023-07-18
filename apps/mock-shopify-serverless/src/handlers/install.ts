@@ -8,18 +8,20 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const install = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'MOCK_SHOPIFY_SECRET';
+    const mockShopifySecret = 'secret';
 
     console.log('In mock install handler');
 
     const installParams = {
-        host: 'LETSGOPANTHERS',
+        host: 'testhost',
         shop: 'localhost:4004',
         timestamp: 'timestamp',
     };
 
-    const stringifiedParams = stringifyParams(installParams);
-    const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('base64');
+    const hmac = crypto
+        .createHmac('sha256', mockShopifySecret)
+        .update(Buffer.from(stringifyParams(installParams)))
+        .digest('hex');
     const hmacString = hmac.toString();
 
     return {

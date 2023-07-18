@@ -25,13 +25,14 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
         throw new MissingEnvError('shopify secret');
     }
 
+    console.log('about to generate hmac', redirectParams);
     const hmacGenerated = crypto
         .createHmac('sha256', secret)
         .update(Buffer.from(stringifyParams(redirectParams)))
         .digest('hex');
 
     if (hmacGenerated != hmac) {
-        throw new UnauthorizedRequestError('hmac did not match.');
+        throw new UnauthorizedRequestError('hmac did not match. redirect' + JSON.stringify(redirectParams));
     }
 
     const nonce = redirectParams.state;
