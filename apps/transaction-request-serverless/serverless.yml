@@ -16,6 +16,12 @@ functions:
       - httpApi:
           path: /pay
           method: post
+  points-setup:
+    handler: src/handlers/points-setup.pointsSetup
+    events:
+      - httpApi:
+          path: /points-setup
+          method: post
 
 plugins:
   - serverless-plugin-typescript
