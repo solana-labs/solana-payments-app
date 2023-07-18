@@ -16,6 +16,7 @@
     "scripts": {
         "predev": "pnpm helius & npx prisma generate",
         "dev": "serverless offline start --stage dev --config serverless.purple.yml & serverless offline start --stage dev --config serverless.green.yml",
+        "build": "tsc",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "test": "jest",
         "test:tx": "jest integration",
@@ -58,6 +59,7 @@
         "helius-sdk": "^1.0.7",
         "jsonwebtoken": "^9.0.0",
         "lodash": "^4.17.21",
+        "node-fetch": "^3.3.1",
         "prisma": "4.13.0",
         "yup": "1.2.0"
     },
@@ -72,7 +74,7 @@
         "jest": "^27.0.0",
         "jest-mock-extended": "2.0.4",
         "rimraf": "^5.0.1",
-        "serverless": "^3.21.0",
+        "serverless": "^3.33.0",
         "serverless-esbuild": "^1.43.1",
         "serverless-iam-roles-per-function": "^3.2.0",
         "serverless-offline": "^12.0.4",

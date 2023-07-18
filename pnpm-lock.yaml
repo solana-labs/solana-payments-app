@@ -84,6 +84,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      node-fetch:
+        specifier: ^3.3.1
+        version: 3.3.1
       prisma:
         specifier: 4.13.0
         version: 4.13.0
@@ -122,8 +125,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       serverless:
-        specifier: ^3.21.0
-        version: 3.21.0
+        specifier: ^3.33.0
+        version: 3.33.0
       serverless-esbuild:
         specifier: ^1.43.1
         version: 1.43.1(esbuild@0.17.19)
@@ -132,7 +135,7 @@ importers:
         version: 3.2.0
       serverless-offline:
         specifier: ^12.0.4
-        version: 12.0.4(serverless@3.21.0)
+        version: 12.0.4(serverless@3.33.0)
       serverless-plugin-common-excludes:
         specifier: ^4.0.0
         version: 4.0.0
@@ -141,19 +144,19 @@ importers:
         version: 5.1.0
       serverless-plugin-typescript:
         specifier: 2.1.4
-        version: 2.1.4(serverless@3.21.0)(typescript@4.9.5)
+        version: 2.1.4(serverless@3.33.0)(typescript@4.9.5)
       serverless-prune-plugin:
         specifier: ^2.0.2
-        version: 2.0.2(serverless@3.21.0)
+        version: 2.0.2(serverless@3.33.0)
       serverless-prune-versions:
         specifier: ^1.0.4
         version: 1.0.4
       serverless-s3-local:
         specifier: ^0.7.2
-        version: 0.7.2(serverless@3.21.0)
+        version: 0.7.2(serverless@3.33.0)
       serverless-step-functions:
         specifier: ^3.13.1
-        version: 3.13.1(serverless@3.21.0)
+        version: 3.13.1(serverless@3.33.0)
       ts-jest:
         specifier: ^27.0.0
         version: 27.0.0(jest@27.0.0)(typescript@4.9.5)
@@ -363,13 +366,13 @@ importers:
         version: 0.0.0(eslint@8.45.0)(typescript@4.9.5)
       serverless:
         specifier: ^3.21.0
-        version: 3.21.0
+        version: 3.33.0
       serverless-esbuild:
         specifier: ^1.43.1
         version: 1.43.1(esbuild@0.17.18)
       serverless-offline:
         specifier: ^12.0.4
-        version: 12.0.4(serverless@3.21.0)
+        version: 12.0.4(serverless@3.33.0)
       serverless-plugin-common-excludes:
         specifier: ^4.0.0
         version: 4.0.0
@@ -378,7 +381,7 @@ importers:
         version: 5.1.0
       serverless-plugin-typescript:
         specifier: 2.1.4
-        version: 2.1.4(serverless@3.21.0)(typescript@4.9.5)
+        version: 2.1.4(serverless@3.33.0)(typescript@4.9.5)
       typescript:
         specifier: ^4.7.4
         version: 4.9.5
@@ -487,7 +490,7 @@ importers:
         version: 1.3.4
       serverless-prune-plugin:
         specifier: ^2.0.2
-        version: 2.0.2(serverless@3.21.0)
+        version: 2.0.2(serverless@3.33.0)
       yup:
         specifier: 1.2.0
         version: 1.2.0
@@ -515,13 +518,13 @@ importers:
         version: 2.0.4(jest@27.0.0)(typescript@4.9.5)
       serverless:
         specifier: ^3.21.0
-        version: 3.21.0
+        version: 3.33.0
       serverless-esbuild:
         specifier: ^1.43.1
         version: 1.43.1(esbuild@0.17.18)
       serverless-offline:
         specifier: ^12.0.4
-        version: 12.0.4(serverless@3.21.0)
+        version: 12.0.4(serverless@3.33.0)
       serverless-plugin-common-excludes:
         specifier: ^4.0.0
         version: 4.0.0
@@ -530,7 +533,7 @@ importers:
         version: 5.1.0
       serverless-plugin-typescript:
         specifier: 2.1.4
-        version: 2.1.4(serverless@3.21.0)(typescript@4.9.5)
+        version: 2.1.4(serverless@3.33.0)(typescript@4.9.5)
       serverless-prune-versions:
         specifier: ^1.0.4
         version: 1.0.4
@@ -5173,7 +5176,7 @@ packages:
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
     dependencies:
-      detect-libc: 2.0.1
+      detect-libc: 2.0.2
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
       node-fetch: 2.6.12
@@ -10515,6 +10518,22 @@ packages:
       util: 0.12.5
       uuid: 8.0.0
       xml2js: 0.5.0
+    dev: false
+
+  /aws-sdk@2.1416.0:
+    resolution: {integrity: sha512-AP36hsRZhyceyCoTYrsV9FH04CEcAegQYcrg2ybsYB4axo5uvwM67YLFcwc9jAAbk4l2ALWv2XnI0e7HZFCGqQ==}
+    engines: {node: '>= 10.0.0'}
+    dependencies:
+      buffer: 4.9.2
+      events: 1.1.1
+      ieee754: 1.1.13
+      jmespath: 0.16.0
+      querystring: 0.2.0
+      sax: 1.2.1
+      url: 0.10.3
+      util: 0.12.5
+      uuid: 8.0.0
+      xml2js: 0.5.0
 
   /axe-core@4.7.2:
     resolution: {integrity: sha512-zIURGIS1E1Q4pcrMjp+nnEh+16G56eG/MUllJH8yEvw7asDo7Ac9uhC9KIH5jzpITueEZolfYglnCGIuSBz39g==}
@@ -13023,8 +13042,8 @@ packages:
     resolution: {integrity: sha512-53rsFbGdwMwlF7qvCt0ypLM5V5/Mbl0szB7GPN8y9NCcbknYOeVVXdrXEq+90IwAfrrzt6Hd+u2E2ntakICU8w==}
     dev: false
 
-  /detect-libc@2.0.1:
-    resolution: {integrity: sha512-463v3ZeIrcWtdgIg6vI6XUncguvr2TnGl4SzDXinkt9mSLpBJKXT3mW6xT3VQdDN11+WVs29pgvivTc4Lp8v+w==}
+  /detect-libc@2.0.2:
+    resolution: {integrity: sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==}
     engines: {node: '>=8'}
     dev: false
     optional: true
@@ -13340,17 +13359,13 @@ packages:
   /dotenv-expand@10.0.0:
     resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
     engines: {node: '>=12'}
-    dev: true
-
-  /dotenv-expand@5.1.0:
-    resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
-
-  /dotenv@10.0.0:
-    resolution: {integrity: sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==}
-    engines: {node: '>=10'}
 
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
 
   /duplexer3@0.1.5:
@@ -13560,7 +13575,7 @@ packages:
       is-regex: 1.1.4
       is-shared-array-buffer: 1.0.2
       is-string: 1.0.7
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
       is-weakref: 1.0.2
       object-inspect: 1.12.3
       object-keys: 1.1.1
@@ -14654,9 +14669,14 @@ packages:
       strip-outer: 1.0.1
       trim-repeated: 1.0.0
 
+  /filesize@10.0.7:
+    resolution: {integrity: sha512-iMRG7Qo9nayLoU3PNCiLizYtsy4W1ClrapeCwEgtiQelOAOuRJiw4QaLI+sSr8xr901dgHv+EYP2bCusGZgoiA==}
+    engines: {node: '>= 10.4.0'}
+
   /filesize@8.0.7:
     resolution: {integrity: sha512-pjmC+bkIF8XI7fWaH8KxHcZL3DPybs1roSKP4rKDvy20tAWwIObE4+JIseG2byfGKhud5ZnM4YSGKBz7Sh0ndQ==}
     engines: {node: '>= 0.4.0'}
+    dev: false
 
   /fill-range@7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
@@ -14930,7 +14950,6 @@ packages:
       graceful-fs: 4.2.11
       jsonfile: 6.1.0
       universalify: 2.0.0
-    dev: false
 
   /fs-extra@11.1.0:
     resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
@@ -16142,7 +16161,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       get-intrinsic: 1.2.1
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
     dev: true
 
   /is-arrayish@0.2.1:
@@ -16420,15 +16439,11 @@ packages:
       has-symbols: 1.0.3
     dev: true
 
-  /is-typed-array@1.1.11:
-    resolution: {integrity: sha512-l2SCJk9RflSWHQjOJJgNsV5FnE1pq/RpHnYW6ckSjTCYypv07SMbiRSCmLQD63WOv2eXaEwNsn+7kcn3csvYSw==}
+  /is-typed-array@1.1.12:
+    resolution: {integrity: sha512-Z14TF2JNG8Lss5/HMqt0//T9JeHXttXy5pH/DBU4vi98ozO2btxzq9MwYDZYnKwU8nRsz/+GVFVRDq3DkVuSPg==}
     engines: {node: '>= 0.4'}
     dependencies:
-      available-typed-arrays: 1.0.5
-      call-bind: 1.0.2
-      for-each: 0.3.3
-      gopd: 1.0.1
-      has-tostringtag: 1.0.0
+      which-typed-array: 1.1.11
 
   /is-typedarray@1.0.0:
     resolution: {integrity: sha512-cyA56iCMHAh5CdzjJIa4aohJyeO1YbwLi3Jc35MmRU6poroFjIGZzUzupGiRPOjgHg9TLu43xbpwXk523fMxKA==}
@@ -17328,6 +17343,12 @@ packages:
   /json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
+  /json-colorizer@2.2.2:
+    resolution: {integrity: sha512-56oZtwV1piXrQnRNTtJeqRv+B9Y/dXAYLqBBaYl/COcUdoZxgLBLAO88+CnkbT6MxNs0c5E9mPBIb2sFcNz3vw==}
+    dependencies:
+      chalk: 2.4.2
+      lodash.get: 4.4.2
+
   /json-cycle@1.5.0:
     resolution: {integrity: sha512-GOehvd5PO2FeZ5T4c+RxobeT5a1PiGpF4u9/3+UvrMU4bhnVqzJY7hm39wg8PDCqkU91fWGH8qjWR4bn+wgq9w==}
     engines: {node: '>= 4'}
@@ -17747,6 +17768,9 @@ packages:
   /lodash.flow@3.5.0:
     resolution: {integrity: sha512-ff3BX/tSioo+XojX4MOsOMhJw0nZoUEF011LX8g8d3gvjVbxd89cCio4BCXronjxcTUIJUoqKEUA+n4CqvvRPw==}
     dev: false
+
+  /lodash.get@4.4.2:
+    resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
 
   /lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
@@ -18879,10 +18903,6 @@ packages:
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
-
-  /object-hash@2.2.0:
-    resolution: {integrity: sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==}
-    engines: {node: '>= 6'}
 
   /object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
@@ -20619,7 +20639,7 @@ packages:
       scheduler: 0.24.0-canary-efb381bbf-20230505
       stacktrace-parser: 0.1.10
       use-sync-external-store: 1.2.0(react@18.2.0)
-      whatwg-fetch: 3.6.2
+      whatwg-fetch: 3.6.16
       ws: 6.2.2
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -21701,7 +21721,7 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /serverless-offline@12.0.4(serverless@3.21.0):
+  /serverless-offline@12.0.4(serverless@3.33.0):
     resolution: {integrity: sha512-G256wDHI12vE0CJ0uTJMBlfnaN7o7td4GgClvQtuedt/n7vKoUfN0och+LybD6YVGsR5h1xpYjPPPLy2QFqWaA==}
     engines: {node: '>=14.18.0'}
     peerDependencies:
@@ -21731,7 +21751,7 @@ packages:
       object.hasown: 1.1.2
       p-memoize: 7.1.1
       p-retry: 5.1.2
-      serverless: 3.21.0
+      serverless: 3.33.0
       velocityjs: 2.0.6
       ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
@@ -21763,7 +21783,7 @@ packages:
       - supports-color
     dev: true
 
-  /serverless-plugin-typescript@2.1.4(serverless@3.21.0)(typescript@4.9.5):
+  /serverless-plugin-typescript@2.1.4(serverless@3.33.0)(typescript@4.9.5):
     resolution: {integrity: sha512-6+IHXlsDydwDu+3ZhJiWyaFsfAoHbXdFGk10RJjipFYW+KLIoGMAxazXeiq0YQtC7uJYOtfYtGM1PtNjxOXAJg==}
     engines: {node: '>=10.0'}
     peerDependencies:
@@ -21773,23 +21793,23 @@ packages:
       fs-extra: 7.0.1
       globby: 10.0.2
       lodash: 4.17.21
-      serverless: 3.21.0
+      serverless: 3.33.0
       typescript: 4.9.5
     dev: true
 
-  /serverless-prune-plugin@2.0.2(serverless@3.21.0):
+  /serverless-prune-plugin@2.0.2(serverless@3.33.0):
     resolution: {integrity: sha512-tW1Q8MAVmhW8KQN+e0AsSVsb9nmRWWj28xBjMwvVC3FbammmtUJT+5nRpmjxJZ6/K/j3OV1Rx8b32md71BwkYQ==}
     peerDependencies:
       serverless: 1 || 2 || 3
     dependencies:
       bluebird: 3.7.2
-      serverless: 3.21.0
+      serverless: 3.33.0
 
   /serverless-prune-versions@1.0.4:
     resolution: {integrity: sha512-LfnVToDJ+QB1udO16aaoaiGSNYy5Wlj8jfG/7IdT6nMnszQnic9PoeWv9RGWRPIfCq4zMmVLykWUnDGesWqUHg==}
     dev: true
 
-  /serverless-s3-local@0.7.2(serverless@3.21.0):
+  /serverless-s3-local@0.7.2(serverless@3.33.0):
     resolution: {integrity: sha512-+Dy8GCptIrIUFhGAUj1GNN7FBgZEE4VPuyFbKP8xfsPoCualo0UwWnnTNmRix8UpWi5+OA+VpR5JizLq/TeJaA==}
     dependencies:
       '@aws-sdk/client-s3': 3.370.0
@@ -21797,7 +21817,7 @@ packages:
       rxjs: 6.6.7
       rxjs-compat: 6.6.7
       s3rver: 3.7.1
-      serverless-offline: 12.0.4(serverless@3.21.0)
+      serverless-offline: 12.0.4(serverless@3.33.0)
       shelljs: 0.8.5
     transitivePeerDependencies:
       - '@aws-sdk/signature-v4-crt'
@@ -21809,7 +21829,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /serverless-step-functions@3.13.1(serverless@3.21.0):
+  /serverless-step-functions@3.13.1(serverless@3.33.0):
     resolution: {integrity: sha512-pkmHJn2L4LmpfqC/0omRFfeNX8MEPd166aHDpTLV5RFCQG56CqdKhPf0klO7h69MSBnqHnH7c1sw6hV/6BGDQQ==}
     peerDependencies:
       serverless: ^2.32.0 || 3
@@ -21820,13 +21840,13 @@ packages:
       chalk: 4.1.2
       joi: 17.9.2
       lodash: 4.17.21
-      serverless: 3.21.0
+      serverless: 3.33.0
     transitivePeerDependencies:
       - encoding
     dev: true
 
-  /serverless@3.21.0:
-    resolution: {integrity: sha512-swDn12DWEN3jyb/DPrr+a5Gy+DcV+cI+Yuii+zjxGTPGrEDfLymPBEtx3e7YmxKWn174ekmRCfRNbbtffo3LcQ==}
+  /serverless@3.33.0:
+    resolution: {integrity: sha512-qmG0RMelsWmnS5Smxoy0CbjpecgnJlM89wzSIgJqfkGlmOo2nJdd8y0/E6KlaTsaozlPKkjUBDzis2nF8VNO2g==}
     engines: {node: '>=12.0'}
     hasBin: true
     requiresBuild: true
@@ -21837,7 +21857,7 @@ packages:
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       archiver: 5.3.1
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1416.0
       bluebird: 3.7.2
       cachedir: 2.3.0
       chalk: 4.1.2
@@ -21847,13 +21867,13 @@ packages:
       d: 1.0.1
       dayjs: 1.11.9
       decompress: 4.2.1
-      dotenv: 10.0.0
-      dotenv-expand: 5.1.0
+      dotenv: 16.3.1
+      dotenv-expand: 10.0.0
       essentials: 1.2.0
       ext: 1.7.0
       fastest-levenshtein: 1.0.16
-      filesize: 8.0.7
-      fs-extra: 9.1.0
+      filesize: 10.0.7
+      fs-extra: 10.1.0
       get-stdin: 8.0.0
       globby: 11.1.0
       got: 11.8.6
@@ -21861,6 +21881,7 @@ packages:
       https-proxy-agent: 5.0.1(supports-color@8.1.1)
       is-docker: 2.2.1
       js-yaml: 4.1.0
+      json-colorizer: 2.2.2
       json-cycle: 1.5.0
       json-refs: 3.0.15(supports-color@8.1.1)
       lodash: 4.17.21
@@ -21868,21 +21889,23 @@ packages:
       micromatch: 4.0.5
       node-fetch: 2.6.12
       npm-registry-utilities: 1.0.0
-      object-hash: 2.2.0
-      open: 7.4.2
+      object-hash: 3.0.0
+      open: 8.4.2
       path2: 0.1.0
       process-utils: 4.0.0
       promise-queue: 2.2.5
       require-from-string: 2.0.2
       semver: 7.5.4
       signal-exit: 3.0.7
+      stream-buffers: 3.0.2
       strip-ansi: 6.0.1
       supports-color: 8.1.1
       tar: 6.1.15
       timers-ext: 0.1.7
       type: 2.7.2
       untildify: 4.0.0
-      uuid: 8.3.2
+      uuid: 9.0.0
+      ws: 7.5.9
       yaml-ast-parser: 0.0.43
     transitivePeerDependencies:
       - bufferutil
@@ -22295,6 +22318,10 @@ packages:
       inherits: 2.0.4
       readable-stream: 3.6.2
     dev: false
+
+  /stream-buffers@3.0.2:
+    resolution: {integrity: sha512-DQi1h8VEBA/lURbSwFtEHnSTb9s2/pwLEaFuNhXwy1Dx3Sa0lOuYT2yNUr4/j2fs8oCAMANtrZ5OrPZtyVs3MQ==}
+    engines: {node: '>= 0.10.0'}
 
   /stream-promise@3.2.0:
     resolution: {integrity: sha512-P+7muTGs2C8yRcgJw/PPt61q7O517tDHiwYEzMWo1GSBCcZedUMT/clz7vUNsSxFphIlJ6QUL4GexQKlfJoVtA==}
@@ -23279,7 +23306,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       get-intrinsic: 1.2.1
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
     dev: true
 
   /typed-array-byte-length@1.0.0:
@@ -23289,7 +23316,7 @@ packages:
       call-bind: 1.0.2
       for-each: 0.3.3
       has-proto: 1.0.1
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
     dev: true
 
   /typed-array-byte-offset@1.0.0:
@@ -23300,7 +23327,7 @@ packages:
       call-bind: 1.0.2
       for-each: 0.3.3
       has-proto: 1.0.1
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
     dev: true
 
   /typed-array-length@1.0.4:
@@ -23308,7 +23335,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       for-each: 0.3.3
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
     dev: true
 
   /typedarray-to-buffer@3.1.5:
@@ -23721,7 +23748,7 @@ packages:
       inherits: 2.0.4
       is-arguments: 1.1.1
       is-generator-function: 1.0.10
-      is-typed-array: 1.1.11
+      is-typed-array: 1.1.12
       which-typed-array: 1.1.11
 
   /utila@0.4.0:
@@ -23748,7 +23775,6 @@ packages:
   /uuid@9.0.0:
     resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
     hasBin: true
-    dev: false
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
@@ -24075,8 +24101,8 @@ packages:
       iconv-lite: 0.4.24
     dev: true
 
-  /whatwg-fetch@3.6.2:
-    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
+  /whatwg-fetch@3.6.16:
+    resolution: {integrity: sha512-83avoGbZ0qtjtNrU3UTT3/Xd3uZ7DyfSYLuc1fL5iYs+93P+UkIVF6/6xpRVWeQcvbc7kSnVybSAVbd6QFW5Fg==}
     dev: false
 
   /whatwg-mimetype@2.3.0:

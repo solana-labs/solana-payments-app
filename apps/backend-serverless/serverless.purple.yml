@@ -484,3 +484,6 @@ custom:
     automatic: true
     includeLayers: true
     number: 3
+  esbuild:
+    forceInclude:
+      - '@prisma/client'
