@@ -25,7 +25,6 @@ export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam
         throw new MissingEnvError('shopify secret');
     }
 
-    console.log('about to generate hmac', redirectParams);
     const hmacGenerated = crypto
         .createHmac('sha256', secret)
         .update(Buffer.from(stringifyParams(redirectParams)))

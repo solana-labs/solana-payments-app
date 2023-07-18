@@ -50,7 +50,6 @@ export const install = Sentry.AWSLambda.wrapHandler(
 
             const redirectUrl = createShopifyOAuthGrantRedirectUrl(shop, newNonce);
 
-            console.log('about to redirect');
             return {
                 statusCode: 302,
                 headers: {

@@ -25,7 +25,6 @@ export const fetchAccessToken = async (shop: string, authCode: string) => {
             headers: headers,
             httpsAgent: agent,
         });
-        console.log('got response', response);
     } else {
         response = await axios({
             url: endpoint,
