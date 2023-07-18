@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import crypto from 'crypto-js';
+import crypto from 'crypto';
 
 export const stringifyParams = (params: { [key: string]: string }): string => {
     return Object.keys(params)
@@ -19,8 +19,7 @@ export const install = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     };
 
     const stringifiedParams = stringifyParams(installParams);
-    const hmac = crypto.HmacSHA256(stringifiedParams, mockShopifySecret);
-
+    const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('base64');
     const hmacString = hmac.toString();
 
     return {

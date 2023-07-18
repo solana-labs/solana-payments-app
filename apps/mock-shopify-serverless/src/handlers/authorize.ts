@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import crypto from 'crypto-js';
+import crypto from 'crypto';
 import { parseAndValidateRejectPaymentResponse } from '../models/authorize.models.js';
 
 export const stringifyParams = (params: { [key: string]: string }): string => {
@@ -28,7 +28,8 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
     };
 
     const stringifiedParams = stringifyParams(authorizeParams);
-    const hmac = crypto.HmacSHA256(stringifiedParams, mockShopifySecret);
+    // const hmac = crypto.HmacSHA256(stringifiedParams, mockShopifySecret);
+    const hmac = crypto.createHmac('sha256', mockShopifySecret).update(stringifiedParams).digest('base64');
     const hmacString = hmac.toString();
 
     return {
