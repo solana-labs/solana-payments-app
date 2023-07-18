@@ -84,16 +84,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
             let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
             account = transactionRequestBody.account;
 
-            if (account == null) {
-                throw new InvalidInputError('missing account in body');
-            } else {
-                try {
-                    new web3.PublicKey(account);
-                } catch (error) {
-                    throw new InvalidInputError('invalid account in body. needs to be a pubkey');
-                }
-            }
-
             let paymentRequest = parseAndValidatePaymentRequest(event.queryStringParameters);
 
             paymentRecord = await paymentRecordService.getPaymentRecord({
@@ -112,7 +102,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 {
                     paymentRecordId: paymentRecord.id,
                 },
-                websocketSessionService,
+                websocketSessionService
             );
 
             await websocketService.sendTransacationRequestStartedMessage();
@@ -143,7 +133,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                         paymentRecord.shopGid,
                         rejectionReason,
                         merchant.shop,
-                        merchant.accessToken,
+                        merchant.accessToken
                     );
 
                     paymentSessionData = validatePaymentSessionRejected(paymentSessionRejectResponse);
@@ -197,7 +187,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
-                axios,
+                axios
             );
 
             let transaction = encodeTransaction(paymentTransaction.transaction);
@@ -213,7 +203,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 encodeBufferToBase58(transactionSignature),
                 TransactionType.payment,
                 paymentRecord.id,
-                null,
+                null
             );
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
@@ -237,7 +227,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     {
         captureTimeoutWarning: false,
         rethrowAfterCapture: false,
-    },
+    }
 );
 
 export const paymentMetadata = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {

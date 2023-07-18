@@ -63,16 +63,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
             let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
             account = transactionRequestBody.account;
 
-            if (account == null) {
-                throw new InvalidInputError('missing account in body');
-            } else {
-                try {
-                    new web3.PublicKey(account);
-                } catch (error) {
-                    throw new InvalidInputError('invalid account in body. needs to be a pubkey');
-                }
-            }
-
             refundRequest = parseAndValidateRefundTransactionRequest(event.queryStringParameters);
 
             refundRecord = await refundRecordService.getRefundRecord({
@@ -92,7 +82,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 await trmService.screenAddress(account);
             } catch (error) {
                 return createErrorResponse(
-                    new InvalidInputError('Bad address for merchant: ' + merchant.id + ' ' + account),
+                    new InvalidInputError('Bad address for merchant: ' + merchant.id + ' ' + account)
                 );
             }
         }
@@ -108,13 +98,8 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
-                axios,
+                axios
             );
-
-            Sentry.captureEvent({
-                message: 'fetched refund',
-                level: 'info',
-            });
 
             let transaction = encodeTransaction(refundTransaction.transaction);
             transaction.partialSign(gasKeypair);
@@ -133,7 +118,7 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 encodeBufferToBase58(transactionSignature),
                 TransactionType.refund,
                 null,
-                refundRecord.id,
+                refundRecord.id
             );
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
@@ -152,21 +137,14 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                         message: `Refunding customer ${refundRecord.usdcAmount.toFixed(2)} USDC`,
                     },
                     null,
-                    2,
+                    2
                 ),
             };
         } catch (error) {
-            Sentry.captureEvent({
-                message: 'in refund-transaction pt2 error',
-                level: 'error',
-                extra: {
-                    error,
-                },
-            });
             return await createErrorResponse(error);
         }
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );
