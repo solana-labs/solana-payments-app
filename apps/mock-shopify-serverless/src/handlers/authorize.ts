@@ -9,7 +9,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'secret';
+    const mockShopifySecret = 'MOCK_SHOPIFY_KEY';
 
     const installParams = {
         shop: 'localhost:4004',
@@ -29,7 +29,7 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
 
     const hmac = crypto
         .createHmac('sha256', mockShopifySecret)
-        .update(Buffer.from(stringifyParams(installParams)))
+        .update(Buffer.from(stringifyParams(authorizeParams)))
         .digest('hex');
 
     const hmacString = hmac.toString();
@@ -37,7 +37,7 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
     return {
         statusCode: 302,
         headers: {
-            Location: `http://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
+            Location: `https://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
             'Content-Type': 'text/html',
         },
         body: JSON.stringify({}),

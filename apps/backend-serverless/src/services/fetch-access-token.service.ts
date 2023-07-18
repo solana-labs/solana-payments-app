@@ -1,4 +1,5 @@
 import axios from 'axios';
+import https from 'https';
 import {
     AccessTokenResponse,
     parseAndValidateAccessTokenResponse,
@@ -11,11 +12,27 @@ export const fetchAccessToken = async (shop: string, authCode: string) => {
         'Content-Type': 'application/json',
         'Accept-Encoding': '',
     };
-    const response = await axios({
-        url: endpoint,
-        method: 'POST',
-        headers: headers,
-    });
+
+    let response;
+    if (process.env.NODE_ENV === 'development') {
+        const agent = new https.Agent({
+            rejectUnauthorized: false,
+        });
+
+        response = await axios({
+            url: endpoint,
+            method: 'POST',
+            headers: headers,
+            httpsAgent: agent,
+        });
+        console.log('got response', response);
+    } else {
+        response = await axios({
+            url: endpoint,
+            method: 'POST',
+            headers: headers,
+        });
+    }
 
     if (response.status != 200) {
         throw new Error('Error requesting access token.');

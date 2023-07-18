@@ -8,7 +8,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const install = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'secret';
+    const mockShopifySecret = 'MOCK_SHOPIFY_KEY';
 
     console.log('In mock install handler');
 
@@ -27,7 +27,7 @@ export const install = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     return {
         statusCode: 302,
         headers: {
-            Location: `http://localhost:4000/install?hmac=${hmacString}&host=${installParams.host}&shop=${installParams.shop}&timestamp=${installParams.timestamp}`,
+            Location: `https://localhost:4000/install?hmac=${hmacString}&host=${installParams.host}&shop=${installParams.shop}&timestamp=${installParams.timestamp}`,
             'Content-Type': 'text/html',
         },
         body: JSON.stringify({}),
