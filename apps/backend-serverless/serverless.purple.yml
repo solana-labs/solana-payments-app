@@ -55,9 +55,8 @@ provider:
     # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:
-  excludeDevDependencies: true
   patterns:
-    - 'node_modules/.prisma/**'
+    - node_modules/**
 functions:
   install:
     handler: src/handlers/shopify-handlers/install.install
@@ -471,7 +470,8 @@ plugins:
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
-
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
 custom:
   serverless-offline:
     httpPort: 4000

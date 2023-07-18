@@ -4,11 +4,6 @@
     "private": true,
     "description": "",
     "main": "handler.js",
-    "workspaces": {
-        "nohoist": [
-            "**"
-        ]
-    },
     "type": "module",
     "scripts": {
         "dev": "NODE_ENV=development serverless offline start --stage dev",

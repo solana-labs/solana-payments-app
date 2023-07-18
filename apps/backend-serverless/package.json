@@ -4,11 +4,6 @@
     "private": true,
     "description": "",
     "main": "handler.js",
-    "workspaces": {
-        "nohoist": [
-            "**"
-        ]
-    },
     "type": "module",
     "prisma": {
         "seed": "tsx prisma/seed.ts"

@@ -4,11 +4,6 @@
     "description": "",
     "private": true,
     "main": "handler.js",
-    "workspaces": {
-        "nohoist": [
-            "**"
-        ]
-    },
     "type": "module",
     "scripts": {
         "dev": "NODE_ENV=development sls offline",
