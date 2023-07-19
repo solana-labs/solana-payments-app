@@ -37,7 +37,7 @@ export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatew
     return {
         statusCode: 302,
         headers: {
-            Location: `https://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
+            Location: `http://localhost:4000/redirect?code=${authorizeParams.code}&hmac=${hmacString}&host=${authorizeParams.host}&shop=${authorizeParams.shop}&state=${authorizeParams.state}&timestamp=${authorizeParams.timestamp}`,
             'Content-Type': 'text/html',
         },
         body: JSON.stringify({}),

@@ -32,6 +32,9 @@
 **/dist
 **/.serverless
 
+
+apps/**/pnpm-lock.yaml
+
 #packages-dist
 
 # General ignore rules for monorepos
