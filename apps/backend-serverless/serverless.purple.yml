@@ -168,7 +168,7 @@ functions:
       - httpApi:
           path: /points-setup-transaction
           method: post
-    iamRoleStatementsName: refund-tx-${self:provider.stage}
+    iamRoleStatementsName: points-setup-tx-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
