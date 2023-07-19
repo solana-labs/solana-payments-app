@@ -1,4 +1,5 @@
 import { DefaultLayout } from '@/components/DefaultLayout';
+import { LoyaltyScreen } from '@/components/LoyaltyScreen';
 import Merchant404 from '@/components/Merchant404';
 import { isFailed, isOk } from '@/lib/Result';
 import { useMerchantStore } from '@/stores/merchantStore';
@@ -22,7 +23,9 @@ export default function Loyalty() {
                 <meta name="description" content="Manage your Shopify Loyalty program" />
             </Head>
             <div className="h-screen w-screen">
-                <DefaultLayout accountIsActive className="h-full w-full"></DefaultLayout>
+                <DefaultLayout accountIsActive className="h-full w-full">
+                    <LoyaltyScreen />
+                </DefaultLayout>
             </div>
         </>
     );
