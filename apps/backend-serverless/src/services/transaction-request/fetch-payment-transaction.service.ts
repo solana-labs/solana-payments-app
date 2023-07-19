@@ -5,7 +5,7 @@ import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
 } from '../../models/transaction-requests/transaction-request-response.model.js';
-import { buildTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
+import { buildPayTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
@@ -14,7 +14,8 @@ export const fetchPaymentTransaction = async (
     gas: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    axiosInstance: typeof axios,
+    payWithPoints: boolean,
+    axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
     if (merchant.walletAddress == null && merchant.tokenAddress == null) {
         throw new Error('Merchant payment address not found.');
@@ -28,7 +29,7 @@ export const fetchPaymentTransaction = async (
         receiverTokenAddress = null;
     }
 
-    const endpoint = buildTransactionRequestEndpoint(
+    const endpoint = buildPayTransactionRequestEndpoint(
         receiverWalletAddress,
         receiverTokenAddress,
         account,
@@ -42,6 +43,10 @@ export const fetchPaymentTransaction = async (
         singleUseNewAcc,
         singleUsePayer,
         'test-one,test-two', // TODO: Update these with real values
+        merchant.loyaltyProgram,
+        merchant.pointsMint,
+        merchant.pointsBack ? merchant.pointsBack.toString() : null,
+        payWithPoints.toString()
     );
     const headers = {
         'Content-Type': 'application/json',

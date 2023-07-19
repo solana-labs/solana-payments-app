@@ -1,3 +1,10 @@
+import {
+    createAssociatedTokenAccountInstruction,
+    createBurnInstruction,
+    createMintToInstruction,
+    getAccount,
+    getAssociatedTokenAddress,
+} from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { TokenInformation } from '../../configs/token-list.config.js';
 import {
@@ -24,6 +31,10 @@ export class PaymentTransactionBuilder {
     private singleUseNewAcc: web3.PublicKey | null;
     private singleUsePayer: web3.PublicKey | null;
     private indexInputs: string[] | null;
+    private loyaltyProgram: string | null;
+    private pointsMint: web3.PublicKey | null;
+    private pointsBack: number | null;
+    private payWithPoints: boolean;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest) {
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
@@ -49,69 +60,92 @@ export class PaymentTransactionBuilder {
         this.indexInputs = paymentTransactionRequest.indexInputs
             ? paymentTransactionRequest.indexInputs.split(',')
             : null;
+
+        this.loyaltyProgram = paymentTransactionRequest.loyaltyProgram
+            ? paymentTransactionRequest.loyaltyProgram
+            : null;
+        this.pointsMint = paymentTransactionRequest.pointsMint
+            ? new web3.PublicKey(paymentTransactionRequest.pointsMint)
+            : null;
+        this.pointsBack = paymentTransactionRequest.pointsBack ? paymentTransactionRequest.pointsBack : null;
+        this.payWithPoints = paymentTransactionRequest.payWithPoints;
     }
 
     public async buildPaymentTransaction(connection: web3.Connection): Promise<web3.Transaction> {
-        let transaction: web3.Transaction;
-        let receivingQuantity: number;
+        const blockhash = await connection.getLatestBlockhash();
+        let transaction = new web3.Transaction({
+            feePayer: this.feePayer,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight,
+        });
+
+        const receivingTokenInformation = await TokenInformation.queryTokenInformationFromPubkey(
+            this.receivingToken,
+            connection
+        );
+
+        const receivingQuantity =
+            this.amountType === AmountType.quantity
+                ? this.receivingAmount
+                : receivingTokenInformation.convertSizeToQuantity(this.receivingAmount);
+
         let swapIxs: web3.TransactionInstruction[] = [];
         let transferIxs: web3.TransactionInstruction[] = [];
         let createIxs: web3.TransactionInstruction[] = [];
         let indexIxs: web3.TransactionInstruction[] = [];
 
-        const blockhash = await connection.getLatestBlockhash();
+        if (this.loyaltyProgram === 'points' && this.pointsMint && this.pointsBack && !this.payWithPoints) {
+            let customerTokenAddress = await getAssociatedTokenAddress(this.sender, this.pointsMint);
+            try {
+                await getAccount(connection, customerTokenAddress);
+            } catch (error: unknown) {
+                transaction = transaction.add(
+                    createAssociatedTokenAccountInstruction(
+                        this.sender,
+                        customerTokenAddress,
+                        this.sender,
+                        this.pointsMint
+                    )
+                );
+            }
 
-        switch (this.transactionType) {
-            case TransactionType.blockhash:
-                transaction = new web3.Transaction({
-                    feePayer: this.feePayer,
-                    blockhash: blockhash.blockhash,
-                    lastValidBlockHeight: blockhash.lastValidBlockHeight,
+            transaction = transaction.add(
+                createMintToInstruction(
+                    this.pointsMint,
+                    customerTokenAddress,
+                    this.feePayer,
+                    (receivingQuantity * this.pointsBack) / 100
+                )
+            );
+        }
+
+        if (this.loyaltyProgram === 'points' && this.payWithPoints && this.pointsMint) {
+            let customerTokenAddress = await getAssociatedTokenAddress(this.sender, this.pointsMint);
+            transaction = transaction.add(
+                createBurnInstruction(customerTokenAddress, this.pointsMint, this.sender, receivingQuantity)
+            );
+        } else {
+            if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
+                swapIxs = await createSwapIx({
+                    provider: 'jupiter',
+                    quantity: receivingQuantity,
+                    fromMint: this.sendingToken,
+                    toMint: this.receivingToken,
+                    swapingWallet: this.sender,
                 });
-                break;
-            case TransactionType.nonce:
-                transaction = new web3.Transaction({
-                    feePayer: this.feePayer,
-                    blockhash: blockhash.blockhash,
-                    lastValidBlockHeight: blockhash.lastValidBlockHeight,
-                });
-                break;
+            }
+
+            transferIxs = await createTransferIx(
+                this.sender,
+                this.receiverWalletAddress,
+                this.receiverTokenAddress,
+                receivingTokenInformation,
+                receivingQuantity,
+                this.createAta,
+                connection,
+                this.feePayer
+            );
         }
-
-        const receivingTokenInformation = await TokenInformation.queryTokenInformationFromPubkey(
-            this.receivingToken,
-            connection,
-        );
-
-        switch (this.amountType) {
-            case AmountType.quantity:
-                receivingQuantity = this.receivingAmount;
-                break;
-            case AmountType.size:
-                receivingQuantity = receivingTokenInformation.convertSizeToQuantity(this.receivingAmount);
-                break;
-        }
-
-        if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
-            swapIxs = await createSwapIx({
-                provider: 'jupiter',
-                quantity: receivingQuantity,
-                fromMint: this.sendingToken,
-                toMint: this.receivingToken,
-                swapingWallet: this.sender,
-            });
-        }
-
-        transferIxs = await createTransferIx(
-            this.sender,
-            this.receiverWalletAddress,
-            this.receiverTokenAddress,
-            receivingTokenInformation,
-            receivingQuantity,
-            this.createAta,
-            connection,
-            this.feePayer,
-        );
 
         if (this.singleUseNewAcc && this.singleUsePayer) {
             createIxs = await createAccountIx(this.singleUseNewAcc, this.singleUsePayer, connection);

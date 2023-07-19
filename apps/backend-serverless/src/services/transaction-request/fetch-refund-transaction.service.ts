@@ -6,7 +6,7 @@ import {
     parseAndValidateTransactionRequestResponse,
 } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility.js';
-import { buildTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
+import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 
 export const fetchRefundTransaction = async (
@@ -16,7 +16,7 @@ export const fetchRefundTransaction = async (
     gas: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ): Promise<TransactionRequestResponse> => {
     // We can't refund a payment that doesn't exist
     if (associatedPaymentRecord.transactionSignature == null) {
@@ -38,7 +38,7 @@ export const fetchRefundTransaction = async (
         receiverTokenAddress = null;
     }
 
-    const endpoint = buildTransactionRequestEndpoint(
+    const endpoint = buildRefundTransactionRequestEndpoint(
         receiverWalletAddress,
         receiverTokenAddress,
         account,
@@ -51,7 +51,7 @@ export const fetchRefundTransaction = async (
         'true',
         singleUseNewAcc,
         singleUsePayer,
-        'test-one,test-two', // TODO: Update these with real values
+        'test-one,test-two' // TODO: Update these with real values
     );
     const headers = {
         'Content-Type': 'application/json',

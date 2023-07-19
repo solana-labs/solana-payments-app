@@ -29,6 +29,10 @@ export const paymentTransactionRequestScheme = object().shape({
     singleUseNewAcc: publicKeySchema.nullable(),
     singleUsePayer: publicKeySchema.nullable(),
     indexInputs: string().nullable(),
+    loyaltyProgram: string().optional(),
+    pointsMint: string().optional(),
+    pointsBack: number().optional(),
+    payWithPoints: boolean().default(false).required(),
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;
