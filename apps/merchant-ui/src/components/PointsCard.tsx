@@ -7,6 +7,7 @@ import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -50,9 +51,9 @@ export function PointsCard(props: Props) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // const buffer = Buffer.from(data.transaction, 'base64');
-            // const transaction = Transaction.from(buffer);
-            // await sendTransaction(transaction, connection);
+            const buffer = Buffer.from(data.transaction, 'base64');
+            const transaction = Transaction.from(buffer);
+            await sendTransaction(transaction, connection);
 
             await updateMerchant('loyaltyProgram', 'points');
             await updateMerchant('pointsMint', data.pointsMint);
@@ -148,7 +149,6 @@ export function PointsCard(props: Props) {
             </div>
         );
     } else {
-        console.log('merchantInfo', merchantInfo);
         return (
             <Card className="w-[400px]">
                 {merchantInfo.data.loyalty.loyaltyProgram != 'points' ? (

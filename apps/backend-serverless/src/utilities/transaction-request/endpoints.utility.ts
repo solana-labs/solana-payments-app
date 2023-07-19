@@ -69,5 +69,5 @@ export const buildPointsSetupTransactionRequestEndpoint = (
         .map(([key, value]) => `${key}=${value}`)
         .join('&');
 
-    return `${TRANSACTION_REQUEST_SERVER_URL}/pointsSetup?${queryString}`;
+    return `${TRANSACTION_REQUEST_SERVER_URL}/points-setup?${queryString}`;
 };

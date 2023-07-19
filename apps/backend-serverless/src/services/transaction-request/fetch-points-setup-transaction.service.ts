@@ -1,4 +1,5 @@
 import axios from 'axios';
+import https from 'https';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
@@ -16,7 +17,26 @@ export const fetchPointsSetupTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    const response = await axiosInstance.post(endpoint, { headers: headers });
+    let response;
+
+    if (process.env.NODE_ENV === 'development') {
+        const agent = new https.Agent({
+            rejectUnauthorized: false,
+        });
+
+        response = await axios({
+            url: endpoint,
+            method: 'POST',
+            headers: headers,
+            httpsAgent: agent,
+        });
+    } else {
+        response = await axios({
+            url: endpoint,
+            method: 'POST',
+            headers: headers,
+        });
+    }
 
     if (response.status != 200) {
         throw new Error('Error fetching payment transaction.');

@@ -21,9 +21,14 @@ export class PointsSetupTransactionBuilder {
     public async buildPointsSetupTransaction(connection: Connection): Promise<Transaction> {
         const lamports = await getMinimumBalanceForRentExemptMint(connection);
 
+        const blockhash = await connection.getLatestBlockhash();
         const programId = TOKEN_PROGRAM_ID;
 
-        return new Transaction().add(
+        return new Transaction({
+            feePayer: this.merchantAddress,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight,
+        }).add(
             SystemProgram.createAccount({
                 fromPubkey: this.merchantAddress,
                 newAccountPubkey: this.mintAddress,

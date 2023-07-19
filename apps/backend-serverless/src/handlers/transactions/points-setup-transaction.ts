@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { DependencyError } from '../../errors/dependency.error.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -24,7 +23,7 @@ Sentry.AWSLambda.init({
 export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In payment transaction handler',
+            message: 'In points setup transaction handler',
             level: 'info',
             extra: {
                 event,
@@ -47,8 +46,6 @@ export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
 
             const pointsMint = web3.Keypair.generate();
 
-            // update merchant  with pointsMint and loyalty type
-
             let pointsSetupTransaction = await fetchPointsSetupTransaction(
                 pointsMint.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
@@ -57,13 +54,7 @@ export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             );
 
             let transaction = encodeTransaction(pointsSetupTransaction.transaction);
-            transaction.partialSign(gasKeypair);
             transaction.partialSign(pointsMint);
-
-            const transactionSignature = transaction.signature;
-            if (transactionSignature == null) {
-                throw new DependencyError('transaction signature');
-            }
 
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
@@ -74,6 +65,7 @@ export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 statusCode: 200,
                 body: JSON.stringify({
                     transaction: transactionBuffer.toString('base64'),
+                    pointsMint: pointsMint.publicKey.toBase58(),
                     message: `Creating ${merchant.name} Points Rewards`,
                 }),
             };
