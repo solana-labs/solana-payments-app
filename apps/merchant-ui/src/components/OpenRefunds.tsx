@@ -223,7 +223,7 @@ export function OpenRefunds(props: Props) {
             <div className={props.className}>
                 <div className="flex flex-col justify-center h-full text-red-700 items-center space-y-4">
                     <MdSyncProblem size={36} />
-                    <p>We're having trouble loading your Open refunds data</p>
+                    <p>We&apos;re having trouble loading your Open refunds data</p>
                 </div>
             </div>
         );
@@ -294,7 +294,7 @@ export function OpenRefunds(props: Props) {
                                         'place-items-center',
                                         'right-0',
                                         'top-0',
-                                        'z-10',
+                                        'z-10'
                                     )}
                                 >
                                     <Dialog.Content
@@ -332,7 +332,7 @@ export function OpenRefunds(props: Props) {
                                                         'ml-8',
                                                         'place-items-center',
                                                         'rounded-full',
-                                                        'w-12',
+                                                        'w-12'
                                                     )}
                                                 >
                                                     <Close className="h-6 w-6 fill-black" />
@@ -375,7 +375,7 @@ export function OpenRefunds(props: Props) {
                                         'place-items-center',
                                         'right-0',
                                         'top-0',
-                                        'z-10',
+                                        'z-10'
                                     )}
                                 >
                                     <Dialog.Content
@@ -404,7 +404,7 @@ export function OpenRefunds(props: Props) {
                                                         'ml-8',
                                                         'place-items-center',
                                                         'rounded-full',
-                                                        'w-12',
+                                                        'w-12'
                                                     )}
                                                 >
                                                     <Close className="h-6 w-6 fill-black" />

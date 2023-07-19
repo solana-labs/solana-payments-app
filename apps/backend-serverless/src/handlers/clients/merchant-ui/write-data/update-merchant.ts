@@ -38,45 +38,38 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
 
             const merchantUpdateRequest = parseAndValidatePaymentAddressRequestBody(JSON.parse(event.body));
 
-            if (
-                merchantUpdateRequest.name == null &&
-                merchantUpdateRequest.paymentAddress == null &&
-                merchantUpdateRequest.acceptedTermsAndConditions == null &&
-                merchantUpdateRequest.acceptedPrivacyPolicy == null &&
-                merchantUpdateRequest.dismissCompleted == null &&
-                merchantUpdateRequest.kybInquiry == null
-            ) {
+            const keysToCheck = [
+                'name',
+                'paymentAddress',
+                'acceptedTermsAndConditions',
+                'acceptedPrivacyPolicy',
+                'dismissCompleted',
+                'kybInquiry',
+                'loyaltyProgram',
+                'pointsMint',
+                'pointsBack',
+            ];
+
+            if (keysToCheck.every(key => merchantUpdateRequest[key] == null)) {
                 throw new InvalidInputError('no relevant fields in request body');
             }
 
-            const merchantUpdateQuery = {};
+            let merchantUpdateQuery = {};
 
-            if (merchantUpdateRequest.name != null) {
-                merchantUpdateQuery['name'] = merchantUpdateRequest.name;
-            }
-
-            if (merchantUpdateRequest.acceptedTermsAndConditions != null) {
-                merchantUpdateQuery['acceptedTermsAndConditions'] = merchantUpdateRequest.acceptedTermsAndConditions;
-            }
-
-            if (merchantUpdateRequest.acceptedPrivacyPolicy != null) {
-                merchantUpdateQuery['acceptedPrivacyPolicy'] = merchantUpdateRequest.acceptedPrivacyPolicy;
-            }
-
-            if (merchantUpdateRequest.dismissCompleted != null) {
-                merchantUpdateQuery['dismissCompleted'] = merchantUpdateRequest.dismissCompleted;
-            }
-
-            if (merchantUpdateRequest.kybInquiry != null) {
-                merchantUpdateQuery['kybInquiry'] = merchantUpdateRequest.kybInquiry;
-            }
+            keysToCheck.forEach(key => {
+                if (merchantUpdateRequest[key] != null) {
+                    merchantUpdateQuery[key] = merchantUpdateRequest[key];
+                    console.log('udpating key', key);
+                }
+            });
 
             if (merchantUpdateRequest.paymentAddress != null) {
                 merchant = await merchantService.updateMerchantWalletAddress(
                     merchant,
-                    merchantUpdateRequest.paymentAddress,
+                    merchantUpdateRequest.paymentAddress
                 );
             }
+
             merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
             if (
                 merchant.kybInquiry &&
@@ -127,5 +120,5 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

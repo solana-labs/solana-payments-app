@@ -3,13 +3,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
+import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction } from '@solana/web3.js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export function PointsCard() {
+interface Props {
+    className?: string;
+}
+
+export function PointsCard(props: Props) {
     const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
     const { connection } = useConnection();
     const headers = {
@@ -21,9 +25,12 @@ export function PointsCard() {
 
     const [points, setPoints] = useState(0);
 
-    if (merchantInfo) {
-        console.log('merchantInfo', merchantInfo.data);
-    }
+    useEffect(() => {
+        if (RE.isOk(merchantInfo) && merchantInfo.data.loyalty.pointsBack) {
+            setPoints(merchantInfo.data.loyalty.pointsBack);
+        }
+    }, [merchantInfo]);
+
     async function setupLoyaltyProgram() {
         if (!publicKey) {
             return;
@@ -43,30 +50,55 @@ export function PointsCard() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const buffer = Buffer.from(data.transaction, 'base64');
-            const transaction = Transaction.from(buffer);
-            await sendTransaction(transaction, connection);
+            // const buffer = Buffer.from(data.transaction, 'base64');
+            // const transaction = Transaction.from(buffer);
+            // await sendTransaction(transaction, connection);
 
             await updateMerchant('loyaltyProgram', 'points');
             await updateMerchant('pointsMint', data.pointsMint);
-            await updateMerchant('pointsBack', data.pointsBack);
+            await updateMerchant('pointsBack', 1);
 
             await getMerchantInfo();
+
+            toast({
+                title: 'Successfully Created Points Back!',
+                variant: 'constructive',
+            });
         } catch (error) {
             if (error instanceof Error) {
                 toast({
-                    title: 'Error Fetching Refund Status',
+                    title: 'Error Starting Points Loyalty Program',
                     description: error.message,
                     variant: 'destructive',
                 });
             }
-            throw error; // Re-throw the error
+            // throw error; // Re-throw the error
+        }
+    }
+
+    async function selectLoyaltyProgram() {
+        if (!publicKey) {
+            return;
         }
 
-        toast({
-            title: 'Successfully Created Points Back!',
-            variant: 'constructive',
-        });
+        try {
+            await updateMerchant('loyaltyProgram', 'points');
+
+            await getMerchantInfo();
+            toast({
+                title: 'Successfully Started Points Back!',
+                variant: 'constructive',
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error Selecting Points Loyalty Program',
+                    description: error.message,
+                    variant: 'destructive',
+                });
+            }
+            // throw error; // Re-throw the error
+        }
     }
 
     async function updateLoyaltyPoints() {
@@ -78,6 +110,10 @@ export function PointsCard() {
             await updateMerchant('pointsBack', points);
 
             await getMerchantInfo();
+            toast({
+                title: 'Successfully Updated Points!',
+                variant: 'constructive',
+            });
         } catch (error) {
             if (error instanceof Error) {
                 toast({
@@ -86,63 +122,88 @@ export function PointsCard() {
                     variant: 'destructive',
                 });
             }
-            throw error; // Re-throw the error
+            // throw error; // Re-throw the error
         }
-
-        toast({
-            title: 'Successfully Updated Points!',
-            variant: 'constructive',
-        });
     }
 
-    // merchantInfo.data.loyaltyProgram
-    const loyaltyProgram = 'points';
-    return (
-        <Card className="w-[400px]">
-            <CardHeader>
-                <CardTitle>Create Points Loyalty Program</CardTitle>
-                <CardDescription>Give back % of purchases to every customer</CardDescription>
-            </CardHeader>
-            {true ? (
-                <>
-                    <CardFooter className="flex justify-between">
-                        <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
-                        <Button variant="outline" onClick={disconnect}>
-                            Disconnect Wallet
-                        </Button>
-                    </CardFooter>
-                </>
-            ) : (
-                <>
-                    <CardContent>
-                        <form>
-                            <div className="grid w-full items-center gap-4">
-                                <div className="flex flex-col space-y-1.5">
-                                    <Label htmlFor="name">Set % points back</Label>
-                                    <Input
-                                        type="number"
-                                        id="name"
-                                        placeholder="%"
-                                        onChange={e => {
-                                            const value = parseFloat(e.target.value);
-                                            if (value >= 0 && value <= 100) {
-                                                setPoints(value);
-                                            }
-                                        }}
-                                        value={points}
-                                    />
+    if (RE.isFailed(merchantInfo)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">This Merchant does not exist</h1>
+                        <p className="text-lg  mt-2">Please Log in with a different Merchant account</p>
+                    </div>
+                </div>
+            </div>
+        );
+    } else if (RE.isPending(merchantInfo)) {
+        return (
+            <div className={props.className}>
+                <div className="flex flex-col justify-center h-full ">
+                    <div className="mt-4 text-center">
+                        <h1 className="text-2xl font-semibold">Loading</h1>
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        console.log('merchantInfo', merchantInfo);
+        return (
+            <Card className="w-[400px]">
+                {merchantInfo.data.loyalty.loyaltyProgram != 'points' ? (
+                    <>
+                        <CardHeader>
+                            <CardTitle>Create Points Loyalty Program</CardTitle>
+                            <CardDescription>Give back % of purchases to every customer</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="flex justify-between">
+                            {!merchantInfo.data.loyalty.pointsMint ? (
+                                <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
+                            ) : (
+                                <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
+                            )}
+                            <Button variant="outline" onClick={disconnect}>
+                                Disconnect Wallet
+                            </Button>
+                        </CardFooter>
+                    </>
+                ) : (
+                    <>
+                        <CardHeader>
+                            <CardTitle>Manage Points Loyalty Program</CardTitle>
+                            <CardDescription>Give back % of purchases to every customer</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form>
+                                <div className="grid w-full items-center gap-4">
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label htmlFor="name">Set % points back</Label>
+                                        <Input
+                                            type="number"
+                                            id="name"
+                                            placeholder="%"
+                                            onChange={e => {
+                                                const value = parseFloat(e.target.value);
+                                                if (value >= 0 && value <= 100) {
+                                                    setPoints(value);
+                                                }
+                                            }}
+                                            value={points}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                        <Button onClick={updateLoyaltyPoints}>Update Points Back</Button>
-                        <Button variant="outline" onClick={disconnect}>
-                            Disconnect Wallet
-                        </Button>
-                    </CardFooter>
-                </>
-            )}
-        </Card>
-    );
+                            </form>
+                        </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button onClick={updateLoyaltyPoints}>Update Loyalty Points Back %</Button>
+                            <Button variant="outline" onClick={disconnect}>
+                                Disconnect Wallet
+                            </Button>
+                        </CardFooter>
+                    </>
+                )}
+            </Card>
+        );
+    }
 }

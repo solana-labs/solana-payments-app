@@ -2,6 +2,11 @@ import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { create } from 'zustand';
 
+interface LoyaltyProgram {
+    loyaltyProgram: 'none' | 'points';
+    pointsMint: string | null;
+    pointsBack: number;
+}
 interface MerchantInfo {
     shop: string;
     name: string;
@@ -13,6 +18,7 @@ interface MerchantInfo {
     kybState?: 'pending' | 'failed' | 'finished' | 'incomplete';
     kybInquiry?: string;
     completedRedirect: string;
+    loyalty: LoyaltyProgram;
 }
 
 type MerchantStore = {
@@ -42,6 +48,11 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     kybInquiry: merchantJson.merchantData.onboarding.kybInquiry,
                     kybState: merchantJson.merchantData.onboarding.kybState,
                     completedRedirect: merchantJson.merchantData.onboarding.completedRedirect,
+                    loyalty: {
+                        loyaltyProgram: merchantJson.merchantData.loyalty.loyaltyProgram,
+                        pointsMint: merchantJson.merchantData.loyalty.pointsMint,
+                        pointsBack: merchantJson.merchantData.loyalty.pointsBack,
+                    },
                 }),
             });
         } catch (error) {
@@ -50,7 +61,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
-export async function updateMerchant(field: string, value: string | boolean) {
+export async function updateMerchant(field: string, value: string | boolean | number) {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -64,8 +75,12 @@ export async function updateMerchant(field: string, value: string | boolean) {
             body: JSON.stringify({ [field]: value }),
             credentials: 'include',
         });
+        if (response.status != 200) {
+            throw new Error('Error updating merchant data');
+        }
     } catch (error) {
         console.error('Failed to update merchant data', error);
+        throw new Error('Failed to update merchant data');
     }
     return response;
 }
