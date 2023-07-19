@@ -12,10 +12,12 @@
         "@carbon/icons-react": "^11.20.0",
         "@radix-ui/react-accordion": "^1.1.1",
         "@radix-ui/react-dialog": "^1.0.3",
+        "@radix-ui/react-label": "^2.0.2",
         "@radix-ui/react-menubar": "^1.0.2",
         "@radix-ui/react-navigation-menu": "^1.1.2",
         "@radix-ui/react-select": "^1.2.1",
-        "@radix-ui/react-tabs": "^1.0.3",
+        "@radix-ui/react-slot": "^1.0.2",
+        "@radix-ui/react-tabs": "^1.0.4",
         "@radix-ui/react-toast": "^1.1.4",
         "@radix-ui/react-tooltip": "^1.0.5",
         "@solana-mobile/wallet-adapter-mobile": "^2.0.0",
@@ -44,15 +46,15 @@
         "zustand": "^4.3.8"
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.13",
         "@types/carbon__icons-react": "^11.20.0",
         "@types/jest": "^29.5.2",
         "@types/node": "^18.16.1",
         "@types/react": "^18.2.0",
+        "autoprefixer": "^10.4.13",
+        "eslint-config-custom": "*",
         "postcss": "^8.4.21",
-        "tailwindcss": "^3.2.7",
         "tailwind-merge": "^1.13.1",
-        "typescript": "^5.0.4",
-        "eslint-config-custom": "*"
+        "tailwindcss": "^3.2.7",
+        "typescript": "^5.0.4"
     }
 }

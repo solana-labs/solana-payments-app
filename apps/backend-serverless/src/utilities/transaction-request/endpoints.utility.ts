@@ -4,6 +4,7 @@ export const accessTokenEndpoint = (shop: string, authCode: string) => {
     const clientSecret = process.env.SHOPIFY_SECRET_KEY;
     return `https://${shop}/admin/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${authCode}`;
 };
+const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
 
 export const buildTransactionRequestEndpoint = (
     receiverWalletAddress: string | null,
@@ -18,10 +19,8 @@ export const buildTransactionRequestEndpoint = (
     createAta: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    indexInputs: string,
+    indexInputs: string
 ) => {
-    const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
-
     if (TRANSACTION_REQUEST_SERVER_URL == null) {
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
     }
@@ -48,4 +47,27 @@ export const buildTransactionRequestEndpoint = (
         .join('&');
 
     return `${TRANSACTION_REQUEST_SERVER_URL}/pay?${queryString}`;
+};
+
+export const buildPointsSetupTransactionRequestEndpoint = (
+    mintAddress: string,
+    merchantAddress: string,
+    gasAddress: string
+) => {
+    if (TRANSACTION_REQUEST_SERVER_URL == null) {
+        throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
+    }
+
+    const params = {
+        mintAddress,
+        merchantAddress,
+        gasAddress,
+    };
+
+    const queryString = Object.entries(params)
+        .filter(([_, value]) => value != null)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+
+    return `${TRANSACTION_REQUEST_SERVER_URL}/points-setup?${queryString}`;
 };

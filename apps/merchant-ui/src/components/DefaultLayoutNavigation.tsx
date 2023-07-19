@@ -12,6 +12,7 @@ import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { cloneElement } from 'react';
+import { AiOutlineCrown } from 'react-icons/ai';
 import { twMerge } from 'tailwind-merge';
 import { DefaultLayoutNavigationExternalLink } from './DefaultLayoutNavigationExternalLink';
 import { DefaultLayoutNavigationLink } from './DefaultLayoutNavigationLink';
@@ -71,7 +72,7 @@ export function DefaultLayoutNavigation(props: Props) {
                 'md:relative',
                 'md:top-auto',
                 'md:translate-x-0',
-                props.className,
+                props.className
             )}
             orientation="vertical"
         >
@@ -107,6 +108,7 @@ export function DefaultLayoutNavigation(props: Props) {
                                     text="Refunds"
                                     renderInRhs={<RefundCount refundCount={refundCount} />}
                                 />
+                                <DefaultLayoutNavigationLink href="/loyalty" icon={<AiOutlineCrown />} text="Loyalty" />
                                 <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant" />
                                 <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
                             </div>
@@ -153,7 +155,7 @@ export function DefaultLayoutNavigation(props: Props) {
                         'px-3',
                         'py-2',
                         'rounded-md',
-                        'grid-cols-[24px,1fr,max-content]',
+                        'grid-cols-[24px,1fr,max-content]'
                     )}
                 >
                     {cloneElement(<Logout />, {

@@ -1,4 +1,4 @@
-import { KybState, Merchant, PrismaClient } from '@prisma/client';
+import { KybState, LoyaltyProgram, Merchant, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
@@ -30,9 +30,11 @@ export type MerchantUpdate = {
     kybInquiry: string;
     kybState: KybState;
     active: boolean;
-};
 
-export type FooBarMerchantUpdate = MerchantUpdate;
+    loyaltyProgram: LoyaltyProgram;
+    pointsMint: string;
+    pointsBack: number;
+};
 
 export class MerchantService {
     private prisma: PrismaClient;
@@ -45,12 +47,12 @@ export class MerchantService {
         const merchant = await prismaErrorHandler(
             this.prisma.merchant.findUnique({
                 where: query,
-            }),
+            })
         );
 
         if (merchant == null) {
             throw new MissingExpectedDatabaseRecordError(
-                'Could not find merchant ' + JSON.stringify(query) + ' in database',
+                'Could not find merchant ' + JSON.stringify(query) + ' in database'
             );
         }
         return merchant;
@@ -64,12 +66,13 @@ export class MerchantService {
                     shop: shop,
                     lastNonce: lastNonce,
                 },
-            }),
+            })
         );
     }
 
     async updateMerchant(merchant: Merchant, update: Partial<MerchantUpdate>): Promise<Merchant> {
         const filteredUpdate = filterUndefinedFields(update);
+        console.log('filteredUpdate', filteredUpdate);
 
         return prismaErrorHandler(
             this.prisma.merchant.update({
@@ -77,7 +80,7 @@ export class MerchantService {
                     id: merchant.id,
                 },
                 data: filteredUpdate,
-            }),
+            })
         );
     }
 
@@ -108,7 +111,7 @@ export class MerchantService {
                     walletAddress: updatedWalletAddress,
                     tokenAddress: updatedTokenAddress,
                 },
-            }),
+            })
         );
     }
 }

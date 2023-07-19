@@ -1,5 +1,5 @@
-import { InferType, boolean, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
+import { InferType, boolean, number, object, string } from 'yup';
+import { parseAndValidate } from '../../../utilities/yup.utility.js';
 import { publicKeySchema } from '../../public-key-schema.model.js';
 
 export const merchantUpdateRequestBodySchema = object().shape({
@@ -9,6 +9,9 @@ export const merchantUpdateRequestBodySchema = object().shape({
     acceptedPrivacyPolicy: boolean().optional(),
     dismissCompleted: boolean().optional(),
     kybInquiry: string().optional(),
+    loyaltyProgram: string().optional(),
+    pointsMint: string().optional(),
+    pointsBack: number().optional(),
 });
 
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;
@@ -16,7 +19,7 @@ export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySc
 export const parseAndValidatePaymentAddressRequestBody = (
     merchantUpdateRequestBody: unknown
 ): MerchantUpdateRequest => {
-    return parseAndValidateStrict(
+    return parseAndValidate(
         merchantUpdateRequestBody,
         merchantUpdateRequestBodySchema,
         'Could not parse the merchant update request body. Unknown Reason.'
