@@ -19,8 +19,11 @@ export function PointsCard() {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
-    const [points, setPoints] = useState(merchantInfo.data.pointsBack ? merchantInfo.data.pointsBack : 0);
+    const [points, setPoints] = useState(0);
 
+    if (merchantInfo) {
+        console.log('merchantInfo', merchantInfo.data);
+    }
     async function setupLoyaltyProgram() {
         if (!publicKey) {
             return;
@@ -92,16 +95,21 @@ export function PointsCard() {
         });
     }
 
+    // merchantInfo.data.loyaltyProgram
+    const loyaltyProgram = 'points';
     return (
         <Card className="w-[400px]">
             <CardHeader>
                 <CardTitle>Create Points Loyalty Program</CardTitle>
                 <CardDescription>Give back % of purchases to every customer</CardDescription>
             </CardHeader>
-            {merchantInfo.data.loyaltyProgram === 'none' ? (
+            {true ? (
                 <>
                     <CardFooter className="flex justify-between">
                         <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
+                        <Button variant="outline" onClick={disconnect}>
+                            Disconnect Wallet
+                        </Button>
                     </CardFooter>
                 </>
             ) : (
@@ -131,7 +139,7 @@ export function PointsCard() {
                         <Button onClick={updateLoyaltyPoints}>Update Points Back</Button>
                         <Button variant="outline" onClick={disconnect}>
                             Disconnect Wallet
-                        </Button>{' '}
+                        </Button>
                     </CardFooter>
                 </>
             )}

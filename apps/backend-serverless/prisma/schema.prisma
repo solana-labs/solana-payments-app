@@ -74,6 +74,7 @@ model Merchant {
   loyaltyProgram LoyaltyProgram @default(none)
 
   pointsMint String?
+  pointsBack Float?
 }
 
 model PaymentRecord {

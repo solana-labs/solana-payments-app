@@ -2,6 +2,7 @@ import { PointsCard } from '@/components/PointsCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useEffect, useState } from 'react';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
 
@@ -12,6 +13,16 @@ interface Props {
 export function LoyaltyScreen(props: Props) {
     const { disconnect, connected } = useWallet();
 
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    useEffect(() => {
+        setIsHydrated(true);
+    }, []);
+
+    if (!isHydrated) {
+        return null;
+    }
+
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle className="hidden md:block">Loyalty Program</DefaultLayoutScreenTitle>
@@ -21,7 +32,7 @@ export function LoyaltyScreen(props: Props) {
                     <WalletMultiButton
                         style={{
                             backgroundColor: 'black',
-                            width: '100%',
+                            width: '400px',
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
@@ -41,7 +52,7 @@ export function LoyaltyScreen(props: Props) {
                         <TabsContent value="points">
                             <PointsCard />
                         </TabsContent>
-                        <TabsContent value="tiers">Change your password here.</TabsContent>
+                        {/* <TabsContent value="tiers">Change your password here.</TabsContent> */}
                     </Tabs>
                 )}
             </div>
