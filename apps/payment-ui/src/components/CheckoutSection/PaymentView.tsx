@@ -1,8 +1,8 @@
+import { QRCode } from '@/components/CheckoutSection/QRCode';
 import { PayToLabel } from '@/components/PayToLabel';
 import { PaymentMethodTab } from '@/components/PaymentMethodTab';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { useSelector } from 'react-redux';
-import { QRCode } from './QRCode';
 
 export const PaymentView: React.FC = () => {
     const paymentMethod = useSelector(getPaymentMethod);

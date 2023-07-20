@@ -1,14 +1,14 @@
+import CancelledTransactionView from '@/components/CheckoutSection/CancelledTransactionView';
+import { ErrorView } from '@/components/CheckoutSection/ErrorView';
+import { GeoBlockedView } from '@/components/CheckoutSection/GeoBlockedView';
+import { PaymentLoadingView } from '@/components/CheckoutSection/PaymentLoadingView';
+import { PaymentView } from '@/components/CheckoutSection/PaymentView';
+import { ThankYouView } from '@/components/CheckoutSection/ThankYou';
 import { getIsBlocked } from '@/features/geo/geoSlice';
 import { Notification, getConnectWalletNotification } from '@/features/notification/notificationSlice';
 import { getIsPaymentError } from '@/features/payment-details/paymentDetailsSlice';
 import { MergedState, getIsCompleted, getMergedState } from '@/features/payment-session/paymentSessionSlice';
 import { useSelector } from 'react-redux';
-import CancelledTransactionView from './CancelledTransactionView';
-import { ErrorView } from './ErrorView';
-import { GeoBlockedView } from './GeoBlockedView';
-import { PaymentLoadingView } from './PaymentLoadingView';
-import { PaymentView } from './PaymentView';
-import { ThankYouView } from './ThankYou';
 
 const CheckoutSection = () => {
     const isCompleted = useSelector(getIsCompleted);

@@ -41,20 +41,19 @@ export default function App({ Component, pageProps }: AppProps) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <TooltipProvider>
-                <Context>
+                <WalletContext>
                     <Component {...pageProps} />
-                </Context>
+                </WalletContext>
                 <Toaster />
             </TooltipProvider>
         </>
     );
 }
 
-const Context: FC<{ children: ReactNode }> = ({ children }) => {
+const WalletContext: FC<{ children: ReactNode }> = ({ children }) => {
     // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
     const network = WalletAdapterNetwork.Mainnet;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    // const endpoint = useMemo(() => "http://localhost:8899");
 
     const wallets = useMemo(
         () => [
