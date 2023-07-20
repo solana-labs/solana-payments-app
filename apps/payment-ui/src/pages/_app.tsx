@@ -1,9 +1,7 @@
 import BalanceHandler from '@/components/handlers/BalanceHandler';
 import CompletingHandler from '@/components/handlers/CompletingHandler';
-import EnvHandler from '@/components/handlers/EnvHandler';
 import PaymentDetailsHandler from '@/components/handlers/PaymentDetailsHandler';
 import RouterHandler from '@/components/handlers/RouterHandler';
-import SetPaymentMethodHandler from '@/components/handlers/SetPaymentMethodHandler';
 import WalletHandler from '@/components/handlers/WalletHandler';
 import WebsocketHandler from '@/components/handlers/WebsocketHandler';
 import WindowHandler from '@/components/handlers/WindowHandler';
@@ -29,13 +27,11 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <Provider store={store}>
             <WalletContext>
-                <EnvHandler />
                 <WalletHandler />
                 <BalanceHandler />
                 <CompletingHandler />
                 <PaymentDetailsHandler />
                 <WindowHandler />
-                <SetPaymentMethodHandler />
                 <WebsocketHandler />
                 <RouterHandler />
                 <Component {...pageProps} />

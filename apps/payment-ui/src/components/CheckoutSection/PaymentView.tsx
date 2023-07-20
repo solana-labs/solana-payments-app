@@ -1,18 +1,36 @@
 import { QRCode } from '@/components/CheckoutSection/QRCode';
 import { PayToLabel } from '@/components/PayToLabel';
-import { PaymentMethodTab } from '@/components/PaymentMethodTab';
-import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
-import { useSelector } from 'react-redux';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getPaymentMethod, setPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
+import { AppDispatch } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const PaymentView: React.FC = () => {
     const paymentMethod = useSelector(getPaymentMethod);
+    const dispatch = useDispatch<AppDispatch>();
 
     return (
         <div className="flex flex-col justify-between h-full">
             <div className="w-full flex flex-col relative">
-                <div className="relative pb-8 flex-col hidden sm:flex">
-                    <PaymentMethodTab />
-                </div>
+                <Tabs defaultValue="connect-wallet" className="pb-8 hidden sm:flex w-full">
+                    <TabsList className="w-full">
+                        <TabsTrigger
+                            value="connect-wallet"
+                            className="w-1/2"
+                            onClick={() => dispatch(setPaymentMethod('connect-wallet'))}
+                        >
+                            Pay with Wallet
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="qr-code"
+                            className="w-1/2"
+                            onClick={() => dispatch(setPaymentMethod('qr-code'))}
+                        >
+                            Pay with QR Code
+                        </TabsTrigger>
+                    </TabsList>
+                </Tabs>
+
                 <PayToLabel />
             </div>
             {paymentMethod == 'qr-code' && (

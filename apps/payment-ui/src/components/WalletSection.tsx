@@ -1,22 +1,23 @@
 import BuyButton from '@/components/BuyButton';
 import SimpleNotificationView from '@/components/SimpleNotificationView';
 import WalletButton from '@/components/WalletButton';
+import { setWalletConnected } from '@/features/wallet/walletSlice';
+import { AppDispatch } from '@/store';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 const WalletSection = () => {
     const { publicKey, wallet, disconnect, connected } = useWallet();
-    // const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
 
-    // const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useDispatch<AppDispatch>();
 
-    // useEffect(() => {
-    //     if (base58) {
-    //         dispatch(setWalletConnected(base58));
-    //     }
-    // }, [dispatch, base58]);
-
-    console.log('wallet stuff', publicKey, wallet, disconnect, connected);
+    useEffect(() => {
+        if (publicKey) {
+            dispatch(setWalletConnected(publicKey.toBase58()));
+        }
+    }, [dispatch, publicKey]);
 
     return (
         <div className="flex flex-col justify-end h-full pb-4 py-2">

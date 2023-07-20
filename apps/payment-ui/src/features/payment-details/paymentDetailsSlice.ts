@@ -68,7 +68,7 @@ const paymentDetailsSlice = createSlice({
                     state.status = PaymentDetailsStatus.fresh;
                     state.paymentDetails = action.payload.paymentDetails;
                     state.errorDetails = action.payload.errorDetails;
-                },
+                }
             );
     },
 });
@@ -97,7 +97,7 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
     async (_, { getState }): Promise<PaymentDetailsResponse> => {
         const state = getState() as RootState;
         const paymentId = state.paymentDetails.paymentId;
-        const backendUrl = state.env.backendUrl;
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
         if (backendUrl == null || paymentId == null) {
             return {
@@ -130,5 +130,5 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
             paymentDetails: paymentDetails,
             errorDetails: errorDetails,
         };
-    },
+    }
 );

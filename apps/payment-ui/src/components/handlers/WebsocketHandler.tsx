@@ -1,4 +1,3 @@
-import { getWebSocketUrl } from '@/features/env/envSlice';
 import {
     Notification,
     NotificationType,
@@ -27,7 +26,7 @@ import { AppDispatch } from '../../store';
 
 const WebsocketHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const websocketUrl = useSelector(getWebSocketUrl);
+    const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
     const websocketSessionState = useSelector(getWebsocketSessionState);
     const paymentId = useSelector(getPaymentId);
     const isEitherNotification = useSelector(getIsEitherNotification);
@@ -67,7 +66,7 @@ const WebsocketHandler: React.FC = () => {
                         setNotification({
                             notification: Notification.insufficentFunds,
                             type: NotificationType.solanaPay,
-                        }),
+                        })
                     );
                 } else if (data.messageType == 'completedDetails') {
                     dispatch(setRedirectUrl(data.payload.completedDetails.redirectUrl));
@@ -82,13 +81,13 @@ const WebsocketHandler: React.FC = () => {
                         setNotification({
                             notification: Notification.transactionRequestFailed,
                             type: NotificationType.solanaPay,
-                        }),
+                        })
                     );
                     dispatch(
                         setNotification({
                             notification: Notification.transactionRequestFailed,
                             type: NotificationType.connectWallet,
-                        }),
+                        })
                     );
                 } else if (data.messageType == 'failedProcessingTransaction') {
                     // this one is starting to feel silly and it could mess up some flows

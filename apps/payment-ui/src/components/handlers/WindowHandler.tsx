@@ -1,15 +1,18 @@
-import { getHeight, setIsMobile } from '@/features/mobile/mobileSlice';
+import { setPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 
 const WindowHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const height = useSelector(getHeight);
 
     useEffect(() => {
         const handleResize = () => {
-            dispatch(setIsMobile(window.innerWidth < 640));
+            const isMobile = window.innerWidth < 640;
+            if (isMobile) {
+                console.log('is mobile');
+                dispatch(setPaymentMethod('connect-wallet'));
+            }
         };
 
         window.addEventListener('resize', handleResize);
