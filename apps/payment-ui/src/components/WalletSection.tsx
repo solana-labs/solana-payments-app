@@ -1,6 +1,6 @@
 import BuyButton from '@/components/BuyButton';
+import { CustomerProfile } from '@/components/CustomerProfile';
 import SimpleNotificationView from '@/components/SimpleNotificationView';
-import WalletButton from '@/components/WalletButton';
 import { setWalletConnected } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -42,7 +42,7 @@ const WalletSection = () => {
                         <SimpleNotificationView />
                     </div>
                     <div className="pb-2">
-                        <WalletButton />
+                        <CustomerProfile />
                     </div>
                     <div className="pt-2">
                         <BuyButton />

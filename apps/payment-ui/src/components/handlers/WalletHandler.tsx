@@ -1,20 +1,21 @@
 import { removeNotification } from '@/features/notification/notificationSlice';
-import { fetchWalletBalance, getWalletPubkey } from '@/features/wallet/walletSlice';
+import { fetchWalletBalance } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const WalletHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const pubkey = useSelector(getWalletPubkey);
+    const { publicKey } = useWallet();
 
     useEffect(() => {
-        if (pubkey) {
-            dispatch(fetchWalletBalance(pubkey));
+        if (publicKey) {
+            dispatch(fetchWalletBalance(publicKey.toBase58()));
         } else {
             dispatch(removeNotification());
         }
-    }, [dispatch, pubkey]);
+    }, [dispatch, publicKey]);
 
     return null;
 };
