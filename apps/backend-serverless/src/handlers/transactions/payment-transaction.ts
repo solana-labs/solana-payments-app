@@ -16,7 +16,10 @@ import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { RiskyWalletError } from '../../errors/risky-wallet.error.js';
 import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
-import { parseAndValidatePaymentRequest } from '../../models/transaction-requests/payment-request-parameters.model.js';
+import {
+    PaymentRequestParameters,
+    parseAndValidatePaymentRequest,
+} from '../../models/transaction-requests/payment-request-parameters.model.js';
 import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
@@ -79,12 +82,13 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         let websocketService;
         let gasKeypair: web3.Keypair;
         let singleUseKeypair: web3.Keypair;
+        let paymentRequest: PaymentRequestParameters;
 
         try {
             let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
             account = transactionRequestBody.account;
 
-            let paymentRequest = parseAndValidatePaymentRequest(event.queryStringParameters);
+            paymentRequest = parseAndValidatePaymentRequest(event.queryStringParameters);
 
             paymentRecord = await paymentRecordService.getPaymentRecord({
                 id: paymentRequest.paymentId,
@@ -187,6 +191,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 gasKeypair.publicKey.toBase58(),
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
+                paymentRequest.payWithPoints,
                 axios
             );
 

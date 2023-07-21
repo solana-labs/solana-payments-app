@@ -1,23 +1,26 @@
-import { getIsBlocked } from '@/features/geo/geoSlice';
+import CancelledTransactionView from '@/components/CheckoutSection/CancelledTransactionView';
+import { ErrorView } from '@/components/CheckoutSection/ErrorView';
+import { GeoBlockedView } from '@/components/CheckoutSection/GeoBlockedView';
+import { PaymentLoadingView } from '@/components/CheckoutSection/PaymentLoadingView';
+import { PaymentView } from '@/components/CheckoutSection/PaymentView';
+import { ThankYouView } from '@/components/CheckoutSection/ThankYou';
 import { Notification, getConnectWalletNotification } from '@/features/notification/notificationSlice';
 import { getIsPaymentError } from '@/features/payment-details/paymentDetailsSlice';
 import { MergedState, getIsCompleted, getMergedState } from '@/features/payment-session/paymentSessionSlice';
+import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import CancelledTransactionView from './CancelledTransactionView';
-import { ErrorView } from './ErrorView';
-import { GeoBlockedView } from './GeoBlockedView';
-import { PaymentLoadingView } from './PaymentLoadingView';
-import { PaymentView } from './PaymentView';
-import { ThankYouView } from './ThankYou';
 
 const CheckoutSection = () => {
     const isCompleted = useSelector(getIsCompleted);
     const isError = useSelector(getIsPaymentError);
     const mergedState = useSelector(getMergedState);
-    const isBlocked = useSelector(getIsBlocked);
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
 
-    if (isBlocked) {
+    const router = useRouter();
+    const blockedString = router.query.blocked as string;
+    const blocked = blockedString == 'true' ? true : false;
+
+    if (blocked) {
         return <GeoBlockedView />;
     } else if (connectedWalletNotification == Notification.declined) {
         return <CancelledTransactionView />;

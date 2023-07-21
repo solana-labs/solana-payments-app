@@ -1,10 +1,29 @@
-import FinishHandler from '@/components/handlers/FinishHandler';
+import { getPaymentRedirectUrl } from '@/features/payment-details/paymentDetailsSlice';
+import { AppDispatch } from '@/store';
 import Image from 'next/image';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const ThankYouView = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const redirectUrl = useSelector(getPaymentRedirectUrl);
+
+    useEffect(() => {
+        const interval = 2000; // 3 seconds
+
+        const timer = setInterval(() => {
+            if (redirectUrl != null) {
+                window.location.href = redirectUrl;
+            }
+        }, interval);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [dispatch, redirectUrl]);
+
     return (
         <div className="flex flex-col">
-            <FinishHandler />
             <Image
                 src="/check.svg"
                 alt="Completed Payment"

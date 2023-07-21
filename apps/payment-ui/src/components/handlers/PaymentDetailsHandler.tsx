@@ -1,4 +1,3 @@
-import { getBackendUrl } from '@/features/env/envSlice';
 import {
     fetchPaymentDetails,
     getPaymentId,
@@ -11,7 +10,7 @@ import { AppDispatch } from '../../store';
 
 const PaymentDetailsHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const backendUrl = useSelector(getBackendUrl);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const paymentId = useSelector(getPaymentId);
     const shouldFetch = useSelector(shouldPaymentDetailsBeFetched);
     const websocketSessionState = useSelector(getWebsocketSessionState);

@@ -6,7 +6,58 @@ export const accessTokenEndpoint = (shop: string, authCode: string) => {
 };
 const TRANSACTION_REQUEST_SERVER_URL = process.env.TRANSACTION_REQUEST_SERVER_URL;
 
-export const buildTransactionRequestEndpoint = (
+export const buildPayTransactionRequestEndpoint = (
+    receiverWalletAddress: string | null,
+    receiverTokenAddress: string | null,
+    sender: string,
+    receivingToken: string,
+    sendingToken: string,
+    feePayer: string,
+    receivingAmount: string,
+    amountType: string,
+    transactionType: string,
+    createAta: string,
+    singleUseNewAcc: string,
+    singleUsePayer: string,
+    indexInputs: string,
+    loyaltyProgram: string | null,
+    pointsMint: string | null,
+    pointsBack: string | null,
+    payWithPoints: string = 'false'
+) => {
+    if (TRANSACTION_REQUEST_SERVER_URL == null) {
+        throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
+    }
+
+    const params = {
+        receiverWalletAddress,
+        receiverTokenAddress,
+        sender,
+        receivingToken,
+        sendingToken,
+        feePayer,
+        receivingAmount,
+        amountType,
+        transactionType,
+        createAta,
+        singleUseNewAcc,
+        singleUsePayer,
+        indexInputs,
+        loyaltyProgram,
+        pointsMint,
+        pointsBack,
+        payWithPoints,
+    };
+
+    const queryString = Object.entries(params)
+        .filter(([_, value]) => value != null)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+
+    return `${TRANSACTION_REQUEST_SERVER_URL}/pay?${queryString}`;
+};
+
+export const buildRefundTransactionRequestEndpoint = (
     receiverWalletAddress: string | null,
     receiverTokenAddress: string | null,
     sender: string,

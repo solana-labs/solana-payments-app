@@ -1,3 +1,6 @@
+import CancelTransactionButton from '@/components/CancelTransactionButton';
+import SolanaPayErrorView from '@/components/SolanaPayErrorView';
+import WalletSection from '@/components/WalletSection';
 import {
     Notification,
     getConnectWalletNotification,
@@ -6,9 +9,6 @@ import {
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { MergedState, getMergedState } from '@/features/payment-session/paymentSessionSlice';
 import { useSelector } from 'react-redux';
-import CancelTransactionButton from './CancelTransactionButton';
-import PayWithWalletSection from './PayWithWalletSection';
-import SolanaPayErrorView from './SolanaPayErrorView';
 
 const FooterSection = () => {
     const paymentMethod = useSelector(getPaymentMethod);
@@ -26,7 +26,7 @@ const FooterSection = () => {
     return (
         <div className="w-full">
             <div className="container h-36 mx-auto px-4 sm:px-20 bg-white text-white text-center max-w-2xl">
-                {isPayWithWalletSection() && <PayWithWalletSection />}
+                {isPayWithWalletSection() && <WalletSection />}
                 {isSolanaPayErrorView() && <SolanaPayErrorView />}
                 {isCancelTransactionButton() && <CancelTransactionButton />}
             </div>
