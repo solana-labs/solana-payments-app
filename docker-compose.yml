@@ -14,8 +14,18 @@ services:
       - mysql:/var/lib/mysql
     networks:
       - app_network
+
+  elasticmq:
+    image: softwaremill/elasticmq
+    restart: always
+    ports:
+      - 9324:9324
+    networks:
+      - app_network
+
 networks:
   app_network:
     external: false
+
 volumes:
   mysql: ~

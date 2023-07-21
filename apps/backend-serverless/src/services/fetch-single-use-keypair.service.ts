@@ -32,7 +32,6 @@ export const fetchSingleUseKeypair = async (key: string): Promise<web3.Keypair> 
         return parseInt(value as string);
     });
     const seed = Uint8Array.from(seedArray);
-    console.log(seed);
     const keypair = web3.Keypair.fromSecretKey(seed);
 
     return keypair;

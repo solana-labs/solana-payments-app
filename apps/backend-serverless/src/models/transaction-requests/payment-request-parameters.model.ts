@@ -9,9 +9,16 @@ export const paymentRequestParametersScheme = object().shape({
 export type PaymentRequestParameters = InferType<typeof paymentRequestParametersScheme>;
 
 export const parseAndValidatePaymentRequest = (paymentStatusRequestParameters: unknown): PaymentRequestParameters => {
+    let params = paymentStatusRequestParameters as { [index: string]: any };
+
+    // Convert 'true' or 'false' strings into booleans.
+    if (typeof params.payWithPoints === 'string') {
+        params.payWithPoints = params.payWithPoints === 'true';
+    }
+
     return parseAndValidateStrict(
-        paymentStatusRequestParameters,
+        params,
         paymentRequestParametersScheme,
-        'Can not parse payment transaction request parameters. Unkownn reason.'
+        'Can not parse payment transaction request parameters. Unknown reason.'
     );
 };

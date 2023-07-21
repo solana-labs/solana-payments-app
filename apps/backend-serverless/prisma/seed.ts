@@ -216,6 +216,9 @@ async function main() {
     await prisma.$executeRaw`DELETE from Merchant;`;
     await prisma.$executeRaw`DELETE from PaymentRecord `;
     await prisma.$executeRaw`DELETE from RefundRecord `;
+    await prisma.$executeRaw`DELETE from TransactionRecord `;
+    await prisma.$executeRaw`DELETE from WebsocketSession `;
+    await prisma.$executeRaw`DELETE from GDPR `;
 
     // await prisma.$executeRaw`DROP TABLE Merchant;`;
     // await prisma.$executeRaw`DROP TABLE PaymentRecord `;

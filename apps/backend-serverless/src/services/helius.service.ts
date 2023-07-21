@@ -112,10 +112,8 @@ export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> =>
 
 export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
     const accountInfo = await getAccountInfo(pubkey);
-    console.log('testing here');
     const owner = accountInfo.result.value.owner;
     const pubkeyType = getPubkeyTypeForProgramOwner(owner);
-    console.log(pubkeyType);
     if (pubkeyType == PubkeyType.token) {
         const data = accountInfo.result.value.data as ValueDataTokenProgram;
         const mint = data.parsed.info.mint;

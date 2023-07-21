@@ -31,7 +31,7 @@ export const sendPaymentResolveRetryMessage = async (paymentId: string) => {
         null,
         null,
         null,
-        null,
+        null
     );
 };
 
@@ -45,7 +45,7 @@ export const sendPaymentRejectRetryMessage = async (paymentId: string, reason: P
         },
         null,
         null,
-        null,
+        null
     );
 };
 
@@ -58,14 +58,14 @@ export const sendRefundResolveRetryMessage = async (refundId: string) => {
             refundId: refundId,
         },
         null,
-        null,
+        null
     );
 };
 
 export const sendRefundRejectRetryMessage = async (
     refundId: string,
     code: RefundSessionStateRejectedReason,
-    reason: string | undefined,
+    reason: string | undefined
 ) => {
     await sendRetryMessage(
         ShopifyMutationRetryType.refundReject,
@@ -77,7 +77,7 @@ export const sendRefundRejectRetryMessage = async (
             code: code,
             merchantMessage: reason,
         },
-        null,
+        null
     );
 };
 
@@ -96,7 +96,7 @@ export const sendRetryMessage = async (
     refundReject: ShopifyMutationRefundReject | null,
     appConfigure: ShopifyMutationAppConfigure | null,
     retryStepIndex = 0,
-    sqs: pkg.SQS = new SQS(),
+    sqs: pkg.SQS = new SQS()
 ) => {
     const queueUrl = process.env.SHOPIFY_SQS_URL;
 
@@ -148,8 +148,6 @@ export const sendProcessTransactionMessage = async (signature: string, sqs: pkg.
         throw new MissingEnvError('process queue url');
     }
 
-    console.log(queueUrl);
-
     const maxNumberOfSendMessageAttempts = 3;
 
     const attempts = await retry(() => {
@@ -176,8 +174,6 @@ export const sendSolanaPayInfoMessage = async (account: string, paymentRecordId:
         throw new MissingEnvError('solana pay queue url');
     }
 
-    console.log(queueUrl);
-
     const maxNumberOfSendMessageAttempts = 3;
 
     const attempts = await retry(() => {
@@ -189,7 +185,11 @@ export const sendSolanaPayInfoMessage = async (account: string, paymentRecordId:
                     paymentRecordId: paymentRecordId,
                 }),
             })
-            .promise();
+            .promise()
+            .catch(error => {
+                console.error(error); // Log the error
+                throw error;
+            });
     }, maxNumberOfSendMessageAttempts);
 
     if (attempts === maxNumberOfSendMessageAttempts) {
