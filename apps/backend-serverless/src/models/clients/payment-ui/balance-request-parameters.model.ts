@@ -3,7 +3,8 @@ import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 import { publicKeySchema } from '../../public-key-schema.model.js';
 
 export const balanceRequestParametersScheme = object().shape({
-    pubkey: publicKeySchema.required(),
+    publicKey: publicKeySchema.required(),
+    mint: publicKeySchema.required(),
 });
 
 export type BalanceRequestParameters = InferType<typeof balanceRequestParametersScheme>;

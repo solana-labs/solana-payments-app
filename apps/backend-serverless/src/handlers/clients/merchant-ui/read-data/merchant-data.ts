@@ -62,7 +62,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
                     name: merchant.name,
                     paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
                     onboarding: onboardingResponse,
-                    loyalty: loyaltyResponse,
+                    loyaltyDetails: loyaltyResponse,
                 },
                 general: generalResponse,
             };

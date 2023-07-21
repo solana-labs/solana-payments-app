@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { parseAndValidateBalanceParameters } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
-import { fetchUsdcSize } from '../../../services/helius.service.js';
+import { fetchBalance } from '../../../services/helius.service.js';
 import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
@@ -21,15 +21,17 @@ export const balance = Sentry.AWSLambda.wrapHandler(
         });
         try {
             const balanceRequestParameters = await parseAndValidateBalanceParameters(event.queryStringParameters);
-            const usdcSize = await fetchUsdcSize(balanceRequestParameters.pubkey);
+
+            const tokenSize = await fetchBalance(balanceRequestParameters.publicKey, balanceRequestParameters.mint);
+
             return {
                 statusCode: 200,
                 body: JSON.stringify({
-                    usdcBalance: usdcSize,
+                    tokenBalance: tokenSize,
                 }),
             };
         } catch (error) {
             return createErrorResponse(error);
         }
-    },
+    }
 );

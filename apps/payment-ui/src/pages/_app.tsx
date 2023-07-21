@@ -1,4 +1,3 @@
-import BalanceHandler from '@/components/handlers/BalanceHandler';
 import CompletingHandler from '@/components/handlers/CompletingHandler';
 import PaymentDetailsHandler from '@/components/handlers/PaymentDetailsHandler';
 import RouterHandler from '@/components/handlers/RouterHandler';
@@ -28,7 +27,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <Provider store={store}>
             <WalletContext>
                 <WalletHandler />
-                <BalanceHandler />
                 <CompletingHandler />
                 <PaymentDetailsHandler />
                 <WindowHandler />

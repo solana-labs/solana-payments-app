@@ -53,6 +53,9 @@ function generateMerchantRecords(count = 1): any[] {
                 acceptedPrivacyPolicy: true,
                 dismissCompleted: true,
                 active: true,
+                loyaltyProgram: 'points',
+                pointsMint: '8wuKwYNTneXGcksnwdDtxCBoG5VPoDqRaWmTxVLhi8nN',
+                pointsBack: 1,
             };
         } else {
             merchant = {
@@ -94,7 +97,7 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 test: 1,
                 amount: j + 1,
                 currency: 'USD',
-                usdcAmount: j + 1,
+                usdcAmount: 1,
                 cancelURL: `https://store-${i}.myshopify.com/checkouts/c/randomId_-${i}-${j}/processing`,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,

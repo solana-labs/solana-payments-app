@@ -7,20 +7,20 @@ import {
 } from '@/features/notification/notificationSlice';
 import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
-import { getIsWalletLoading, setWalletLoading, stopWalletLoading } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const BuyButton = () => {
     const paymentId = useSelector(getPaymentId);
-    const { publicKey, sendTransaction, signTransaction } = useWallet();
+    const { publicKey, sendTransaction } = useWallet();
     const dispatch = useDispatch<AppDispatch>();
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
-    const isLoading = useSelector(getIsWalletLoading);
+    const [walletLoading, setWalletLoading] = useState(false);
 
     const fetchAndSendTransaction = async () => {
         const getErrorType = (error: any) => {
@@ -47,7 +47,7 @@ const BuyButton = () => {
 
         const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId);
 
-        dispatch(setWalletLoading());
+        setWalletLoading(true);
 
         try {
             const response = await axios.post(
@@ -57,7 +57,7 @@ const BuyButton = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                },
+                }
             );
 
             const transactionString = response.data.transaction;
@@ -75,18 +75,18 @@ const BuyButton = () => {
             }
 
             const connection = new web3.Connection(
-                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e',
+                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
             );
             await sendTransaction(transaction, connection);
         } catch (error) {
             const errorType = getErrorType(error);
-            dispatch(stopWalletLoading());
+            setWalletLoading(false);
             dispatch(resetSession());
             dispatch(
                 setNotification({
                     notification: errorType,
                     type: NotificationType.connectWallet,
-                }),
+                })
             );
             return;
         }
@@ -97,7 +97,7 @@ const BuyButton = () => {
             return true;
         } else if (paymentId == null) {
             return true;
-        } else if (isLoading) {
+        } else if (walletLoading) {
             return true;
         }
     };
@@ -105,7 +105,7 @@ const BuyButton = () => {
     return (
         <Button.Primary
             disabled={isDisabled()}
-            pending={isLoading}
+            pending={walletLoading}
             onClick={async () => {
                 await fetchAndSendTransaction();
             }}

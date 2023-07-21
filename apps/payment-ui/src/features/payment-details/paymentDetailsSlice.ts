@@ -17,6 +17,12 @@ export interface PaymentDetails {
     completed: boolean;
 }
 
+export interface LoyaltyDetails {
+    loyaltyProgram: 'none' | 'points';
+    pointsMint: string;
+    pointsBalance: number;
+}
+
 export interface ErrorDetails {
     errorTitle: string;
     errorDetail: string;
@@ -28,11 +34,13 @@ export interface PaymentDetailsState {
     status: PaymentDetailsStatus;
     paymentDetails: PaymentDetails | null;
     errorDetails: ErrorDetails | null;
+    loyaltyDetails: LoyaltyDetails | null;
 }
 
 export interface PaymentDetailsResponse {
     paymentDetails: PaymentDetails | null;
     errorDetails: ErrorDetails | null;
+    loyaltyDetails: LoyaltyDetails | null;
 }
 
 const initalState: PaymentDetailsState = {
@@ -40,6 +48,7 @@ const initalState: PaymentDetailsState = {
     status: PaymentDetailsStatus.new,
     paymentDetails: null,
     errorDetails: null,
+    loyaltyDetails: null,
 };
 
 const paymentDetailsSlice = createSlice({
@@ -68,6 +77,7 @@ const paymentDetailsSlice = createSlice({
                     state.status = PaymentDetailsStatus.fresh;
                     state.paymentDetails = action.payload.paymentDetails;
                     state.errorDetails = action.payload.errorDetails;
+                    state.loyaltyDetails = action.payload.loyaltyDetails;
                 }
             );
     },
@@ -92,6 +102,8 @@ export const getPaymentSize = (state: RootState): number | null =>
 export const getPaymentRedirectUrl = (state: RootState): string | null =>
     state.paymentDetails.paymentDetails?.redirectUrl ?? null;
 
+export const getLoyaltyDetails = (state: RootState): LoyaltyDetails | null => state.paymentDetails.loyaltyDetails;
+
 export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
     'paymentDetails/fetchPaymentDetails',
     async (_, { getState }): Promise<PaymentDetailsResponse> => {
@@ -99,7 +111,19 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
         const paymentId = state.paymentDetails.paymentId;
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-        if (backendUrl == null || paymentId == null) {
+        try {
+            if (backendUrl == null || paymentId == null) {
+                throw new Error('There is a fatal error with this app. Please return back to Shopify.');
+            }
+
+            const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
+            const response = await axios.get(url);
+            return {
+                paymentDetails: response.data.paymentStatus,
+                errorDetails: response.data.error,
+                loyaltyDetails: response.data.loyaltyDetails,
+            };
+        } catch (error) {
             return {
                 paymentDetails: null,
                 errorDetails: {
@@ -107,28 +131,8 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
                     errorDetail: 'There is a fatal error with this app. Please return back to Shopify.',
                     errorRedirect: null,
                 },
+                loyaltyDetails: null,
             };
         }
-
-        let paymentDetails: PaymentDetails | null;
-        let errorDetails: ErrorDetails | null;
-
-        try {
-            const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
-            const response = await axios.get(url);
-            paymentDetails = response.data.paymentStatus;
-            errorDetails = response.data.error;
-        } catch (error) {
-            return {
-                // TODO: Figure something out other than crashing lol
-                paymentDetails: null,
-                errorDetails: null,
-            };
-        }
-
-        return {
-            paymentDetails: paymentDetails,
-            errorDetails: errorDetails,
-        };
     }
 );

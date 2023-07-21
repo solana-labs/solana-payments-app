@@ -4,6 +4,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/payment-ui/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
+import { createLoyaltyResponse } from '../../../utilities/clients/merchant-ui/create-loyalty-response.utility.js';
 import {
     createPaymentErrorResponse,
     createPaymentStatusResponse,
@@ -36,15 +37,17 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
             });
 
             const merchant = await merchantService.getMerchant({ id: paymentRecord.merchantId });
+            const loyaltyResponse = createLoyaltyResponse(merchant);
             const paymentStatusResponse = createPaymentStatusResponse(
                 paymentRecord,
                 merchant,
-                parsedPaymentStatusQuery.language,
+                parsedPaymentStatusQuery.language
             );
             const paymentErrorResponse = createPaymentErrorResponse(paymentRecord);
             const responseBodyData = {
                 paymentStatus: paymentStatusResponse,
                 error: paymentErrorResponse,
+                loyaltyDetails: loyaltyResponse,
             };
 
             return {
@@ -54,5 +57,5 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
         } catch (error) {
             return createErrorResponse(error);
         }
-    },
+    }
 );

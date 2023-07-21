@@ -52,6 +52,7 @@ provider:
     SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
     PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
+    GAS_KEYPAIR_SECRET_KEY: ${env:GAS_KEYPAIR_SECRET_KEY}
     # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:

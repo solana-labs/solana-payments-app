@@ -3,96 +3,80 @@ import axios from 'axios';
 import { RootState } from '../../store';
 
 interface WalletState {
-    pubkey: string | null;
     usdcBalance: number | null;
+    pointsBalance: number | null;
     error: string | null;
-    loading: boolean;
 }
 
 const initalState: WalletState = {
-    pubkey: null,
     usdcBalance: null,
+    pointsBalance: null,
     error: null,
-    loading: false,
 };
 
 type BalanceResponse = {
-    pubkey: string | null;
     usdcBalance: number | null;
+    pointsBalance: number | null;
     error: string | null;
 };
 
 export const fetchWalletBalance = createAsyncThunk<BalanceResponse, string>(
     'wallet/fetchWalletBalance',
     async (pubkey, { getState }): Promise<BalanceResponse> => {
+        const state = getState() as RootState;
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-        if (backendUrl == null) {
-            return {
-                pubkey: null,
-                usdcBalance: null,
-                error: 'There is a fatal error with this app. Please contact the developer.',
-            };
-        }
-
         try {
-            const url = `${backendUrl}/balance?pubkey=${pubkey}`;
-            const response = await axios.get(url);
-            const usdcBalance = response.data.usdcBalance;
+            if (backendUrl == null) {
+                throw new Error('There is a fatal error with this app. Please contact the developer.');
+            }
+
+            const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+            const response = await axios.get(`${backendUrl}/balance?publicKey=${pubkey}&mint=${USDC_MINT}`);
+            let pointsBalance = 0;
+            if (state.paymentDetails.loyaltyDetails?.pointsMint != null) {
+                const pointsMint = state.paymentDetails.loyaltyDetails.pointsMint;
+                const pointsBalanceResponse = await axios.get(
+                    `${backendUrl}/balance?publicKey=${pubkey}&mint=${pointsMint}`
+                );
+                pointsBalance = pointsBalanceResponse.data.tokenBalance;
+            }
 
             return {
-                pubkey: pubkey,
-                usdcBalance: usdcBalance,
+                usdcBalance: response.data.tokenBalance,
+                pointsBalance: pointsBalance,
                 error: null,
             };
         } catch (error) {
             console.log(error);
+            return {
+                usdcBalance: null,
+                pointsBalance: null,
+                error: 'There is a fatal error with this app. Please contact the developer.',
+            };
         }
-
-        return {
-            pubkey: null,
-            usdcBalance: null,
-            error: 'There is a fatal error with this app. Please contact the developer.',
-        };
     }
 );
 
 const walletSlice = createSlice({
     name: 'wallet',
     initialState: initalState,
-    reducers: {
-        setWalletConnected: (state, action: PayloadAction<string>) => {
-            state.pubkey = action.payload;
-        },
-        setWalletDisconnected: state => {
-            state.pubkey = null;
-        },
-        setWalletLoading: state => {
-            state.loading = true;
-        },
-        stopWalletLoading: state => {
-            state.loading = false;
-        },
-    },
+    reducers: {},
     extraReducers(builder) {
         builder
             .addCase(fetchWalletBalance.pending, (state: WalletState) => {})
             .addCase(fetchWalletBalance.rejected, (state: WalletState) => {})
             .addCase(fetchWalletBalance.fulfilled, (state: WalletState, action: PayloadAction<BalanceResponse>) => {
                 state.error = action.payload.error;
-                state.pubkey = action.payload.pubkey;
                 state.usdcBalance = action.payload.usdcBalance;
+                state.pointsBalance = action.payload.pointsBalance;
             });
     },
 });
 
-export const { setWalletDisconnected, setWalletConnected, setWalletLoading, stopWalletLoading } = walletSlice.actions;
-
 export default walletSlice.reducer;
 
-export const getIsWalletConnected = (state: RootState): boolean => state.wallet.pubkey != null;
-export const getWalletPubkey = (state: RootState): string | null => state.wallet.pubkey;
 export const getBalance = (state: RootState): number | null => state.wallet.usdcBalance;
+export const getPointsBalance = (state: RootState): number | null => state.wallet.pointsBalance;
 export const getIsWalletError = (state: RootState): boolean => state.wallet.error != null;
 export const getWalletError = (state: RootState): string | null => state.wallet.error;
-export const getIsWalletLoading = (state: RootState): boolean => state.wallet.loading;

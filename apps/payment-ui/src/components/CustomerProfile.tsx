@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -7,9 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-
-import { Button } from '@/components/ui/button';
-import { getBalance } from '@/features/wallet/walletSlice';
+import { getBalance, getPointsBalance } from '@/features/wallet/walletSlice';
 import { useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import Image from 'next/image';
@@ -25,6 +24,7 @@ export function CustomerProfile(props: Props) {
     const { publicKey, disconnect } = useWallet();
 
     const usdcBalance = useSelector(getBalance);
+    const pointsBalance = useSelector(getPointsBalance);
     const [copied, setCopied] = useState(false);
 
     const walletDisplayString = (pubkey: web3.PublicKey | null) => {
@@ -63,6 +63,9 @@ export function CustomerProfile(props: Props) {
                         </DialogTitle>
                         <DialogDescription className="pt-2 text-gray-700 text-md font-normal">
                             {usdcBalance} USDC
+                        </DialogDescription>
+                        <DialogDescription className="pt-2 text-gray-700 text-md font-normal">
+                            {pointsBalance} Points
                         </DialogDescription>
                     </div>
                 </DialogHeader>

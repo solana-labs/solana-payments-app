@@ -8,7 +8,7 @@ import {
     ValueDataTokenProgram,
     parseAndValidateGetAccountInfo,
 } from '../models/dependencies/get-account-info.model.js';
-import { HeliusBalance, parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
+import { parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
 import {
     HeliusEnhancedTransaction,
     HeliusEnhancedTransactionArray,
@@ -50,7 +50,7 @@ export const fetchEnhancedTransaction = async (transactionId: string): Promise<H
     return heliusEnhancedTransactions[0];
 };
 
-export const fetchHeliusBalance = async (pubkey: string): Promise<HeliusBalance> => {
+export const fetchBalance = async (publicKey: string, mint: string): Promise<number> => {
     let response: AxiosResponse;
 
     const apiKey = process.env.HELIUS_API_KEY;
@@ -59,7 +59,7 @@ export const fetchHeliusBalance = async (pubkey: string): Promise<HeliusBalance>
         throw new Error('No API key found');
     }
 
-    const heliusBalanceApiUrl = `https://api.helius.xyz/v0/addresses/${pubkey}/balances?api-key=${apiKey}`;
+    const heliusBalanceApiUrl = `https://api.helius.xyz/v0/addresses/${publicKey}/balances?api-key=${apiKey}`;
 
     try {
         response = await axios.get(heliusBalanceApiUrl);
@@ -69,26 +69,13 @@ export const fetchHeliusBalance = async (pubkey: string): Promise<HeliusBalance>
 
     const heliusBalance = parseAndValidateHeliusBalance(response.data);
 
-    return heliusBalance;
-};
+    const tokenBalance = heliusBalance.tokens.find(token => token.mint === mint);
 
-export const fetchUsdcSize = async (pubkey: string): Promise<number> => {
-    const heliusBalance = await fetchHeliusBalance(pubkey);
-
-    const usdcTokenBalance = heliusBalance.tokens.find(token => token.mint === USDC_MINT.toBase58());
-
-    if (usdcTokenBalance == null) {
+    if (tokenBalance == null) {
         return 0;
     }
 
-    const usdcSize = usdcTokenBalance.amount / 10 ** usdcTokenBalance.decimals;
-
-    return usdcSize;
-};
-
-export const fetchUsdcBalance = async (pubkey: string): Promise<string> => {
-    const usdcSize = await fetchUsdcSize(pubkey);
-    return `${usdcSize.toFixed(3)} USDC`;
+    return tokenBalance.amount / 10 ** tokenBalance.decimals;
 };
 
 export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> => {
@@ -153,7 +140,7 @@ export const getPubkeyTypeForProgramOwner = (owner: PubkeyOwner): PubkeyType => 
             return PubkeyType.token;
         default:
             throw new InvalidInputError(
-                'Invalid payment address input. You must enter a wallet address or USDC token account address.',
+                'Invalid payment address input. You must enter a wallet address or USDC token account address.'
             );
     }
 };

@@ -2,11 +2,12 @@ import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { create } from 'zustand';
 
-interface LoyaltyProgram {
+interface LoyaltyDetails {
     loyaltyProgram: 'none' | 'points';
     pointsMint: string | null;
     pointsBack: number;
 }
+
 interface MerchantInfo {
     shop: string;
     name: string;
@@ -18,7 +19,7 @@ interface MerchantInfo {
     kybState?: 'pending' | 'failed' | 'finished' | 'incomplete';
     kybInquiry?: string;
     completedRedirect: string;
-    loyalty: LoyaltyProgram;
+    loyalty: LoyaltyDetails;
 }
 
 type MerchantStore = {
@@ -49,9 +50,9 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     kybState: merchantJson.merchantData.onboarding.kybState,
                     completedRedirect: merchantJson.merchantData.onboarding.completedRedirect,
                     loyalty: {
-                        loyaltyProgram: merchantJson.merchantData.loyalty.loyaltyProgram,
-                        pointsMint: merchantJson.merchantData.loyalty.pointsMint,
-                        pointsBack: merchantJson.merchantData.loyalty.pointsBack,
+                        loyaltyProgram: merchantJson.merchantData.loyaltyDetails.loyaltyProgram,
+                        pointsMint: merchantJson.merchantData.loyaltyDetails.pointsMint,
+                        pointsBack: merchantJson.merchantData.loyaltyDetails.pointsBack,
                     },
                 }),
             });
