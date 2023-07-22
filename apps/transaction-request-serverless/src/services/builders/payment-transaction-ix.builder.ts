@@ -95,7 +95,7 @@ export class PaymentTransactionBuilder {
         let indexIxs: web3.TransactionInstruction[] = [];
 
         if (this.loyaltyProgram === 'points' && this.pointsMint && this.pointsBack && !this.payWithPoints) {
-            let customerTokenAddress = await getAssociatedTokenAddress(this.sender, this.pointsMint);
+            let customerTokenAddress = await getAssociatedTokenAddress(this.pointsMint, this.sender);
             try {
                 await getAccount(connection, customerTokenAddress);
             } catch (error: unknown) {
@@ -114,7 +114,7 @@ export class PaymentTransactionBuilder {
                     this.pointsMint,
                     customerTokenAddress,
                     this.feePayer,
-                    (receivingQuantity * this.pointsBack) / 100
+                    receivingQuantity * this.pointsBack * 100
                 )
             );
         }

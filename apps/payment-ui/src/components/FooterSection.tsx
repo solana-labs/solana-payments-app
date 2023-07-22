@@ -16,7 +16,10 @@ const FooterSection = () => {
     const isSolanaPayNotification = useSelector(getIsSolanaPayNotification);
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
 
-    const isPayWithWalletSection = () => paymentMethod == 'connect-wallet' && mergedState == MergedState.start;
+    const isPayWithWalletSection = () =>
+        paymentMethod == 'connect-wallet' &&
+        mergedState == MergedState.start &&
+        connectedWalletNotification != Notification.declined;
     const isSolanaPayErrorView = () => paymentMethod == 'qr-code' && isSolanaPayNotification;
     const isCancelTransactionButton = () =>
         mergedState > MergedState.start &&

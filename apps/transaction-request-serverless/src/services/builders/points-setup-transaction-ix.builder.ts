@@ -36,7 +36,7 @@ export class PointsSetupTransactionBuilder {
                 lamports,
                 programId,
             }),
-            createInitializeMint2Instruction(this.mintAddress, 9, this.gasAddress, this.gasAddress, programId)
+            createInitializeMint2Instruction(this.mintAddress, 6, this.gasAddress, this.gasAddress, programId)
         );
     }
 }
