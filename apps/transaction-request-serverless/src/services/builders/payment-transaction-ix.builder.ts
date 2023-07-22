@@ -120,9 +120,9 @@ export class PaymentTransactionBuilder {
         }
 
         if (this.loyaltyProgram === 'points' && this.payWithPoints && this.pointsMint) {
-            let customerTokenAddress = await getAssociatedTokenAddress(this.sender, this.pointsMint);
+            let customerTokenAddress = await getAssociatedTokenAddress(this.pointsMint, this.sender);
             transaction = transaction.add(
-                createBurnInstruction(customerTokenAddress, this.pointsMint, this.sender, receivingQuantity)
+                createBurnInstruction(customerTokenAddress, this.pointsMint, this.sender, receivingQuantity * 100)
             );
         } else {
             if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
