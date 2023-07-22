@@ -5,6 +5,7 @@ import {
     Notification,
     getConnectWalletNotification,
     getIsSolanaPayNotification,
+    getSolanaPayNotification,
 } from '@/features/notification/notificationSlice';
 import { getPaymentMethod } from '@/features/payment-options/paymentOptionsSlice';
 import { MergedState, getMergedState } from '@/features/payment-session/paymentSessionSlice';
@@ -14,12 +15,14 @@ const FooterSection = () => {
     const paymentMethod = useSelector(getPaymentMethod);
     const mergedState = useSelector(getMergedState);
     const isSolanaPayNotification = useSelector(getIsSolanaPayNotification);
+    const solanaPayNotification = useSelector(getSolanaPayNotification);
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
 
     const isPayWithWalletSection = () =>
         paymentMethod == 'connect-wallet' &&
         mergedState == MergedState.start &&
-        connectedWalletNotification != Notification.declined;
+        connectedWalletNotification != Notification.declined &&
+        solanaPayNotification != Notification.transactionDoesNotExist;
     const isSolanaPayErrorView = () => paymentMethod == 'qr-code' && isSolanaPayNotification;
     const isCancelTransactionButton = () =>
         mergedState > MergedState.start &&

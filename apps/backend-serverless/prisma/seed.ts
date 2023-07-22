@@ -224,7 +224,7 @@ async function main() {
     // await prisma.$executeRaw`DROP TABLE PaymentRecord `;
     // await prisma.$executeRaw`DROP TABLE RefundRecord `;
 
-    await insertGeneratedData(2, 6, 3);
+    await insertGeneratedData(2, 16, 3);
 }
 
 main()

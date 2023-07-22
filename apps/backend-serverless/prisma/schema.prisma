@@ -135,6 +135,7 @@ model TransactionRecord {
   refundRecord    RefundRecord?   @relation(fields: [refundRecordId], references: [id])
   refundRecordId  String?
   createdAt       DateTime        @default(now())
+  paidWithPoints  Boolean         @default(false)
 
   @@index(paymentRecordId)
   @@index(refundRecordId)
