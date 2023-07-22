@@ -114,7 +114,7 @@ export class PaymentTransactionBuilder {
                     this.pointsMint,
                     customerTokenAddress,
                     this.feePayer,
-                    receivingQuantity * this.pointsBack * 100
+                    receivingQuantity * this.pointsBack * 1000
                 )
             );
         }

@@ -27,7 +27,6 @@ export const verifyTransactionWithRecordPoints = (
         verifyAppCreatedTheTransaction(transaction);
     }
     verifySingleUseInstruction(transaction);
-    verifyPayerIsNotHistoricalFeePayer(transaction);
 };
 
 // export const verifyRecordWithHeliusTranscation = (
@@ -175,8 +174,6 @@ export const verifySingleUseInstruction = (transaction: web3.Transaction) => {
     const singleUseInstruction = instructions[0];
 
     // Check the instruction is a system program account creation
-
-    console.log(singleUseInstruction.programId.toBase58());
 
     // if (singleUseInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
     //     throw new Error('The single use instruction was not a system program instruction.');

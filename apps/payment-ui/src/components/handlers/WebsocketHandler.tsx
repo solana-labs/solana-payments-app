@@ -33,6 +33,8 @@ const WebsocketHandler: React.FC = () => {
 
     let socket = useRef<WebSocket | null>(null);
     let timer = useRef<any | null>(null);
+    let stopReconnectionAttempts = useRef(false);
+
     useEffect(() => {
         if (
             websocketSessionState == WebsocketSesssionState.readyToConnect &&
@@ -52,7 +54,7 @@ const WebsocketHandler: React.FC = () => {
 
             socket.current.onmessage = event => {
                 const data = JSON.parse(event.data);
-                // console.log('Message: ' + data.messageType)
+                console.log('Message: ' + data.messageType);
 
                 if (data.messageType == 'transactionRequestStarted') {
                     dispatch(setTransactionRequestStarted());
@@ -100,13 +102,28 @@ const WebsocketHandler: React.FC = () => {
 
             socket.current.onclose = () => {
                 console.log('WebSocket is closed now.');
+                stopReconnectionAttempts.current = true;
+                dispatch(
+                    setNotification({
+                        notification: Notification.transactionDoesNotExist,
+                        type: NotificationType.solanaPay,
+                    })
+                );
                 dispatch(setWebsocketClosed());
             };
 
             socket.current.onerror = error => {
                 console.log('WebSocket encountered error: ', error);
+                stopReconnectionAttempts.current = true;
+                dispatch(
+                    setNotification({
+                        notification: Notification.transactionDoesNotExist,
+                        type: NotificationType.solanaPay,
+                    })
+                );
+                dispatch(setWebsocketClosed());
             };
-        } else if (websocketSessionState == WebsocketSesssionState.closed) {
+        } else if (websocketSessionState == WebsocketSesssionState.closed && !stopReconnectionAttempts.current) {
             const interval = 5000; // 5 seconds
 
             timer.current = setInterval(() => {

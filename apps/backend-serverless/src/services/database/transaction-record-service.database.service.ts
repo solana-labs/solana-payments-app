@@ -1,4 +1,5 @@
 import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
+import { prismaErrorHandler } from './shared.database.service.js';
 
 // --- TransactionRecordService CRUD Operations ---
 // 1. getTransactionRecord
@@ -65,6 +66,7 @@ export class TransactionRecordService {
         transactionType: TransactionType,
         paymentRecordId: string | null,
         refundRecordId: string | null,
+        paidWithPoints: boolean = false
     ): Promise<TransactionRecord> {
         if (paymentRecordId == null && refundRecordId == null) {
             throw new Error('paymentRecordId and refundRecordId cannot both be null');
@@ -87,6 +89,7 @@ export class TransactionRecordService {
             signature: signature,
             type: transactionType,
             createdAt: new Date(),
+            paidWithPoints: paidWithPoints,
         };
 
         // Depending on the transaction type, add the correct record ID
@@ -100,12 +103,10 @@ export class TransactionRecordService {
         }
 
         // Create the transaction record
-        try {
-            return await this.prisma.transactionRecord.create({
+        return prismaErrorHandler(
+            this.prisma.transactionRecord.create({
                 data: transactionRecordData,
-            });
-        } catch {
-            throw new Error('Failed to create transaction record.');
-        }
+            })
+        );
     }
 }

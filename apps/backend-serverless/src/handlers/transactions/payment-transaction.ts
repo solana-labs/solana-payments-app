@@ -215,7 +215,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 encodeBufferToBase58(transactionSignature),
                 TransactionType.payment,
                 paymentRecord.id,
-                null
+                null,
+                paymentRequest.payWithPoints
             );
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
