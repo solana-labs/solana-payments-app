@@ -33,7 +33,10 @@ import {
     sendSolanaPayInfoMessage,
 } from '../../services/sqs/sqs-send-message.service.js';
 import { fetchPaymentTransaction } from '../../services/transaction-request/fetch-payment-transaction.service.js';
-import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
+import {
+    verifyTransactionWithRecord,
+    verifyTransactionWithRecordPoints,
+} from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
 import { TrmService } from '../../services/trm-service.service.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
@@ -197,7 +200,11 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
 
             let transaction = encodeTransaction(paymentTransaction.transaction);
             transaction.partialSign(gasKeypair);
-            verifyTransactionWithRecord(paymentRecord, transaction, true);
+            if (paymentRequest.payWithPoints) {
+                verifyTransactionWithRecordPoints(paymentRecord, transaction, true);
+            } else {
+                verifyTransactionWithRecord(paymentRecord, transaction, true);
+            }
 
             const transactionSignature = transaction.signature;
             if (transactionSignature == null) {

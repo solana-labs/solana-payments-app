@@ -72,7 +72,6 @@ export class MerchantService {
 
     async updateMerchant(merchant: Merchant, update: Partial<MerchantUpdate>): Promise<Merchant> {
         const filteredUpdate = filterUndefinedFields(update);
-        console.log('filteredUpdate', filteredUpdate);
 
         return prismaErrorHandler(
             this.prisma.merchant.update({

@@ -48,10 +48,10 @@ provider:
     AWS_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_REGION: ${self:provider.region}
     AWS_SINGLE_USE_KEYPAIR_BUCKET_NAME: ${self:custom.single-use-bucket-name}
-    WEBSOCKET_URL: ${self:resources.Outputs.WebsocketUrl.Value}
-    SHOPIFY_SQS_URL: ${self:resources.Outputs.ShopifyQueueUrl.Value}
-    PROCESS_SQS_URL: ${self:resources.Outputs.ProcessQueueUrl.Value}
-    SP_INFO_SQS_URL: ${self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
+    WEBSOCKET_URL: ${self:custom.${self:provider.stage}.WebsocketUrl, self:resources.Outputs.WebsocketUrl.Value}
+    SHOPIFY_SQS_URL: ${self:custom.${self:provider.stage}.ShopifyQueueUrl, self:resources.Outputs.ShopifyQueueUrl.Value}
+    PROCESS_SQS_URL: ${self:custom.${self:provider.stage}.ProcessQueueUrl, self:resources.Outputs.ProcessQueueUrl.Value}
+    SP_INFO_SQS_URL: ${self:custom.${self:provider.stage}.SolanaPayInfoQueueUrl, self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
     GAS_KEYPAIR_SECRET_KEY: ${env:GAS_KEYPAIR_SECRET_KEY}
     # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
@@ -485,6 +485,7 @@ plugins:
   - serverless-offline
   - serverless-plugin-common-excludes
   - serverless-plugin-include-dependencies
+  - serverless-offline-sqs
 custom:
   serverless-offline:
     httpPort: 4000
@@ -500,3 +501,16 @@ custom:
   esbuild:
     forceInclude:
       - '@prisma/client'
+  serverless-offline-sqs:
+    autoCreate: true # create queue if not exists
+    apiVersion: '2012-11-05'
+    endpoint: http://0.0.0.0:9324
+    region: ${self:provider.region}
+    accessKeyId: root
+    secretAccessKey: root
+    skipCacheInvalidation: false
+  dev:
+    ShopifyQueueUrl: 'http://localhost:9324/queue/shopify-queue-dev'
+    ProcessQueueUrl: 'http://localhost:9324/queue/process-queue-dev'
+    SolanaPayInfoQueueUrl: 'http://localhost:9324/queue/sp-info-queue-dev'
+    WebsocketUrl: 'ws://localhost:4009'

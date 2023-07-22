@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import bs58 from 'bs58';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
@@ -43,13 +42,7 @@ export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             const merchantAuthToken = withAuth(event.cookies);
             let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
-            let gasKeypair;
-
-            if (process.env.NODE_ENV === 'development') {
-                gasKeypair = web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET_KEY!));
-            } else {
-                gasKeypair = await fetchGasKeypair();
-            }
+            let gasKeypair = await fetchGasKeypair();
 
             const pointsMint = web3.Keypair.generate();
 

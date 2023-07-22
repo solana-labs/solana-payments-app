@@ -10,7 +10,7 @@ const COIN_GECKO_API_BASE_URL = 'https://api.coingecko.com';
 export const convertAmountAndCurrencyToUsdcSize = async (
     givenAmount: number,
     currency: string,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ): Promise<number> => {
     const coinGeckoApiKey = process.env.COIN_GECKO_API_KEY;
 
@@ -23,8 +23,6 @@ export const convertAmountAndCurrencyToUsdcSize = async (
             `${COIN_GECKO_API_BASE_URL}/api/v3/simple/price` + `?ids=${COIN_GECKO_USDC_ID}&vs_currencies=${currency}`;
 
         const response: AxiosResponse = await axios.get(url);
-
-        console.log(response.data);
 
         if (response.status === 200) {
             const usdcPriceInGivenCurrency = response.data[COIN_GECKO_USDC_ID][currency.toLowerCase()] as number;

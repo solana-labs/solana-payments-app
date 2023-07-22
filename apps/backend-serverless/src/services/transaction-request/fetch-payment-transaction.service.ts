@@ -24,11 +24,6 @@ export const fetchPaymentTransaction = async (
     let receiverWalletAddress = merchant.walletAddress;
     let receiverTokenAddress = merchant.tokenAddress;
 
-    if (paymentRecord.test) {
-        receiverWalletAddress = account;
-        receiverTokenAddress = null;
-    }
-
     const endpoint = buildPayTransactionRequestEndpoint(
         receiverWalletAddress,
         receiverTokenAddress,

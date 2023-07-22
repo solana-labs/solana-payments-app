@@ -5,8 +5,9 @@ import {
     getConnectWalletNotification,
     setNotification,
 } from '@/features/notification/notificationSlice';
-import { getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
+import { getPaymentDetails, getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
+import { getPointsBalance } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -21,8 +22,10 @@ const BuyButton = () => {
     const dispatch = useDispatch<AppDispatch>();
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
     const [walletLoading, setWalletLoading] = useState(false);
+    const pointsBalance = useSelector(getPointsBalance);
+    const usdcCost = useSelector(getPaymentDetails)?.usdcSize;
 
-    const fetchAndSendTransaction = async () => {
+    const fetchAndSendTransaction = async (points: boolean = false) => {
         const getErrorType = (error: any) => {
             if (error instanceof Error) {
                 const message = error.message.toLowerCase();
@@ -45,7 +48,7 @@ const BuyButton = () => {
             return;
         }
 
-        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId);
+        const transactionRequestEndpoint = buildTransactionRequestEndpoint(paymentId, points);
 
         setWalletLoading(true);
 
@@ -102,17 +105,41 @@ const BuyButton = () => {
         }
     };
 
+    const pointsDisabled = () => {
+        if (!pointsBalance || !usdcCost) {
+            return true;
+        } else if (pointsBalance && usdcCost && pointsBalance < usdcCost * 100) {
+            return true;
+        } else if (paymentId == null) {
+            return true;
+        } else if (walletLoading) {
+            return true;
+        }
+    };
+
     return (
-        <Button.Primary
-            disabled={isDisabled()}
-            pending={walletLoading}
-            onClick={async () => {
-                await fetchAndSendTransaction();
-            }}
-            className="bg-black text-white w-full shadow-lg "
-        >
-            Buy now
-        </Button.Primary>
+        <div className="flex flex-col space-y-2">
+            <Button.Primary
+                disabled={pointsDisabled()}
+                pending={walletLoading}
+                onClick={async () => {
+                    await fetchAndSendTransaction(true);
+                }}
+                className="bg-purple-700 text-white w-full shadow-xl "
+            >
+                {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
+            </Button.Primary>
+            <Button.Primary
+                disabled={isDisabled()}
+                pending={walletLoading}
+                onClick={async () => {
+                    await fetchAndSendTransaction();
+                }}
+                className="bg-black text-white w-full shadow-lg "
+            >
+                Buy now
+            </Button.Primary>
+        </div>
     );
 };
 

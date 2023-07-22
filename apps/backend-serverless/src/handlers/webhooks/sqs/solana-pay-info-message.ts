@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
+import { USDC_MINT } from '../../../configs/tokens.config.js';
 import { MissingEnvError } from '../../../errors/missing-env.error.js';
 import {
     SolanaPayInfoMessage,
@@ -8,7 +9,7 @@ import {
 } from '../../../models/sqs/solana-pay-info-message.model.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { WebsocketSessionService } from '../../../services/database/websocket.database.service.js';
-import { fetchUsdcSize } from '../../../services/helius.service.js';
+import { fetchBalance } from '../../../services/helius.service.js';
 import { WebSocketService } from '../../../services/websocket/send-websocket-message.service.js';
 import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 
@@ -52,7 +53,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
                 {
                     paymentRecordId: solanaPayInfoMessage.paymentRecordId,
                 },
-                websocketSessionService,
+                websocketSessionService
             );
 
             let paymentRecord;
@@ -72,7 +73,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
             }
 
             try {
-                const usdcSize = await fetchUsdcSize(solanaPayInfoMessage.account);
+                const usdcSize = await fetchBalance(solanaPayInfoMessage.account, USDC_MINT.toBase58());
                 if (paymentRecord.usdcAmount > usdcSize) {
                     await websocketService.sendInsufficientFundsMessage();
                 }
@@ -85,7 +86,7 @@ export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );
 
 const successfulMessage = (): APIGatewayProxyResultV2 => {

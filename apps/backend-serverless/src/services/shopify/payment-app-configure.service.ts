@@ -68,8 +68,8 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                 case 202:
                 case 204:
                 case 205:
-                    console.log(response.data.data.paymentsAppConfigure.userErrors);
-                    console.log(response.data.data.paymentsAppConfigure);
+                    // console.log(response.data.data.paymentsAppConfigure.userErrors);
+                    // console.log(response.data.data.paymentsAppConfigure);
                     paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
                     break;
                 default:

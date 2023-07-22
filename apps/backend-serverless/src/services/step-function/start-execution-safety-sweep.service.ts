@@ -13,7 +13,7 @@ const { StepFunctions } = pkg;
 // Dependency injection is used here for easier testing
 export const startExecutionOfSafetySweep = async (
     key: string,
-    stepFunctions: pkg.StepFunctions = new StepFunctions(),
+    stepFunctions: pkg.StepFunctions = new StepFunctions()
 ) => {
     const safetyMachineArn = process.env.SAFETY_ARN;
 
@@ -31,13 +31,13 @@ export const startExecutionOfSafetySweep = async (
                     input: JSON.stringify({ key: key }),
                 })
                 .promise(),
-        maxNumberOfExecutionAttempts,
+        maxNumberOfExecutionAttempts
     );
 
     // TODO: Get error out of retry
     if (attempts === maxNumberOfExecutionAttempts) {
         const error = new Error('Could not execute the shopify mutation step function');
-        console.log(error);
+        // console.log(error);
         Sentry.captureException(error);
         throw error;
     }
