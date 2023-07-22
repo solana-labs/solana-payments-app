@@ -45,7 +45,7 @@ function generateMerchantRecords(count = 1): any[] {
                 accessToken: `access-token-${i}`,
                 scopes: 'write_payment_gateways,write_payment_sessions',
                 lastNonce: `nonce-${i}`,
-                walletAddress: 'JAiArByfpjM3CKYms47FGNEqxuwDpJ93vDj9wGmQenJr',
+                walletAddress: '9CAaGmubCCGSii1a6XEsJJCtQggVUJqSb1wAaEne11rT',
                 tokenAddress: null,
                 kybInquiry: `inq_${i}`,
                 kybState: 'finished',
@@ -54,7 +54,7 @@ function generateMerchantRecords(count = 1): any[] {
                 dismissCompleted: true,
                 active: true,
                 loyaltyProgram: 'points',
-                pointsMint: '8wuKwYNTneXGcksnwdDtxCBoG5VPoDqRaWmTxVLhi8nN',
+                pointsMint: 'Fq2oteAH3w4qKfDtnrdHTqVNRoUAWwMHSqeG7gsRqPSC',
                 pointsBack: 1,
             };
         } else {
@@ -97,7 +97,7 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
                 test: 1,
                 amount: j + 1,
                 currency: 'USD',
-                usdcAmount: 1,
+                usdcAmount: 2,
                 cancelURL: `https://store-${i}.myshopify.com/checkouts/c/randomId_-${i}-${j}/processing`,
                 merchantId: `merchant-${i}`,
                 transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,

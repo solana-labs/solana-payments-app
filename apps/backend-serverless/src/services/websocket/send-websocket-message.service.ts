@@ -8,6 +8,7 @@ export interface WebSocketSessionFetcher<WebsocketQuery> {
 export class WebSocketService<WebsocketQuery> {
     private websocketSessions: WebsocketSession[] = [];
     private apiGatewayManagementApi: pkg.ApiGatewayManagementApi;
+    private loaded = false;
 
     constructor(
         apiGatewayEndpoint: string,
@@ -15,32 +16,32 @@ export class WebSocketService<WebsocketQuery> {
         private websocketSessionService: WebSocketSessionFetcher<WebsocketQuery>
     ) {
         this.apiGatewayManagementApi = new ApiGatewayManagementApi({ endpoint: apiGatewayEndpoint });
-        // Load sessions right at instantiation
-        this.loadSessions().catch(error => {
-            console.error('Error loading sessions: ', error);
-        });
     }
 
     private loadSessions = async (): Promise<void> => {
         this.websocketSessions = await this.websocketSessionService.fetchWebsocketSessions(this.query);
+        this.loaded = true;
     };
 
     private sendMessage = async (message: WebsocketMessage, payload: unknown): Promise<void> => {
-        try {
-            await Promise.all(
-                this.websocketSessions.map(async websocketSession => {
-                    const postParams = {
-                        Data: JSON.stringify({
-                            messageType: message,
-                            payload,
-                        }),
-                        ConnectionId: websocketSession.connectionId,
-                    };
-                    await this.apiGatewayManagementApi.postToConnection(postParams).promise();
-                })
-            );
-        } catch (error) {
-            console.error('Error in sendMessage():', error);
+        // Log the message and payload being sent
+        if (this.loaded === false) {
+            await this.loadSessions();
+        }
+
+        for (const websocketSession of this.websocketSessions) {
+            try {
+                const postParams = {
+                    Data: JSON.stringify({
+                        messageType: message,
+                        payload,
+                    }),
+                    ConnectionId: websocketSession.connectionId,
+                };
+                await this.apiGatewayManagementApi.postToConnection(postParams).promise();
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 

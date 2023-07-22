@@ -8,13 +8,25 @@ import { findPayingWalletFromTransaction } from '../../utilities/transaction-ins
 export const verifyTransactionWithRecord = (
     record: PaymentRecord | RefundRecord,
     transaction: web3.Transaction,
-    weShouldHaveSigned: boolean,
+    weShouldHaveSigned: boolean
 ) => {
     if (weShouldHaveSigned) {
         verifyAppCreatedTheTransaction(transaction);
     }
     verifySingleUseInstruction(transaction);
     verifyTransferInstructionIsCorrect(transaction, record);
+    verifyPayerIsNotHistoricalFeePayer(transaction);
+};
+
+export const verifyTransactionWithRecordPoints = (
+    record: PaymentRecord | RefundRecord,
+    transaction: web3.Transaction,
+    weShouldHaveSigned: boolean
+) => {
+    if (weShouldHaveSigned) {
+        verifyAppCreatedTheTransaction(transaction);
+    }
+    verifySingleUseInstruction(transaction);
     verifyPayerIsNotHistoricalFeePayer(transaction);
 };
 
@@ -90,7 +102,7 @@ export const verifyPayerIsNotHistoricalFeePayer = async (transaction: web3.Trans
 // KEEP
 export const verifyTransferInstructionIsCorrect = (
     transaction: web3.Transaction,
-    record: PaymentRecord | RefundRecord,
+    record: PaymentRecord | RefundRecord
 ) => {
     // The token transfer is the second to last instruction included. We should check it's spot and that the
     // amount is correct.
