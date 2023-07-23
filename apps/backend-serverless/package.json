@@ -61,7 +61,7 @@
     "devDependencies": {
         "@ngrok/ngrok": "^0.5.2",
         "@types/aws-lambda": "^8.10.101",
-        "@types/jest": "^29.5.1",
+        "@types/jest": "^29.5.3",
         "@types/winston": "^2.4.4",
         "axios-mock-adapter": "^1.21.4",
         "dotenv-cli": "^7.2.1",
@@ -81,7 +81,9 @@
         "serverless-prune-versions": "^1.0.4",
         "serverless-s3-local": "^0.7.2",
         "serverless-step-functions": "^3.13.1",
+        "serverless-webpack": "^5.11.0",
         "ts-jest": "^27.0.0",
+        "ts-loader": "^9.4.4",
         "tsx": "^3.12.7",
         "typescript": "^4.7.4",
         "winston": "^3.9.0"

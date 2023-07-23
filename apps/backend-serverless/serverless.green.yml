@@ -18,9 +18,8 @@ provider:
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     COIN_GECKO_API_KEY: ${env:COIN_GECKO_API_KEY}
 package:
+  artifact: .serverless/${self:service}.zip
   excludeDevDependencies: true
-  patterns:
-    - 'node_modules/.prisma/**'
 functions:
   payment:
     handler: src/handlers/shopify-handlers/payment.payment
@@ -60,14 +59,15 @@ functions:
           method: get
 
 plugins:
-  - serverless-plugin-typescript
+  - serverless-webpack
+  # - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
   - serverless-plugin-common-excludes
-  - serverless-plugin-include-dependencies
+  # - serverless-plugin-include-dependencies
 
 custom:
   serverless-offline:
@@ -77,3 +77,6 @@ custom:
     automatic: true
     includeLayers: true
     number: 3
+  webpack:
+    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
+    packager: 'pnpm' # Packager that will be used to package your external modules

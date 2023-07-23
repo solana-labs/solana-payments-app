@@ -8,7 +8,8 @@ provider:
     RPC_URL: ${env:RPC_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
 package:
-  excludeDevDependencies: false
+  artifact: .serverless/${self:service}.zip
+  excludeDevDependencies: true
 functions:
   pay:
     handler: src/handlers/pay.pay
@@ -24,7 +25,8 @@ functions:
           method: post
 
 plugins:
-  - serverless-plugin-typescript
+  - serverless-webpack
+  # - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-offline
@@ -39,3 +41,6 @@ custom:
     automatic: true
     includeLayers: true
     number: 3
+  webpack:
+    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
+    packager: 'pnpm' # Packager that will be used to package your external modules
