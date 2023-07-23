@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import { InvalidInputError } from '../../../errors/invalid-input.error.js';
-import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error';
+import { startExecutionOfShopifyMutationRetry } from '../../../services/step-function/start-execution-shopify-retry.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -52,5 +52,5 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

@@ -1,23 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
-import { delay } from '../../utilities/delay.utility.js';
-import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
+import { delay } from '../../utilities/delay.utility';
+import { TransactionSignatureQuery } from '../database/payment-record-service.database.service';
 import {
     PaymentResolveResponse,
     ShopifyResolveResponse,
     getRecordServiceForTransaction,
-} from '../database/record-service.database.service.js';
-import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
-import { fetchTransaction } from '../fetch-transaction.service.js';
-import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
-import { WebSocketService } from '../websocket/send-websocket-message.service.js';
+} from '../database/record-service.database.service';
+import { TransactionRecordService } from '../database/transaction-record-service.database.service';
+import { fetchTransaction } from '../fetch-transaction.service';
+import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service';
+import { WebSocketService } from '../websocket/send-websocket-message.service';
 
 export const processTransaction = async (
     signature: string,
     prisma: PrismaClient,
     websocketService: WebSocketService<TransactionSignatureQuery> | null,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
 

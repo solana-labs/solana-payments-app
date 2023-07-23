@@ -8,16 +8,16 @@ import {
     WebsocketSession,
 } from '@prisma/client';
 import axios from 'axios';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model.js';
-import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
-import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service.js';
-import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service.js';
-import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
-import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service.js';
-import { MerchantService } from './merchant-service.database.service.js';
-import { PaymentRejectResponse, PaymentResolveResponse, RecordService } from './record-service.database.service.js';
-import { prismaErrorHandler } from './shared.database.service.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error';
+import { ShopifyPaymentInitiation } from '../../models/shopify/process-payment-request.model';
+import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility';
+import { makePaymentSessionResolve } from '../shopify/payment-session-resolve.service';
+import { validatePaymentSessionResolved } from '../shopify/validate-payment-session-resolved.service';
+import { sendPaymentResolveRetryMessage } from '../sqs/sqs-send-message.service';
+import { WebSocketSessionFetcher } from '../websocket/send-websocket-message.service';
+import { MerchantService } from './merchant-service.database.service';
+import { PaymentRejectResponse, PaymentResolveResponse, RecordService } from './record-service.database.service';
+import { prismaErrorHandler } from './shared.database.service';
 
 export type PaidUpdate = {
     status: PaymentRecordStatus;
@@ -92,7 +92,7 @@ export class PaymentRecordService
                 where: {
                     id: transactionRecord.paymentRecordId,
                 },
-            }),
+            })
         );
     }
 
@@ -102,7 +102,7 @@ export class PaymentRecordService
                 where: {
                     id,
                 },
-            }),
+            })
         );
     }
 
@@ -117,7 +117,7 @@ export class PaymentRecordService
                     transactionSignature: transactionSignature,
                     completedAt: new Date(),
                 },
-            }),
+            })
         );
     }
 
@@ -136,7 +136,7 @@ export class PaymentRecordService
                     redirectUrl: resolveResponse.redirectUrl,
                     completedAt: new Date(),
                 },
-            }),
+            })
         );
     }
 
@@ -166,7 +166,7 @@ export class PaymentRecordService
         const paymentRecord = await prismaErrorHandler(
             this.prisma.paymentRecord.findFirst({
                 where: query,
-            }),
+            })
         );
 
         if (paymentRecord == null) {
@@ -177,7 +177,7 @@ export class PaymentRecordService
 
     async getPaymentRecordsForMerchantWithPagination(
         query: PaymentRecordQuery,
-        pagination: Pagination,
+        pagination: Pagination
     ): Promise<PaymentRecord[] | null> {
         return prismaErrorHandler(
             this.prisma.paymentRecord.findMany({
@@ -200,7 +200,7 @@ export class PaymentRecordService
                 },
                 take: pagination.pageSize,
                 skip: calculatePaginationSkip(pagination),
-            }),
+            })
         );
     }
 
@@ -210,7 +210,7 @@ export class PaymentRecordService
     }
 
     async getPaymentRecordAndWebsocketServiceForTransactionSignature(
-        transactionSignature: string,
+        transactionSignature: string
     ): Promise<{ websocketSessions: WebsocketSession[] }> {
         const transactionRecord = await prismaErrorHandler(
             this.prisma.transactionRecord.findUnique({
@@ -222,7 +222,7 @@ export class PaymentRecordService
                         },
                     },
                 },
-            }),
+            })
         );
 
         if (transactionRecord && transactionRecord.paymentRecord) {
@@ -237,7 +237,7 @@ export class PaymentRecordService
     }
 
     async getPaymentRecordAndWebsocketServiceForTransactionSignatures(
-        transactionSignatures: string[],
+        transactionSignatures: string[]
     ): Promise<{ websocketSessions: WebsocketSession[] }> {
         const transactionRecords = await prismaErrorHandler(
             this.prisma.transactionRecord.findMany({
@@ -249,7 +249,7 @@ export class PaymentRecordService
                         },
                     },
                 },
-            }),
+            })
         );
 
         let websocketSessions: WebsocketSession[] = [];
@@ -279,7 +279,7 @@ export class PaymentRecordService
                         },
                     ],
                 },
-            }),
+            })
         );
     }
 
@@ -287,7 +287,7 @@ export class PaymentRecordService
         id: string,
         paymentInitiation: ShopifyPaymentInitiation,
         merchant: Merchant,
-        usdcAmount: number,
+        usdcAmount: number
     ): Promise<PaymentRecord> {
         return prismaErrorHandler(
             this.prisma.paymentRecord.create({
@@ -308,7 +308,7 @@ export class PaymentRecordService
                     completedAt: null,
                     rejectionReason: null,
                 },
-            }),
+            })
         );
     }
 
@@ -319,7 +319,7 @@ export class PaymentRecordService
                     id: paymentRecord.id,
                 },
                 data: update,
-            }),
+            })
         );
     }
 }

@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../../utilities/yup.utility';
 
 export const paymentStatusRequestScheme = object().shape({
     paymentId: string().required(),
@@ -12,6 +12,6 @@ export const parseAndValidatePaymentStatusRequest = (paymentStatusRequestParamet
     return parseAndValidateStrict(
         paymentStatusRequestParameters,
         paymentStatusRequestScheme,
-        'Can not parse payment status request. Unkownn reason.',
+        'Can not parse payment status request. Unkownn reason.'
     );
 };

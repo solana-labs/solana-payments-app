@@ -1,8 +1,8 @@
 import { PaymentRecord, PrismaClient, RefundRecord } from '@prisma/client';
-import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
-import { RefundRecordService } from '../../../services/database/refund-record-service.database.service.js';
-import { Pagination } from './database-services.utility.js';
-import { RefundDataResponse, createRefundDataResponseFromRefundRecord } from './refund-record.utility.js';
+import { MerchantAuthToken } from '../../../models/clients/merchant-ui/merchant-auth-token.model';
+import { RefundRecordService } from '../../../services/database/refund-record-service.database.service';
+import { Pagination } from './database-services.utility';
+import { RefundDataResponse, createRefundDataResponseFromRefundRecord } from './refund-record.utility';
 
 export interface RefundResponse {
     page: number;
@@ -20,7 +20,7 @@ export const createRefundResponse = async (
     merchantAuthToken: MerchantAuthToken,
     status: RefundStatusOption,
     pagination: Pagination,
-    prisma: PrismaClient,
+    prisma: PrismaClient
 ): Promise<RefundResponse> => {
     const refundRecordService = new RefundRecordService(prisma);
     let refundRecords: (RefundRecord & { paymentRecord: PaymentRecord | null })[] | null;
@@ -29,7 +29,7 @@ export const createRefundResponse = async (
     if (status == RefundStatusOption.open) {
         refundRecords = await refundRecordService.getOpenRefundRecordsForMerchantWithPagination(
             { merchantId: merchantAuthToken.id },
-            pagination,
+            pagination
         );
         total =
             (await refundRecordService.getTotalOpenRefundRecordsForMerchant({
@@ -38,7 +38,7 @@ export const createRefundResponse = async (
     } else {
         refundRecords = await refundRecordService.getClosedRefundRecordsForMerchantWithPagination(
             { merchantId: merchantAuthToken.id },
-            pagination,
+            pagination
         );
         total =
             (await refundRecordService.getTotalClosedRefundRecordsForMerchant({

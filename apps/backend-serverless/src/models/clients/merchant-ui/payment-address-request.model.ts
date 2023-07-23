@@ -1,6 +1,6 @@
 import { InferType, boolean, number, object, string } from 'yup';
-import { parseAndValidate } from '../../../utilities/yup.utility.js';
-import { publicKeySchema } from '../../public-key-schema.model.js';
+import { parseAndValidate } from '../../../utilities/yup.utility';
+import { publicKeySchema } from '../../public-key-schema.model';
 
 export const merchantUpdateRequestBodySchema = object().shape({
     paymentAddress: publicKeySchema.optional(),

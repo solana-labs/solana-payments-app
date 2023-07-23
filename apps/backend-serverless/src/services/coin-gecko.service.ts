@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { DependencyError } from '../errors/dependency.error.js';
-import { MissingEnvError } from '../errors/missing-env.error.js';
+import { DependencyError } from '../errors/dependency.error';
+import { MissingEnvError } from '../errors/missing-env.error';
 
 const COIN_GECKO_USDC_ID = 'usd-coin';
 const COIN_GECKO_API_BASE_URL = 'https://api.coingecko.com';

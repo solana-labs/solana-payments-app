@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/serverless';
 import pkg from 'aws-sdk';
-import { DependencyError } from '../../errors/dependency.error.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { DependencyError } from '../../errors/dependency.error';
+import { MissingEnvError } from '../../errors/missing-env.error';
 import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
-} from '../../models/shopify-graphql-responses/shared.model.js';
+} from '../../models/shopify-graphql-responses/shared.model';
 import {
     ShopifyMutationAppConfigure,
     ShopifyMutationPaymentReject,
@@ -13,8 +13,8 @@ import {
     ShopifyMutationRefundReject,
     ShopifyMutationRefundResolve,
     ShopifyMutationRetryType,
-} from '../../models/sqs/shopify-mutation-retry.model.js';
-import { nextRetryTimeInterval, retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
+} from '../../models/sqs/shopify-mutation-retry.model';
+import { nextRetryTimeInterval, retry } from '../../utilities/shopify-retry/shopify-retry.utility';
 const { SQS } = pkg;
 
 /*

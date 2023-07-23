@@ -1,8 +1,8 @@
 import { Merchant, PrismaClient } from '@prisma/client';
-import { ConflictingStateError } from '../../errors/conflicting-state.error.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { createErrorResponse } from '../responses/error-response.utility.js';
-import { getKybState } from './get-kyb-state.js';
+import { ConflictingStateError } from '../../errors/conflicting-state.error';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { createErrorResponse } from '../responses/error-response.utility';
+import { getKybState } from './get-kyb-state';
 
 export const syncKybState = async (merchant: Merchant, prisma: PrismaClient): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);

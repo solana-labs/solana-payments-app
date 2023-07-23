@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidateRefundStatusRequest } from '../../../../models/clients/merchant-ui/refund-status-request.model.js';
-import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/clients/merchant-ui/refund-record.utility.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { parseAndValidateRefundStatusRequest } from '../../../../models/clients/merchant-ui/refund-status-request.model';
+import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service';
+import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response';
+import { createRefundDataResponseFromRefundRecord } from '../../../../utilities/clients/merchant-ui/refund-record.utility';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -50,5 +50,5 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

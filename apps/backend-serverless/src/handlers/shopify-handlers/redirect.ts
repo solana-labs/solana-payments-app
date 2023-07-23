@@ -2,17 +2,17 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { parseAndValidateAppRedirectQueryParams } from '../../models/shopify/redirect-query-params.model.js';
-import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
-import { makeAdminData } from '../../services/shopify/admin-data.service.js';
-import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
-import { createOnboardingResponse } from '../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
-import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { parseAndValidateAppRedirectQueryParams } from '../../models/shopify/redirect-query-params.model';
+import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { fetchAccessToken } from '../../services/fetch-access-token.service';
+import { makeAdminData } from '../../services/shopify/admin-data.service';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility';
+import { createOnboardingResponse } from '../../utilities/clients/merchant-ui/create-onboarding-response.utility';
+import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
+import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility';
 
 const prisma = new PrismaClient();
 

@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const safetyKeyMessageSchema = object().shape({
     key: string().required(),
@@ -11,6 +11,6 @@ export const parseAndValidateSafetyKeyMessage = (safetyKeyMessageBody: unknown):
     return parseAndValidateStrict(
         safetyKeyMessageBody,
         safetyKeyMessageSchema,
-        'Could not parse the safety key message. Unknown Reason.',
+        'Could not parse the safety key message. Unknown Reason.'
     );
 };

@@ -1,16 +1,16 @@
 import { PaymentRecordStatus, PrismaClient } from '@prisma/client';
 import axios from 'axios';
-import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error.js';
-import { ShopifyMutationPaymentReject } from '../../models/sqs/shopify-mutation-retry.model.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { PaymentRecordService } from '../database/payment-record-service.database.service.js';
-import { makePaymentSessionReject } from '../shopify/payment-session-reject.service.js';
-import { validatePaymentSessionRejected } from '../shopify/validate-payment-session-rejected.service.js';
+import { MissingExpectedDatabaseValueError } from '../../errors/missing-expected-database-value.error';
+import { ShopifyMutationPaymentReject } from '../../models/sqs/shopify-mutation-retry.model';
+import { MerchantService } from '../database/merchant-service.database.service';
+import { PaymentRecordService } from '../database/payment-record-service.database.service';
+import { makePaymentSessionReject } from '../shopify/payment-session-reject.service';
+import { validatePaymentSessionRejected } from '../shopify/validate-payment-session-rejected.service';
 
 export const retryPaymentReject = async (
     paymentRejectInfo: ShopifyMutationPaymentReject | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
     const paymentRecordService = new PaymentRecordService(prisma);
@@ -37,7 +37,7 @@ export const retryPaymentReject = async (
         paymentRecord.shopGid,
         paymentRejectInfo.reason,
         merchant.shop,
-        merchant.accessToken,
+        merchant.accessToken
     );
 
     validatePaymentSessionRejected(rejectPaymentResponse);

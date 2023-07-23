@@ -1,6 +1,6 @@
 import { InferType, number, object } from 'yup';
-import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility.js';
-import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
+import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility';
+import { parseAndValidateStrict } from '../../../utilities/yup.utility';
 
 const parseParameters = (params: any) => {
     return {
@@ -17,11 +17,11 @@ export const paymentDataRequestParametersSchema = object().shape({
 export type PaymentDataRequestParameters = InferType<typeof paymentDataRequestParametersSchema>;
 
 export const parseAndValidatePaymentDataRequestParameters = (
-    paymentDataRequestParametersBody: any,
+    paymentDataRequestParametersBody: any
 ): PaymentDataRequestParameters => {
     return parseAndValidateStrict(
         parseParameters(paymentDataRequestParametersBody),
         paymentDataRequestParametersSchema,
-        'Could not parse the payment data request parameters. Unknown Reason.',
+        'Could not parse the payment data request parameters. Unknown Reason.'
     );
 };

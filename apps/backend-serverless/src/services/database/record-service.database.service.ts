@@ -1,10 +1,10 @@
 // import { Merchant, PaymentRecord, PrismaClient, RefundRecord, TransactionRecord } from '@prisma/client';
-// import { PaymentRecordService } from './payment-record-service.database.service.js';
+// import { PaymentRecordService } from './payment-record-service.database.service';
 
 import { PaymentRecord, PrismaClient, RefundRecord, TransactionRecord } from '@prisma/client';
 import axios from 'axios';
-import { PaymentRecordService } from './payment-record-service.database.service.js';
-import { RefundRecordService } from './refund-record-service.database.service.js';
+import { PaymentRecordService } from './payment-record-service.database.service';
+import { RefundRecordService } from './refund-record-service.database.service';
 
 export type ShopifyRecord = PaymentRecord | RefundRecord;
 export type PaymentRejectResponse = {};
@@ -34,7 +34,7 @@ export interface RecordService<RecordType, ResolveResponse> {
 
 export const getRecordServiceForTransaction = async (
     transactionRecord: TransactionRecord,
-    prisma: PrismaClient,
+    prisma: PrismaClient
 ): Promise<RecordService<ShopifyRecord, ShopifyResolveResponse>> => {
     switch (transactionRecord.type) {
         case 'payment':

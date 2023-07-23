@@ -1,17 +1,17 @@
 import { PaymentRecordRejectionReason } from '@prisma/client';
 import * as Sentry from '@sentry/node';
 import { AxiosInstance } from 'axios';
-import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
 import {
     RejectPaymentResponse,
     parseAndValidateRejectPaymentResponse,
-} from '../../models/shopify-graphql-responses/reject-payment-response.model.js';
-import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model.js';
+} from '../../models/shopify-graphql-responses/reject-payment-response.model';
+import { PaymentSessionStateRejectedReason } from '../../models/shopify-graphql-responses/shared.model';
 
 // TODO: Update these to marketing strings
 export const paymentSessionRejectionDisplayMessages = (
-    reason: PaymentRecordRejectionReason,
+    reason: PaymentRecordRejectionReason
 ): { errorTitle: string; errorDescription: string } => {
     switch (reason) {
         case PaymentRecordRejectionReason.dependencySafetyReason:
@@ -59,7 +59,7 @@ export const makePaymentSessionReject =
         id: string,
         reason: PaymentSessionStateRejectedReason,
         shop: string,
-        token: string,
+        token: string
     ): Promise<RejectPaymentResponse> => {
         const headers = {
             'content-type': 'application/graphql',
@@ -96,7 +96,7 @@ export const makePaymentSessionReject =
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
                     );
             }
         } catch (error) {

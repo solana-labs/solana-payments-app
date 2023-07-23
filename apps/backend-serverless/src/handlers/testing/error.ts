@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -25,5 +25,5 @@ export const error = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

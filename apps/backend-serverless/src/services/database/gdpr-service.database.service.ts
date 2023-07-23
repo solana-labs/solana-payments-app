@@ -1,5 +1,5 @@
 import { GDPR, PrismaClient } from '@prisma/client';
-import { prismaErrorHandler } from './shared.database.service.js';
+import { prismaErrorHandler } from './shared.database.service';
 
 export class GDPRService {
     private prisma: PrismaClient;
@@ -15,7 +15,7 @@ export class GDPRService {
                     merchantId: merchantId,
                     completed: false,
                 },
-            }),
+            })
         );
     }
 }

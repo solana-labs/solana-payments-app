@@ -1,5 +1,5 @@
 import { InferType, bool, number, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 /*
     SPEC: https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite
 */
@@ -67,11 +67,11 @@ export const shopifyPaymentInitiationScheme = object().shape({
 export type ShopifyPaymentInitiation = InferType<typeof shopifyPaymentInitiationScheme>;
 
 export const parseAndValidateShopifyPaymentInitiation = (
-    paymentInitiationRequestBody: unknown,
+    paymentInitiationRequestBody: unknown
 ): ShopifyPaymentInitiation => {
     return parseAndValidateStrict(
         parseParameters(paymentInitiationRequestBody),
         shopifyPaymentInitiationScheme,
-        'Could not parse the Shopify payment initiation request. Unknown Reason.',
+        'Could not parse the Shopify payment initiation request. Unknown Reason.'
     );
 };

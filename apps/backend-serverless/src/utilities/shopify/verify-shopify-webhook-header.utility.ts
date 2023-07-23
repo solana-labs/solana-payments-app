@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error';
 
 export const verifyShopifyWebhook = (data: Buffer, hmacHeader: string) => {
     const shopifySecret = process.env.SHOPIFY_SECRET_KEY;

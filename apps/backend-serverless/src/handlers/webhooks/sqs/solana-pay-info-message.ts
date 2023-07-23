@@ -1,17 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
-import { USDC_MINT } from '../../../configs/tokens.config.js';
-import { MissingEnvError } from '../../../errors/missing-env.error.js';
+import { USDC_MINT } from '../../../configs/tokens.config';
+import { MissingEnvError } from '../../../errors/missing-env.error';
 import {
     SolanaPayInfoMessage,
     parseAndValidateSolanaPayInfoMessage,
-} from '../../../models/sqs/solana-pay-info-message.model.js';
-import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { WebsocketSessionService } from '../../../services/database/websocket.database.service.js';
-import { fetchBalance } from '../../../services/helius.service.js';
-import { WebSocketService } from '../../../services/websocket/send-websocket-message.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+} from '../../../models/sqs/solana-pay-info-message.model';
+import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service';
+import { WebsocketSessionService } from '../../../services/database/websocket.database.service';
+import { fetchBalance } from '../../../services/helius.service';
+import { WebSocketService } from '../../../services/websocket/send-websocket-message.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 

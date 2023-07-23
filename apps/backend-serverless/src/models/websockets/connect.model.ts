@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const connectSchema = object().shape({
     paymentId: string().required(),
@@ -11,6 +11,6 @@ export const parseAndValidateConnectSchema = (connectSchemaBody: unknown): Conne
     return parseAndValidateStrict(
         connectSchemaBody,
         connectSchema,
-        'Could not parse the merchant auth token body. Unknown Reason.',
+        'Could not parse the merchant auth token body. Unknown Reason.'
     );
 };

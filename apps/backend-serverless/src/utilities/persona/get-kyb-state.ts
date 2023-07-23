@@ -1,7 +1,7 @@
 import { KybState } from '@prisma/client';
 import fetch from 'node-fetch';
-import { DependencyError } from '../../errors/dependency.error.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { DependencyError } from '../../errors/dependency.error';
+import { MissingEnvError } from '../../errors/missing-env.error';
 
 export const getKybState = async (inquiryId: string): Promise<KybState> => {
     const personaApiKey = process.env.PERSONA_API_KEY;

@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/serverless';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
-import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
+import { RejectRefundResponse } from '../../models/shopify-graphql-responses/reject-refund-response.model';
 import {
     RefundSessionStateCode,
     RefundSessionStateRejected,
-} from '../../models/shopify-graphql-responses/shared.model.js';
+} from '../../models/shopify-graphql-responses/shared.model';
 
 export const validateRefundSessionRejected = (refundSessionRejectResponse: RejectRefundResponse) => {
     const userErrors = refundSessionRejectResponse.data.refundSessionReject.userErrors;
@@ -20,7 +20,7 @@ export const validateRefundSessionRejected = (refundSessionRejectResponse: Rejec
 
     if (refundSession == null) {
         const error = new ShopifyResponseError(
-            'Refund session is null. ' + JSON.stringify(refundSessionRejectResponse.data),
+            'Refund session is null. ' + JSON.stringify(refundSessionRejectResponse.data)
         );
         console.log(error);
         Sentry.captureException(error);
@@ -31,7 +31,7 @@ export const validateRefundSessionRejected = (refundSessionRejectResponse: Rejec
 
     if (refundSessionStateTestResolved.code != RefundSessionStateCode.rejected) {
         const error = new ShopifyResponseError(
-            'Refund session state is not rejected. ' + refundSessionStateTestResolved.code,
+            'Refund session state is not rejected. ' + refundSessionStateTestResolved.code
         );
         console.log(error);
         Sentry.captureException(error);

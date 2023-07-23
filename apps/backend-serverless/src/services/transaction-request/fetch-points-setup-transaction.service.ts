@@ -3,8 +3,8 @@ import https from 'https';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../../models/transaction-requests/transaction-request-response.model.js';
-import { buildPointsSetupTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
+} from '../../models/transaction-requests/transaction-request-response.model';
+import { buildPointsSetupTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility';
 
 export const fetchPointsSetupTransaction = async (
     pointsMintAddress: string,

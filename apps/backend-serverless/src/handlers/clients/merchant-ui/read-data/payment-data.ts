@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidatePaymentDataRequestParameters } from '../../../../models/clients/merchant-ui/payment-data-request.model.js';
-import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createPaymentResponse } from '../../../../utilities/clients/merchant-ui/create-payment-response.utility.js';
-import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { parseAndValidatePaymentDataRequestParameters } from '../../../../models/clients/merchant-ui/payment-data-request.model';
+import { MerchantService } from '../../../../services/database/merchant-service.database.service';
+import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response';
+import { createPaymentResponse } from '../../../../utilities/clients/merchant-ui/create-payment-response.utility';
+import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +31,7 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
             const paymentDataRequestParameters = parseAndValidatePaymentDataRequestParameters(
-                event.queryStringParameters,
+                event.queryStringParameters
             );
             const pagination: Pagination = {
                 page: paymentDataRequestParameters.pageNumber,
@@ -59,5 +59,5 @@ export const paymentData = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

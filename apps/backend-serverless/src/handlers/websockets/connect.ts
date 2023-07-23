@@ -2,10 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
 import pkg from 'aws-sdk';
-import { parseAndValidateConnectSchema } from '../../models/websockets/connect.model.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { parseAndValidateConnectSchema } from '../../models/websockets/connect.model';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 const { ApiGatewayManagementApi } = pkg;
 
 const prisma = new PrismaClient();
@@ -44,5 +44,5 @@ export const connect = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

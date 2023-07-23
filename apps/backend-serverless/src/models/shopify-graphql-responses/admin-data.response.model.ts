@@ -1,6 +1,6 @@
 import { InferType, array, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
-import { shopifyResponseExtensionsSchema } from './shared.model.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
+import { shopifyResponseExtensionsSchema } from './shared.model';
 
 export const adminDataResponseShopSchema = object().shape({
     name: string().required(),
@@ -23,6 +23,6 @@ export const parseAndValidateAdminDataResponse = (adminDataResponeBody: unknown)
     return parseAndValidateStrict(
         adminDataResponeBody,
         adminDataResponseSchema,
-        'Could not parse the admin data response. Unknown Reason.',
+        'Could not parse the admin data response. Unknown Reason.'
     );
 };

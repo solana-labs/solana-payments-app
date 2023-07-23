@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, S3Event } from 'aws-lambda';
-import { startExecutionOfSafetySweep } from '../../../services/step-function/start-execution-safety-sweep.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { startExecutionOfSafetySweep } from '../../../services/step-function/start-execution-safety-sweep.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 export const safetyKeyUploaded = Sentry.AWSLambda.wrapHandler(
     async (event: S3Event): Promise<APIGatewayProxyResultV2> => {
@@ -24,5 +24,5 @@ export const safetyKeyUploaded = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

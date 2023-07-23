@@ -1,15 +1,15 @@
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import axios from 'axios';
-import { ShopifyMutationRefundReject } from '../../models/sqs/shopify-mutation-retry.model.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { RefundRecordService } from '../database/refund-record-service.database.service.js';
-import { makeRefundSessionReject } from '../shopify/refund-session-reject.service.js';
-import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service.js';
+import { ShopifyMutationRefundReject } from '../../models/sqs/shopify-mutation-retry.model';
+import { MerchantService } from '../database/merchant-service.database.service';
+import { RefundRecordService } from '../database/refund-record-service.database.service';
+import { makeRefundSessionReject } from '../shopify/refund-session-reject.service';
+import { validateRefundSessionRejected } from '../shopify/validate-refund-session-rejected.service';
 
 export const retryRefundReject = async (
     refundRejectInfo: ShopifyMutationRefundReject | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);
@@ -37,7 +37,7 @@ export const retryRefundReject = async (
         refundRejectInfo.code,
         refundRejectInfo.merchantMessage,
         merchant.shop,
-        merchant.accessToken,
+        merchant.accessToken
     );
 
     validateRefundSessionRejected(rejectRefundResponse);

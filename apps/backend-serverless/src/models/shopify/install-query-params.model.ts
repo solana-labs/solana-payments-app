@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const appInstallQueryParmSchema = object().shape({
     hmac: string().optional(), // optional for the purpose of validation. i should do an extra check here or make a new structure
@@ -24,6 +24,6 @@ export const parseAndValidateAppInstallQueryParms = (appInstallQuery: unknown): 
     return parseAndValidateStrict(
         appInstallQuery,
         appInstallQueryParmSchema,
-        'Could not parse the app install query. Unknown Reason.',
+        'Could not parse the app install query. Unknown Reason.'
     );
 };

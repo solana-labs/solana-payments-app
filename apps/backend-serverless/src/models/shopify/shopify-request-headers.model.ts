@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const shopifyRequestHeadersScheme = object().shape({
     'shopify-shop-domain': string().required(),
@@ -13,6 +13,6 @@ export const parseAndValidateShopifyRequestHeaders = (shopifyRequestHeaders: unk
     return parseAndValidateStrict<ShopifyRequestHeaders>(
         shopifyRequestHeaders,
         shopifyRequestHeadersScheme,
-        'Could not parse the shopify request headers. Unknown Reason.',
+        'Could not parse the shopify request headers. Unknown Reason.'
     );
 };

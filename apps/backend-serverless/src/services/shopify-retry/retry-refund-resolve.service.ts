@@ -1,15 +1,15 @@
 import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import axios from 'axios';
-import { ShopifyMutationRefundResolve } from '../../models/sqs/shopify-mutation-retry.model.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { RefundRecordService } from '../database/refund-record-service.database.service.js';
-import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
-import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
+import { ShopifyMutationRefundResolve } from '../../models/sqs/shopify-mutation-retry.model';
+import { MerchantService } from '../database/merchant-service.database.service';
+import { RefundRecordService } from '../database/refund-record-service.database.service';
+import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service';
 
 export const retryRefundResolve = async (
     refundResolveInfo: ShopifyMutationRefundResolve | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
     const refundRecordService = new RefundRecordService(prisma);

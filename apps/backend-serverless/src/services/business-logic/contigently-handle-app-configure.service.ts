@@ -1,15 +1,15 @@
 import { KybState, Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import axios from 'axios';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
-import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
-import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service.js';
+import { MerchantService } from '../database/merchant-service.database.service';
+import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service';
+import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service';
+import { sendAppConfigureRetryMessage } from '../sqs/sqs-send-message.service';
 
 export const contingentlyHandleAppConfigure = async (
     merchant: Merchant,
     axiosInstance: typeof axios,
-    prisma: PrismaClient,
+    prisma: PrismaClient
 ): Promise<Merchant> => {
     const merchantService = new MerchantService(prisma);
 
@@ -27,7 +27,7 @@ export const contingentlyHandleAppConfigure = async (
                 merchant.id.slice(0, 10),
                 true,
                 merchant.shop,
-                merchant.accessToken,
+                merchant.accessToken
             );
 
             validatePaymentAppConfigured(appConfigureResponse, merchant);

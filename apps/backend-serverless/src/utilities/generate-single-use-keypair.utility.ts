@@ -1,5 +1,5 @@
 import * as web3 from '@solana/web3.js';
-import { ShopifyRecord } from '../services/database/record-service.database.service.js';
+import { ShopifyRecord } from '../services/database/record-service.database.service';
 
 export const generateSingleUseKeypairFromRecord = async (record: ShopifyRecord) => {
     const shopifyStrings = ['shopify', record.shopId];
@@ -12,6 +12,6 @@ export const generateSingleUseKeypairFromRecord = async (record: ShopifyRecord) 
 const hashIntoPublicKey = async (inputs: string[]) => {
     return await web3.PublicKey.findProgramAddressSync(
         inputs.map(input => Buffer.from(input)),
-        web3.SystemProgram.programId,
+        web3.SystemProgram.programId
     )[0];
 };

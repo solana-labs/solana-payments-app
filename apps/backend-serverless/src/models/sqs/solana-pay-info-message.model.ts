@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const solanaPayInfoMessageSchema = object().shape({
     account: string().required(),
@@ -12,6 +12,6 @@ export const parseAndValidateSolanaPayInfoMessage = (solanaPayInfoMessageBody: u
     return parseAndValidateStrict(
         solanaPayInfoMessageBody,
         solanaPayInfoMessageSchema,
-        'Could not parse the solana pay info message body. Unknown Reason.',
+        'Could not parse the solana pay info message body. Unknown Reason.'
     );
 };

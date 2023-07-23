@@ -2,20 +2,20 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { InvalidInputError } from '../../errors/invalid-input.error';
 import {
     ShopifyMutationRetry,
     ShopifyMutationRetryType,
     parseAndValidateShopifyMutationRetry,
-} from '../../models/sqs/shopify-mutation-retry.model.js';
-import { retryAppConfigure } from '../../services/shopify-retry/retry-app-configure.service.js';
-import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service.js';
-import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service.js';
-import { retryRefundReject } from '../../services/shopify-retry/retry-refund-reject.service.js';
-import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service.js';
-import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility.js';
+} from '../../models/sqs/shopify-mutation-retry.model';
+import { retryAppConfigure } from '../../services/shopify-retry/retry-app-configure.service';
+import { retryPaymentReject } from '../../services/shopify-retry/retry-payment-reject.service';
+import { retryPaymentResolve } from '../../services/shopify-retry/retry-payment-resolve.service';
+import { retryRefundReject } from '../../services/shopify-retry/retry-refund-reject.service';
+import { retryRefundResolve } from '../../services/shopify-retry/retry-refund-resolve.service';
+import { sendRetryMessage } from '../../services/sqs/sqs-send-message.service';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
+import { exhaustedRetrySteps } from '../../utilities/shopify-retry/shopify-retry.utility';
 
 const prisma = new PrismaClient();
 
@@ -86,7 +86,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                     shopifyMutationRetry.refundResolve,
                     shopifyMutationRetry.refundReject,
                     shopifyMutationRetry.appConfigure,
-                    nextStep,
+                    nextStep
                 );
             } catch (error) {
                 return createErrorResponse(error);
@@ -100,5 +100,5 @@ export const retry = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

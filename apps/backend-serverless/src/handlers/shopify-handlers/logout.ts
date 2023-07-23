@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { deleteMerchantAuthCookieHeader } from '../../utilities/clients/merchant-ui/delete-cookie-header.utility.js';
+import { deleteMerchantAuthCookieHeader } from '../../utilities/clients/merchant-ui/delete-cookie-header.utility';
 
 const prisma = new PrismaClient();
 
@@ -33,5 +33,5 @@ export const logout = Sentry.AWSLambda.wrapHandler(
             cookies: [merchantCookie, nonceCookie],
             body: JSON.stringify({ message: 'Logged out' }),
         };
-    },
+    }
 );

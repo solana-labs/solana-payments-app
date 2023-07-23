@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { ShopifyMutationAppConfigure } from '../../models/sqs/shopify-mutation-retry.model.js';
-import { MerchantService } from '../database/merchant-service.database.service.js';
-import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service.js';
-import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error';
+import { ShopifyMutationAppConfigure } from '../../models/sqs/shopify-mutation-retry.model';
+import { MerchantService } from '../database/merchant-service.database.service';
+import { makePaymentAppConfigure } from '../shopify/payment-app-configure.service';
+import { validatePaymentAppConfigured } from '../shopify/validate-payment-app-configured.service';
 
 export const retryAppConfigure = async (
     appConfigureInfo: ShopifyMutationAppConfigure | null,
     prisma: PrismaClient,
-    axiosInstance: typeof axios,
+    axiosInstance: typeof axios
 ) => {
     const merchantService = new MerchantService(prisma);
 
@@ -30,7 +30,7 @@ export const retryAppConfigure = async (
             merchant.id,
             appConfigureInfo.state,
             merchant.shop,
-            merchant.accessToken,
+            merchant.accessToken
         );
 
         validatePaymentAppConfigured(configureAppResponse, merchant);

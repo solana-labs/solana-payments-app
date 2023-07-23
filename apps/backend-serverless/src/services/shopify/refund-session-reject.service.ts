@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/node';
 import { AxiosInstance } from 'axios';
-import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
 import {
     RejectRefundResponse,
     parseAndValidateRejectRefundResponse,
-} from '../../models/shopify-graphql-responses/reject-refund-response.model.js';
+} from '../../models/shopify-graphql-responses/reject-refund-response.model';
 
 const refundSessionRejectMutation = `mutation RefundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
     refundSessionReject(id: $id, reason: $reason) {
@@ -34,7 +34,7 @@ export const makeRefundSessionReject =
         code: string,
         merchantMessage: string | undefined,
         shop: string,
-        token: string,
+        token: string
     ): Promise<RejectRefundResponse> => {
         const headers = {
             'content-type': 'application/json',
@@ -77,7 +77,7 @@ export const makeRefundSessionReject =
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
                     );
             }
         } catch (error) {

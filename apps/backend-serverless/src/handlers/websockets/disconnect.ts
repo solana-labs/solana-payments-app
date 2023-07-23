@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, APIGatewayProxyWebsocketEventV2 } from 'aws-lambda';
-import { WebsocketSessionService } from '../../services/database/websocket.database.service.js';
+import { WebsocketSessionService } from '../../services/database/websocket.database.service';
 
 const prisma = new PrismaClient();
 
@@ -31,5 +31,5 @@ export const disconnect = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

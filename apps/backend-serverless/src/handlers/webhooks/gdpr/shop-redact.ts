@@ -1,16 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { InvalidInputError } from '../../../errors/invalid-input.error.js';
-import { parseAndValidateShopRedactRequestBody } from '../../../models/shopify/shop-redact-request.model.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error';
+import { parseAndValidateShopRedactRequestBody } from '../../../models/shopify/shop-redact-request.model';
 import {
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
-} from '../../../models/shopify/shopify-webhook-headers.model.js';
-import { GDPRService } from '../../../services/database/gdpr-service.database.service.js';
-import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
-import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
+} from '../../../models/shopify/shopify-webhook-headers.model';
+import { GDPRService } from '../../../services/database/gdpr-service.database.service';
+import { MerchantService } from '../../../services/database/merchant-service.database.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
+import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility';
 
 const prisma = new PrismaClient();
 
@@ -59,5 +59,5 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

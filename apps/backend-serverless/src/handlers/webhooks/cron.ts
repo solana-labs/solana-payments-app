@@ -2,11 +2,11 @@ import { PrismaClient, TransactionRecord } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { processTransaction } from '../../services/business-logic/process-transaction.service.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { processTransaction } from '../../services/business-logic/process-transaction.service';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -56,7 +56,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
             {
                 signatures: signatures,
             },
-            paymentRecordService,
+            paymentRecordService
         );
 
         await websocketService.sendProcessingTransactionMessage();
@@ -77,5 +77,5 @@ export const cron = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

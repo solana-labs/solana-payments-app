@@ -1,7 +1,7 @@
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
 import pkg from 'bs58';
-import { MissingEnvError } from '../errors/missing-env.error.js';
+import { MissingEnvError } from '../errors/missing-env.error';
 const { decode } = pkg;
 
 export const fetchTransaction = async (transactionId: string): Promise<web3.Transaction> => {

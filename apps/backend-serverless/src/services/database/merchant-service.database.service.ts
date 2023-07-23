@@ -1,11 +1,11 @@
 import { KybState, LoyaltyProgram, Merchant, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
-import { USDC_MINT } from '../../configs/tokens.config.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
-import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
-import { PubkeyType, getPubkeyType } from '../helius.service.js';
-import { prismaErrorHandler } from './shared.database.service.js';
+import { USDC_MINT } from '../../configs/tokens.config';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error';
+import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility';
+import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility';
+import { PubkeyType, getPubkeyType } from '../helius.service';
+import { prismaErrorHandler } from './shared.database.service';
 
 export type ShopQuery = {
     shop: string;

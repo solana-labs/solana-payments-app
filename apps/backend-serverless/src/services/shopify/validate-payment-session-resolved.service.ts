@@ -1,14 +1,14 @@
 import * as Sentry from '@sentry/serverless';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
-import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
+import { ResolvePaymentResponse } from '../../models/shopify-graphql-responses/resolve-payment-response.model';
 import {
     PaymentSessionNextActionAction,
     PaymentSessionStateCode,
     PaymentSessionStateResolved,
-} from '../../models/shopify-graphql-responses/shared.model.js';
+} from '../../models/shopify-graphql-responses/shared.model';
 
 export const validatePaymentSessionResolved = (
-    paymentSessionResolveResponse: ResolvePaymentResponse,
+    paymentSessionResolveResponse: ResolvePaymentResponse
 ): { redirectUrl: string } => {
     const userErrors = paymentSessionResolveResponse.data.paymentSessionResolve.userErrors;
 
@@ -23,7 +23,7 @@ export const validatePaymentSessionResolved = (
 
     if (paymentSession == null) {
         const error = new ShopifyResponseError(
-            'Payment session is null. ' + JSON.stringify(paymentSessionResolveResponse.data),
+            'Payment session is null. ' + JSON.stringify(paymentSessionResolveResponse.data)
         );
         console.log(error);
         Sentry.captureException(error);
@@ -44,7 +44,7 @@ export const validatePaymentSessionResolved = (
 
     if (paymentSessionNextAction == null) {
         const error = new ShopifyResponseError(
-            'Payment session next action is null. ' + JSON.stringify(paymentSession),
+            'Payment session next action is null. ' + JSON.stringify(paymentSession)
         );
         console.log(error);
         Sentry.captureException(error);

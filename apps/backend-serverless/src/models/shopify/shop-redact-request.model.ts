@@ -1,5 +1,5 @@
 import { InferType, number, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const shopRedactRequestScheme = object().shape({
     shop_id: number().required(),
@@ -12,6 +12,6 @@ export const parseAndValidateShopRedactRequestBody = (shopRedactRequestBody: unk
     return parseAndValidateStrict<ShopRedactRequest>(
         shopRedactRequestBody,
         shopRedactRequestScheme,
-        'Could not parse the shop redact body. Unknown Reason.',
+        'Could not parse the shop redact body. Unknown Reason.'
     );
 };

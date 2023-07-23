@@ -1,9 +1,9 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
 import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
-import { USDC_MINT } from '../../configs/tokens.config.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility.js';
+import { USDC_MINT } from '../../configs/tokens.config';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { findPayingWalletFromTransaction } from '../../utilities/transaction-inspection.utility';
 
 export const verifyTransactionWithRecord = (
     record: PaymentRecord | RefundRecord,

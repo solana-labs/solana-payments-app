@@ -8,15 +8,15 @@ import {
     TransactionRecord,
 } from '@prisma/client';
 import axios from 'axios';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
-import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility.js';
-import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service.js';
-import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service.js';
-import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service.js';
-import { MerchantService } from './merchant-service.database.service.js';
-import { RecordService, RefundRejectResponse, RefundResolveResponse } from './record-service.database.service.js';
-import { prismaErrorHandler } from './shared.database.service.js';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error';
+import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model';
+import { Pagination, calculatePaginationSkip } from '../../utilities/clients/merchant-ui/database-services.utility';
+import { makeRefundSessionResolve } from '../shopify/refund-session-resolve.service';
+import { validateRefundSessionResolved } from '../shopify/validate-refund-session-resolved.service';
+import { sendRefundResolveRetryMessage } from '../sqs/sqs-send-message.service';
+import { MerchantService } from './merchant-service.database.service';
+import { RecordService, RefundRejectResponse, RefundResolveResponse } from './record-service.database.service';
+import { prismaErrorHandler } from './shared.database.service';
 
 export type PaidTransactionUpdate = {
     status: PaymentRecordStatus;
@@ -83,7 +83,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 where: {
                     id: transactionRecord.refundRecordId,
                 },
-            }),
+            })
         );
     }
 
@@ -93,7 +93,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 where: {
                     id,
                 },
-            }),
+            })
         );
     }
 
@@ -108,7 +108,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                     transactionSignature: transactionSignature,
                     completedAt: new Date(),
                 },
-            }),
+            })
         );
     }
 
@@ -122,7 +122,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                     status: RefundRecordStatus.completed,
                     completedAt: new Date(),
                 },
-            }),
+            })
         );
     }
 
@@ -154,18 +154,18 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         const refundRecord = await prismaErrorHandler(
             this.prisma.refundRecord.findFirst({
                 where: query,
-            }),
+            })
         );
         if (refundRecord == null) {
             throw new MissingExpectedDatabaseRecordError(
-                'Could not find refund record ' + JSON.stringify(query) + ' in database',
+                'Could not find refund record ' + JSON.stringify(query) + ' in database'
             );
         }
         return refundRecord;
     }
 
     async getRefundRecordWithPayment(
-        query: RefundRecordQuery,
+        query: RefundRecordQuery
     ): Promise<RefundRecord & { paymentRecord: PaymentRecord | null }> {
         const refundRecord = await prismaErrorHandler(
             this.prisma.refundRecord.findFirst({
@@ -173,12 +173,12 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 include: {
                     paymentRecord: true,
                 },
-            }),
+            })
         );
 
         if (refundRecord == null) {
             throw new MissingExpectedDatabaseRecordError(
-                'Could not find refund record ' + JSON.stringify(query) + ' in database',
+                'Could not find refund record ' + JSON.stringify(query) + ' in database'
             );
         }
         return refundRecord;
@@ -186,7 +186,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
 
     async getOpenRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
-        pagination: Pagination,
+        pagination: Pagination
     ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
         return prismaErrorHandler(
             this.prisma.refundRecord.findMany({
@@ -206,13 +206,13 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 },
                 take: pagination.pageSize,
                 skip: calculatePaginationSkip(pagination),
-            }),
+            })
         );
     }
 
     async getClosedRefundRecordsForMerchantWithPagination(
         query: RefundRecordQuery,
-        pagination: Pagination,
+        pagination: Pagination
     ): Promise<(RefundRecord & { paymentRecord: PaymentRecord | null })[] | null> {
         return prismaErrorHandler(
             this.prisma.refundRecord.findMany({
@@ -238,7 +238,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 },
                 take: pagination.pageSize,
                 skip: calculatePaginationSkip(pagination),
-            }),
+            })
         );
     }
 
@@ -253,7 +253,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                         },
                     ],
                 },
-            }),
+            })
         );
     }
 
@@ -274,7 +274,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                         },
                     ],
                 },
-            }),
+            })
         );
     }
 
@@ -285,11 +285,11 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                 include: {
                     paymentRecord: true,
                 },
-            }),
+            })
         );
         if (refundRecord == null) {
             throw new MissingExpectedDatabaseRecordError(
-                'Could not find refund record ' + JSON.stringify(query) + ' in database',
+                'Could not find refund record ' + JSON.stringify(query) + ' in database'
             );
         }
 
@@ -300,7 +300,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
         id: string,
         refundInitiation: ShopifyRefundInitiation,
         merchant: Merchant,
-        usdcAmount: number,
+        usdcAmount: number
     ): Promise<RefundRecord> {
         return await prismaErrorHandler(
             this.prisma.refundRecord.create({
@@ -319,7 +319,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                     requestedAt: new Date(),
                     completedAt: null,
                 },
-            }),
+            })
         );
     }
 

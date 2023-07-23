@@ -1,13 +1,13 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
 import axios from 'axios';
-import { USDC_MINT } from '../../configs/tokens.config.js';
+import { USDC_MINT } from '../../configs/tokens.config';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
-} from '../../models/transaction-requests/transaction-request-response.model.js';
-import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility.js';
-import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
-import { fetchTransaction } from '../fetch-transaction.service.js';
+} from '../../models/transaction-requests/transaction-request-response.model';
+import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility';
+import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility';
+import { fetchTransaction } from '../fetch-transaction.service';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,

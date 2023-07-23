@@ -1,19 +1,19 @@
 import axios, { AxiosResponse } from 'axios';
-import { USDC_MINT } from '../configs/tokens.config.js';
-import { DependencyError } from '../errors/dependency.error.js';
-import { InvalidInputError } from '../errors/invalid-input.error.js';
+import { USDC_MINT } from '../configs/tokens.config';
+import { DependencyError } from '../errors/dependency.error';
+import { InvalidInputError } from '../errors/invalid-input.error';
 import {
     GetAccountInfo,
     PubkeyOwner,
     ValueDataTokenProgram,
     parseAndValidateGetAccountInfo,
-} from '../models/dependencies/get-account-info.model.js';
-import { parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model.js';
+} from '../models/dependencies/get-account-info.model';
+import { parseAndValidateHeliusBalance } from '../models/dependencies/helius-balance.model';
 import {
     HeliusEnhancedTransaction,
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
-} from '../models/dependencies/helius-enhanced-transaction.model.js';
+} from '../models/dependencies/helius-enhanced-transaction.model';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;

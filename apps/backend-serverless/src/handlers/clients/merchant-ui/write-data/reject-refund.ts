@@ -2,19 +2,19 @@ import { PrismaClient, RefundRecordStatus } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { ConflictingStateError } from '../../../../errors/conflicting-state.error.js';
-import { DependencyError } from '../../../../errors/dependency.error.js';
-import { UnauthorizedRequestError } from '../../../../errors/unauthorized-request.error.js';
-import { parseAndValidateRejectRefundRequest } from '../../../../models/clients/merchant-ui/reject-refund-request.model.js';
-import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model.js';
-import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model.js';
-import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service.js';
-import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
-import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service.js';
-import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { ConflictingStateError } from '../../../../errors/conflicting-state.error';
+import { DependencyError } from '../../../../errors/dependency.error';
+import { UnauthorizedRequestError } from '../../../../errors/unauthorized-request.error';
+import { parseAndValidateRejectRefundRequest } from '../../../../models/clients/merchant-ui/reject-refund-request.model';
+import { RejectRefundResponse } from '../../../../models/shopify-graphql-responses/reject-refund-response.model';
+import { RefundSessionStateRejectedReason } from '../../../../models/shopify-graphql-responses/shared.model';
+import { MerchantService } from '../../../../services/database/merchant-service.database.service';
+import { RefundRecordService } from '../../../../services/database/refund-record-service.database.service';
+import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service';
+import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service';
+import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -63,7 +63,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     RefundSessionStateRejectedReason.processingError,
                     rejectRefundRequest.merchantReason,
                     shop,
-                    accessToken,
+                    accessToken
                 );
 
                 validateRefundSessionRejected(rejectRefundResponse);
@@ -72,7 +72,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     await sendRefundRejectRetryMessage(
                         refundRecord.id,
                         RefundSessionStateRejectedReason.processingError,
-                        rejectRefundRequest.merchantReason,
+                        rejectRefundRequest.merchantReason
                     );
                 } catch (sendMessageError) {
                     throw new DependencyError('failed to send refund reject retry message');
@@ -96,5 +96,5 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

@@ -1,16 +1,16 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidateHeliusEnchancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model.js';
+import { parseAndValidateHeliusEnchancedTransaction } from '../../models/dependencies/helius-enhanced-transaction.model';
 
 import { PrismaClient, TransactionRecord } from '@prisma/client';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
-import { parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model.js';
-import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { sendProcessTransactionMessage } from '../../services/sqs/sqs-send-message.service.js';
-import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { InvalidInputError } from '../../errors/invalid-input.error';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error';
+import { parseAndValidateHeliusHeader } from '../../models/dependencies/helius-header.model';
+import { PaymentRecordService } from '../../services/database/payment-record-service.database.service';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service';
+import { sendProcessTransactionMessage } from '../../services/sqs/sqs-send-message.service';
+import { WebSocketService } from '../../services/websocket/send-websocket-message.service';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -60,7 +60,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: signatures,
                 },
-                paymentRecordService,
+                paymentRecordService
             );
 
             try {
@@ -108,7 +108,7 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: failedTransactionRecordSignatures,
                 },
-                paymentRecordService,
+                paymentRecordService
             );
 
             try {
@@ -127,5 +127,5 @@ export const helius = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

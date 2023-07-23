@@ -3,26 +3,26 @@ import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { DependencyError } from '../../errors/dependency.error.js';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
+import { DependencyError } from '../../errors/dependency.error';
+import { InvalidInputError } from '../../errors/invalid-input.error';
 import {
     RefundTransactionRequest,
     parseAndValidateRefundTransactionRequest,
-} from '../../models/transaction-requests/refund-transaction-request.model.js';
-import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
-import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service.js';
-import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service.js';
-import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service.js';
-import { TrmService } from '../../services/trm-service.service.js';
-import { generateSingleUseKeypairFromRecord } from '../../utilities/generate-single-use-keypair.utility.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+} from '../../models/transaction-requests/refund-transaction-request.model';
+import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { RefundRecordService } from '../../services/database/refund-record-service.database.service';
+import { TransactionRecordService } from '../../services/database/transaction-record-service.database.service';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service';
+import { fetchRefundTransaction } from '../../services/transaction-request/fetch-refund-transaction.service';
+import { verifyTransactionWithRecord } from '../../services/transaction-validation/validate-discovered-payment-transaction.service';
+import { TrmService } from '../../services/trm-service.service';
+import { generateSingleUseKeypairFromRecord } from '../../utilities/generate-single-use-keypair.utility';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 import {
     encodeBufferToBase58,
     encodeTransaction,
-} from '../../utilities/transaction-request/encode-transaction.utility.js';
+} from '../../utilities/transaction-request/encode-transaction.utility';
 
 const prisma = new PrismaClient();
 

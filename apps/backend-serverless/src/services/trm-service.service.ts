@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../configs/trm.config.js';
-import { DependencyError } from '../errors/dependency.error.js';
-import { MissingEnvError } from '../errors/missing-env.error.js';
-import { RiskyWalletError } from '../errors/risky-wallet.error.js';
+import { TRM_CHAIN_SOLANA_ID, TRM_MAX_RISK_LEVEL, TRM_SCREEN_URL } from '../configs/trm.config';
+import { DependencyError } from '../errors/dependency.error';
+import { MissingEnvError } from '../errors/missing-env.error';
+import { RiskyWalletError } from '../errors/risky-wallet.error';
 import {
     TrmWalletScreenResponse,
     parseAndValidateTrmWalletScreenResponse,
-} from '../models/dependencies/trm-wallet-screen-response.model.js';
-import { retry } from '../utilities/shopify-retry/shopify-retry.utility.js';
+} from '../models/dependencies/trm-wallet-screen-response.model';
+import { retry } from '../utilities/shopify-retry/shopify-retry.utility';
 
 export class TrmService {
     constructor() {}
@@ -56,7 +56,7 @@ export class TrmService {
 
     private validateRiskLevelBelowMax(response: TrmWalletScreenResponse) {
         const riskLevelBelow5 = response.every((item: any) =>
-            item.entities.every((entity: any) => entity.riskScoreLevel < TRM_MAX_RISK_LEVEL),
+            item.entities.every((entity: any) => entity.riskScoreLevel < TRM_MAX_RISK_LEVEL)
         );
 
         if (!riskLevelBelow5) {

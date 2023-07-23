@@ -1,9 +1,9 @@
 import { InferType, boolean, number, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 import {
     PaymentSessionStateRejectedReason,
     RefundSessionStateRejectedReason,
-} from '../shopify-graphql-responses/shared.model.js';
+} from '../shopify-graphql-responses/shared.model';
 export enum ShopifyMutationRetryType {
     paymentResolve = 'payment-resolve',
     paymentReject = 'payment-reject',
@@ -63,6 +63,6 @@ export const parseAndValidateShopifyMutationRetry = (shopifyMutationRetryBody: u
     return parseAndValidateStrict(
         shopifyMutationRetryBody,
         shopifyMutationRetrySchema,
-        'Could not parse the shopify mutation retry body. Unknown Reason.',
+        'Could not parse the shopify mutation retry body. Unknown Reason.'
     );
 };

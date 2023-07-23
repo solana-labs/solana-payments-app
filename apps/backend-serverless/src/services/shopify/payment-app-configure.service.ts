@@ -1,12 +1,12 @@
 import * as Sentry from '@sentry/node';
 import axios from 'axios';
 import https from 'https';
-import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
 import {
     PaymentAppConfigureResponse,
     parseAndValidatePaymentAppConfigureResponse,
-} from '../../models/shopify-graphql-responses/payment-app-configure-response.model.js';
+} from '../../models/shopify-graphql-responses/payment-app-configure-response.model';
 
 const paymentAppConfigureMutation = `
     mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {

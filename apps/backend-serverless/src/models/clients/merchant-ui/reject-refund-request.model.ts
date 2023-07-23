@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../../utilities/yup.utility';
 
 export const rejectRefundRequestBodySchema = object().shape({
     refundId: string().required(),
@@ -12,6 +12,6 @@ export const parseAndValidateRejectRefundRequest = (rejectRefundRequestBody: unk
     return parseAndValidateStrict(
         rejectRefundRequestBody,
         rejectRefundRequestBodySchema,
-        'Could not parse the reject refund request. Unknown Reason.',
+        'Could not parse the reject refund request. Unknown Reason.'
     );
 };

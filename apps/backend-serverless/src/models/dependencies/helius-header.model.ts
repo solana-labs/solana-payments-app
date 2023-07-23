@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const heliusHeaderSchema = object().shape({
     authorization: string().required(),
@@ -11,6 +11,6 @@ export const parseAndValidateHeliusHeader = (heliusHeaderBody: unknown): HeliusH
     return parseAndValidateStrict(
         heliusHeaderBody,
         heliusHeaderSchema,
-        'Could not parse the heluis header body. Unknown Reason.',
+        'Could not parse the heluis header body. Unknown Reason.'
     );
 };

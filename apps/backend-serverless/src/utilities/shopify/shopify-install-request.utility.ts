@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error';
 import {
     AppInstallQueryParam,
     parseAndValidateAppInstallQueryParms,
-} from '../../models/shopify/install-query-params.model.js';
-import { stringifyParams } from './stringify-params.utility.js';
+} from '../../models/shopify/install-query-params.model';
+import { stringifyParams } from './stringify-params.utility';
 
 export const verifyAndParseShopifyInstallRequest = (appInstallQuery: unknown): AppInstallQueryParam => {
     let parsedAppInstallQuery: AppInstallQueryParam;

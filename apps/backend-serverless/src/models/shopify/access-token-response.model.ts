@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const accessTokenResponseSchema = object().shape({
     access_token: string().required(),
@@ -12,6 +12,6 @@ export const parseAndValidateAccessTokenResponse = (accessTokenResponseBody: unk
     return parseAndValidateStrict(
         accessTokenResponseBody,
         accessTokenResponseSchema,
-        'Could not parse the access token response. Unknown Reason.',
+        'Could not parse the access token response. Unknown Reason.'
     );
 };

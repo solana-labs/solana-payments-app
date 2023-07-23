@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export enum ShopifyWebhookTopic {
     customerData = 'customers/data_request',
@@ -26,6 +26,6 @@ export const parseAndValidateShopifyWebhookHeaders = (shopifyRequestHeaders: any
     return parseAndValidateStrict<ShopifyWebhookHeaders>(
         headersLowerCased,
         shopifyWebhookHeadersScheme,
-        'Could not parse the Shopify webhook headers. Unknown Reason.',
+        'Could not parse the Shopify webhook headers. Unknown Reason.'
     );
 };

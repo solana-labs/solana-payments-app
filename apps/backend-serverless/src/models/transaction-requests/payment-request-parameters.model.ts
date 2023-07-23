@@ -1,5 +1,5 @@
 import { InferType, boolean, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
 
 export const paymentRequestParametersScheme = object().shape({
     paymentId: string().required(),

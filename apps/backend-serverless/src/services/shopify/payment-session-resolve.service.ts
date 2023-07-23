@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/node';
 import axios from 'axios';
-import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
-import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
+import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config';
+import { ShopifyResponseError } from '../../errors/shopify-response.error';
 import {
     ResolvePaymentResponse,
     parseAndValidateResolvePaymentResponse,
-} from '../../models/shopify-graphql-responses/resolve-payment-response.model.js';
+} from '../../models/shopify-graphql-responses/resolve-payment-response.model';
 
 const paymentSessionResolveMutation = `mutation PaymentSessionResolve($id: ID!) {
     paymentSessionResolve(id: $id) {
@@ -70,7 +70,7 @@ export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
                     );
             }
         } catch (error) {

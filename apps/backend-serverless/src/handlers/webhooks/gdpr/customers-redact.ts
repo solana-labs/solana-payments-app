@@ -1,12 +1,12 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { InvalidInputError } from '../../../errors/invalid-input.error.js';
+import { InvalidInputError } from '../../../errors/invalid-input.error';
 import {
     ShopifyWebhookTopic,
     parseAndValidateShopifyWebhookHeaders,
-} from '../../../models/shopify/shopify-webhook-headers.model.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
-import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility.js';
+} from '../../../models/shopify/shopify-webhook-headers.model';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
+import { verifyShopifyWebhook } from '../../../utilities/shopify/verify-shopify-webhook-header.utility';
 
 Sentry.AWSLambda.init({
     dsn: process.env.SENTRY_DSN,
@@ -43,5 +43,5 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

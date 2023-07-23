@@ -1,5 +1,5 @@
 import { InferType, object, string } from 'yup';
-import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../../utilities/yup.utility';
 
 export const refundStatusRequestScheme = object().shape({
     shopId: string().required(),
@@ -11,6 +11,6 @@ export const parseAndValidateRefundStatusRequest = (refundStatusRequestParameter
     return parseAndValidateStrict<RefundStatusRequest>(
         refundStatusRequestParameters,
         refundStatusRequestScheme,
-        'Could not parse the refund status request parameters. Unknown Reason.',
+        'Could not parse the refund status request parameters. Unknown Reason.'
     );
 };

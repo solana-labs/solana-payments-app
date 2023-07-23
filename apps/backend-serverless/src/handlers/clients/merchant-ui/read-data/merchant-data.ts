@@ -2,14 +2,14 @@ import { KybState, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
-import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createLoyaltyResponse } from '../../../../utilities/clients/merchant-ui/create-loyalty-response.utility.js';
-import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
-import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
+import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service';
+import { MerchantService } from '../../../../services/database/merchant-service.database.service';
+import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response';
+import { createLoyaltyResponse } from '../../../../utilities/clients/merchant-ui/create-loyalty-response.utility';
+import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility';
+import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { syncKybState } from '../../../../utilities/persona/sync-kyb-status';
+import { createErrorResponse } from '../../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 

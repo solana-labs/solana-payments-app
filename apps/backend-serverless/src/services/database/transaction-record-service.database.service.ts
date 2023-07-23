@@ -1,5 +1,5 @@
 import { PrismaClient, TransactionRecord, TransactionType } from '@prisma/client';
-import { prismaErrorHandler } from './shared.database.service.js';
+import { prismaErrorHandler } from './shared.database.service';
 
 // --- TransactionRecordService CRUD Operations ---
 // 1. getTransactionRecord

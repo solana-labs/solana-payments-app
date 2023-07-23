@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { sendPaymentResolveRetryMessage } from '../../services/sqs/sqs-send-message.service.js';
+import { sendPaymentResolveRetryMessage } from '../../services/sqs/sqs-send-message.service';
 
 Sentry.AWSLambda.init({
     dsn: 'https://dbf74b8a0a0e4927b9269aa5792d356c@o4505168718004224.ingest.sentry.io/4505168722526208',
@@ -28,5 +28,5 @@ export const queue = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

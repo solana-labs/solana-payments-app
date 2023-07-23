@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidateBalanceParameters } from '../../../models/clients/payment-ui/balance-request-parameters.model.js';
-import { fetchBalance } from '../../../services/helius.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+import { parseAndValidateBalanceParameters } from '../../../models/clients/payment-ui/balance-request-parameters.model';
+import { fetchBalance } from '../../../services/helius.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 

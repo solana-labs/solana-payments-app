@@ -1,6 +1,6 @@
 import { InferType, object } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
-import { sharedPaymentSessionSchema, shopifyResponseExtensionsSchema } from './shared.model.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
+import { sharedPaymentSessionSchema, shopifyResponseExtensionsSchema } from './shared.model';
 
 export const dataPaymentSessionRejectSchema = object().shape({
     paymentSessionReject: sharedPaymentSessionSchema.required(),
@@ -17,6 +17,6 @@ export const parseAndValidateRejectPaymentResponse = (rejectPaymentResponeBody: 
     return parseAndValidateStrict(
         rejectPaymentResponeBody,
         paymentSessionRejectResponseSchema,
-        'Could not parse the reject payment response. Unknown Reason.',
+        'Could not parse the reject payment response. Unknown Reason.'
     );
 };

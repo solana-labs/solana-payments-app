@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import pkg from 'aws-sdk';
-import { ShopifyRecord } from './database/record-service.database.service.js';
+import { ShopifyRecord } from './database/record-service.database.service';
 const { S3 } = pkg;
 
 // This service method should upload the keypair to an encrypted s3 bucket for rent collection
@@ -25,7 +25,7 @@ export const uploadSingleUseKeypair = async (singleUseKeypair: web3.Keypair, rec
         await s3
             .upload({
                 Bucket: bucket,
-                Key: `${record.id}.json`,
+                Key: `${record.id}on`,
                 Body: seedString,
                 ContentType: 'application/json',
             })

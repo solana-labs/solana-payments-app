@@ -2,14 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { parseAndValidateShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
-import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { RefundRecordService } from '../../services/database/refund-record-service.database.service.js';
-import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { InvalidInputError } from '../../errors/invalid-input.error';
+import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error';
+import { parseAndValidateShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model';
+import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { RefundRecordService } from '../../services/database/refund-record-service.database.service';
+import { generatePubkeyString } from '../../utilities/pubkeys.utility';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -61,7 +61,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                         usdcSize = await convertAmountAndCurrencyToUsdcSize(
                             refundInitiation.amount,
                             refundInitiation.currency,
-                            axios,
+                            axios
                         );
                     }
 
@@ -70,7 +70,7 @@ export const refund = Sentry.AWSLambda.wrapHandler(
                         newRefundRecordId,
                         refundInitiation,
                         merchant,
-                        usdcSize,
+                        usdcSize
                     );
                 } else {
                     throw error;
@@ -88,5 +88,5 @@ export const refund = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

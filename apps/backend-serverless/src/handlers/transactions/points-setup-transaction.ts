@@ -3,14 +3,14 @@ import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
-import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { fetchPointsSetupTransaction } from '../../services/transaction-request/fetch-points-setup-transaction.service.js';
-import { withAuth } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
-import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
-import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
+import { InvalidInputError } from '../../errors/invalid-input.error';
+import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service';
+import { fetchPointsSetupTransaction } from '../../services/transaction-request/fetch-points-setup-transaction.service';
+import { withAuth } from '../../utilities/clients/merchant-ui/token-authenticate.utility';
+import { createErrorResponse } from '../../utilities/responses/error-response.utility';
+import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility';
 
 const prisma = new PrismaClient();
 

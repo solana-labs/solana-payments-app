@@ -2,15 +2,15 @@ import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyResultV2, SQSEvent } from 'aws-lambda';
 import axios from 'axios';
-import { MissingEnvError } from '../../../errors/missing-env.error.js';
+import { MissingEnvError } from '../../../errors/missing-env.error';
 import {
     ProcessTransactionMessage,
     parseAndValidateProcessTransactionMessage,
-} from '../../../models/sqs/process-transaction-message.model.js';
-import { processTransaction } from '../../../services/business-logic/process-transaction.service.js';
-import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { WebSocketService } from '../../../services/websocket/send-websocket-message.service.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+} from '../../../models/sqs/process-transaction-message.model';
+import { processTransaction } from '../../../services/business-logic/process-transaction.service';
+import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service';
+import { WebSocketService } from '../../../services/websocket/send-websocket-message.service';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
@@ -56,7 +56,7 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: [processTransactionMessage.signature],
                 },
-                paymentRecordService,
+                paymentRecordService
             );
 
             try {
@@ -76,5 +76,5 @@ export const processTransactionMessage = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

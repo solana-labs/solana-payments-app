@@ -1,6 +1,6 @@
 import { InferType, object } from 'yup';
-import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
-import { sharedRefundResponseRootSchema, shopifyResponseExtensionsSchema } from './shared.model.js';
+import { parseAndValidateStrict } from '../../utilities/yup.utility';
+import { sharedRefundResponseRootSchema, shopifyResponseExtensionsSchema } from './shared.model';
 
 export const dataRefundSessionRejectSchema = object().shape({
     refundSessionReject: sharedRefundResponseRootSchema.required(),
@@ -17,6 +17,6 @@ export const parseAndValidateRejectRefundResponse = (rejectRefundResponeBody: un
     return parseAndValidateStrict<RejectRefundResponse>(
         rejectRefundResponeBody,
         refundSessionRejectResponseSchema,
-        'Could not parse the reject refund response body. Unknown Reason.',
+        'Could not parse the reject refund response body. Unknown Reason.'
     );
 };

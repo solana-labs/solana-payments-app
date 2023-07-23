@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
-import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model.js';
-import { MerchantService } from '../../services/database/merchant-service.database.service.js';
-import { stringifyParams } from './stringify-params.utility.js';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error';
+import { AppRedirectQueryParam } from '../../models/shopify/redirect-query-params.model';
+import { MerchantService } from '../../services/database/merchant-service.database.service';
+import { stringifyParams } from './stringify-params.utility';
 
 export const verifyRedirectParams = async (redirectParams: AppRedirectQueryParam, prisma: PrismaClient) => {
     const merchantService = new MerchantService(prisma);

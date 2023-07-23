@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/serverless';
 import pkg from 'aws-sdk';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
-import { retry } from '../../utilities/shopify-retry/shopify-retry.utility.js';
+import { MissingEnvError } from '../../errors/missing-env.error';
+import { retry } from '../../utilities/shopify-retry/shopify-retry.utility';
 
 const { StepFunctions } = pkg;
 

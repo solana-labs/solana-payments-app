@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/payment-ui/payment-status-request.model.js';
-import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
-import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { createLoyaltyResponse } from '../../../utilities/clients/merchant-ui/create-loyalty-response.utility.js';
+import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/payment-ui/payment-status-request.model';
+import { MerchantService } from '../../../services/database/merchant-service.database.service';
+import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service';
+import { createLoyaltyResponse } from '../../../utilities/clients/merchant-ui/create-loyalty-response.utility';
 import {
     createPaymentErrorResponse,
     createPaymentStatusResponse,
-} from '../../../utilities/clients/payment-ui/create-payment-status-response.utility.js';
-import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
+} from '../../../utilities/clients/payment-ui/create-payment-status-response.utility';
+import { createErrorResponse } from '../../../utilities/responses/error-response.utility';
 
 const prisma = new PrismaClient();
 
