@@ -10,12 +10,16 @@
         "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {
+        "@prisma/client": "^4.13.0",
         "@shopify/app": "^3.47.5",
         "@shopify/cli": "^3.47.5",
+        "dotenv": "^16.0.3",
+        "prisma": "^4.13.0",
         "typescript": "^5.0.3"
     },
-     "devDependencies": {
+    "devDependencies": {
         "@solana/prettier-config-solana": "0.0.2",
+        "@types/node": "^18.16.1",
         "eslint-config-custom": "*",
         "prettier": "2.8.7",
         "prettier-plugin-organize-imports": "3.2.3",

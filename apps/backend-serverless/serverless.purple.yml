@@ -56,6 +56,8 @@ provider:
     # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:
+  artifact: .serverless/${self:service}.zip
+  excludeDevDependencies: true
   patterns:
     - node_modules/**
 functions:
@@ -476,16 +478,19 @@ resources:
       DeletionPolicy: Retain
       Properties:
         QueueName: sp-info-queue-${self:provider.stage}
+
 plugins:
-  - serverless-plugin-typescript
+  - serverless-webpack
+  # - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
   - serverless-plugin-common-excludes
-  - serverless-plugin-include-dependencies
   - serverless-offline-sqs
+  # - serverless-plugin-include-dependencies
+
 custom:
   serverless-offline:
     httpPort: 4000
@@ -514,3 +519,6 @@ custom:
     ProcessQueueUrl: 'http://localhost:9324/queue/process-queue-dev'
     SolanaPayInfoQueueUrl: 'http://localhost:9324/queue/sp-info-queue-dev'
     WebsocketUrl: 'ws://localhost:4009'
+  webpack:
+    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
+    packager: 'pnpm' # Packager that will be used to package your external modules
