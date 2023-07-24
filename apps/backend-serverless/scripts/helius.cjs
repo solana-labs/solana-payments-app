@@ -1,40 +1,60 @@
-const { Helius } = require("helius-sdk");
-// const dotenv = require("dotenv");
+const bs58 = require('bs58');
+const web3 = require('@solana/web3.js');
+const axios = require('axios');
+const { Helius } = require('helius-sdk');
+const dotenv = require('dotenv');
 
-// dotenv.config({ path: ".env.dev" });
-// const helius = new Helius(process.env.HELIUS_API_KEY);
-// const webhookUrl = process.env.HELIUS_WEBHOOK_URL;
+dotenv.config({ path: '.env.dev' });
 
-// console.log(process.env.HELIUS_WEBHOOK_URL)
-// console.log(process.env.HELIUS_API_KEY)
+if (!process.env.HELIUS_API_KEY) {
+    throw new Error('HELIUS API KEY not set in .env.dev');
+}
+if (!process.env.GAS_KEYPAIR_SECRET) {
+    throw new Error('GAS_KEYPAIR_SECRET not set in .env.dev');
+}
 
-// helius.getAllWebhooks().then((webhooks) => {
+const helius = new Helius(process.env.HELIUS_API_KEY);
+axios
+    .get('http://127.0.0.1:4040/api/tunnels')
+    .then(response => {
+        // Here we directly parse the JSON like how `jq` would.
+        const publicUrl = response.data.tunnels[0].public_url;
+        const address = web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET)).publicKey.toString();
 
-//   if (webhooks.length == 0) {
-
-    // helius.createWebhook({
-    //   webhookURL: webhookUrl,
-    //   transactionTypes: ['ANY'],
-    //   accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'],
-    //   webhookType: 'enhanced',
-    //   encoding: 'jsonParsed',
-    // }).then((webhook) => {
-    //   console.log("Created webhook with helius: ", webhook.webhookID);
-    // }).catch((err) => {
-    //   console.log("Could not create webhook with helius: ", err);
-    // })
-
-//   } else {
-
-//     helius.editWebhook(
-//       webhooks[0].webhookID,
-//       { accountAddresses: ['9hBUxihyvswYSExF8s7K5SZiS3XztF3DAT7eTZ5krx4T'] } // This will ONLY update accountAddresses, not the other fields on the webhook object
-//     ).then((webhook) => {
-//       console.log("Edited webhook with helius: ", webhook.webhookID)
-//     }).catch((err) => {
-//       console.log("Could not edit webhook with helius: ", err);
-//     })
-    
-//   }
-
-// })
+        helius.getAllWebhooks().then(webhooks => {
+            if (webhooks.length == 0) {
+                helius
+                    .createWebhook({
+                        webhookURL: publicUrl,
+                        transactionTypes: ['ANY'],
+                        accountAddresses: [address],
+                        webhookType: 'enhanced',
+                        encoding: 'jsonParsed',
+                    })
+                    .then(webhook => {
+                        console.log('Created webhook with helius: ', webhook.webhookID, ' at ', publicUrl);
+                    })
+                    .catch(err => {
+                        console.log('Could not create webhook with helius: ', err);
+                    });
+            } else {
+                helius
+                    .editWebhook(
+                        webhooks[0].webhookID,
+                        {
+                            webhookURL: publicUrl,
+                            accountAddresses: [address],
+                        } // This will ONLY update accountAddresses, not the other fields on the webhook object
+                    )
+                    .then(webhook => {
+                        console.log('Edited webhook with helius: ', webhook.webhookID, ' at ', publicUrl);
+                    })
+                    .catch(err => {
+                        console.log('Could not edit webhook with helius: ', err);
+                    });
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching ngrok tunnel:', error.message);
+    });

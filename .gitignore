@@ -15,7 +15,6 @@
 **/.build
 
 # misc
-*.pem
 .DS_Store
 
 # debug
@@ -56,3 +55,6 @@ working-notes.md
 !.yarn/releases/*
 !.yarn/sdks/*
 !.yarn/versions/*
+
+
+**.pid

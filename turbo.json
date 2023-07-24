@@ -10,8 +10,12 @@
             "env": ["NODE_ENV", "NEXT_PUBLIC_API_BASE_URL"],
             "outputs": ["./apps/merchant-ui/.next/**"]
         },
+        "build:backend-serverless": {
+            "env": ["GAS_KEYPAIR_SECRET", "HELIUS_API_KEY"],
+            "outputs": ["./apps/backend-serverless/dist/**"]
+        },
         "build": {
-            "dependsOn": ["build:payment-ui", "build:merchant-ui"],
+            "dependsOn": ["build:payment-ui", "build:merchant-ui", "build:backend-serverless"],
             "outputs": []
         },
         "lint": {

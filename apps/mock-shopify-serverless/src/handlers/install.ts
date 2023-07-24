@@ -8,9 +8,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const install = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'MOCK_SHOPIFY_KEY';
-
-    console.log('In mock install handler');
+    const mockShopifySecret = process.env.MOCK_SHOPIFY_SECRET_KEY!;
 
     const installParams = {
         host: 'testhost',
