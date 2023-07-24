@@ -12,20 +12,18 @@ const envDirectories = [
 ];
 
 const envMapping = {
-    'apps/backend-serverless': '.env.dev',
-    'apps/backend-serverless': '.env.staging',
-    'apps/backend-serverless': '.env.production',
-    'apps/transaction-request-serverless': '.env.dev',
-    'apps/transaction-request-serverless': '.env.staging',
-    'apps/transaction-request-serverless': '.env.production',
-    'apps/mock-shopify-serverless': '.env.dev',
-    'apps/merchant-ui': '.env',
-    'apps/payment-ui': '.env',
+    'apps/backend-serverless': ['.env.dev', '.env.staging', '.env.production'],
+    'apps/transaction-request-serverless': ['.env.dev', '.env.staging', '.env.production'],
+    'apps/mock-shopify-serverless': ['.env.dev'],
+    'apps/merchant-ui': ['.env'],
+    'apps/payment-ui': ['.env'],
 };
 
 envDirectories.forEach(dir => {
-    const src = path.join(baseDir, dir, '.sample.env');
-    const dest = path.join(baseDir, dir, envMapping[dir]);
-    fs.copyFileSync(src, dest);
-    console.log(`Copied .sample.env from ${dir} to ${envMapping[dir]}`);
+    envMapping[dir].forEach(env => {
+        const src = path.join(baseDir, dir, '.sample.env');
+        const dest = path.join(baseDir, dir, env);
+        fs.copyFileSync(src, dest);
+        console.log(`Copied .sample.env from ${dir} to ${env}`);
+    });
 });
