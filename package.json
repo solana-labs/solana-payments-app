@@ -10,10 +10,13 @@
     },
     "scripts": {
         "build": "turbo run build",
-        "dev": "docker-compose up & turbo run dev",
+        "predev": "cd apps/backend-serverless && y prisma:generate:dev && cd ../..",
+        "dev": "ngrok http 4000 && docker-compose up && turbo run dev",
+        "postdev": "cd apps/backend-serverless && y prisma:push:dev && cd ../..",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
-        "setup": "node scripts/env-setup.js",
+        "setup:env": "node scripts/env-setup.js",
+        "seed": "cd apps/backend-serverless && y prisma:seed:dev && cd ../..",
         "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {

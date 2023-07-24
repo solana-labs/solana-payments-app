@@ -14,11 +14,13 @@
         "seed": "tsx prisma/seed.ts"
     },
     "scripts": {
+        "predev": "y helius & npx prisma generate",
         "dev": "serverless offline start --stage dev --config serverless.purple.yml & serverless offline start --stage dev --config serverless.green.yml",
         "build": "tsc",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "test": "jest",
         "test:tx": "jest integration",
+        "helius": "node scripts/helius.cjs",
         "deploy:production:green": "serverless deploy --stage production --config serverless.green.yml",
         "deploy:staging:green": "serverless deploy --stage staging --config serverless.green.yml",
         "deploy:staging:purple": "serverless deploy --stage staging --config serverless.purple.yml",

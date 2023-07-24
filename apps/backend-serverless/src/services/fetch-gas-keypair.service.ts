@@ -5,7 +5,7 @@ const { S3, Endpoint } = pkg;
 
 export const fetchGasKeypair = async (): Promise<web3.Keypair> => {
     if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-        return web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET_KEY!));
+        return web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET!));
     }
 
     const object = process.env.AWS_BUCKET_OBJECT_NAME;
