@@ -49,6 +49,7 @@ working-notes.md
 
 .pnp.*
 .yarn/*
+.yarnrc
 !.yarn/cache/*
 !.yarn/patches/*
 !.yarn/plugins/*
