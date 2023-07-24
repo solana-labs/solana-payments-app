@@ -1,8 +1,16 @@
+const web3 = require('@solana/web3.js');
 const axios = require('axios');
 const { Helius } = require('helius-sdk');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: '.env.dev' });
+
+if (!process.env.HELIUS_API_KEY) {
+    throw new Error('HELIUS API KEY not set in .env.dev');
+}
+if (!process.env.GAS_KEYPAIR_SECRET) {
+    throw new Error('GAS_KEYPAIR_SECRET not set in .env.dev');
+}
 
 const helius = new Helius(process.env.HELIUS_API_KEY);
 axios
@@ -10,6 +18,7 @@ axios
     .then(response => {
         // Here we directly parse the JSON like how `jq` would.
         const publicUrl = response.data.tunnels[0].public_url;
+        const address = bs58.decode(process.env.GAS_KEYPAIR_SECRET);
 
         helius.getAllWebhooks().then(webhooks => {
             if (webhooks.length == 0) {
@@ -17,7 +26,7 @@ axios
                     .createWebhook({
                         webhookURL: publicUrl,
                         transactionTypes: ['ANY'],
-                        accountAddresses: [process.env.GAS_KEYPAIR_SECRET],
+                        accountAddresses: [address],
                         webhookType: 'enhanced',
                         encoding: 'jsonParsed',
                     })
@@ -31,7 +40,10 @@ axios
                 helius
                     .editWebhook(
                         webhooks[0].webhookID,
-                        { accountAddresses: [process.env.GAS_KEYPAIR_SECRET] } // This will ONLY update accountAddresses, not the other fields on the webhook object
+                        {
+                            webhookURL: publicUrl,
+                            accountAddresses: [address],
+                        } // This will ONLY update accountAddresses, not the other fields on the webhook object
                     )
                     .then(webhook => {
                         console.log('Edited webhook with helius: ', webhook.webhookID);

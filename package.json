@@ -23,6 +23,7 @@
         "@prisma/client": "^4.13.0",
         "@shopify/app": "^3.47.5",
         "@shopify/cli": "^3.47.5",
+        "concurrently": "^8.2.0",
         "dotenv": "^16.0.3",
         "prisma": "^4.13.0",
         "typescript": "^5.0.3"

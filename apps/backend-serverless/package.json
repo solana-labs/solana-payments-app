@@ -14,7 +14,9 @@
         "seed": "tsx prisma/seed.ts"
     },
     "scripts": {
-        "predev": "ngrok http 4000 && node scripts/helius.cjs",
+        "start-ngrok": "ngrok http 4000",
+        "setup:helius": "node scripts/helius.cjs",
+        "predev": "concurrently \"npm:start-ngrok\" \"npm:setup:helius\"",
         "dev": "serverless offline start --stage dev --config serverless.purple.yml & serverless offline start --stage dev --config serverless.green.yml",
         "build": "tsc",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -65,6 +67,7 @@
         "@types/node": "^18.16.1",
         "@types/winston": "^2.4.4",
         "axios-mock-adapter": "^1.21.4",
+        "concurrently": "^8.2.0",
         "dotenv-cli": "^7.2.1",
         "eslint-config-custom": "*",
         "jest": "^27.0.0",
