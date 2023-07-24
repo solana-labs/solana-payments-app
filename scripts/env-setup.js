@@ -8,6 +8,7 @@ const envDirectories = [
     'apps/merchant-ui',
     'apps/payment-ui',
     'apps/transaction-request-serverless',
+    'apps/mock-shopify-serverless',
 ];
 
 const envMapping = {
@@ -17,6 +18,7 @@ const envMapping = {
     'apps/transaction-request-serverless': '.env.dev',
     'apps/transaction-request-serverless': '.env.staging',
     'apps/transaction-request-serverless': '.env.production',
+    'apps/mock-shopify-serverless': '.env.dev',
     'apps/merchant-ui': '.env',
     'apps/payment-ui': '.env',
 };

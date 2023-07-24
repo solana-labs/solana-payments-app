@@ -9,13 +9,7 @@ export const stringifyParams = (params: { [key: string]: string }): string => {
 };
 
 export const authorize = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-    const mockShopifySecret = 'MOCK_SHOPIFY_KEY';
-
-    const installParams = {
-        shop: 'localhost:4004',
-        host: 'testhost',
-        timestamp: 'timestamp',
-    };
+    const mockShopifySecret = process.env.MOCK_SHOPIFY_SECRET_KEY!;
 
     const authorizeParameters = parseAndValidateRejectPaymentResponse(event.queryStringParameters);
 

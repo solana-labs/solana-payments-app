@@ -6,6 +6,8 @@ provider:
   runtime: nodejs18.x
   environment:
     NODE_TLS_REJECT_UNAUTHORIZED: ${env:NODE_TLS_REJECT_UNAUTHORIZED}
+    MOCK_SHOPIFY_CLIENT_ID: ${env:SHOPIFY_CLIENT_ID}
+    MOCK_SHOPIFY_SECRET_KEY: ${env:SHOPIFY_SECRET_KEY}
 package:
   excludeDevDependencies: false
 functions:
