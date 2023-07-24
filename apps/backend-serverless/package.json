@@ -4,12 +4,17 @@
     "private": true,
     "description": "",
     "main": "handler.js",
+    "workspaces": {
+        "nohoist": [
+            "**"
+        ]
+    },
     "type": "module",
     "prisma": {
         "seed": "tsx prisma/seed.ts"
     },
     "scripts": {
-        "predev": "pnpm helius & npx prisma generate",
+        "predev": "y helius & npx prisma generate",
         "dev": "serverless offline start --stage dev --config serverless.purple.yml & serverless offline start --stage dev --config serverless.green.yml",
         "build": "tsc",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -38,14 +43,13 @@
     "author": "@solana_labs",
     "license": "ISC",
     "dependencies": {
-        "@prisma/client": "4.13.0",
+        "@prisma/client": "^4.13.0",
         "@sentry/node": "^7.51.2",
-        "@sentry/serverless": "^7.51.2",
+        "@sentry/serverless": "^7.60.0",
         "@sentry/tracing": "^7.51.2",
         "@solana/spl-token": "^0.3.7",
         "@solana/web3.js": "^1.77.3",
         "@types/jsonwebtoken": "^9.0.2",
-        "@types/node": "^18.16.1",
         "aws-lambda": "^1.0.7",
         "aws-sdk": "^2.1382.0",
         "axios": "^1.3.4",
@@ -55,13 +59,14 @@
         "jsonwebtoken": "^9.0.0",
         "lodash": "^4.17.21",
         "node-fetch": "^3.3.1",
-        "prisma": "4.13.0",
+        "prisma": "^4.13.0",
         "yup": "1.2.0"
     },
     "devDependencies": {
         "@ngrok/ngrok": "^0.5.2",
         "@types/aws-lambda": "^8.10.101",
-        "@types/jest": "^29.5.1",
+        "@types/jest": "^29.5.3",
+        "@types/node": "^18.16.1",
         "@types/winston": "^2.4.4",
         "axios-mock-adapter": "^1.21.4",
         "dotenv-cli": "^7.2.1",
@@ -76,17 +81,19 @@
         "serverless-offline-sqs": "^7.3.2",
         "serverless-plugin-common-excludes": "^4.0.0",
         "serverless-plugin-include-dependencies": "^5.1.0",
-        "serverless-plugin-typescript": "2.1.4",
+        "serverless-plugin-optimize": "4.2.1-rc.1",
+        "serverless-plugin-typescript": "^2.1.5",
         "serverless-prune-plugin": "^2.0.2",
         "serverless-prune-versions": "^1.0.4",
         "serverless-s3-local": "^0.7.2",
         "serverless-step-functions": "^3.13.1",
         "ts-jest": "^27.0.0",
         "tsx": "^3.12.7",
-        "typescript": "^4.7.4",
+        "typescript": "^5.0.3",
         "winston": "^3.9.0"
     },
     "browser": {
         "crypto": false
-    }
+    },
+    "packageManager": "yarn@3.6.1"
 }
