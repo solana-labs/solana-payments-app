@@ -14,15 +14,14 @@
         "seed": "tsx prisma/seed.ts"
     },
     "scripts": {
-        "start-ngrok": "ngrok http 4000",
+        "start-ngrok": "ngrok http 4000 > /dev/null & echo $! > ngrok.pid",
         "setup:helius": "node scripts/helius.cjs",
-        "predev": "concurrently \"npm:start-ngrok\" \"npm:setup:helius\"",
-        "dev": "serverless offline start --stage dev --config serverless.purple.yml & serverless offline start --stage dev --config serverless.green.yml",
+        "predev": "yarn start-ngrok && yarn setup:helius",
+        "dev": "serverless offline start --stage dev --config serverless.purple.yml & echo $! > serverless.purple.pid & serverless offline start --stage dev --config serverless.green.yml & echo $! > serverless.green.pid",
+        "kill": "kill $(cat ngrok.pid) && rm ngrok.pid && kill $(cat serverless.purple.pid) && rm serverless.purple.pid && kill $(cat serverless.green.pid) && rm serverless.green.pid",
         "build": "tsc",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "test": "jest",
         "test:tx": "jest integration",
-        "helius": "node scripts/helius.cjs",
         "deploy:production:green": "serverless deploy --stage production --config serverless.green.yml",
         "deploy:staging:green": "serverless deploy --stage staging --config serverless.green.yml",
         "deploy:staging:purple": "serverless deploy --stage staging --config serverless.purple.yml",
@@ -35,7 +34,8 @@
         "prisma:studio:production": "dotenv -e .env.production -- npx prisma studio",
         "prisma:generate": "npx prisma generate",
         "prisma:seed:dev": "dotenv -e .env.dev -- npx prisma db seed",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\""
     },
     "keywords": [],
     "author": "@solana_labs",

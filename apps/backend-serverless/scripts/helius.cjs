@@ -1,3 +1,4 @@
+const bs58 = require('bs58');
 const web3 = require('@solana/web3.js');
 const axios = require('axios');
 const { Helius } = require('helius-sdk');
@@ -18,7 +19,7 @@ axios
     .then(response => {
         // Here we directly parse the JSON like how `jq` would.
         const publicUrl = response.data.tunnels[0].public_url;
-        const address = bs58.decode(process.env.GAS_KEYPAIR_SECRET);
+        const address = web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET)).publicKey.toString();
 
         helius.getAllWebhooks().then(webhooks => {
             if (webhooks.length == 0) {
