@@ -14,6 +14,10 @@ Right now the overall documentation is federated to respective directories. Over
 
 These steps will get you up and running with a local dev environment, and you can later setup these environments for production
 
+### Keypairs
+
+we recommend setting up one admin account (to manage helius api), and one gas account (to interface with all of your shopify transactions)
+
 ### Set up the Application
 
 ```
@@ -30,13 +34,32 @@ yarn dev
 yarn seed
 ```
 
+once done, run
+
+```
+yarn kill
+```
+
 #### Helius API Key
 
 We use Helius to listen to onchain transactions associated with merchants.
 
-Go to [Helius](https://www.helius.dev/) and create a new account. You can use an existing account if you like, but we will modify your webhooks so it is advised you create a new account. Once you have your API key from Helius, edit the env variable in backend_serverless/.env.dev. (Make sure you setup your helius webook using the HELIUS_AUTHORIZATION in the .env.dev)
+Go to [Helius](https://www.helius.dev/) and sign in with your admin keypair. Generate and copy your api key to your .env.dev (backend-serverless). (Make sure you setup your helius webook using the HELIUS_AUTHORIZATION in the .env.dev)
 
 #### Gas Keypair
+
+This gas keypair will be the signer for all shopify transactions so the customers don't have to pay gas fees.
+
+It will also help track all of our relavent transactions
+
+###### keep in mind
+
+we generate ngrok in the background. if processes aren't killed properly, run
+
+```
+pgrep ngrok
+kill -9 (ngrok pid)
+```
 
 ### Local Development
 

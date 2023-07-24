@@ -32,7 +32,7 @@ axios
                         encoding: 'jsonParsed',
                     })
                     .then(webhook => {
-                        console.log('Created webhook with helius: ', webhook.webhookID);
+                        console.log('Created webhook with helius: ', webhook.webhookID, ' at ', publicUrl);
                     })
                     .catch(err => {
                         console.log('Could not create webhook with helius: ', err);
@@ -47,7 +47,7 @@ axios
                         } // This will ONLY update accountAddresses, not the other fields on the webhook object
                     )
                     .then(webhook => {
-                        console.log('Edited webhook with helius: ', webhook.webhookID);
+                        console.log('Edited webhook with helius: ', webhook.webhookID, ' at ', publicUrl);
                     })
                     .catch(err => {
                         console.log('Could not edit webhook with helius: ', err);
