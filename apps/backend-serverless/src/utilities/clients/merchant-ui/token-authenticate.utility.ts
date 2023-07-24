@@ -11,51 +11,50 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
     const useAuthMock = process.env.USE_AUTH_MOCK;
 
-    if (useAuthMock !== null && useAuthMock !== undefined) {
-        const payload = {
-            id: useAuthMock,
-            iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-        };
-        return parseAndValidateMerchantAuthToken(payload);
-    }
-
     if (jwtSecretKey == null) {
         throw new MissingEnvError('Missing jwt secret');
     }
 
-    if (cookies == null || cookies.length === 0) {
-        throw new UnauthorizedRequestError('Did not include cookies');
-    }
-
-    const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
-
-    if (bearerCookie == null) {
-        throw new UnauthorizedRequestError('Did not include bearer cookie');
-    }
-
-    const bearerToken = bearerCookie.split('Bearer=')[1];
-
+    let merchantAuthToken: MerchantAuthToken;
     let decodedToken: string | jwt.JwtPayload;
 
-    try {
-        decodedToken = jwt.verify(bearerToken, jwtSecretKey);
-    } catch (error) {
-        throw new ForbiddenError();
-    }
+    if (cookies != null && cookies.length > 0) {
+        const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
 
-    let merchantAuthToken: MerchantAuthToken;
+        if (bearerCookie == null) {
+            throw new UnauthorizedRequestError('Did not include bearer cookie');
+        }
 
-    try {
-        merchantAuthToken = parseAndValidateMerchantAuthToken(decodedToken);
-    } catch {
-        throw new UnauthorizedRequestError('Bearer cookie did not decode correctly');
-    }
+        const bearerToken = bearerCookie.split('Bearer=')[1];
 
-    const currentTimestamp = Math.floor(Date.now() / 1000);
+        try {
+            decodedToken = jwt.verify(bearerToken, jwtSecretKey);
+        } catch (error) {
+            throw new ForbiddenError();
+        }
 
-    if (merchantAuthToken.exp < currentTimestamp) {
-        throw new UnauthorizedRequestError('Token has expired');
+        try {
+            merchantAuthToken = parseAndValidateMerchantAuthToken(decodedToken);
+        } catch {
+            throw new UnauthorizedRequestError('Bearer cookie did not decode correctly');
+        }
+
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+
+        if (merchantAuthToken.exp < currentTimestamp) {
+            throw new UnauthorizedRequestError('Token has expired');
+        }
+    } else {
+        if (useAuthMock !== null && useAuthMock !== undefined) {
+            const payload = {
+                id: useAuthMock,
+                iat: Math.floor(Date.now() / 1000),
+                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+            };
+            merchantAuthToken = parseAndValidateMerchantAuthToken(payload);
+        } else {
+            throw new UnauthorizedRequestError('Did not include cookies or useAuthMock');
+        }
     }
 
     return merchantAuthToken;

@@ -53,7 +53,7 @@ provider:
     PROCESS_SQS_URL: ${self:custom.${self:provider.stage}.ProcessQueueUrl, self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:custom.${self:provider.stage}.SolanaPayInfoQueueUrl, self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
     GAS_KEYPAIR_SECRET: ${env:GAS_KEYPAIR_SECRET}
-    # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
 
 package:
   patterns:
