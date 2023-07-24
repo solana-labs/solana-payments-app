@@ -46,3 +46,5 @@ apps/**/pnpm-lock.yaml
 
 # Working notes
 working-notes.md
+
+.yarn

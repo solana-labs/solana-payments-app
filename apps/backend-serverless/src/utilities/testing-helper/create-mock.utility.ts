@@ -40,6 +40,9 @@ export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Mercha
         acceptedTermsAndConditions: merchantData.acceptedTermsAndConditions ?? false,
         acceptedPrivacyPolicy: merchantData.acceptedPrivacyPolicy ?? false,
         dismissCompleted: merchantData.dismissCompleted ?? false,
+        loyaltyProgram: merchantData.loyaltyProgram ?? 'none',
+        pointsMint: merchantData.pointsMint ?? null,
+        pointsBack: merchantData.pointsBack ?? 0,
     };
 };
 
