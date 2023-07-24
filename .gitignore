@@ -46,3 +46,13 @@ apps/**/pnpm-lock.yaml
 
 # Working notes
 working-notes.md
+
+.pnp.*
+.yarn/*
+.yarnrc
+!.yarn/cache/*
+!.yarn/patches/*
+!.yarn/plugins/*
+!.yarn/releases/*
+!.yarn/sdks/*
+!.yarn/versions/*

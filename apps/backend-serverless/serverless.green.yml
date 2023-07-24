@@ -18,9 +18,13 @@ provider:
     SENTRY_RELEASE: ${env:SENTRY_RELEASE}
     COIN_GECKO_API_KEY: ${env:COIN_GECKO_API_KEY}
 package:
-  excludeDevDependencies: true
   patterns:
     - 'node_modules/.prisma/**'
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-openssl-1.0.x.so.node'
+    - 'node_modules/.prisma/client/libquery_engine-linux-arm64-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
 functions:
   payment:
     handler: src/handlers/shopify-handlers/payment.payment
@@ -60,6 +64,7 @@ functions:
           method: get
 
 plugins:
+  - serverless-plugin-optimize
   - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
