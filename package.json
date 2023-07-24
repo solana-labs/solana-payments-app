@@ -11,7 +11,7 @@
     "scripts": {
         "build": "turbo run build",
         "predev": "yarn --cwd apps/backend-serverless predev",
-        "dev": "docker-compose up && turbo run dev",
+        "dev": "docker-compose up & turbo run dev",
         "postdev": "yarn --cwd apps/backend-serverless postdev",
         "kill": "docker-compose down && yarn --cwd apps/backend-serverless kill",
         "lint": "turbo run lint",

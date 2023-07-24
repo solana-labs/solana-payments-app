@@ -4,6 +4,7 @@ const path = require('path');
 const baseDir = path.join(__dirname, '..');
 
 const envDirectories = [
+    '/',
     'apps/backend-serverless',
     'apps/merchant-ui',
     'apps/payment-ui',
@@ -12,6 +13,7 @@ const envDirectories = [
 ];
 
 const envMapping = {
+    '/': ['.env'],
     'apps/backend-serverless': ['.env.dev', '.env.staging', '.env.production'],
     'apps/transaction-request-serverless': ['.env.dev', '.env.staging', '.env.production'],
     'apps/mock-shopify-serverless': ['.env.dev'],

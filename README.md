@@ -20,6 +20,8 @@ we recommend setting up one admin account (to manage helius api), and one gas ac
 
 ### Set up the Application
 
+make sure Docker Desktop is installed and running
+
 ```
 git clone https://github.com/solana-labs/solana-payments-app
 
@@ -60,6 +62,10 @@ we generate ngrok in the background. if processes aren't killed properly, run
 pgrep ngrok
 kill -9 (ngrok pid)
 ```
+
+###### Dev certs
+
+We use dev certs since our mock-shopify-server mimics shopify's https connection. For now, we've added our own devcerts to the repo since they're only used for local development. but you can generate your own certs following [This guide](https://blog.simontimms.com/2021/10/12/serverless-offline-https/)
 
 ### Local Development
 
