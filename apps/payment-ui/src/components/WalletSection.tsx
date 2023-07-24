@@ -8,7 +8,7 @@ const WalletSection = () => {
     const { connected } = useWallet();
 
     return (
-        <div className="flex flex-col justify-end h-full pb-4 py-2">
+        <div className="flex flex-col justify-end h-full pb-4 py-2 items-center w-full">
             {!connected ? (
                 <WalletMultiButton
                     style={{
@@ -25,7 +25,7 @@ const WalletSection = () => {
                     </div>
                 </WalletMultiButton>
             ) : (
-                <div className="">
+                <div className="w-full">
                     <div className="pb-4">
                         <SimpleNotificationView />
                     </div>

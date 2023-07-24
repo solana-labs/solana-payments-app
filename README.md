@@ -36,12 +36,6 @@ yarn dev
 yarn seed
 ```
 
-once done, run
-
-```
-yarn kill
-```
-
 #### Helius API Key
 
 We use Helius to listen to onchain transactions associated with merchants.
@@ -70,10 +64,11 @@ We use dev certs since our mock-shopify-server mimics shopify's https connection
 ### Local Development
 
 ```
-http://localhost:4004/install
+https://localhost:4004/install
 
 
 
+https://localhost:4004/payment
 
 ```
 
