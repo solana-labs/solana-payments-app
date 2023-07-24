@@ -7,8 +7,6 @@ provider:
   environment:
     RPC_URL: ${env:RPC_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
-package:
-  excludeDevDependencies: false
 functions:
   pay:
     handler: src/handlers/pay.pay
@@ -24,6 +22,7 @@ functions:
           method: post
 
 plugins:
+  - serverless-plugin-optimize
   - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
