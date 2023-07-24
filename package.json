@@ -13,6 +13,7 @@
         "dev": "docker-compose up & turbo run dev",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
+        "setup": "node scripts/env-setup.js",
         "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {
