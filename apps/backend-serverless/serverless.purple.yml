@@ -54,12 +54,14 @@ provider:
     SP_INFO_SQS_URL: ${self:custom.${self:provider.stage}.SolanaPayInfoQueueUrl, self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
     GAS_KEYPAIR_SECRET_KEY: ${env:GAS_KEYPAIR_SECRET_KEY}
     # USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
+    PRISMA_SCHEMA_PATH: ${env:PRISMA_SCHEMA_PATH}
 
 package:
-  artifact: .serverless/${self:service}.zip
-  excludeDevDependencies: true
   patterns:
-    - node_modules/**
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-linux-arm64-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**' # individually: true
 functions:
   install:
     handler: src/handlers/shopify-handlers/install.install
@@ -480,16 +482,16 @@ resources:
         QueueName: sp-info-queue-${self:provider.stage}
 
 plugins:
-  - serverless-webpack
-  # - serverless-plugin-typescript
+  - serverless-plugin-optimize
+  - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-step-functions
   - serverless-iam-roles-per-function
   - serverless-offline
-  - serverless-plugin-common-excludes
   - serverless-offline-sqs
-  # - serverless-plugin-include-dependencies
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
 
 custom:
   serverless-offline:
@@ -503,9 +505,9 @@ custom:
     automatic: true
     includeLayers: true
     number: 3
-  esbuild:
-    forceInclude:
-      - '@prisma/client'
+  # esbuild:
+  #   forceInclude:
+  #     - '@prisma/client'
   serverless-offline-sqs:
     autoCreate: true # create queue if not exists
     apiVersion: '2012-11-05'
@@ -519,6 +521,3 @@ custom:
     ProcessQueueUrl: 'http://localhost:9324/queue/process-queue-dev'
     SolanaPayInfoQueueUrl: 'http://localhost:9324/queue/sp-info-queue-dev'
     WebsocketUrl: 'ws://localhost:4009'
-  webpack:
-    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
-    packager: 'pnpm' # Packager that will be used to package your external modules

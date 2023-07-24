@@ -8,8 +8,11 @@ provider:
     RPC_URL: ${env:RPC_URL}
     SENTRY_DSN: ${env:SENTRY_DSN}
 package:
-  artifact: .serverless/${self:service}.zip
-  excludeDevDependencies: true
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-linux-arm64-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**' # individually: true
 functions:
   pay:
     handler: src/handlers/pay.pay
@@ -25,8 +28,8 @@ functions:
           method: post
 
 plugins:
-  - serverless-webpack
-  # - serverless-plugin-typescript
+  - serverless-plugin-optimize
+  - serverless-plugin-typescript
   - serverless-prune-plugin
   - serverless-prune-versions
   - serverless-offline
@@ -41,6 +44,3 @@ custom:
     automatic: true
     includeLayers: true
     number: 3
-  webpack:
-    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
-    packager: 'pnpm' # Packager that will be used to package your external modules

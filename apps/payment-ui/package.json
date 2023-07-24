@@ -35,7 +35,6 @@
         "react-icons": "^4.8.0",
         "react-redux": "^8.0.5",
         "tailwindcss-animate": "^1.0.5",
-        "typescript": "4.9.5",
         "ws": "^8.13.0",
         "yup": "^0.32.11"
     },
@@ -48,6 +47,6 @@
         "postcss": "^8.4.21",
         "tailwind-merge": "^1.13.1",
         "tailwindcss": "^3.2.7",
-        "typescript": "^5.0.4"
+        "typescript": "^5.0.3"
     }
 }

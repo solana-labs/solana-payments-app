@@ -2,10 +2,10 @@
     "compilerOptions": {
         "preserveConstEnums": true,
         "strictNullChecks": true,
-        "module": "es2015",
+        "module": "ESNext",
         "sourceMap": true,
         "allowJs": false,
-        "target": "es5",
+        "target": "ES2018",
         "outDir": ".build",
         "moduleResolution": "node",
         "lib": ["es2015"],
