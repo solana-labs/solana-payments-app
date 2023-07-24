@@ -48,3 +48,5 @@ apps/**/pnpm-lock.yaml
 working-notes.md
 
 .yarn
+
+**/.webpack
