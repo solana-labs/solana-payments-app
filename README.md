@@ -1,81 +1,60 @@
 # Solana Payments App
 
-## Learn More
+This project allows Shopify merchants to accept crypto through their shopify store, and customers to purchase products using crypto.
 
-Right now the overall documentation is federated to respective directories. Overall overview documentation coming soon.
+[Visit Documentation](https://commercedocs.solanapay.com)
+[Test Payment flow](solanatest8.myshopify.com)
+[Test Merchant Flow](merchant-staging.solanapay.com)
 
-[Payment App Backend](apps/backend-serverless/README.md) - Server that handles communication and orchestration of payments, merchant experience, and customer experience.<br>
-[Transaction Request Server](apps/transaction-request-serverless/README.md) - Server for building transaction for payments.<br>
-[Merchant UI](apps/merchant-ui/README.md) - The merchant frontend that where merchants manage their payments.<br>
-[Payment UI](apps/payment-ui/README.md) - The payment frontend where customers can complete payments.<br>
-[System Design](system-design/README.md) - Where we communicate overall system design decisions for the current state.<br>
+# Local Development
 
-## How to Deploy Locally
+## Dependencies
 
 These steps will get you up and running with a local dev environment, and you can later setup these environments for production
 
-### Keypairs
+-   Dependencies
 
-we recommend setting up one admin account (to manage helius api), and one gas account (to interface with all of your shopify transactions)
+    -   Docker Desktop
+    -   Mysql
 
-### Set up the Application
+-   Keys
 
-make sure Docker Desktop is installed and running
+    -   Gas Keypair
+        -   .env.dev in backend serverless
+    -   [Helius API key](https://www.helius.dev)
+        -   .env.dev in backend serverless
+
+-   Dev Certs
+
+    -   [Follow this guide](https://blog.simontimms.com/2021/10/12/serverless-offline-https/)
+    -   included sample dev certs in backend-serverless & mock-shopify-serverless, must proceed to safety on google chrome
+
+## Commands
+
+Installation:
 
 ```
 git clone https://github.com/solana-labs/solana-payments-app
-
-yarn
-
-(run first time to setup env variables, setup helius as below)
+yarn install
 yarn setup:env
+```
 
+Once the dependencies are all setup, env variables are set:
+
+```
 yarn dev
-
-(optional: load database with dummy data)
 yarn seed
 ```
 
-#### Helius API Key
+## Testing
 
-We use Helius to listen to onchain transactions associated with merchants.
+Use these links to test out the local development flow
+[Local Merchant UI](https://localhost:4004/install)
+[Local Payment Simulation](https://localhost:4004/payment)
 
-Go to [Helius](https://www.helius.dev/) and sign in with your admin keypair. Generate and copy your api key to your .env.dev (backend-serverless). (Make sure you setup your helius webook using the HELIUS_AUTHORIZATION in the .env.dev)
+At the moment, here are some local development hacks we use to get it to work, these will be fixed shortly, including
 
-#### Gas Keypair
+-   local queue events not being sent
+-   accessing mock payment records as created in the seed script
 
-This gas keypair will be the signer for all shopify transactions so the customers don't have to pay gas fees.
-
-It will also help track all of our relavent transactions
-
-###### keep in mind
-
-we generate ngrok in the background. if processes aren't killed properly, run
-
-```
-pgrep ngrok
-kill -9 (ngrok pid)
-```
-
-###### Dev certs
-
-We use dev certs since our mock-shopify-server mimics shopify's https connection. For now, we've added our own devcerts to the repo since they're only used for local development. but you can generate your own certs following [This guide](https://blog.simontimms.com/2021/10/12/serverless-offline-https/)
-
-### Local Development
-
-```
-https://localhost:4004/install
-
-
-
-https://localhost:4004/payment
-
-```
-
-### Make a Payment
-
-Everything is running! Now let's make a payment. In production, Shopify sends a post request to the backend-serverless apps. Specifically, to our backender-serverless-green service. Go [here](/system-design/shopify/README.md#mutual-tls-mtls) to read more about why the backend-serverless app is split up into two deployed services. Locally, you have to invoke your own payment. You can do this by visiting https:localhost:4004/payment. This will mock a shopify request, create your payment, and redirect you to your locally hosted payment-ui. It should look like this
-
-## How to Contribute
-
-We need to flesh out more compartmentalized issues for developers to easily step in and contribute code. For now, please create an issue about further documentation you would like to see. Please make sure you set up our prettier and es-list packages and these don't conflict with your local setup. We use the [es-lint](https://github.com/solana-labs/eslint-config-solana) and [prettier](https://github.com/solana-labs/prettier-config-solana) packages from Solana Labs. Both should be installed with the rest of the dependencies.
+You are welcome to play around with the code as you wish.

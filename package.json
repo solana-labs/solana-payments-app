@@ -13,7 +13,6 @@
         "predev": "yarn --cwd apps/backend-serverless predev",
         "dev": "docker-compose up & turbo run dev",
         "postdev": "yarn --cwd apps/backend-serverless postdev",
-        "kill": "docker-compose down && yarn --cwd apps/backend-serverless kill",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
         "setup:env": "node scripts/env-setup.js",
