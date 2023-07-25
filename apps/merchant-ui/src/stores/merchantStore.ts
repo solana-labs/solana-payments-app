@@ -76,9 +76,6 @@ export async function updateMerchant(field: string, value: string | boolean | nu
             body: JSON.stringify({ [field]: value }),
             credentials: 'include',
         });
-        if (response.status != 200) {
-            throw new Error('Error updating merchant data');
-        }
     } catch (error) {
         console.error('Failed to update merchant data', error);
         throw new Error('Failed to update merchant data');
