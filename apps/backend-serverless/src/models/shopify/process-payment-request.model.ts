@@ -22,7 +22,7 @@ const shopifyPaymentInitiationCustomerScheme = object().shape({
     phone_number: string().optional(),
     locale: string().required(),
     billing_address: customerAddressSchema.required(),
-    shipping_address: customerAddressSchema.required(),
+    shipping_address: customerAddressSchema.optional(),
 });
 
 const paymentMethodDataSchema = object().shape({
@@ -67,11 +67,11 @@ export const shopifyPaymentInitiationScheme = object().shape({
 export type ShopifyPaymentInitiation = InferType<typeof shopifyPaymentInitiationScheme>;
 
 export const parseAndValidateShopifyPaymentInitiation = (
-    paymentInitiationRequestBody: unknown,
+    paymentInitiationRequestBody: unknown
 ): ShopifyPaymentInitiation => {
     return parseAndValidateStrict(
         parseParameters(paymentInitiationRequestBody),
         shopifyPaymentInitiationScheme,
-        'Could not parse the Shopify payment initiation request. Unknown Reason.',
+        'Could not parse the Shopify payment initiation request. Unknown Reason.'
     );
 };

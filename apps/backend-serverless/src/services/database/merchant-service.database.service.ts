@@ -1,9 +1,10 @@
 import { KybState, LoyaltyProgram, Merchant, PrismaClient } from '@prisma/client';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
-import { findAssociatedTokenAddress } from '../../utilities/pubkeys.utility.js';
 import { PubkeyType, getPubkeyType } from '../helius.service.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
@@ -84,9 +85,14 @@ export class MerchantService {
     }
 
     async updateMerchantWalletAddress(merchant: Merchant, inputPubkeyString: string): Promise<Merchant> {
-        const accountType = await getPubkeyType(inputPubkeyString);
+        let accountType: PubkeyType;
+        try {
+            accountType = await getPubkeyType(inputPubkeyString);
+        } catch (error) {
+            throw new InvalidInputError('Make sure account is created and has SOL');
+        }
         const inputPubkey = new web3.PublicKey(inputPubkeyString);
-        const usdcAddress = await findAssociatedTokenAddress(inputPubkey, USDC_MINT);
+        const usdcAddress = await getAssociatedTokenAddress(USDC_MINT, inputPubkey);
 
         let updatedWalletAddress: string | null = null;
         let updatedTokenAddress: string | null = null;

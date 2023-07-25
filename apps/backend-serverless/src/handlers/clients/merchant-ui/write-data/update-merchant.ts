@@ -59,7 +59,6 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             keysToCheck.forEach(key => {
                 if (merchantUpdateRequest[key] != null) {
                     merchantUpdateQuery[key] = merchantUpdateRequest[key];
-                    console.log('udpating key', key);
                 }
             });
 
@@ -68,9 +67,10 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                     merchant,
                     merchantUpdateRequest.paymentAddress
                 );
+            } else {
+                merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
             }
 
-            merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
             if (
                 merchant.kybInquiry &&
                 merchant.kybState !== KybState.finished &&

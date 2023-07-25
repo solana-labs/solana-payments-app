@@ -105,9 +105,11 @@ export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> =>
         throw new DependencyError('helius rpc get account info');
     }
 
-    const getAccountInfo = parseAndValidateGetAccountInfo(response.data);
-
-    return getAccountInfo;
+    try {
+        return parseAndValidateGetAccountInfo(response.data);
+    } catch (error) {
+        throw new InvalidInputError('Did not receive Helius Get Account Info');
+    }
 };
 
 export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
