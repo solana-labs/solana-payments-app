@@ -17,12 +17,25 @@ const customerAddressSchema = object().shape({
     company: string().optional(),
 });
 
+const customerShippingSchema = object().shape({
+    given_name: string().optional(),
+    family_name: string().optional(),
+    line1: string().optional(),
+    line2: string().optional(),
+    city: string().optional(),
+    postal_code: string().optional(),
+    province: string().optional(),
+    country_code: string().optional(),
+    phone_number: string().optional(),
+    company: string().optional(),
+});
+
 const shopifyPaymentInitiationCustomerScheme = object().shape({
     email: string().optional(),
     phone_number: string().optional(),
     locale: string().required(),
     billing_address: customerAddressSchema.required(),
-    shipping_address: customerAddressSchema.optional(),
+    shipping_address: customerShippingSchema.optional(),
 });
 
 const paymentMethodDataSchema = object().shape({
