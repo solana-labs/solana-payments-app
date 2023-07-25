@@ -112,8 +112,10 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 websocketSessionService
             );
 
-            await websocketService.sendTransacationRequestStartedMessage();
-            await sendSolanaPayInfoMessage(account, paymentRecord.id);
+            if (process.env.NODE_ENV != 'development' && process.env.NODE_ENV != 'test') {
+                await websocketService.sendTransacationRequestStartedMessage();
+                await sendSolanaPayInfoMessage(account, paymentRecord.id);
+            }
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -223,7 +225,9 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 requireAllSignatures: false,
             });
 
-            await websocketService.sendTransactionDeliveredMessage();
+            if (process.env.NODE_ENV != 'development' && process.env.NODE_ENV != 'test') {
+                await websocketService.sendTransactionDeliveredMessage();
+            }
 
             return {
                 statusCode: 200,

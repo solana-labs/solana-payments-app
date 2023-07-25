@@ -99,31 +99,33 @@ export class PaymentTransactionBuilder {
             try {
                 await getAccount(connection, customerTokenAddress);
             } catch (error: unknown) {
-                transaction = transaction.add(
-                    createAssociatedTokenAccountInstruction(
-                        this.sender,
-                        customerTokenAddress,
-                        this.sender,
-                        this.pointsMint
-                    )
+                const createAtaIx = createAssociatedTokenAccountInstruction(
+                    this.sender,
+                    customerTokenAddress,
+                    this.sender,
+                    this.pointsMint
                 );
+                transaction = transaction.add(createAtaIx);
             }
 
-            transaction = transaction.add(
-                createMintToInstruction(
-                    this.pointsMint,
-                    customerTokenAddress,
-                    this.feePayer,
-                    receivingQuantity * this.pointsBack * 100000
-                )
+            const mintIx = createMintToInstruction(
+                this.pointsMint,
+                customerTokenAddress,
+                this.feePayer,
+                receivingQuantity * this.pointsBack * 100000
             );
+            transaction = transaction.add(mintIx);
         }
 
         if (this.loyaltyProgram === 'points' && this.payWithPoints && this.pointsMint) {
             let customerTokenAddress = await getAssociatedTokenAddress(this.pointsMint, this.sender);
-            transaction = transaction.add(
-                createBurnInstruction(customerTokenAddress, this.pointsMint, this.sender, receivingQuantity * 100)
+            const burnTx = createBurnInstruction(
+                customerTokenAddress,
+                this.pointsMint,
+                this.sender,
+                receivingQuantity * 100
             );
+            transaction = transaction.add(burnTx);
         } else {
             if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
                 swapIxs = await createSwapIx({

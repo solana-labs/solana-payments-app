@@ -3,7 +3,9 @@
 This project allows Shopify merchants to accept crypto through their shopify store, and customers to purchase products using crypto.
 
 [Visit Documentation](https://commercedocs.solanapay.com)
+
 [Test Payment flow](solanatest8.myshopify.com)
+
 [Test Merchant Flow](merchant-staging.solanapay.com)
 
 # Local Development
@@ -49,7 +51,9 @@ yarn seed
 ## Testing
 
 Use these links to test out the local development flow
+
 [Local Merchant UI](https://localhost:4004/install)
+
 [Local Payment Simulation](https://localhost:4004/payment)
 
 At the moment, here are some local development hacks we use to get it to work, these will be fixed shortly, including
