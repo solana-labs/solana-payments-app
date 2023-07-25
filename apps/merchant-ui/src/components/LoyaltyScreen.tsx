@@ -5,6 +5,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useEffect, useState } from 'react';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
+import { TiersCard } from './TiersCard';
 
 interface Props {
     className?: string;
@@ -44,15 +45,17 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="points" className="flex flex-col items-center w-[400px]">
+                    <Tabs defaultValue="points" className="flex flex-col items-center w-[400px] ">
                         <TabsList>
                             <TabsTrigger value="points">Points</TabsTrigger>
-                            {/* <TabsTrigger value="tiers">Tiers</TabsTrigger> */}
+                            <TabsTrigger value="tiers">Tiers</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="points">
+                        <TabsContent value="points" className="w-full">
                             <PointsCard />
                         </TabsContent>
-                        {/* <TabsContent value="tiers">Change your password here.</TabsContent> */}
+                        <TabsContent value="tiers" className="w-full">
+                            <TiersCard />
+                        </TabsContent>
                     </Tabs>
                 )}
             </div>
