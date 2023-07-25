@@ -5,11 +5,9 @@ import { PaymentAppConfigureResponse } from '../../models/shopify-graphql-respon
 
 export const validatePaymentAppConfigured = (
     paymentAppConfiguredResponse: PaymentAppConfigureResponse,
-    merchant: Merchant,
+    merchant: Merchant
 ) => {
     const userErrors = paymentAppConfiguredResponse.data.paymentsAppConfigure.userErrors;
-
-    console.log('user errors: ' + userErrors.length);
 
     if (userErrors.length > 0) {
         console.log(userErrors);
@@ -17,8 +15,6 @@ export const validatePaymentAppConfigured = (
         Sentry.captureException(error);
         throw error;
     }
-
-    console.log('user errors: ' + userErrors.length);
 
     const paymentAppConfigured = paymentAppConfiguredResponse.data.paymentsAppConfigure.paymentsAppConfiguration;
 
@@ -36,7 +32,7 @@ export const validatePaymentAppConfigured = (
             'merchant id does not match external handle. external handler: ' +
                 externalHandle +
                 ' merchant id: ' +
-                merchant.id,
+                merchant.id
         );
         console.log(error);
         Sentry.captureException(error);

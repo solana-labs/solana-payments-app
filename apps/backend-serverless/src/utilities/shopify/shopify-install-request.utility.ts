@@ -48,6 +48,8 @@ export const createShopifyOAuthGrantRedirectUrl = (shop: string, nonce: string) 
     return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${createScopeString([
         ShopifyScope.WRITE_PAYMENT_GATEWAYS,
         ShopifyScope.WRITE_PAYMENT_SESSIONS,
+        ShopifyScope.READ_PRODUCTS,
+        ShopifyScope.READ_PRODUCTS_LISTING,
     ])}&redirect_uri=${redirectUrl}&state=${nonce}`;
 };
 
@@ -59,4 +61,6 @@ export const createScopeString = (scopes: ShopifyScope[]) => {
 export enum ShopifyScope {
     WRITE_PAYMENT_GATEWAYS = 'write_payment_gateways',
     WRITE_PAYMENT_SESSIONS = 'write_payment_sessions',
+    READ_PRODUCTS = 'read_products',
+    READ_PRODUCTS_LISTING = 'read_product_listings',
 }

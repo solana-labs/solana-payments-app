@@ -16,9 +16,10 @@ export const paymentApp = async (event: APIGatewayProxyEventV2): Promise<APIGate
         data = {
             paymentsAppConfigure: {
                 paymentsAppConfiguration: {
-                    externalHandle: 'mock-external-handle',
+                    externalHandle: 'merchant-0',
                     ready: true,
                 },
+                userErrors: [],
             },
         };
     } else if (paymentSessionResolve) {
