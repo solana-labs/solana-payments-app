@@ -1,10 +1,8 @@
 import * as web3 from '@solana/web3.js';
 import { ShopifyRecord } from '../services/database/record-service.database.service.js';
-import { fetchGasKeypair } from '../services/fetch-gas-keypair.service.js';
 
 export const generateSingleUseKeypairFromRecord = async (record: ShopifyRecord) => {
-    const gasKeypair = await fetchGasKeypair();
-    const shopifyStrings = ['shopify', record.shopId, gasKeypair.publicKey.toBase58()];
+    const shopifyStrings = ['shopify', record.shopId];
     const hashedPublicKey = await hashIntoPublicKey(shopifyStrings);
     const seed: Uint8Array = Uint8Array.from(hashedPublicKey.toBuffer());
     const keypair = web3.Keypair.fromSeed(seed);
