@@ -2,10 +2,33 @@ import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
 import { create } from 'zustand';
 
-interface LoyaltyDetails {
-    loyaltyProgram: 'none' | 'points';
-    pointsMint: string | null;
-    pointsBack: number;
+export interface Product {
+    id: string;
+    name?: string;
+    image?: string;
+    active: boolean;
+    mint?: string;
+    merchantId: string;
+}
+
+export interface Tier {
+    id: number;
+    name?: string;
+    threshold?: number;
+    discount?: number;
+    active: boolean;
+    mint?: string;
+    merchantId: string;
+}
+
+export interface LoyaltyDetails {
+    loyaltyProgram: 'none' | 'points' | 'tiers';
+    points: {
+        pointsMint: string | null;
+        pointsBack: number;
+    };
+    products: Product[];
+    tiers: Tier[];
 }
 
 interface MerchantInfo {
@@ -36,6 +59,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                 credentials: 'include',
             });
             const merchantJson = await response.json();
+            console.log('merchant json', merchantJson.merchantData.loyaltyDetails);
 
             set({
                 merchantInfo: RE.ok({
@@ -49,11 +73,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     kybInquiry: merchantJson.merchantData.onboarding.kybInquiry,
                     kybState: merchantJson.merchantData.onboarding.kybState,
                     completedRedirect: merchantJson.merchantData.onboarding.completedRedirect,
-                    loyalty: {
-                        loyaltyProgram: merchantJson.merchantData.loyaltyDetails.loyaltyProgram,
-                        pointsMint: merchantJson.merchantData.loyaltyDetails.pointsMint,
-                        pointsBack: merchantJson.merchantData.loyaltyDetails.pointsBack,
-                    },
+                    loyalty: merchantJson.merchantData.loyaltyDetails,
                 }),
             });
         } catch (error) {

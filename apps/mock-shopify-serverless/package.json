@@ -27,12 +27,12 @@
         "@types/aws-lambda": "^8.10.101",
         "esbuild": "^0.17.18",
         "eslint-config-custom": "*",
-        "serverless": "^3.21.0",
+        "serverless": "^3.33.0",
         "serverless-esbuild": "^1.43.1",
         "serverless-offline": "^12.0.4",
         "serverless-plugin-common-excludes": "^4.0.0",
         "serverless-plugin-include-dependencies": "^5.1.0",
-        "serverless-plugin-typescript": "2.1.4",
+        "serverless-plugin-typescript": "2.1.5",
         "typescript": "^5.0.3"
     }
 }

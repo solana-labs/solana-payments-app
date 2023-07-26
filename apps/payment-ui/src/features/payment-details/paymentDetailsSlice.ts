@@ -17,10 +17,33 @@ export interface PaymentDetails {
     completed: boolean;
 }
 
+export interface Product {
+    id: string;
+    name?: string;
+    image?: string;
+    active: boolean;
+    mint?: string;
+    merchantId: string;
+}
+
+export interface Tier {
+    id: string;
+    name?: string;
+    threshold?: number;
+    discount?: number;
+    active: boolean;
+    mint?: string;
+    merchantId: string;
+}
+
 export interface LoyaltyDetails {
-    loyaltyProgram: 'none' | 'points';
-    pointsMint: string;
-    pointsBalance: number;
+    loyaltyProgram: 'none' | 'points' | 'tiers';
+    points: {
+        pointsMint: string | null;
+        pointsBack: number;
+    };
+    products: Product[];
+    tiers: Tier[];
 }
 
 export interface ErrorDetails {

@@ -1,26 +1,23 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
+import * as RE from '@/lib/Result';
+import { Product, useMerchantStore } from '@/stores/merchantStore';
 import { Switch } from './ui/switch';
 
 interface Props {
     className?: string;
 }
 
-const items = [
-    {
-        id: 1,
-        picture: 'picture',
-        name: 'name',
-        enabled: false,
-    },
-];
-
-export function ItemsCard(props: Props) {
+export function ProductsCard(props: Props) {
     const { toast } = useToast();
 
-    async function handleEnable(item: number) {
+    const merchantInfo = useMerchantStore(state => state.merchantInfo);
+
+    const products =
+        RE.isOk(merchantInfo) && merchantInfo.data.loyalty.products ? merchantInfo.data.loyalty.products : [];
+
+    async function handleEnable(product: Product) {
         try {
-            console.log(item);
             toast({
                 title: 'Successfully enabled NFTs',
                 variant: 'constructive',
@@ -42,12 +39,12 @@ export function ItemsCard(props: Props) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {items.map(item => (
-                    <TableRow key={item.id}>
-                        <TableCell>{item.picture}</TableCell>
-                        <TableCell>{item.name}</TableCell>
+                {products.map((product: Product) => (
+                    <TableRow key={product.id}>
+                        <TableCell>{product.image}</TableCell>
+                        <TableCell>{product.name}</TableCell>
                         <TableCell>
-                            <Switch checked={item.enabled} onCheckedChange={() => handleEnable(item.id)} />
+                            <Switch checked={product.active} onCheckedChange={() => handleEnable(product)} />
                         </TableCell>
                     </TableRow>
                 ))}

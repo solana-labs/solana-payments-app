@@ -27,8 +27,8 @@ export function PointsCard(props: Props) {
     const [points, setPoints] = useState(0);
 
     useEffect(() => {
-        if (RE.isOk(merchantInfo) && merchantInfo.data.loyalty.pointsBack) {
-            setPoints(merchantInfo.data.loyalty.pointsBack);
+        if (RE.isOk(merchantInfo) && merchantInfo.data.loyalty.points.pointsBack) {
+            setPoints(merchantInfo.data.loyalty.points.pointsBack);
         }
     }, [merchantInfo]);
 
@@ -138,7 +138,7 @@ export function PointsCard(props: Props) {
                 </div>
             </div>
         );
-    } else if (RE.isPending(merchantInfo)) {
+    } else if (RE.isPending(merchantInfo) || !merchantInfo.data.loyalty) {
         return (
             <div className={props.className}>
                 <div className="flex flex-col justify-center h-full ">
@@ -158,7 +158,7 @@ export function PointsCard(props: Props) {
                             <CardDescription>Give back % of purchases to every customer</CardDescription>
                         </CardHeader>
                         <CardFooter className="flex justify-between">
-                            {!merchantInfo.data.loyalty.pointsMint ? (
+                            {!merchantInfo.data.loyalty.points.pointsMint ? (
                                 <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
                             ) : (
                                 <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>

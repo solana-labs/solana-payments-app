@@ -5,7 +5,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useEffect, useState } from 'react';
 import { DefaultLayoutContent } from './DefaultLayoutContent';
 import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
-import { ItemsCard } from './ItemsCard';
+import { ProductsCard } from './ProductsCard';
 import { TiersCard } from './TiersCard';
 
 interface Props {
@@ -63,7 +63,7 @@ export function LoyaltyScreen(props: Props) {
                             <TiersCard />
                         </TabsContent>
                         <TabsContent value="items" className="w-full">
-                            <ItemsCard />
+                            <ProductsCard />
                         </TabsContent>
                     </Tabs>
                 )}
