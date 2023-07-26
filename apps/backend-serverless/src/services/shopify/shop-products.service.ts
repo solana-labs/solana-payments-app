@@ -1,3 +1,4 @@
+import { Merchant } from '@prisma/client';
 import axios from 'axios';
 import https from 'https';
 import { shopifyAdminGraphQLEndpoint } from '../../configs/endpoints.config.js';
@@ -26,18 +27,18 @@ const getProductsRequest = (cursor: string | null) => {
     `;
 };
 
-export const fetchAllProducts = async (axiosInstance: typeof axios, shop: string, token: string | null) => {
+export const fetchAllProducts = async (merchant: Merchant): Promise<ProductNode[]> => {
     let hasNextPage = true;
     let cursor: string | null = null;
     const allProducts: ProductNode[] = [];
 
-    if (!token) {
+    if (!merchant.accessToken) {
         return allProducts;
     }
 
     const headers = {
         'content-type': 'application/json',
-        'X-Shopify-Access-Token': token,
+        'X-Shopify-Access-Token': merchant.accessToken,
     };
 
     while (hasNextPage) {
@@ -52,16 +53,16 @@ export const fetchAllProducts = async (axiosInstance: typeof axios, shop: string
                 rejectUnauthorized: false,
             });
 
-            response = await axiosInstance({
-                url: shopifyAdminGraphQLEndpoint(shop),
+            response = await axios({
+                url: shopifyAdminGraphQLEndpoint(merchant.shop),
                 method: 'POST',
                 headers: headers,
                 data: JSON.stringify(graphqlQuery),
                 httpsAgent: agent,
             });
         } else {
-            response = await axiosInstance({
-                url: shopifyAdminGraphQLEndpoint(shop),
+            response = await axios({
+                url: shopifyAdminGraphQLEndpoint(merchant.shop),
                 method: 'POST',
                 headers: headers,
                 data: JSON.stringify(graphqlQuery),

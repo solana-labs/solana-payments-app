@@ -37,7 +37,7 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
             });
 
             const merchant = await merchantService.getMerchant({ id: paymentRecord.merchantId });
-            const loyaltyResponse = createLoyaltyResponse(merchant);
+            const loyaltyResponse = await createLoyaltyResponse(merchant);
             const paymentStatusResponse = createPaymentStatusResponse(
                 paymentRecord,
                 merchant,

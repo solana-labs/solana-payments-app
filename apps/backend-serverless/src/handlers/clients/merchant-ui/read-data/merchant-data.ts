@@ -54,9 +54,10 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
                     // It's better if we just return the merchant data here and handle the issue elsewhere
                 }
             }
+
             const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
             const onboardingResponse = createOnboardingResponse(merchant);
-            const loyaltyResponse = createLoyaltyResponse(merchant);
+            const loyaltyResponse = await createLoyaltyResponse(merchant);
             const responseBodyData = {
                 merchantData: {
                     name: merchant.name,

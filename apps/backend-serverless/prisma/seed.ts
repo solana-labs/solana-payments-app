@@ -135,6 +135,7 @@ function generatePaymentRecords(merchant = 1, count = 1): any[] {
     }
     return records;
 }
+
 function generateRefundRecords(merchant = 1, count = 1): any[] {
     const records: any[] = [];
 
@@ -188,7 +189,56 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
     return records;
 }
 
-async function insertGeneratedData(merchants: number, payments: number, refunds: number) {
+function generateProductRecords(merchant = 1, count = 2): any[] {
+    const records: any[] = [];
+
+    const productData = {
+        title: 'Crafty_Shoes',
+        handle: 'crappy-shoes',
+    };
+
+    for (let i = 0; i < merchant; i++) {
+        for (let j = 0; j < count; j++) {
+            const record = {
+                id: `gid://shopify/Product/${i}-${j}`,
+                name: productData.title + `-${j}`,
+                image: productData.handle + `-${j}`,
+                merchantId: `merchant-${i}`,
+                active: false,
+            };
+            records.push(record);
+        }
+    }
+    console.log('products', records);
+    return records;
+}
+
+function generateTierRecords(merchant = 1, count = 2): any[] {
+    const records: any[] = [];
+
+    for (let i = 0; i < merchant; i++) {
+        for (let j = 0; j < count; j++) {
+            const record = {
+                name: `Tier ${j}`,
+                threshold: 100 * (j + 1),
+                discount: 10 * (j + 1),
+                merchantId: `merchant-${i}`,
+                active: false,
+            };
+            records.push(record);
+        }
+    }
+    console.log('tiers', records);
+    return records;
+}
+
+async function insertGeneratedData(
+    merchants: number,
+    payments: number,
+    refunds: number,
+    products: number,
+    tiers: number
+) {
     const merchantInfo = await prisma.merchant.createMany({
         data: generateMerchantRecords(merchants).map(merchant => ({
             ...merchant,
@@ -210,21 +260,39 @@ async function insertGeneratedData(merchants: number, payments: number, refunds:
             test: Boolean(record.test),
         })),
     });
+
+    const productRecords = await prisma.product.createMany({
+        data: generateProductRecords(merchants, products).map(record => ({
+            ...record,
+        })),
+    });
+
+    const tierRecords = await prisma.tier.createMany({
+        data: generateTierRecords(merchants, tiers).map(record => ({
+            ...record,
+        })),
+    });
 }
 
 async function main() {
+    // await prisma.$executeRaw`DROP TABLE Merchant;`;
+    // await prisma.$executeRaw`DROP TABLE PaymentRecord `;
+    // await prisma.$executeRaw`DROP TABLE RefundRecord `;
+    // await prisma.$executeRaw`DROP TABLE Tier `;
+    // await prisma.$executeRaw`DROP TABLE Product `;
+    // await prisma.$executeRaw`DROP TABLE WebsocketSession `;
+    // await prisma.$executeRaw`DROP TABLE GDPR `;
+
     await prisma.$executeRaw`DELETE from Merchant;`;
     await prisma.$executeRaw`DELETE from PaymentRecord `;
     await prisma.$executeRaw`DELETE from RefundRecord `;
     await prisma.$executeRaw`DELETE from TransactionRecord `;
     await prisma.$executeRaw`DELETE from WebsocketSession `;
+    await prisma.$executeRaw`DELETE from Tier `;
+    await prisma.$executeRaw`DELETE from Product `;
     await prisma.$executeRaw`DELETE from GDPR `;
 
-    // await prisma.$executeRaw`DROP TABLE Merchant;`;
-    // await prisma.$executeRaw`DROP TABLE PaymentRecord `;
-    // await prisma.$executeRaw`DROP TABLE RefundRecord `;
-
-    await insertGeneratedData(2, 16, 3);
+    await insertGeneratedData(2, 16, 3, 3, 4);
 }
 
 main()

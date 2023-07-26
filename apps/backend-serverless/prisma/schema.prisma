@@ -49,6 +49,7 @@ enum KybState {
 enum LoyaltyProgram {
   none
   points
+  tiers
 }
 
 model Merchant {
@@ -73,8 +74,13 @@ model Merchant {
 
   loyaltyProgram LoyaltyProgram @default(none)
 
+  lastFetched DateTime?
+
   pointsMint String?
   pointsBack Float?
+
+  products Product[]
+  tiers    Tier[]
 }
 
 model PaymentRecord {
@@ -89,7 +95,7 @@ model PaymentRecord {
   usdcAmount           Float
   cancelURL            String
   transactions         TransactionRecord[]
-  merchant             Merchant                      @relation(fields: [merchantId], references: [id])
+  merchant             Merchant                      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
   redirectUrl          String?
@@ -113,7 +119,7 @@ model RefundRecord {
   shopPaymentId        String // Given payment_id from Shopify, it will like to the 'shopId' in our database or 'id' from Shopify
   paymentRecord        PaymentRecord      @relation(fields: [shopPaymentId], references: [shopId])
   test                 Boolean
-  merchant             Merchant           @relation(fields: [merchantId], references: [id])
+  merchant             Merchant           @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId           String
   transactionSignature String? // Signature of the on chain transaction that was used to settle the payment with Shopify
 
@@ -154,4 +160,29 @@ model WebsocketSession {
   paymentRecordId String
 
   @@index(paymentRecordId)
+}
+
+model Product {
+  id         String   @id
+  name       String?
+  image      String?
+  active     Boolean  @default(false)
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId String
+  mint       String?
+
+  @@index(merchantId)
+}
+
+model Tier {
+  id         Int      @id @default(autoincrement())
+  name       String
+  threshold  Float
+  discount   Float
+  active     Boolean  @default(true)
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId String
+  mint       String?
+
+  @@index(merchantId)
 }
