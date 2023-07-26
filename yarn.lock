@@ -4251,16 +4251,6 @@
     "@radix-ui/react-use-layout-effect" "1.0.1"
     "@radix-ui/react-visually-hidden" "1.0.3"
 
-"@radix-ui/react-toggle@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@radix-ui/react-toggle/-/react-toggle-1.0.3.tgz#aecb2945630d1dc5c512997556c57aba894e539e"
-  integrity sha512-Pkqg3+Bc98ftZGsl60CLANXQBBQ4W3mTFS9EJvNxKMZ7magklKV69/id1mlAlOFDDfHvlCms0fx8fA4CMKDJHg==
-  dependencies:
-    "@babel/runtime" "^7.13.10"
-    "@radix-ui/primitive" "1.0.1"
-    "@radix-ui/react-primitive" "1.0.3"
-    "@radix-ui/react-use-controllable-state" "1.0.1"
-
 "@radix-ui/react-tooltip@^1.0.5":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-tooltip/-/react-tooltip-1.0.6.tgz#87a7786cd9f2b4de957ac645afae1575339c58b0"
@@ -19113,16 +19103,7 @@ serverless-plugin-optimize@4.2.1-rc.1:
     fs-extra "^7.0.1"
     resolve-from "^4.0.0"
 
-serverless-plugin-typescript@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/serverless-plugin-typescript/-/serverless-plugin-typescript-2.1.4.tgz#6093c9c4d71f9bed980724908f9e2961ca249a4e"
-  integrity sha512-6+IHXlsDydwDu+3ZhJiWyaFsfAoHbXdFGk10RJjipFYW+KLIoGMAxazXeiq0YQtC7uJYOtfYtGM1PtNjxOXAJg==
-  dependencies:
-    fs-extra "^7.0.1"
-    globby "^10.0.2"
-    lodash "^4.17.21"
-
-serverless-plugin-typescript@^2.1.5:
+serverless-plugin-typescript@2.1.5, serverless-plugin-typescript@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/serverless-plugin-typescript/-/serverless-plugin-typescript-2.1.5.tgz#d4c4636ee6e4803d2fe773ce2bb8bf52362c836d"
   integrity sha512-7OO6eJzv57dvfz0v9huU1JVBgdzgvvz+6GCwwkR2bfdVHKs1tifx+fSgjbQcBpXNNHf8Dx2Mo7evtYTkA/TDDA==
