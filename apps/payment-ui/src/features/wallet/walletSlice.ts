@@ -34,8 +34,8 @@ export const fetchWalletBalance = createAsyncThunk<BalanceResponse, string>(
             const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
             const response = await axios.get(`${backendUrl}/balance?publicKey=${pubkey}&mint=${USDC_MINT}`);
             let pointsBalance = 0;
-            if (state.paymentDetails.loyaltyDetails?.pointsMint != null) {
-                const pointsMint = state.paymentDetails.loyaltyDetails.pointsMint;
+            if (state.paymentDetails.loyaltyDetails?.points.pointsMint != null) {
+                const pointsMint = state.paymentDetails.loyaltyDetails.points.pointsMint;
                 const pointsBalanceResponse = await axios.get(
                     `${backendUrl}/balance?publicKey=${pubkey}&mint=${pointsMint}`
                 );
