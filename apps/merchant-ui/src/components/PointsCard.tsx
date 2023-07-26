@@ -149,7 +149,6 @@ export function PointsCard(props: Props) {
             </div>
         );
     } else {
-        console.log('points', merchantInfo.data.loyalty);
         return (
             <Card className="w-[400px]">
                 {merchantInfo.data.loyalty.loyaltyProgram != 'points' ? (

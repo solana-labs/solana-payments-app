@@ -31,12 +31,6 @@ export interface LoyaltyDetails {
     tiers: Tier[];
 }
 
-// interface LoyaltyDetails {
-//     loyaltyProgram: 'none' | 'points';
-//     pointsMint: string | null;
-//     pointsBack: number;
-// }
-
 interface MerchantInfo {
     shop: string;
     name: string;
@@ -80,12 +74,6 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                     kybState: merchantJson.merchantData.onboarding.kybState,
                     completedRedirect: merchantJson.merchantData.onboarding.completedRedirect,
                     loyalty: merchantJson.merchantData.loyaltyDetails,
-
-                    // {
-                    //     loyaltyProgram: merchantJson.merchantData.loyaltyDetails.loyaltyProgram,
-                    //     pointsMint: merchantJson.merchantData.loyaltyDetails.pointsMint,
-                    //     pointsBack: merchantJson.merchantData.loyaltyDetails.pointsBack,
-                    // },
                 }),
             });
         } catch (error) {

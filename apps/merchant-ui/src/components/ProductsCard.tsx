@@ -18,7 +18,6 @@ export function ProductsCard(props: Props) {
 
     async function handleEnable(product: Product) {
         try {
-            console.log(product);
             toast({
                 title: 'Successfully enabled NFTs',
                 variant: 'constructive',

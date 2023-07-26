@@ -46,12 +46,6 @@ export interface LoyaltyDetails {
     tiers: Tier[];
 }
 
-// export interface LoyaltyDetails {
-//     loyaltyProgram: 'none' | 'points';
-//     pointsMint: string;
-//     pointsBalance: number;
-// }
-
 export interface ErrorDetails {
     errorTitle: string;
     errorDetail: string;

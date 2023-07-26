@@ -104,7 +104,7 @@ export const admin = async (event: APIGatewayProxyEventV2): Promise<APIGatewayPr
                     },
                 ],
                 pageInfo: {
-                    hasNextPage: false, // you might want to make this dynamic based on your mock data
+                    hasNextPage: false,
                 },
             },
         };
