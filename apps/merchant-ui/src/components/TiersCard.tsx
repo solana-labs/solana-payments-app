@@ -25,6 +25,12 @@ export function TiersCard(props: Props) {
         discount: undefined,
     });
 
+    const [newTier, setNewTier] = useState<EditingTier>({
+        name: undefined,
+        threshold: undefined,
+        discount: undefined,
+    });
+
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
@@ -48,17 +54,6 @@ export function TiersCard(props: Props) {
                 variant: 'constructive',
             });
         } else {
-            console.log(
-                'updating merchant',
-                {
-                    id: tierId,
-                    name: editingTier.name,
-                    threshold: editingTier.threshold,
-                    discount: editingTier.discount,
-                },
-                'old',
-                tier
-            );
             await updateMerchant('tier', {
                 id: tierId,
                 name: editingTier.name,
@@ -72,8 +67,6 @@ export function TiersCard(props: Props) {
             });
         }
 
-        // Save changes here
-
         setEditing(null);
     }
 
@@ -84,10 +77,15 @@ export function TiersCard(props: Props) {
         }
 
         await updateMerchant('tier', {
-            name: 'tier new',
+            ...newTier,
         });
 
         await getMerchantInfo();
+        setNewTier({
+            name: undefined,
+            threshold: undefined,
+            discount: undefined,
+        });
         toast({
             title: 'Successfully Added a new Tier',
             variant: 'constructive',
@@ -142,79 +140,132 @@ export function TiersCard(props: Props) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tiers.map((tier: Tier) => (
-                            <TableRow key={tier.id}>
-                                <TableCell>
-                                    {editing === tier.id ? (
-                                        <Input
-                                            value={editingTier.name}
-                                            onChange={e => {
-                                                setEditingTier({
-                                                    ...editingTier,
-                                                    name: e.target.value,
-                                                });
-                                            }}
-                                        />
-                                    ) : (
-                                        tier.name
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {editing === tier.id ? (
-                                        <Input
-                                            value={editingTier.threshold}
-                                            onChange={e => {
-                                                setEditingTier({
-                                                    ...editingTier,
-                                                    threshold: Number(e.target.value),
-                                                });
-                                            }}
-                                        />
-                                    ) : (
-                                        tier.threshold
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {editing === tier.id ? (
-                                        <Input
-                                            value={editingTier.discount}
-                                            onChange={e => {
-                                                setEditingTier({
-                                                    ...editingTier,
-                                                    discount: Number(e.target.value),
-                                                });
-                                            }}
-                                        />
-                                    ) : (
-                                        tier.discount
-                                    )}
-                                </TableCell>
-                                <TableCell className="flex flex-row space-x-1">
-                                    {editing === tier.id ? (
-                                        <Button variant="outline" onClick={() => handleSave(tier.id)}>
-                                            Save
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                setEditing(tier.id);
-                                                setEditingTier({
-                                                    name: tier.name,
-                                                    threshold: tier.threshold,
-                                                    discount: tier.discount,
-                                                });
-                                            }}
-                                        >
-                                            Edit
-                                        </Button>
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    <Switch checked={tier.active} onCheckedChange={() => handleToggle(tier.id)} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {tiers
+                            .sort((a, b) => b.threshold - a.threshold)
+                            .map((tier: Tier) => (
+                                <TableRow key={tier.id}>
+                                    <TableCell>
+                                        {editing === tier.id ? (
+                                            <Input
+                                                value={editingTier.name}
+                                                onChange={e => {
+                                                    setEditingTier({
+                                                        ...editingTier,
+                                                        name: e.target.value,
+                                                    });
+                                                }}
+                                            />
+                                        ) : (
+                                            tier.name
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {editing === tier.id ? (
+                                            <Input
+                                                value={editingTier.threshold}
+                                                onChange={e => {
+                                                    setEditingTier({
+                                                        ...editingTier,
+                                                        threshold: Number(e.target.value),
+                                                    });
+                                                }}
+                                            />
+                                        ) : (
+                                            tier.threshold
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {editing === tier.id ? (
+                                            <Input
+                                                value={editingTier.discount}
+                                                onChange={e => {
+                                                    setEditingTier({
+                                                        ...editingTier,
+                                                        discount: Number(e.target.value),
+                                                    });
+                                                }}
+                                            />
+                                        ) : (
+                                            tier.discount
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="flex flex-row space-x-1">
+                                        {editing === tier.id ? (
+                                            <Button variant="outline" onClick={() => handleSave(tier.id)}>
+                                                Save
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setEditing(tier.id);
+                                                    setEditingTier({
+                                                        name: tier.name,
+                                                        threshold: tier.threshold,
+                                                        discount: tier.discount,
+                                                    });
+                                                }}
+                                            >
+                                                Edit
+                                            </Button>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Switch checked={tier.active} onCheckedChange={() => handleToggle(tier.id)} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        <div>New Tier</div>
+                        <TableRow>
+                            <TableCell>
+                                <Input
+                                    value={newTier.name ? newTier.name : ''}
+                                    onChange={e => {
+                                        setNewTier({
+                                            ...newTier,
+                                            name: e.target.value,
+                                        });
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newTier.threshold ? newTier.threshold : ''}
+                                    onChange={e => {
+                                        setNewTier({
+                                            ...newTier,
+                                            threshold: Number(e.target.value),
+                                        });
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newTier.discount ? newTier.discount : ''}
+                                    onChange={e => {
+                                        setNewTier({
+                                            ...newTier,
+                                            discount: Number(e.target.value),
+                                        });
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell className="flex flex-row space-x-1">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        handleAdd();
+                                    }}
+                                    disabled={
+                                        newTier.name === undefined ||
+                                        newTier.threshold === undefined ||
+                                        newTier.discount === undefined
+                                    }
+                                >
+                                    Add
+                                </Button>
+                            </TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
                 <Button onClick={handleAdd} disabled={editing !== null} className="w-full">

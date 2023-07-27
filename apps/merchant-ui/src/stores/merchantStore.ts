@@ -13,9 +13,9 @@ export interface Product {
 
 export interface Tier {
     id: number;
-    name?: string;
-    threshold?: number;
-    discount?: number;
+    name: string;
+    threshold: number;
+    discount: number;
     active: boolean;
     mint?: string;
     merchantId: string;

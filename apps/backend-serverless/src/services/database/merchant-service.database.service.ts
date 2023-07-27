@@ -187,16 +187,23 @@ export class MerchantService {
 
     async upsertTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
         const filteredUpdate = filterUndefinedFields(tier);
-        return prismaErrorHandler(
-            this.prisma.tier.upsert({
-                where: { id: tier.id },
-                update: filteredUpdate,
-                create: {
-                    ...filteredUpdate,
-                    merchantId: merchantId,
-                },
-            })
-        );
+        if (tier.id) {
+            return prismaErrorHandler(
+                this.prisma.tier.update({
+                    where: { id: tier.id },
+                    data: filteredUpdate,
+                })
+            );
+        } else {
+            return prismaErrorHandler(
+                this.prisma.tier.create({
+                    data: {
+                        ...filteredUpdate,
+                        merchantId: merchantId,
+                    },
+                })
+            );
+        }
     }
 
     async getProducts(merchantId: string): Promise<Product[]> {
