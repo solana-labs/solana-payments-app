@@ -12,6 +12,21 @@ export const merchantUpdateRequestBodySchema = object().shape({
     loyaltyProgram: string().optional(),
     pointsMint: string().optional(),
     pointsBack: number().optional(),
+    tier: object()
+        .shape({
+            id: number().optional(),
+            name: string().optional(),
+            threshold: number().optional(),
+            discount: number().optional(),
+            active: boolean().optional(),
+        })
+        .optional(),
+    product: object()
+        .shape({
+            productId: string().optional(),
+            active: boolean().optional(),
+        })
+        .optional(),
 });
 
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;

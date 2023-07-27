@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Product, useMerchantStore } from '@/stores/merchantStore';
+import { Product, updateMerchant, useMerchantStore } from '@/stores/merchantStore';
 import { Switch } from './ui/switch';
 
 interface Props {
@@ -12,21 +12,31 @@ export function ProductsCard(props: Props) {
     const { toast } = useToast();
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
+    const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
     const products =
         RE.isOk(merchantInfo) && merchantInfo.data.loyalty.products ? merchantInfo.data.loyalty.products : [];
 
-    async function handleEnable(product: Product) {
+    async function handleToggle(product: Product) {
         try {
+            await updateMerchant('product', {
+                productId: product.id,
+                active: !product.active,
+            });
+            await getMerchantInfo();
+
             toast({
-                title: 'Successfully enabled NFTs',
+                title: `Successfully ${product.active ? 'deactivated' : 'activated'} NFTs`,
                 variant: 'constructive',
             });
         } catch (error) {
-            toast({
-                title: 'Error enabling NFTs',
-                variant: 'destructive',
-            });
+            if (error instanceof Error) {
+                toast({
+                    title: `Error ${product.active ? 'deactivating' : 'activating'} NFTs`,
+                    description: error.message,
+                    variant: 'destructive',
+                });
+            }
         }
     }
     return (
@@ -44,7 +54,7 @@ export function ProductsCard(props: Props) {
                         <TableCell>{product.image}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell>
-                            <Switch checked={product.active} onCheckedChange={() => handleEnable(product)} />
+                            <Switch checked={product.active} onCheckedChange={() => handleToggle(product)} />
                         </TableCell>
                     </TableRow>
                 ))}

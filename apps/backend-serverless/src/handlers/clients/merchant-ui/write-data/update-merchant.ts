@@ -6,8 +6,6 @@ import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { parseAndValidatePaymentAddressRequestBody } from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createOnboardingResponse } from '../../../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
@@ -50,8 +48,12 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                 'pointsBack',
             ];
 
-            if (keysToCheck.every(key => merchantUpdateRequest[key] == null)) {
-                throw new InvalidInputError('no relevant fields in request body');
+            if (
+                keysToCheck.every(key => merchantUpdateRequest[key] == null) &&
+                merchantUpdateRequest.tier == null &&
+                merchantUpdateRequest.product == null
+            ) {
+                throw new InvalidInputError('No fields to update in request body');
             }
 
             let merchantUpdateQuery = {};
@@ -71,43 +73,36 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                 merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
             }
 
-            if (
-                merchant.kybInquiry &&
-                merchant.kybState !== KybState.finished &&
-                merchant.kybState !== KybState.failed
-            ) {
-                try {
+            try {
+                if (
+                    merchant.kybInquiry &&
+                    merchant.kybState !== KybState.finished &&
+                    merchant.kybState !== KybState.failed
+                ) {
                     merchant = await syncKybState(merchant, prisma);
-                } catch {
-                    // it's unlikely that this will throw but we should catch and record all errors underneath this
-                    // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
-                    // we don't wana disrupt the flow, they'll just get blocked elsewhere
-                }
-            }
-
-            if (merchant.kybState === KybState.finished) {
-                try {
+                } else if (merchant.kybState === KybState.finished) {
                     merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
-                } catch {
-                    // It's possible for this to throw but we should capture and log alll errors underneath this
-                    // It's better if we just return the merchant data here and handle the issue elsewhere
                 }
-            }
-            const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
-            const onboardingResponse = createOnboardingResponse(merchant);
+            } catch (error) {
+                // it's unlikely that this will throw but we should catch and record all errors underneath this
+                // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
+                // we don't wana disrupt the flow, they'll just get blocked elsewhere
+                console.log('error with kyb');
 
-            const responseBodyData = {
-                merchantData: {
-                    name: merchant.name,
-                    paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
-                    onboarding: onboardingResponse,
-                },
-                general: generalResponse,
-            };
+                Sentry.captureException(error);
+                await Sentry.flush(2000);
+            }
+
+            if (merchantUpdateRequest.tier && Object.keys(merchantUpdateRequest.tier).length != 0) {
+                await merchantService.upsertTier(merchant.id, merchantUpdateRequest.tier);
+            }
+
+            if (merchantUpdateRequest.product && Object.keys(merchantUpdateRequest.product).length != 0) {
+                await merchantService.toggleProduct(merchantUpdateRequest.product);
+            }
 
             return {
                 statusCode: 200,
-                body: JSON.stringify(responseBodyData),
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Credentials': true,
