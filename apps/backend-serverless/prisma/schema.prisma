@@ -176,9 +176,9 @@ model Product {
 
 model Tier {
   id         Int      @id @default(autoincrement())
-  name       String
-  threshold  Float
-  discount   Float
+  name       String   @default("Default Name")
+  threshold  Float    @default(0)
+  discount   Float    @default(0)
   active     Boolean  @default(true)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId String

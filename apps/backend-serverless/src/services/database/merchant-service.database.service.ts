@@ -43,15 +43,14 @@ export type ProductUpdate = {
     name: string;
     image: string;
     active: boolean;
-    mint: string;
 };
 
 export type TierUpdate = {
-    name: string;
-    threshold: number;
-    discount: number;
-    active: boolean;
-    mint: string;
+    id?: number;
+    name?: string;
+    threshold?: number;
+    discount?: number;
+    active?: boolean;
 };
 
 export class MerchantService {
@@ -184,35 +183,24 @@ export class MerchantService {
         return upsertedProducts;
     }
 
-    async addTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
+    async toggleProduct(product: { productId?: string; active?: boolean }): Promise<Product> {
+        return await prismaErrorHandler(
+            this.prisma.product.update({
+                where: { id: product.productId },
+                data: { active: product.active },
+            })
+        );
+    }
+
+    async upsertTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
+        const filteredUpdate = filterUndefinedFields(tier);
         return prismaErrorHandler(
-            this.prisma.tier.create({
-                data: {
-                    ...tier,
+            this.prisma.tier.upsert({
+                where: { id: tier.id },
+                update: filteredUpdate,
+                create: {
+                    ...filteredUpdate,
                     merchantId: merchantId,
-                },
-            })
-        );
-    }
-
-    async updateTier(tierId: number, update: Partial<TierUpdate>): Promise<Tier> {
-        const filteredUpdate = filterUndefinedFields(update);
-
-        return prismaErrorHandler(
-            this.prisma.tier.update({
-                where: {
-                    id: tierId,
-                },
-                data: filteredUpdate,
-            })
-        );
-    }
-
-    async removeTier(tierId: number): Promise<void> {
-        await prismaErrorHandler(
-            this.prisma.tier.delete({
-                where: {
-                    id: tierId,
                 },
             })
         );

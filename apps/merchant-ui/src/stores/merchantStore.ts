@@ -59,7 +59,6 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                 credentials: 'include',
             });
             const merchantJson = await response.json();
-            console.log('merchant json', merchantJson.merchantData.loyaltyDetails);
 
             set({
                 merchantInfo: RE.ok({
@@ -82,7 +81,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
-export async function updateMerchant(field: string, value: string | boolean | number) {
+export async function updateMerchant(field: string, value: string | boolean | number | object) {
     const headers = {
         'Content-Type': 'application/json',
     };
