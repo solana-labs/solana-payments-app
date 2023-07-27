@@ -1,7 +1,9 @@
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { Tier, updateMerchant, useMerchantStore } from '@/stores/merchantStore';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -18,6 +20,8 @@ interface EditingTier {
 }
 
 export function TiersCard(props: Props) {
+    const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
+
     const [editing, setEditing] = useState<number | null>(null);
     const [editingTier, setEditingTier] = useState<EditingTier>({
         name: undefined,
@@ -106,6 +110,27 @@ export function TiersCard(props: Props) {
         });
     }
 
+    async function selectLoyaltyProgram() {
+        try {
+            await updateMerchant('loyaltyProgram', 'tiers');
+
+            await getMerchantInfo();
+
+            toast({
+                title: 'Successfully Selected Tiers Loyalty!',
+                variant: 'constructive',
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error Starting Tiers Loyalty Program',
+                    description: error.message,
+                    variant: 'destructive',
+                });
+            }
+        }
+    }
+
     if (RE.isFailed(merchantInfo)) {
         return (
             <div className={props.className}>
@@ -126,6 +151,21 @@ export function TiersCard(props: Props) {
                     </div>
                 </div>
             </div>
+        );
+    } else if (merchantInfo.data.loyalty.loyaltyProgram != 'tiers') {
+        return (
+            <Card className="w-[400px]">
+                <CardHeader>
+                    <CardTitle>Select Tiers Loyalty Program</CardTitle>
+                    <CardDescription>Reward discounts to returning customers</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex justify-between">
+                    <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
+                    <Button variant="outline" onClick={disconnect}>
+                        Disconnect Wallet
+                    </Button>
+                </CardFooter>
+            </Card>
         );
     } else {
         return (

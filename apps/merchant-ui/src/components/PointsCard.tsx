@@ -98,7 +98,6 @@ export function PointsCard(props: Props) {
                     variant: 'destructive',
                 });
             }
-            // throw error; // Re-throw the error
         }
     }
 
@@ -148,61 +147,59 @@ export function PointsCard(props: Props) {
                 </div>
             </div>
         );
+    } else if (merchantInfo.data.loyalty.loyaltyProgram != 'points') {
+        return (
+            <Card className="w-[400px]">
+                <CardHeader>
+                    <CardTitle>Create Points Loyalty Program</CardTitle>
+                    <CardDescription>Give back % of purchases to every customer</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex justify-between">
+                    {!merchantInfo.data.loyalty.points.pointsMint ? (
+                        <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
+                    ) : (
+                        <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
+                    )}
+                    <Button variant="outline" onClick={disconnect}>
+                        Disconnect Wallet
+                    </Button>
+                </CardFooter>
+            </Card>
+        );
     } else {
         return (
             <Card className="w-[400px]">
-                {merchantInfo.data.loyalty.loyaltyProgram != 'points' ? (
-                    <>
-                        <CardHeader>
-                            <CardTitle>Create Points Loyalty Program</CardTitle>
-                            <CardDescription>Give back % of purchases to every customer</CardDescription>
-                        </CardHeader>
-                        <CardFooter className="flex justify-between">
-                            {!merchantInfo.data.loyalty.points.pointsMint ? (
-                                <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
-                            ) : (
-                                <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
-                            )}
-                            <Button variant="outline" onClick={disconnect}>
-                                Disconnect Wallet
-                            </Button>
-                        </CardFooter>
-                    </>
-                ) : (
-                    <>
-                        <CardHeader>
-                            <CardTitle>Manage Points Loyalty Program</CardTitle>
-                            <CardDescription>Give back % of purchases to every customer</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form>
-                                <div className="grid w-full items-center gap-4">
-                                    <div className="flex flex-col space-y-1.5">
-                                        <Label htmlFor="name">Set % points back</Label>
-                                        <Input
-                                            type="number"
-                                            id="name"
-                                            placeholder="%"
-                                            onChange={e => {
-                                                const value = parseFloat(e.target.value);
-                                                if (value >= 0 && value <= 100) {
-                                                    setPoints(value);
-                                                }
-                                            }}
-                                            value={points}
-                                        />
-                                    </div>
-                                </div>
-                            </form>
-                        </CardContent>
-                        <CardFooter className="flex justify-between">
-                            <Button onClick={updateLoyaltyPoints}>Update Loyalty Points Back %</Button>
-                            <Button variant="outline" onClick={disconnect}>
-                                Disconnect Wallet
-                            </Button>
-                        </CardFooter>
-                    </>
-                )}
+                <CardHeader>
+                    <CardTitle>Manage Points Loyalty Program</CardTitle>
+                    <CardDescription>Give back % of purchases to every customer</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form>
+                        <div className="grid w-full items-center gap-4">
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="name">Set % points back</Label>
+                                <Input
+                                    type="number"
+                                    id="name"
+                                    placeholder="%"
+                                    onChange={e => {
+                                        const value = parseFloat(e.target.value);
+                                        if (value >= 0 && value <= 100) {
+                                            setPoints(value);
+                                        }
+                                    }}
+                                    value={points}
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                    <Button onClick={updateLoyaltyPoints}>Update Loyalty Points Back %</Button>
+                    <Button variant="outline" onClick={disconnect}>
+                        Disconnect Wallet
+                    </Button>
+                </CardFooter>
             </Card>
         );
     }
