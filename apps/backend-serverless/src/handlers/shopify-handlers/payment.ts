@@ -9,6 +9,7 @@ import { parseAndValidateShopifyRequestHeaders } from '../../models/shopify/shop
 import { convertAmountAndCurrencyToUsdcSize } from '../../services/coin-gecko.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../services/database/payment-record-service.database.service.js';
+import { fetchCheckoutData } from '../../services/shopify/checkout-data.service.js';
 import { generatePubkeyString } from '../../utilities/pubkeys.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
@@ -23,7 +24,7 @@ Sentry.AWSLambda.init({
 export const payment = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In Payment',
+            message: 'In Payment shopify handler',
             level: 'info',
             extra: {
                 event,
@@ -50,6 +51,58 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             }
             const merchant = await merchantService.getMerchant({ shop: shop });
             const paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
+
+            Sentry.captureEvent({
+                message: 'In Payment SHOPIFY about to get the checkout response',
+                level: 'info',
+                extra: {
+                    event,
+                },
+            });
+            console.log(
+                'paymentInitiation.payment_method.data.cancel_url',
+                paymentInitiation.payment_method.data.cancel_url
+            );
+            let checkoutUrlParts = paymentInitiation.payment_method.data.cancel_url.split('/');
+            console.log('parts', checkoutUrlParts);
+
+            let checkoutId = checkoutUrlParts[checkoutUrlParts.length - 2];
+            console.log('checkoutId', checkoutId);
+            try {
+                let checkoutResponse = await fetchCheckoutData(merchant, checkoutId);
+
+                console.log('checkout data?', checkoutResponse);
+                Sentry.captureEvent({
+                    message: 'In Payment SHOPIFY WE GOT ITTT',
+                    level: 'info',
+                    extra: {
+                        event,
+                        checkoutResponse,
+                    },
+                });
+            } catch (error) {
+                console.log('checkout response 1', error);
+            }
+
+            try {
+                let checkoutResponse2 = await fetchCheckoutData(merchant, checkoutId.slice(3));
+                console.log('checkout data?', checkoutResponse2);
+                Sentry.captureEvent({
+                    message: 'In Payment SHOPIFY WE GOT ITTT2',
+                    level: 'info',
+                    extra: {
+                        event,
+                        checkoutResponse2,
+                    },
+                });
+            } catch (error) {
+                console.log('checkout response 2', error);
+            }
+
+            Sentry.captureEvent({
+                message: 'postmortem',
+                level: 'info',
+            });
 
             let paymentRecord;
             try {
