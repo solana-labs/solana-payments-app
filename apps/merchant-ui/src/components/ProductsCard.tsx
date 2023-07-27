@@ -20,6 +20,7 @@ export function ProductsCard(props: Props) {
     async function handleToggle(product: Product) {
         try {
             await updateMerchant('product', {
+                productId: product.id,
                 active: !product.active,
             });
             await getMerchantInfo();

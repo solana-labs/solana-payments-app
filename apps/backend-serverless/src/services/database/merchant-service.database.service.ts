@@ -141,23 +141,18 @@ export class MerchantService {
     }
 
     async upsertProducts(merchantId: string, products: ProductNode[]): Promise<Product[]> {
-        // 1. Fetch all existing products for the merchant.
         const existingProducts = await this.prisma.product.findMany({
             where: { merchantId: merchantId },
         });
 
-        // 2. Create a Set of product IDs from the passed-in array.
         const newProductIds = new Set(products.map(product => product.id));
 
-        // 3. Identify the products that exist in the database but not in the passed-in array.
         const productsToDelete = existingProducts.filter(product => !newProductIds.has(product.id));
 
-        // 4. Create delete actions for the products to be deleted.
         const deleteActions = productsToDelete.map(product =>
             this.prisma.product.delete({ where: { id: product.id } })
         );
 
-        // 5. Create upsert actions for the passed-in products.
         const upsertActions = products.map(product =>
             this.prisma.product.upsert({
                 where: { id: product.id },
@@ -174,10 +169,8 @@ export class MerchantService {
             })
         );
 
-        // 6. Perform the delete and upsert actions in a transaction.
         const transactionResults = await this.prisma.$transaction([...deleteActions, ...upsertActions]);
 
-        // 7. Filter out the results of the delete actions to return only the upserted products.
         const upsertedProducts = transactionResults.slice(deleteActions.length) as Product[];
 
         return upsertedProducts;

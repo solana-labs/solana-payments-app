@@ -73,7 +73,6 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                 merchant = await merchantService.updateMerchant(merchant, merchantUpdateQuery as MerchantUpdate);
             }
 
-            console.log('before kyb');
             try {
                 if (
                     merchant.kybInquiry &&
@@ -94,7 +93,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                 await Sentry.flush(2000);
             }
 
-            if (merchantUpdateRequest.tier != null) {
+            if (merchantUpdateRequest.tier && Object.keys(merchantUpdateRequest.tier).length != 0) {
                 await merchantService.upsertTier(merchant.id, merchantUpdateRequest.tier);
             }
 

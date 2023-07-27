@@ -46,7 +46,7 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="tiers" className="flex flex-col items-center w-[400px] ">
+                    <Tabs defaultValue="points" className="flex flex-col items-center w-[400px] ">
                         <div className="flex flex-row space-x-2">
                             <TabsList>
                                 <TabsTrigger value="points">Points</TabsTrigger>
