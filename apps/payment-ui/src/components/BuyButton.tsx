@@ -5,7 +5,7 @@ import {
     getConnectWalletNotification,
     setNotification,
 } from '@/features/notification/notificationSlice';
-import { getPaymentDetails, getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
+import { getLoyaltyDetails, getPaymentDetails, getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
 import { getPointsBalance } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
@@ -23,6 +23,7 @@ const BuyButton = () => {
     const connectedWalletNotification = useSelector(getConnectWalletNotification);
     const [walletLoading, setWalletLoading] = useState(false);
     const pointsBalance = useSelector(getPointsBalance);
+    const loyaltyDetails = useSelector(getLoyaltyDetails);
     const usdcCost = useSelector(getPaymentDetails)?.usdcSize;
 
     const fetchAndSendTransaction = async (points: boolean = false) => {
@@ -119,16 +120,18 @@ const BuyButton = () => {
 
     return (
         <div className="flex flex-col space-y-2">
-            <Button.Primary
-                disabled={pointsDisabled()}
-                pending={walletLoading}
-                onClick={async () => {
-                    await fetchAndSendTransaction(true);
-                }}
-                className="bg-purple-700 text-white w-full shadow-xl "
-            >
-                {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
-            </Button.Primary>
+            {loyaltyDetails && loyaltyDetails.loyaltyProgram === 'points' && (
+                <Button.Primary
+                    disabled={pointsDisabled()}
+                    pending={walletLoading}
+                    onClick={async () => {
+                        await fetchAndSendTransaction(true);
+                    }}
+                    className="bg-purple-700 text-white w-full shadow-xl "
+                >
+                    {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
+                </Button.Primary>
+            )}
             <Button.Primary
                 disabled={isDisabled()}
                 pending={walletLoading}
