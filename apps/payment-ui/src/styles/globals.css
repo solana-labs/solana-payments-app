@@ -31,14 +31,6 @@ a {
     width: 100%;
 }
 
-.wallet-adapter-button-trigger {
-    background-color: black;
-}
-
-.wallet-adapter-button-trigger {
-    background-color: black;
-}
-
 @layer base {
     :root {
         --background: 0 0% 100%;

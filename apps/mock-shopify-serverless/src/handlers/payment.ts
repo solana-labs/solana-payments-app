@@ -30,7 +30,7 @@ export const payment = async (event: APIGatewayProxyEventV2): Promise<APIGateway
                 payment_method: {
                     type: 'type',
                     data: {
-                        cancel_url: 'localhost:4004/processing',
+                        cancel_url: 'http://localhost:4004/processing',
                     },
                 },
                 proposed_at: '2021-08-10T18:02:00.000Z',

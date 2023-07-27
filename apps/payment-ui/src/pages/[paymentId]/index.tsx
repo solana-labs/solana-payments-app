@@ -1,6 +1,5 @@
 import CheckoutSection from '@/components/CheckoutSection';
 import { DefaultLayout } from '@/components/DefaultLayout';
-import FooterSection from '@/components/FooterSection';
 import { useRouter } from 'next/router';
 
 export default function CheckoutPage() {
@@ -13,7 +12,6 @@ export default function CheckoutPage() {
     return (
         <DefaultLayout>
             <CheckoutSection />
-            <FooterSection />
         </DefaultLayout>
     );
 }
