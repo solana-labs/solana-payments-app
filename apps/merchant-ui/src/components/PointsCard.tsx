@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { updateMerchant, useMerchantStore } from '@/stores/merchantStore';
+import { updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
@@ -25,6 +25,7 @@ export function PointsCard(props: Props) {
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
     const [points, setPoints] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (RE.isOk(merchantInfo) && merchantInfo.data.loyalty.points.pointsBack) {
@@ -55,9 +56,13 @@ export function PointsCard(props: Props) {
             const transaction = Transaction.from(buffer);
             await sendTransaction(transaction, connection);
 
-            await updateMerchant('loyaltyProgram', 'points');
-            await updateMerchant('pointsMint', data.pointsMint);
-            await updateMerchant('pointsBack', 1);
+            await updateLoyalty({
+                loyaltyProgram: 'tiers',
+                points: {
+                    mint: data.pointsMint,
+                    back: 1,
+                },
+            });
 
             await getMerchantInfo();
 
@@ -83,9 +88,13 @@ export function PointsCard(props: Props) {
         }
 
         try {
-            await updateMerchant('loyaltyProgram', 'points');
+            setLoading(true);
+            await updateLoyalty({
+                loyaltyProgram: 'points',
+            });
 
             await getMerchantInfo();
+            setLoading(false);
             toast({
                 title: 'Successfully Started Points Back!',
                 variant: 'constructive',
@@ -107,7 +116,11 @@ export function PointsCard(props: Props) {
         }
 
         try {
-            await updateMerchant('pointsBack', points);
+            await updateLoyalty({
+                points: {
+                    back: points,
+                },
+            });
 
             await getMerchantInfo();
             toast({
@@ -158,7 +171,9 @@ export function PointsCard(props: Props) {
                     {!merchantInfo.data.loyalty.points.pointsMint ? (
                         <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
                     ) : (
-                        <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
+                        <Button onClick={selectLoyaltyProgram} pending={loading}>
+                            Restart the Program
+                        </Button>
                     )}
                     <Button variant="outline" onClick={disconnect}>
                         Disconnect Wallet
@@ -195,7 +210,9 @@ export function PointsCard(props: Props) {
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button onClick={updateLoyaltyPoints}>Update Loyalty Points Back %</Button>
+                    <Button pending={loading} onClick={updateLoyaltyPoints}>
+                        Update Loyalty Points Back %
+                    </Button>
                     <Button variant="outline" onClick={disconnect}>
                         Disconnect Wallet
                     </Button>

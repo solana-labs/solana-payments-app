@@ -1,8 +1,8 @@
+import { cn } from '@/lib/utils';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-
-import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
     'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
@@ -34,14 +34,24 @@ export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof buttonVariants> {
     asChild?: boolean;
+    pending?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, ...props }, ref) => {
+    ({ className, variant, size, asChild = false, pending = false, children, ...props }, ref) => {
         const Comp = asChild ? Slot : 'button';
-        return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+        return (
+            <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+                <span className={pending ? 'opacity-0' : ''}>{children}</span>
+                {pending && (
+                    <ReloadIcon className="absolute mr-2 h-4 w-4 animate-spin" />
+                    // <ReloadIcon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mr-2 h-4 w-4 animate-spin" />
+                )}
+            </Comp>
+        );
     }
 );
+
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };

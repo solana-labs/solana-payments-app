@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Product, updateMerchant, useMerchantStore } from '@/stores/merchantStore';
+import { Product, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { Switch } from './ui/switch';
 
 interface Props {
@@ -19,10 +19,13 @@ export function ProductsCard(props: Props) {
 
     async function handleToggle(product: Product) {
         try {
-            await updateMerchant('product', {
-                productId: product.id,
-                active: !product.active,
+            await updateLoyalty({
+                products: {
+                    productId: product.id,
+                    active: !product.active,
+                },
             });
+
             await getMerchantInfo();
 
             toast({

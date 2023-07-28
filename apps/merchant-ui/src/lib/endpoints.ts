@@ -13,4 +13,5 @@ export const API_ENDPOINTS = {
     refundStatus: `${process.env.NEXT_PUBLIC_API_BASE_URL}/refund-status`,
     paymentData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-data`,
     updateMerchant: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-merchant`,
+    updateLoyalty: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-loyalty`,
 };

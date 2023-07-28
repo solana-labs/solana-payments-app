@@ -43,16 +43,9 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                 'acceptedPrivacyPolicy',
                 'dismissCompleted',
                 'kybInquiry',
-                'loyaltyProgram',
-                'pointsMint',
-                'pointsBack',
             ];
 
-            if (
-                keysToCheck.every(key => merchantUpdateRequest[key] == null) &&
-                merchantUpdateRequest.tier == null &&
-                merchantUpdateRequest.product == null
-            ) {
+            if (keysToCheck.every(key => merchantUpdateRequest[key] == null)) {
                 throw new InvalidInputError('No fields to update in request body');
             }
 
@@ -84,21 +77,12 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
                     merchant = await contingentlyHandleAppConfigure(merchant, axios, prisma);
                 }
             } catch (error) {
-                // it's unlikely that this will throw but we should catch and record all errors underneath this
-                // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
-                // we don't wana disrupt the flow, they'll just get blocked elsewhere
+                // it's unlikely that this will throw but we should catch and record all errors underneath this, merchant will get blocked elsewhere
+                // we don't need to error out here because a new merchant shouldn't have a kyb inquiry but if they do
                 console.log('error with kyb');
 
                 Sentry.captureException(error);
                 await Sentry.flush(2000);
-            }
-
-            if (merchantUpdateRequest.tier && Object.keys(merchantUpdateRequest.tier).length != 0) {
-                await merchantService.upsertTier(merchant.id, merchantUpdateRequest.tier);
-            }
-
-            if (merchantUpdateRequest.product && Object.keys(merchantUpdateRequest.product).length != 0) {
-                await merchantService.toggleProduct(merchantUpdateRequest.product);
             }
 
             return {

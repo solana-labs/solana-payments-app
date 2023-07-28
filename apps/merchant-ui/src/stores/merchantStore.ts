@@ -101,3 +101,24 @@ export async function updateMerchant(field: string, value: string | boolean | nu
     }
     return response;
 }
+
+export async function updateLoyalty(updateLoyaltyRequest: object) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    let response;
+
+    try {
+        response = await fetch(API_ENDPOINTS.updateLoyalty, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(updateLoyaltyRequest),
+            credentials: 'include',
+        });
+    } catch (error) {
+        console.error('Failed to update loyalty data', error);
+        throw new Error('Failed to update loyalty data');
+    }
+    return response;
+}

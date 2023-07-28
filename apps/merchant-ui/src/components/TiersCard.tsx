@@ -2,7 +2,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Tier, updateMerchant, useMerchantStore } from '@/stores/merchantStore';
+import { Tier, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
@@ -28,6 +28,7 @@ export function TiersCard(props: Props) {
         threshold: undefined,
         discount: undefined,
     });
+    const [loading, setLoading] = useState(false);
 
     const [newTier, setNewTier] = useState<EditingTier>({
         name: undefined,
@@ -58,11 +59,13 @@ export function TiersCard(props: Props) {
                 variant: 'constructive',
             });
         } else {
-            await updateMerchant('tier', {
-                id: tierId,
-                name: editingTier.name,
-                threshold: editingTier.threshold,
-                discount: editingTier.discount,
+            await updateLoyalty({
+                tiers: {
+                    id: tierId,
+                    name: editingTier.name,
+                    threshold: editingTier.threshold,
+                    discount: editingTier.discount,
+                },
             });
             await getMerchantInfo();
             toast({
@@ -80,8 +83,10 @@ export function TiersCard(props: Props) {
             return;
         }
 
-        await updateMerchant('tier', {
-            ...newTier,
+        await updateLoyalty({
+            tiers: {
+                ...newTier,
+            },
         });
 
         await getMerchantInfo();
@@ -99,10 +104,13 @@ export function TiersCard(props: Props) {
     async function handleToggle(tierId: number) {
         const tier = tiers.find(t => t.id === tierId);
 
-        await updateMerchant('tier', {
-            id: tierId,
-            active: !tier?.active,
+        await updateLoyalty({
+            tiers: {
+                id: tierId,
+                active: !tier?.active,
+            },
         });
+
         await getMerchantInfo();
         toast({
             title: 'Successfully Saved Changes',
@@ -112,9 +120,13 @@ export function TiersCard(props: Props) {
 
     async function selectLoyaltyProgram() {
         try {
-            await updateMerchant('loyaltyProgram', 'tiers');
+            setLoading(true);
+            await updateLoyalty({
+                loyaltyProgram: 'tiers',
+            });
 
             await getMerchantInfo();
+            setLoading(false);
 
             toast({
                 title: 'Successfully Selected Tiers Loyalty!',
@@ -160,7 +172,9 @@ export function TiersCard(props: Props) {
                     <CardDescription>Reward discounts to returning customers</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                    <Button onClick={selectLoyaltyProgram}>Restart the Program</Button>
+                    <Button onClick={selectLoyaltyProgram} pending={loading}>
+                        Restart the Program
+                    </Button>
                     <Button variant="outline" onClick={disconnect}>
                         Disconnect Wallet
                     </Button>
@@ -255,7 +269,6 @@ export function TiersCard(props: Props) {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                        <div>New Tier</div>
                         <TableRow>
                             <TableCell>
                                 <Input
@@ -308,9 +321,6 @@ export function TiersCard(props: Props) {
                         </TableRow>
                     </TableBody>
                 </Table>
-                <Button onClick={handleAdd} disabled={editing !== null} className="w-full">
-                    Add Tier
-                </Button>
             </div>
         );
     }

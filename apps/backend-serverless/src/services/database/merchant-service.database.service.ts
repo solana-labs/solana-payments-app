@@ -185,25 +185,36 @@ export class MerchantService {
         );
     }
 
-    async upsertTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
+    async createTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
         const filteredUpdate = filterUndefinedFields(tier);
-        if (tier.id) {
-            return prismaErrorHandler(
-                this.prisma.tier.update({
-                    where: { id: tier.id },
-                    data: filteredUpdate,
-                })
-            );
-        } else {
-            return prismaErrorHandler(
-                this.prisma.tier.create({
-                    data: {
-                        ...filteredUpdate,
-                        merchantId: merchantId,
-                    },
-                })
-            );
+        if (!('name' in filteredUpdate) || !('threshold' in filteredUpdate) || !('discount' in filteredUpdate)) {
+            throw new Error('Tier fields missing');
         }
+
+        if (!filteredUpdate.name || !filteredUpdate.threshold || !filteredUpdate.discount) {
+            throw new Error('Tier fields missing');
+        }
+        return prismaErrorHandler(
+            this.prisma.tier.create({
+                data: {
+                    ...filteredUpdate,
+                    merchantId: merchantId,
+                },
+            })
+        );
+    }
+
+    async updateTier(tier: TierUpdate): Promise<Tier> {
+        if (!tier.id) {
+            throw new Error('Tier id is required for update operation');
+        }
+        const filteredUpdate = filterUndefinedFields(tier);
+        return prismaErrorHandler(
+            this.prisma.tier.update({
+                where: { id: tier.id },
+                data: filteredUpdate,
+            })
+        );
     }
 
     async getProducts(merchantId: string): Promise<Product[]> {
@@ -220,5 +231,19 @@ export class MerchantService {
                 where: { merchantId: merchantId },
             })
         );
+    }
+
+    async getTier(tierId: number): Promise<Tier> {
+        const tier = await prismaErrorHandler(
+            this.prisma.tier.findUnique({
+                where: { id: tierId },
+            })
+        );
+
+        if (tier == null) {
+            throw new MissingExpectedDatabaseRecordError('Could not find tier ' + tierId + ' in database');
+        }
+
+        return tier;
     }
 }

@@ -1,4 +1,4 @@
-import { InferType, boolean, number, object, string } from 'yup';
+import { InferType, boolean, object, string } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
 import { publicKeySchema } from '../../public-key-schema.model.js';
 
@@ -9,24 +9,6 @@ export const merchantUpdateRequestBodySchema = object().shape({
     acceptedPrivacyPolicy: boolean().optional(),
     dismissCompleted: boolean().optional(),
     kybInquiry: string().optional(),
-    loyaltyProgram: string().optional(),
-    pointsMint: string().optional(),
-    pointsBack: number().optional(),
-    tier: object()
-        .shape({
-            id: number().optional(),
-            name: string().optional(),
-            threshold: number().optional(),
-            discount: number().optional(),
-            active: boolean().optional(),
-        })
-        .optional(),
-    product: object()
-        .shape({
-            productId: string().optional(),
-            active: boolean().optional(),
-        })
-        .optional(),
 });
 
 export type MerchantUpdateRequest = InferType<typeof merchantUpdateRequestBodySchema>;

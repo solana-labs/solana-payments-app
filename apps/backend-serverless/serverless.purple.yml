@@ -249,6 +249,17 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
+  update-loyalty:
+    handler: src/handlers/clients/merchant-ui/write-data/update-loyalty.updateLoyalty
+    events:
+      - httpApi:
+          path: /update-loyalty
+          method: put
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   sqs-message-receive:
     handler: src/handlers/webhooks/sqs/sqs-message-receive.sqsMessageReceive
     environment:
