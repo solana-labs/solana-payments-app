@@ -78,13 +78,9 @@ export function TiersCard(props: Props) {
                 });
             } else {
                 const data = await response.json();
-
                 const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
 
-                const sig = await sendTransaction(transaction, connection);
-
-                console.log('Transaction sent: ', sig);
-
+                await sendTransaction(transaction, connection);
                 await getMerchantInfo();
                 toast({
                     title: 'Successfully Saved Changes',
