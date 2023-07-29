@@ -3,7 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { Tier, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -21,6 +22,7 @@ interface EditingTier {
 
 export function TiersCard(props: Props) {
     const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
+    const { connection } = useConnection();
 
     const [editing, setEditing] = useState<number | null>(null);
     const [editingTier, setEditingTier] = useState<EditingTier>({
@@ -59,19 +61,32 @@ export function TiersCard(props: Props) {
                 variant: 'constructive',
             });
         } else {
-            await updateLoyalty({
+            const response = await updateLoyalty({
                 tiers: {
                     id: tierId,
                     name: editingTier.name,
                     threshold: editingTier.threshold,
                     discount: editingTier.discount,
                 },
+                payer: publicKey?.toBase58(),
             });
-            await getMerchantInfo();
-            toast({
-                title: 'Successfully Saved Changes',
-                variant: 'constructive',
-            });
+
+            if (response.status != 200) {
+                toast({
+                    title: 'Error Adding a new Tier',
+                    variant: 'destructive',
+                });
+            } else {
+                const data = await response.json();
+                const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
+
+                await sendTransaction(transaction, connection);
+                await getMerchantInfo();
+                toast({
+                    title: 'Successfully Saved Changes',
+                    variant: 'constructive',
+                });
+            }
         }
 
         setEditing(null);
@@ -83,21 +98,36 @@ export function TiersCard(props: Props) {
             return;
         }
 
-        await updateLoyalty({
+        const response = await updateLoyalty({
             tiers: {
                 ...newTier,
             },
+            payer: publicKey?.toBase58(),
         });
+
+        if (response.status != 200) {
+            toast({
+                title: 'Error Adding a new Tier',
+                variant: 'destructive',
+            });
+            return;
+        } else {
+            const data = await response.json();
+
+            const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
+            await sendTransaction(transaction, connection);
+
+            toast({
+                title: 'Successfully Added a new Tier',
+                variant: 'constructive',
+            });
+        }
 
         await getMerchantInfo();
         setNewTier({
             name: undefined,
             threshold: undefined,
             discount: undefined,
-        });
-        toast({
-            title: 'Successfully Added a new Tier',
-            variant: 'constructive',
         });
     }
 

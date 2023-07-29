@@ -1,5 +1,6 @@
 import { InferType, boolean, number, object, string } from 'yup';
 import { parseAndValidate } from '../../../utilities/yup.utility.js';
+import { publicKeySchema } from '../../public-key-schema.model.js';
 
 export const updateLoyaltyRequestBodySchema = object().shape({
     loyaltyProgram: string().oneOf(['points', 'tiers', 'none']).optional(),
@@ -22,6 +23,7 @@ export const updateLoyaltyRequestBodySchema = object().shape({
             active: boolean().optional(),
         })
         .optional(),
+    payer: publicKeySchema.optional(),
 });
 
 export type UpdateLoyaltyRequest = InferType<typeof updateLoyaltyRequestBodySchema>;
