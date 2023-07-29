@@ -60,26 +60,12 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: signatures,
                 },
-                paymentRecordService,
+                paymentRecordService
             );
 
-            try {
-                await websocketService.sendProcessingTransactionMessage();
-            } catch (error) {
-                Sentry.captureException(error);
-            }
+            await websocketService.sendProcessingTransactionMessage();
 
             const transactionRecords = await transactionRecordService.getTransactionRecords(signatures);
-
-            if (transactionRecords == null) {
-                // Think message isn't gonna find anyone, if it did, we would have transaction records since the websocket service
-                // has a dependency on the transaction record service. Here for safety
-                await websocketService.sendFailedProcessingTransactionMessage();
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({}),
-                };
-            }
 
             const failedTransactionRecordMessages: {
                 error: unknown;
@@ -108,14 +94,10 @@ export const helius = Sentry.AWSLambda.wrapHandler(
                 {
                     signatures: failedTransactionRecordSignatures,
                 },
-                paymentRecordService,
+                paymentRecordService
             );
 
-            try {
-                await failedWebsocketService.sendFailedProcessingTransactionMessage();
-            } catch (error) {
-                Sentry.captureException(error);
-            }
+            await failedWebsocketService.sendFailedProcessingTransactionMessage();
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -127,5 +109,5 @@ export const helius = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

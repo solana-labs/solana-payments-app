@@ -10,7 +10,7 @@ const CompletingHandler: React.FC = () => {
 
     useEffect(() => {
         if (isCompleting) {
-            const interval = 2000; // 2 seconds
+            const interval = 500;
 
             timer.current = setInterval(() => {
                 clearInterval(timer.current);

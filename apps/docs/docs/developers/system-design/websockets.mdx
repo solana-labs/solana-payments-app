@@ -1,0 +1,16 @@
+---
+title: Websocket Design
+sidebar_position: 3
+---
+
+In the payment flow, we use websockets to give customers a step-by-step update of their payment.
+
+First, in payment-transaction, we validate the basic payemnt request sent from the payment-ui to the backend. If the request is valid, the customer is sent to the laoding screen, and their state is set to _completed_.
+
+Next, again in payment-transaction, we build the transaction, and set it back to the user to sign. During this time, the user is at _approving_. We also store the transaction signature in the database
+
+Once the user signs the transaction and sends it to the blockchain, we wait until helius hits our webhook confirming that the transaction has been received. We check to see this signature exists in our database, in which case the user is set to _processing_, and the helius webhook endpoint also hits out process-transaction-message queue.
+
+This process-transaction-message handler then again fetched the transaction from the chain, tells shopify that the payment has been made, and sets the state to _completing_.
+
+Finally, the payment ui marks everything as completed 1 second later.
