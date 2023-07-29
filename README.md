@@ -55,10 +55,3 @@ Use these links to test out the local development flow
 [Local Merchant UI](https://localhost:4004/install)
 
 [Local Payment Simulation](https://localhost:4004/payment)
-
-At the moment, here are some local development hacks we use to get it to work, these will be fixed shortly, including
-
--   local queue events not being sent
--   accessing mock payment records as created in the seed script
-
-You are welcome to play around with the code as you wish.

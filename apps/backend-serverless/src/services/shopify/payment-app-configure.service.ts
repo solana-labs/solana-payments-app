@@ -46,7 +46,7 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                     rejectUnauthorized: false,
                 });
 
-                response = await axiosInstance({
+                response = await axios({
                     url: shopifyGraphQLEndpoint(shop),
                     method: 'POST',
                     headers: headers,
@@ -54,7 +54,7 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                     httpsAgent: agent,
                 });
             } else {
-                response = await axiosInstance({
+                response = await axios({
                     url: shopifyGraphQLEndpoint(shop),
                     method: 'POST',
                     headers: headers,
@@ -68,8 +68,6 @@ export const makePaymentAppConfigure = (axiosInstance: typeof axios) => {
                 case 202:
                 case 204:
                 case 205:
-                    // console.log(response.data.data.paymentsAppConfigure.userErrors);
-                    // console.log(response.data.data.paymentsAppConfigure);
                     paymentAppConfigureResponse = parseAndValidatePaymentAppConfigureResponse(response.data);
                     break;
                 default:

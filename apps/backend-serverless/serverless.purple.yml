@@ -532,4 +532,4 @@ custom:
     ShopifyQueueUrl: 'http://localhost:9324/queue/shopify-queue-dev'
     ProcessQueueUrl: 'http://localhost:9324/queue/process-queue-dev'
     SolanaPayInfoQueueUrl: 'http://localhost:9324/queue/sp-info-queue-dev'
-    WebsocketUrl: 'ws://localhost:4009'
+    WebsocketUrl: 'http://localhost:4009'
