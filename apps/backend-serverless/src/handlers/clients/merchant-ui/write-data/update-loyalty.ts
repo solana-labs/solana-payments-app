@@ -1,9 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { Merchant, PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { parseAndValidateUpdateLoyaltyRequestBody } from '../../../../models/clients/merchant-ui/update-loyalty-request.model.js';
-import { MerchantService, TierUpdate } from '../../../../services/database/merchant-service.database.service.js';
+import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
+import { fetchGasKeypair } from '../../../../services/fetch-gas-keypair.service.js';
+import { fetchManageTiersTransaction } from '../../../../services/transaction-request/fetch-manage-tiers-transaction.service.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { filterUndefinedFields } from '../../../../utilities/database/filter-underfined-fields.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
@@ -23,78 +26,45 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
             level: 'info',
         });
 
-        const merchantService = new MerchantService(prisma);
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }
 
         try {
             const merchantAuthToken = withAuth(event.cookies);
-            let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
-
+            const merchantService = new MerchantService(prisma);
             const updateLoyaltyRequest = parseAndValidateUpdateLoyaltyRequestBody(JSON.parse(event.body));
 
-            let merchantUpdateQuery = {
-                ...(updateLoyaltyRequest.loyaltyProgram && { loyaltyProgram: updateLoyaltyRequest.loyaltyProgram }),
-                ...(updateLoyaltyRequest.points?.mint && { pointsMint: updateLoyaltyRequest.points.mint }),
-                ...(updateLoyaltyRequest.points?.back && { pointsBack: updateLoyaltyRequest.points.back }),
+            const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+
+            const { tiers, products, payer, points, loyaltyProgram } = updateLoyaltyRequest;
+
+            const merchantUpdateQuery = {
+                ...(loyaltyProgram && { loyaltyProgram: loyaltyProgram }),
+                ...(points?.mint && { pointsMint: points.mint }),
+                ...(points?.back && { pointsBack: points.back }),
             };
 
-            Object.keys(merchantUpdateQuery).length > 0 &&
-                (await merchantService.updateMerchant(merchant, merchantUpdateQuery));
-
-            if (updateLoyaltyRequest.tiers && Object.keys(updateLoyaltyRequest.tiers).length != 0) {
-                let tierDetails: TierUpdate;
-
-                if (updateLoyaltyRequest.tiers.id) {
-                    let fetchedTier = await merchantService.getTier(updateLoyaltyRequest.tiers.id);
-                    tierDetails = {
-                        ...(fetchedTier || {}),
-                        ...filterUndefinedFields(updateLoyaltyRequest.tiers),
-                    };
-                } else {
-                    tierDetails = updateLoyaltyRequest.tiers;
-                }
-
-                // if (
-                //     !tierDetails.name ||
-                //     !tierDetails.threshold ||
-                //     !tierDetails.discount
-                //     // !updateLoyaltyRequest.tiers.merchantAddress ||
-                //     // !updateLoyaltyRequest.tiers.gasAddress
-                // ) {
-                //     throw new Error('Required tier details are missing');
-                // }
-
-                // let manageTierTransaction = await fetchManageTiersTransaction(
-                //     tierDetails.name,
-                //     tierDetails.threshold,
-                //     tierDetails.discount,
-                //     updateLoyaltyRequest.tiers.merchantAddress,
-                //     updateLoyaltyRequest.tiers.gasAddress,
-                //     tierDetails.mintAddress || undefined // Provide a default value or handle the error
-                // );
-
-                // Update or create the tiers in the database
-                if (updateLoyaltyRequest.tiers.id) {
-                    await merchantService.updateTier(tierDetails);
-                } else {
-                    await merchantService.createTier(merchant.id, tierDetails);
-                }
+            if (Object.keys(merchantUpdateQuery).length > 0) {
+                await merchantService.updateMerchant(merchant, merchantUpdateQuery);
+                return createSuccessResponse();
             }
 
-            if (updateLoyaltyRequest.products && Object.keys(updateLoyaltyRequest.products).length != 0) {
-                await merchantService.toggleProduct(updateLoyaltyRequest.products);
+            let gasKeypair = await fetchGasKeypair();
+
+            if (tiers) {
+                if (!payer) {
+                    throw new Error('payer is missing');
+                }
+                const tierUpdateResponse = await handleTierUpdate(tiers, gasKeypair, merchant, merchantService, payer);
+                return createSuccessResponse(tierUpdateResponse);
             }
 
-            return {
-                statusCode: 200,
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Credentials': true,
-                    'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
-                },
-            };
+            if (products) {
+                await merchantService.toggleProduct(products);
+                return createSuccessResponse();
+            }
+            return createSuccessResponse();
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -103,3 +73,57 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
         rethrowAfterCapture: false,
     }
 );
+
+async function handleTierUpdate(
+    tiers: any,
+    gasKeypair: Keypair,
+    merchant: Merchant,
+    merchantService: MerchantService,
+    payer: string
+) {
+    let tierDetails = tiers.id
+        ? { ...((await merchantService.getTier(tiers.id)) || {}), ...filterUndefinedFields(tiers) }
+        : tiers;
+    const { mint, name, threshold, discount } = tierDetails;
+    if (!name || !threshold || !discount || !payer) {
+        throw new Error('Required tier details are missing');
+    }
+
+    const mintAddress = mint ? new PublicKey(mint) : undefined;
+    const merchantAddress = new PublicKey(payer);
+
+    const { base: transaction, mintAddress: newMintAddress } = await fetchManageTiersTransaction(
+        name,
+        threshold,
+        discount,
+        gasKeypair,
+        merchantAddress,
+        mintAddress
+    );
+
+    if (newMintAddress) {
+        tierDetails.mint = newMintAddress.toString();
+    }
+
+    tiers.id
+        ? await merchantService.updateTier(tierDetails)
+        : await merchantService.createTier(merchant.id, tierDetails);
+
+    return {
+        transaction,
+        mintAddress: newMintAddress?.toString(),
+        message: 'tier nft management',
+    };
+}
+
+function createSuccessResponse(body: any = {}): APIGatewayProxyResultV2 {
+    return {
+        statusCode: 200,
+        body: JSON.stringify(body),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': true,
+            'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+        },
+    };
+}

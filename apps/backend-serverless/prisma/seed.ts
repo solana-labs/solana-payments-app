@@ -213,20 +213,30 @@ function generateProductRecords(merchant = 1, count = 2): any[] {
     return records;
 }
 
-function generateTierRecords(merchant = 1, count = 2): any[] {
+function generateTierRecords(count = 2): any[] {
     const records: any[] = [];
 
-    for (let i = 0; i < merchant; i++) {
-        for (let j = 0; j < count; j++) {
-            const record = {
-                name: `Tier ${j}`,
-                threshold: 100 * (j + 1),
-                discount: 10 * (j + 1),
-                merchantId: `merchant-${i}`,
+    for (let i = 0; i < count; i++) {
+        let record;
+        if (i === 0) {
+            record = {
+                name: `Tier ${i}`,
+                threshold: 1000,
+                discount: 10,
+                merchantId: `merchant-${0}`,
+                active: true,
+                mint: '6rEHh7ZPV238LbvaUfQKLSBUsJoCYsaMPqTH1QdQ79dB',
+            };
+        } else {
+            record = {
+                name: `Tier ${i}`,
+                threshold: 100 * (i + 1),
+                discount: 10 * (i + 1),
+                merchantId: `merchant-${0}`,
                 active: false,
             };
-            records.push(record);
         }
+        records.push(record);
     }
     console.log('tiers', records);
     return records;
@@ -268,7 +278,7 @@ async function insertGeneratedData(
     });
 
     const tierRecords = await prisma.tier.createMany({
-        data: generateTierRecords(merchants, tiers).map(record => ({
+        data: generateTierRecords(tiers).map(record => ({
             ...record,
         })),
     });

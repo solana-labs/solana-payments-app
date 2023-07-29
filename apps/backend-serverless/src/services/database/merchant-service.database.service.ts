@@ -51,6 +51,7 @@ export type TierUpdate = {
     threshold?: number;
     discount?: number;
     active?: boolean;
+    mintAddress?: string;
 };
 
 export class MerchantService {
