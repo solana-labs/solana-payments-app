@@ -164,7 +164,7 @@ model WebsocketSession {
 
 model Product {
   id         String   @id
-  name       String?
+  name       String
   image      String?
   active     Boolean  @default(false)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)

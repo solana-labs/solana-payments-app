@@ -19,7 +19,7 @@ export const updateLoyaltyRequestBodySchema = object().shape({
         .optional(),
     products: object()
         .shape({
-            productId: string().optional(),
+            id: string().optional(),
             active: boolean().optional(),
         })
         .optional(),

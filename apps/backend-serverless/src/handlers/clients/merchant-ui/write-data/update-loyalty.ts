@@ -6,6 +6,7 @@ import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { parseAndValidateUpdateLoyaltyRequestBody } from '../../../../models/clients/merchant-ui/update-loyalty-request.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
 import { fetchGasKeypair } from '../../../../services/fetch-gas-keypair.service.js';
+import { fetchManageProductsTransaction } from '../../../../services/transaction-request/fetch-manage-products-transaction.service.js';
 import { fetchManageTiersTransaction } from '../../../../services/transaction-request/fetch-manage-tiers-transaction.service.js';
 import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
 import { filterUndefinedFields } from '../../../../utilities/database/filter-underfined-fields.utility.js';
@@ -52,17 +53,23 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
 
             let gasKeypair = await fetchGasKeypair();
 
-            if (tiers) {
-                if (!payer) {
-                    throw new Error('payer is missing');
-                }
+            if (!payer) {
+                throw new Error('payer is missing');
+            }
+            if (tiers && Object.values(tiers).length > 0) {
                 const tierUpdateResponse = await handleTierUpdate(tiers, gasKeypair, merchant, merchantService, payer);
                 return createSuccessResponse(tierUpdateResponse);
             }
 
-            if (products) {
-                await merchantService.toggleProduct(products);
-                return createSuccessResponse();
+            if (products && Object.values(products).length > 0) {
+                const productUpdateResponse = await handleProductUpdate(
+                    products,
+                    gasKeypair,
+                    merchant,
+                    merchantService,
+                    payer
+                );
+                return createSuccessResponse(productUpdateResponse);
             }
             return createSuccessResponse();
         } catch (error) {
@@ -125,5 +132,37 @@ function createSuccessResponse(body: any = {}): APIGatewayProxyResultV2 {
             'Access-Control-Allow-Credentials': true,
             'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
         },
+    };
+}
+
+async function handleProductUpdate(
+    products: any,
+    gasKeypair: Keypair,
+    merchant: Merchant,
+    merchantService: MerchantService,
+    payer: string
+) {
+    let product = await merchantService.getProduct(products.id);
+    const merchantAddress = new PublicKey(payer);
+
+    let transaction;
+    let newMintAddress;
+
+    if (product.mint == null) {
+        let response = await fetchManageProductsTransaction(product.name, gasKeypair, merchantAddress);
+        transaction = response.base;
+        newMintAddress = response.mintAddress;
+    }
+
+    await merchantService.updateProduct({
+        id: product.id,
+        mint: newMintAddress?.toString(),
+        active: products.active,
+    });
+
+    return {
+        transaction,
+        mintAddress: newMintAddress?.toString(),
+        message: 'product nft management',
     };
 }

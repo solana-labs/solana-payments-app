@@ -189,7 +189,7 @@ function generateRefundRecords(merchant = 1, count = 1): any[] {
     return records;
 }
 
-function generateProductRecords(merchant = 1, count = 2): any[] {
+function generateProductRecords(count = 2): any[] {
     const records: any[] = [];
 
     const productData = {
@@ -197,19 +197,28 @@ function generateProductRecords(merchant = 1, count = 2): any[] {
         handle: 'crappy-shoes',
     };
 
-    for (let i = 0; i < merchant; i++) {
-        for (let j = 0; j < count; j++) {
-            const record = {
-                id: `gid://shopify/Product/${i}-${j}`,
-                name: productData.title + `-${j}`,
-                image: productData.handle + `-${j}`,
-                merchantId: `merchant-${i}`,
+    for (let i = 1; i < count + 1; i++) {
+        let record;
+        if (i === 1) {
+            record = {
+                id: 'gid://shopify/Product/1',
+                name: `Crafty Shoes 1`,
+                image: productData.handle + `-${i}`,
+                merchantId: `merchant-${0}`,
+                active: true,
+                mint: '4PoRgd3x1xW3UWn1rmsooLjmyk81BFKyF8CCLyCM5YJE',
+            };
+        } else {
+            record = {
+                id: `gid://shopify/Product/${i}`,
+                name: productData.title + `-${i}`,
+                image: productData.handle + `-${i}`,
+                merchantId: `merchant-0`,
                 active: false,
             };
-            records.push(record);
         }
+        records.push(record);
     }
-    console.log('products', records);
     return records;
 }
 
@@ -238,7 +247,6 @@ function generateTierRecords(count = 2): any[] {
         }
         records.push(record);
     }
-    console.log('tiers', records);
     return records;
 }
 
@@ -272,7 +280,7 @@ async function insertGeneratedData(
     });
 
     const productRecords = await prisma.product.createMany({
-        data: generateProductRecords(merchants, products).map(record => ({
+        data: generateProductRecords(products).map(record => ({
             ...record,
         })),
     });
@@ -302,7 +310,7 @@ async function main() {
     await prisma.$executeRaw`DELETE from Product `;
     await prisma.$executeRaw`DELETE from GDPR `;
 
-    await insertGeneratedData(2, 16, 3, 3, 4);
+    await insertGeneratedData(2, 16, 3, 4, 4);
 }
 
 main()
