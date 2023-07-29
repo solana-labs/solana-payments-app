@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/node';
 import axios from 'axios';
+import https from 'https';
 import { shopifyGraphQLEndpoint } from '../../configs/endpoints.config.js';
 import { ShopifyResponseError } from '../../errors/shopify-response.error.js';
 import {
@@ -49,13 +50,28 @@ export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
 
         let resolvePaymentResponse: ResolvePaymentResponse;
 
+        let response;
         try {
-            const response = await axiosInstance({
-                url: shopifyGraphQLEndpoint(shop),
-                method: 'POST',
-                headers: headers,
-                data: JSON.stringify(graphqlQuery),
-            });
+            if (process.env.NODE_ENV === 'development') {
+                const agent = new https.Agent({
+                    rejectUnauthorized: false,
+                });
+
+                response = await axios({
+                    url: shopifyGraphQLEndpoint(shop),
+                    method: 'POST',
+                    headers: headers,
+                    data: JSON.stringify(graphqlQuery),
+                    httpsAgent: agent,
+                });
+            } else {
+                response = await axios({
+                    url: shopifyGraphQLEndpoint(shop),
+                    method: 'POST',
+                    headers: headers,
+                    data: JSON.stringify(graphqlQuery),
+                });
+            }
 
             // TODO: For all of these graphql requests, check for the specific error codes here
             // https://shopify.dev/docs/api/payments-apps#status_and_error_codes
@@ -70,7 +86,7 @@ export const makePaymentSessionResolve = (axiosInstance: typeof axios) => {
                     break;
                 default:
                     throw new ShopifyResponseError(
-                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data),
+                        'non successful status code ' + response.status + '. data: ' + JSON.stringify(response.data)
                     );
             }
         } catch (error) {

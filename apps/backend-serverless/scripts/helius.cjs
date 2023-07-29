@@ -18,7 +18,7 @@ axios
     .get('http://127.0.0.1:4040/api/tunnels')
     .then(response => {
         // Here we directly parse the JSON like how `jq` would.
-        const publicUrl = response.data.tunnels[0].public_url;
+        const publicUrl = response.data.tunnels[0].public_url + '/helius';
         const address = web3.Keypair.fromSecretKey(bs58.decode(process.env.GAS_KEYPAIR_SECRET)).publicKey.toString();
 
         helius.getAllWebhooks().then(webhooks => {
