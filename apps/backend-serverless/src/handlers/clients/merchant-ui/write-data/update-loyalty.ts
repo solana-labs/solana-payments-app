@@ -57,7 +57,6 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
                 throw new Error('payer is missing');
             }
             if (tiers && Object.values(tiers).length > 0) {
-                console.log('in tiers if');
                 const tierUpdateResponse = await handleTierUpdate(tiers, gasKeypair, merchant, merchantService, payer);
                 return createSuccessResponse(tierUpdateResponse);
             }
