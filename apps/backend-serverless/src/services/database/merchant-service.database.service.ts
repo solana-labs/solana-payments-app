@@ -40,9 +40,11 @@ export type MerchantUpdate = {
 };
 
 export type ProductUpdate = {
-    name: string;
-    image: string;
-    active: boolean;
+    id: string;
+    name?: string;
+    image?: string;
+    active?: boolean;
+    mint?: string;
 };
 
 export type TierUpdate = {
@@ -177,11 +179,15 @@ export class MerchantService {
         return upsertedProducts;
     }
 
-    async toggleProduct(product: { productId?: string; active?: boolean }): Promise<Product> {
+    async updateProduct(product: ProductUpdate): Promise<Product> {
+        if (!product.id) {
+            throw new Error('Product id is required for update operation');
+        }
+        const filteredUpdate = filterUndefinedFields(product);
         return await prismaErrorHandler(
             this.prisma.product.update({
-                where: { id: product.productId },
-                data: { active: product.active },
+                where: { id: product.id },
+                data: filteredUpdate,
             })
         );
     }
@@ -224,6 +230,19 @@ export class MerchantService {
                 where: { merchantId: merchantId },
             })
         );
+    }
+    async getProduct(productId: string): Promise<Product> {
+        const product = await prismaErrorHandler(
+            this.prisma.product.findUnique({
+                where: { id: productId },
+            })
+        );
+
+        if (product == null) {
+            throw new MissingExpectedDatabaseRecordError('Could not find product ' + productId + ' in database');
+        }
+
+        return product;
     }
 
     async getTiers(merchantId: string): Promise<Tier[]> {
