@@ -70,6 +70,6 @@ export const processTransaction = async (
         await websocketService.sendCompletedDetailsMessage({
             redirectUrl,
         });
-        await merchantService.recordCustomerSpending(rpcTransaction._json.signers[1], record.merchantId, record.amount);
+        await merchantService.recordCustomer(rpcTransaction._json.signers[1], record.merchantId, record.amount);
     }
 };

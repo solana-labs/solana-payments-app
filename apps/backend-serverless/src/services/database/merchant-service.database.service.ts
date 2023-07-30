@@ -1,4 +1,4 @@
-import { CustomerSpending, KybState, LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
+import { Customer, KybState, LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
@@ -242,6 +242,7 @@ export class MerchantService {
         return prismaErrorHandler(
             this.prisma.tier.findMany({
                 where: { merchantId: merchantId },
+                orderBy: { threshold: 'asc' },
             })
         );
     }
@@ -260,12 +261,8 @@ export class MerchantService {
         return tier;
     }
 
-    async recordCustomerSpending(
-        customerWalletAddress: string,
-        merchantId: string,
-        spentAmount: number
-    ): Promise<CustomerSpending> {
-        return this.prisma.customerSpending.upsert({
+    async recordCustomer(customerWalletAddress: string, merchantId: string, amountSpent: number): Promise<Customer> {
+        return this.prisma.customer.upsert({
             where: {
                 merchantId_customerWalletAddress: {
                     merchantId: merchantId,
@@ -273,21 +270,21 @@ export class MerchantService {
                 },
             },
             update: {
-                spentAmount: {
-                    increment: spentAmount,
+                amountSpent: {
+                    increment: amountSpent,
                 },
             },
             create: {
                 merchantId: merchantId,
                 customerWalletAddress: customerWalletAddress,
-                spentAmount: spentAmount,
+                amountSpent: amountSpent,
             },
         });
     }
 
-    async getCustomerSpending(customerWalletAddress: string, merchantId: string): Promise<CustomerSpending> {
-        const customerSpending = await prismaErrorHandler(
-            this.prisma.customerSpending.findUnique({
+    async getCustomer(customerWalletAddress: string, merchantId: string): Promise<Customer> {
+        const customer = await prismaErrorHandler(
+            this.prisma.customer.findUnique({
                 where: {
                     merchantId_customerWalletAddress: {
                         merchantId: merchantId,
@@ -297,12 +294,12 @@ export class MerchantService {
             })
         );
 
-        if (customerSpending == null) {
+        if (customer == null) {
             throw new MissingExpectedDatabaseRecordError(
                 'Could not find customer spending for ' + customerWalletAddress + ' in database'
             );
         }
 
-        return customerSpending;
+        return customer;
     }
 }

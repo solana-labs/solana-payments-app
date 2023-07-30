@@ -203,6 +203,12 @@ functions:
       - httpApi:
           path: /payment-status
           method: get
+  customer-data:
+    handler: src/handlers/clients/payment-ui/customer-data.customerData
+    events:
+      - httpApi:
+          path: /customer-data
+          method: get
   balance:
     handler: src/handlers/clients/payment-ui/balance.balance
     events:
