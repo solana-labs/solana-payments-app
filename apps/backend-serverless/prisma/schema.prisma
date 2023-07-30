@@ -79,8 +79,9 @@ model Merchant {
   pointsMint String?
   pointsBack Float?
 
-  products Product[]
-  tiers    Tier[]
+  products         Product[]
+  tiers            Tier[]
+  customerSpending CustomerSpending[]
 }
 
 model PaymentRecord {
@@ -185,4 +186,14 @@ model Tier {
   mint       String?
 
   @@index(merchantId)
+}
+
+model CustomerSpending {
+  customerWalletAddress String
+  spentAmount           Float    @default(0)
+  merchant              Merchant @relation(fields: [merchantId], references: [id])
+  merchantId            String
+
+  @@id([merchantId, customerWalletAddress]) // Composite key on merchantId and customerWalletAddress
+  @@unique([merchantId, customerWalletAddress]) // Unique constraint on the same fields
 }
