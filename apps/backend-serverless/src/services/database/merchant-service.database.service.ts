@@ -1,4 +1,4 @@
-import { KybState, LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
+import { CustomerSpending, KybState, LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
@@ -270,5 +270,51 @@ export class MerchantService {
         }
 
         return tier;
+    }
+
+    async recordCustomerSpending(
+        customerWalletAddress: string,
+        merchantId: string,
+        spentAmount: number
+    ): Promise<CustomerSpending> {
+        return this.prisma.customerSpending.upsert({
+            where: {
+                merchantId_customerWalletAddress: {
+                    merchantId: merchantId,
+                    customerWalletAddress: customerWalletAddress,
+                },
+            },
+            update: {
+                spentAmount: {
+                    increment: spentAmount,
+                },
+            },
+            create: {
+                merchantId: merchantId,
+                customerWalletAddress: customerWalletAddress,
+                spentAmount: spentAmount,
+            },
+        });
+    }
+
+    async getCustomerSpending(customerWalletAddress: string, merchantId: string): Promise<CustomerSpending> {
+        const customerSpending = await prismaErrorHandler(
+            this.prisma.customerSpending.findUnique({
+                where: {
+                    merchantId_customerWalletAddress: {
+                        merchantId: merchantId,
+                        customerWalletAddress: customerWalletAddress,
+                    },
+                },
+            })
+        );
+
+        if (customerSpending == null) {
+            throw new MissingExpectedDatabaseRecordError(
+                'Could not find customer spending for ' + customerWalletAddress + ' in database'
+            );
+        }
+
+        return customerSpending;
     }
 }

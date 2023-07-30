@@ -33,7 +33,7 @@ export const paymentApp = async (event: APIGatewayProxyEventV2): Promise<APIGate
                     nextAction: {
                         action: 'REDIRECT',
                         context: {
-                            redirectUrl: 'https://www.shopify.com/',
+                            redirectUrl: 'https://localhost:4004/payment',
                         },
                     },
                 },

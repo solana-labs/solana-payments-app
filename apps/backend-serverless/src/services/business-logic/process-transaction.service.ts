@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
 import { delay } from '../../utilities/delay.utility.js';
+import { MerchantService } from '../database/merchant-service.database.service.js';
 import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 import {
     PaymentResolveResponse,
@@ -21,6 +22,7 @@ export const processTransaction = async (
 ) => {
     const transactionRecordService = new TransactionRecordService(prisma);
 
+    const merchantService = new MerchantService(prisma);
     const transactionRecord = await transactionRecordService.getTransactionRecord({
         signature: signature,
     });
@@ -68,5 +70,6 @@ export const processTransaction = async (
         await websocketService.sendCompletedDetailsMessage({
             redirectUrl,
         });
+        await merchantService.recordCustomerSpending(rpcTransaction._json.signers[1], record.merchantId, record.amount);
     }
 };
