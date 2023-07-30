@@ -8,33 +8,20 @@ const WalletSection = () => {
     const { connected } = useWallet();
 
     return (
-        <div className="flex flex-col justify-end h-full pb-4 py-2 items-center w-full">
+        <div className="flex flex-col justify-end h-full items-center w-full">
             {!connected ? (
-                <WalletMultiButton
-                    style={{
-                        backgroundColor: 'black',
-                        width: '400',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        zIndex: 100,
-                    }}
-                >
-                    <div className="flex flex-row items-center justify-center">
-                        <div className="pl-1">Connect wallet</div>
-                    </div>
-                </WalletMultiButton>
-            ) : (
                 <div className="w-full">
-                    <div className="pb-4">
-                        <SimpleNotificationView />
-                    </div>
-                    <div className="pb-2">
-                        <CustomerProfile />
-                    </div>
-                    <div className="pt-2">
-                        <BuyButton />
-                    </div>
+                    <WalletMultiButton>
+                        <div className="flex flex-row items-center justify-center">
+                            <div className="pl-1">Connect wallet</div>
+                        </div>
+                    </WalletMultiButton>
+                </div>
+            ) : (
+                <div className="w-full flex flex-col space-y-2">
+                    <SimpleNotificationView />
+                    <CustomerProfile />
+                    <BuyButton />
                 </div>
             )}
         </div>
