@@ -8,7 +8,7 @@ import { MerchantService } from '../../../../services/database/merchant-service.
 import { fetchGasKeypair } from '../../../../services/fetch-gas-keypair.service.js';
 import { fetchManageProductsTransaction } from '../../../../services/transaction-request/fetch-manage-products-transaction.service.js';
 import { fetchManageTiersTransaction } from '../../../../services/transaction-request/fetch-manage-tiers-transaction.service.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { withAuth } from '../../../../utilities/clients/token-authenticate.utility.js';
 import { filterUndefinedFields } from '../../../../utilities/database/filter-underfined-fields.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 

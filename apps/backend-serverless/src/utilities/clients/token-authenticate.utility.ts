@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { ForbiddenError } from '../../../errors/forbidden.error.js';
-import { MissingEnvError } from '../../../errors/missing-env.error.js';
-import { UnauthorizedRequestError } from '../../../errors/unauthorized-request.error.js';
+import { ForbiddenError } from '../../errors/forbidden.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { UnauthorizedRequestError } from '../../errors/unauthorized-request.error.js';
 import {
     MerchantAuthToken,
     parseAndValidateMerchantAuthToken,
-} from '../../../models/clients/merchant-ui/merchant-auth-token.model.js';
+} from '../../models/clients/merchant-ui/merchant-auth-token.model.js';
 
 export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;

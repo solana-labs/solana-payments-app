@@ -4,11 +4,11 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/payment-ui/payment-status-request.model.js';
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
-import { createLoyaltyResponse } from '../../../utilities/clients/merchant-ui/create-loyalty-response.utility.js';
+import { createLoyaltyResponse } from '../../../utilities/clients/create-loyalty-response.utility.js';
 import {
     createPaymentErrorResponse,
     createPaymentStatusResponse,
-} from '../../../utilities/clients/payment-ui/create-payment-status-response.utility.js';
+} from '../../../utilities/clients/create-payment-status-response.utility.js';
 import { createErrorResponse } from '../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();

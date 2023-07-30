@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/serverless';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/create-cookie-header.utility.js';
 import { requestErrorResponse } from '../../utilities/responses/request-response.utility.js';
 
 export const login = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {

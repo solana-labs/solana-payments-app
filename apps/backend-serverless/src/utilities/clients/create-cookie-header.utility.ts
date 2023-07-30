@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { MissingEnvError } from '../../../errors/missing-env.error.js';
+import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 export const AUTH_TOKEN_COOKIE_NAME = 'Bearer';
 

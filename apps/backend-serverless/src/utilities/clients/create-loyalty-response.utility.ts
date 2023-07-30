@@ -1,6 +1,6 @@
 import { LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
-import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
-import { fetchAllProducts } from '../../../services/shopify/shop-products.service.js';
+import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { fetchAllProducts } from '../../services/shopify/shop-products.service.js';
 
 export interface LoyaltyResponse {
     loyaltyProgram: LoyaltyProgram;

@@ -8,7 +8,7 @@ import { parseAndValidateTransactionRequestBody } from '../../models/transaction
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { fetchPointsSetupTransaction } from '../../services/transaction-request/fetch-points-setup-transaction.service.js';
-import { withAuth } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { withAuth } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { encodeTransaction } from '../../utilities/transaction-request/encode-transaction.utility.js';
 

@@ -6,7 +6,7 @@ import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { parseAndValidatePaymentAddressRequestBody } from '../../../../models/clients/merchant-ui/payment-address-request.model.js';
 import { contingentlyHandleAppConfigure } from '../../../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService, MerchantUpdate } from '../../../../services/database/merchant-service.database.service.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { withAuth } from '../../../../utilities/clients/token-authenticate.utility.js';
 import { syncKybState } from '../../../../utilities/persona/sync-kyb-status.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 

@@ -8,9 +8,9 @@ import { contingentlyHandleAppConfigure } from '../../services/business-logic/co
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
 import { makeAdminData } from '../../services/shopify/admin-data.service.js';
-import { createMechantAuthCookieHeader } from '../../utilities/clients/merchant-ui/create-cookie-header.utility.js';
-import { createOnboardingResponse } from '../../utilities/clients/merchant-ui/create-onboarding-response.utility.js';
-import { verifyShopifySignedCookie } from '../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { createMechantAuthCookieHeader } from '../../utilities/clients/create-cookie-header.utility.js';
+import { createOnboardingResponse } from '../../utilities/clients/create-onboarding-response.utility.js';
+import { verifyShopifySignedCookie } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
 

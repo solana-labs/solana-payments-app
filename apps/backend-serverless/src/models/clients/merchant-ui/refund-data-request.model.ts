@@ -1,6 +1,6 @@
 import { InferType, number, object, string } from 'yup';
-import { RefundStatusOption } from '../../../utilities/clients/merchant-ui/create-refund-response.utility.js';
-import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/merchant-ui/database-services.utility.js';
+import { RefundStatusOption } from '../../../utilities/clients/create-refund-response.utility.js';
+import { DEFAULT_PAGINATION_SIZE } from '../../../utilities/clients/database-services.utility.js';
 import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 
 const parseParameters = params => {
@@ -20,11 +20,11 @@ export const refundDataRequestParametersSchema = object().shape({
 export type RefundDataRequestParameters = InferType<typeof refundDataRequestParametersSchema>;
 
 export const parseAndValidateRefundDataRequestParameters = (
-    refundDataRequestParmatersBody: unknown,
+    refundDataRequestParmatersBody: unknown
 ): RefundDataRequestParameters => {
     return parseAndValidateStrict(
         parseParameters(refundDataRequestParmatersBody),
         refundDataRequestParametersSchema,
-        'Could not parse the refund data request parameters. Unknown Reason.',
+        'Could not parse the refund data request parameters. Unknown Reason.'
     );
 };

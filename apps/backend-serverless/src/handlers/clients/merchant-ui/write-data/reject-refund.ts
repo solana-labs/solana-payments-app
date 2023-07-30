@@ -13,7 +13,7 @@ import { RefundRecordService } from '../../../../services/database/refund-record
 import { makeRefundSessionReject } from '../../../../services/shopify/refund-session-reject.service.js';
 import { validateRefundSessionRejected } from '../../../../services/shopify/validate-refund-session-rejected.service.js';
 import { sendRefundRejectRetryMessage } from '../../../../services/sqs/sqs-send-message.service.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { withAuth } from '../../../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
@@ -63,7 +63,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     RefundSessionStateRejectedReason.processingError,
                     rejectRefundRequest.merchantReason,
                     shop,
-                    accessToken,
+                    accessToken
                 );
 
                 validateRefundSessionRejected(rejectRefundResponse);
@@ -72,7 +72,7 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
                     await sendRefundRejectRetryMessage(
                         refundRecord.id,
                         RefundSessionStateRejectedReason.processingError,
-                        rejectRefundRequest.merchantReason,
+                        rejectRefundRequest.merchantReason
                     );
                 } catch (sendMessageError) {
                     throw new DependencyError('failed to send refund reject retry message');
@@ -96,5 +96,5 @@ export const rejectRefund = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

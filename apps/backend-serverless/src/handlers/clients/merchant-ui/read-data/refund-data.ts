@@ -6,10 +6,10 @@ import {
     parseAndValidateRefundDataRequestParameters,
 } from '../../../../models/clients/merchant-ui/refund-data-request.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { createGeneralResponse } from '../../../../utilities/clients/merchant-ui/create-general-response.js';
-import { createRefundResponse } from '../../../../utilities/clients/merchant-ui/create-refund-response.utility.js';
-import { Pagination } from '../../../../utilities/clients/merchant-ui/database-services.utility.js';
-import { withAuth } from '../../../../utilities/clients/merchant-ui/token-authenticate.utility.js';
+import { createGeneralResponse } from '../../../../utilities/clients/create-general-response.js';
+import { createRefundResponse } from '../../../../utilities/clients/create-refund-response.utility.js';
+import { Pagination } from '../../../../utilities/clients/database-services.utility.js';
+import { withAuth } from '../../../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
@@ -45,7 +45,7 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
                 merchantAuthToken,
                 refundDataRequestParameters.refundStatus,
                 pagination,
-                prisma,
+                prisma
             );
             const generalResponse = await createGeneralResponse(merchantAuthToken, prisma);
 
@@ -68,5 +68,5 @@ export const refundData = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

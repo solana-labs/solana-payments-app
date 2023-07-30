@@ -1,5 +1,5 @@
 import { Merchant, PaymentRecord, PaymentRecordRejectionReason, PaymentRecordStatus } from '@prisma/client';
-import { paymentSessionRejectionDisplayMessages } from '../../../services/shopify/payment-session-reject.service.js';
+import { paymentSessionRejectionDisplayMessages } from '../../services/shopify/payment-session-reject.service.js';
 
 export interface PaymentStatusResponse {
     merchantDisplayName: string;
@@ -19,7 +19,7 @@ export interface PaymentErrrorResponse {
 export const createPaymentStatusResponse = (
     paymentRecord: PaymentRecord,
     merchant: Merchant,
-    language: string,
+    language: string
 ): PaymentStatusResponse => {
     const merchantDisplayName = merchant.name ?? merchant.shop.split('.')[0];
     const totalAmountFiatDisplay = paymentRecord.amount.toLocaleString(language, {
