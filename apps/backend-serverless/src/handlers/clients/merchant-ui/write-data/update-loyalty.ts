@@ -110,11 +110,14 @@ async function handleTierUpdate(
 
     if (newMintAddress) {
         tierDetails.mint = newMintAddress.toString();
+        tierDetails.merchantId = merchant.id;
     }
 
-    tiers.id
-        ? await merchantService.updateTier(tierDetails)
-        : await merchantService.createTier(merchant.id, tierDetails);
+    if (tiers.id) {
+        await merchantService.updateTier(tierDetails);
+    } else {
+        await merchantService.createTier(tierDetails);
+    }
 
     return {
         transaction,

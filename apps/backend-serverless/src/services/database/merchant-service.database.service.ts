@@ -47,14 +47,20 @@ export type ProductUpdate = {
     mint?: string;
 };
 
-export type TierUpdate = {
-    id?: number;
+export type TierCreate = {
     name: string;
     threshold: number;
     discount: number;
+    mint: string;
+    merchantId: string;
+};
+
+export type TierUpdate = {
+    id: number;
+    name?: string;
+    threshold?: number;
+    discount?: number;
     active?: boolean;
-    mintAddress?: string;
-    merchantId?: string;
 };
 
 export class MerchantService {
@@ -193,33 +199,15 @@ export class MerchantService {
         );
     }
 
-    async createTier(merchantId: string, tier: TierUpdate): Promise<Tier> {
-        const filteredUpdate = filterUndefinedFields(tier);
-        filteredUpdate.merchantId = merchantId;
-
-        if (
-            filteredUpdate.name == undefined ||
-            filteredUpdate.threshold == undefined ||
-            filteredUpdate.discount == undefined
-        ) {
-            throw new Error('Tier fields missing');
-        }
+    async createTier(tier: TierCreate): Promise<Tier> {
         return prismaErrorHandler(
             this.prisma.tier.create({
-                data: {
-                    name: filteredUpdate.name,
-                    threshold: filteredUpdate.threshold,
-                    discount: filteredUpdate.discount,
-                    merchantId: merchantId,
-                },
+                data: tier,
             })
         );
     }
 
     async updateTier(tier: TierUpdate): Promise<Tier> {
-        if (!tier.id) {
-            throw new Error('Tier id is required for update operation');
-        }
         const filteredUpdate = filterUndefinedFields(tier);
         return prismaErrorHandler(
             this.prisma.tier.update({

@@ -134,11 +134,16 @@ export function TiersCard(props: Props) {
     async function handleToggle(tierId: number) {
         const tier = tiers.find(t => t.id === tierId);
 
+        if (!tier) {
+            return;
+        }
+
         await updateLoyalty({
             tiers: {
                 id: tierId,
-                active: !tier?.active,
+                active: !tier.active,
             },
+            payer: publicKey?.toBase58(),
         });
 
         await getMerchantInfo();
