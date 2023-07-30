@@ -23,7 +23,7 @@ export const payment = async (event: APIGatewayProxyEventV2): Promise<APIGateway
                 id: id,
                 gid: gid,
                 group: group,
-                amount: 4.2,
+                amount: 14.2,
                 currency: 'USD',
                 test: true,
                 merchant_locale: 'en',

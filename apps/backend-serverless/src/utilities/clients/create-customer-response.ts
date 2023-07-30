@@ -21,6 +21,15 @@ export const createCustomerResponse = async (
 
     let usdcBalance = await fetchBalance(customerWallet, USDC_MINT.toBase58());
 
+    if (customer == null) {
+        return {
+            amountSpent: 0,
+            tier: null,
+            points: null,
+            usdc: usdcBalance,
+        };
+    }
+
     let points;
     if (merchant.pointsMint) {
         points = await fetchBalance(customerWallet, merchant.pointsMint);

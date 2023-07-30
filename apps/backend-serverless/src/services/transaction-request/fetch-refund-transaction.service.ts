@@ -5,6 +5,7 @@ import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
 } from '../../models/transaction-requests/transaction-request-response.model.js';
+import { delay } from '../../utilities/delay.utility.js';
 import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
@@ -27,7 +28,13 @@ export const fetchRefundTransaction = async (
     // This is also something we could add to a job with sqs to save calls here and then make
     // it easier to populate on merchant-ui read calls
     // TODO: Figure out if we need to direct it to the exact token account of the customer, probably yes
-    const transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
+
+    let transaction;
+
+    while (transaction == null) {
+        await delay(1000);
+        transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
+    }
     const payingCustomerTokenAddress = await findPayingTokenAddressFromTransaction(transaction);
 
     let receiverWalletAddress: string | null = null;

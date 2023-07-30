@@ -70,6 +70,8 @@ export const processTransaction = async (
         await websocketService.sendCompletedDetailsMessage({
             redirectUrl,
         });
+        // TODO Make this fetching user account better
+        // @ts-ignore
         await merchantService.recordCustomer(rpcTransaction._json.signers[1], record.merchantId, record.amount);
     }
 };

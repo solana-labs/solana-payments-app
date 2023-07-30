@@ -282,7 +282,7 @@ export class MerchantService {
         });
     }
 
-    async getCustomer(customerWalletAddress: string, merchantId: string): Promise<Customer> {
+    async getCustomer(customerWalletAddress: string, merchantId: string): Promise<Customer | null> {
         const customer = await prismaErrorHandler(
             this.prisma.customer.findUnique({
                 where: {
@@ -293,12 +293,6 @@ export class MerchantService {
                 },
             })
         );
-
-        if (customer == null) {
-            throw new MissingExpectedDatabaseRecordError(
-                'Could not find customer spending for ' + customerWalletAddress + ' in database'
-            );
-        }
 
         return customer;
     }
