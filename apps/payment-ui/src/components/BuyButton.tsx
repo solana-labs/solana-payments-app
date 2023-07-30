@@ -120,23 +120,17 @@ const BuyButton = () => {
 
     return (
         <div className="flex flex-col space-y-2">
-            {loyaltyDetails && (
-                <>
-                    {loyaltyDetails.loyaltyProgram === 'points' ? (
-                        <Button.Primary
-                            disabled={pointsDisabled()}
-                            pending={walletLoading}
-                            onClick={async () => {
-                                await fetchAndSendTransaction(true);
-                            }}
-                            className="bg-purple-700 text-white w-full shadow-xl "
-                        >
-                            {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
-                        </Button.Primary>
-                    ) : (
-                        <p>getting a tier</p>
-                    )}
-                </>
+            {loyaltyDetails && loyaltyDetails.loyaltyProgram === 'points' && (
+                <Button.Primary
+                    disabled={pointsDisabled()}
+                    pending={walletLoading}
+                    onClick={async () => {
+                        await fetchAndSendTransaction(true);
+                    }}
+                    className="bg-purple-700 text-white w-full shadow-xl "
+                >
+                    {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
+                </Button.Primary>
             )}
             <Button.Primary
                 disabled={isDisabled()}

@@ -19,11 +19,7 @@ export const buildPayTransactionRequestEndpoint = (
     createAta: string,
     singleUseNewAcc: string,
     singleUsePayer: string,
-    indexInputs: string,
-    loyaltyProgram: string | null,
-    pointsMint: string | null,
-    pointsBack: string | null,
-    payWithPoints: string = 'false'
+    indexInputs: string
 ) => {
     if (TRANSACTION_REQUEST_SERVER_URL == null) {
         throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
@@ -43,10 +39,6 @@ export const buildPayTransactionRequestEndpoint = (
         singleUseNewAcc,
         singleUsePayer,
         indexInputs,
-        loyaltyProgram,
-        pointsMint,
-        pointsBack,
-        payWithPoints,
     };
 
     const queryString = Object.entries(params)

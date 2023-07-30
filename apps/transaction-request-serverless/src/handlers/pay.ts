@@ -1,6 +1,8 @@
 import * as Sentry from '@sentry/serverless';
 import * as web3 from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { InvalidInputError } from '../errors/invalid-input.error.js';
+import { parseAndValidatePaymentTransactionBody } from '../models/payment-transaction-body.js';
 import { parseAndValidatePaymentTransactionRequest } from '../models/payment-transaction-request.model.js';
 import { PaymentTransactionBuilder } from '../services/builders/payment-transaction-ix.builder.js';
 import { createConnection } from '../utilities/connection.utility.js';
@@ -21,16 +23,20 @@ export const pay = Sentry.AWSLambda.wrapHandler(
             },
         });
 
+        if (event.body == null) {
+            return createErrorResponse(new InvalidInputError('missing body in request'));
+        }
+
         try {
             let paymentTransactionRequest = parseAndValidatePaymentTransactionRequest(event.queryStringParameters);
 
-            const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest);
+            let paymentTransactionBody = parseAndValidatePaymentTransactionBody(JSON.parse(event.body));
+
+            const transactionBuilder = new PaymentTransactionBuilder(paymentTransactionRequest, paymentTransactionBody);
 
             const connection = createConnection();
 
             let transaction: web3.Transaction = await transactionBuilder.buildPaymentTransaction(connection);
-
-            // TODO create another transaction that mints points
 
             let base = transaction
                 .serialize({ requireAllSignatures: false, verifySignatures: false })
@@ -44,7 +50,7 @@ export const pay = Sentry.AWSLambda.wrapHandler(
                         message: 'Tranasction created successfully',
                     },
                     null,
-                    2,
+                    2
                 ),
             };
         } catch (error) {
@@ -54,5 +60,5 @@ export const pay = Sentry.AWSLambda.wrapHandler(
     {
         captureTimeoutWarning: false,
         rethrowAfterCapture: false,
-    },
+    }
 );

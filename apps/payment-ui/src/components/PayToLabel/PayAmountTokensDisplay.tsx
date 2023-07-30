@@ -35,7 +35,10 @@ const PaymentTokenSelector = () => {
 export const PayAmountTokensDisplay = (props: { amount: number }) => {
     return (
         <div className="flex flex-row w-full justify-between items-center">
-            <div className="text-lg w-1/3">{props.amount} USDC</div>
+            <div className="flex flex-col w-1/3">
+                <div className="text-lg">{props.amount.toFixed(2)} USDC </div>
+                <div className="text-sm text-gray-500"> (Discount on payment)</div>
+            </div>
             <div className="w-2/3">
                 <PaymentTokenSelector />
             </div>
