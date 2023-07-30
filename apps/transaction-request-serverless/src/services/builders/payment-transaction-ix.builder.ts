@@ -1,12 +1,14 @@
 import {
     createAssociatedTokenAccountInstruction,
     createBurnInstruction,
+    createCloseAccountInstruction,
     createMintToInstruction,
     getAccount,
     getAssociatedTokenAddress,
 } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { TokenInformation } from '../../configs/token-list.config.js';
+import { PaymentTransactionBody } from '../../models/payment-transaction-body.js';
 import {
     AmountType,
     PaymentTransactionRequest,
@@ -36,7 +38,12 @@ export class PaymentTransactionBuilder {
     private pointsBack: number | null;
     private payWithPoints: boolean;
 
-    constructor(paymentTransactionRequest: PaymentTransactionRequest) {
+    private currentTier: web3.PublicKey | null;
+    private customerOwnsTier: boolean;
+    private currentDiscount: number | null;
+    private nextTier: web3.PublicKey | null;
+
+    constructor(paymentTransactionRequest: PaymentTransactionRequest, paymentTransactionBody: PaymentTransactionBody) {
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
         this.receiverWalletAddress = paymentTransactionRequest.receiverWalletAddress
             ? new web3.PublicKey(paymentTransactionRequest.receiverWalletAddress)
@@ -60,15 +67,31 @@ export class PaymentTransactionBuilder {
         this.indexInputs = paymentTransactionRequest.indexInputs
             ? paymentTransactionRequest.indexInputs.split(',')
             : null;
+        this.payWithPoints = paymentTransactionBody.payWithPoints ? paymentTransactionBody.payWithPoints : false;
 
-        this.loyaltyProgram = paymentTransactionRequest.loyaltyProgram
-            ? paymentTransactionRequest.loyaltyProgram
+        this.loyaltyProgram = paymentTransactionBody.loyaltyProgram ? paymentTransactionBody.loyaltyProgram : null;
+
+        this.pointsMint = paymentTransactionBody.points.mint
+            ? new web3.PublicKey(paymentTransactionBody.points.mint)
             : null;
-        this.pointsMint = paymentTransactionRequest.pointsMint
-            ? new web3.PublicKey(paymentTransactionRequest.pointsMint)
-            : null;
-        this.pointsBack = paymentTransactionRequest.pointsBack ? paymentTransactionRequest.pointsBack : null;
-        this.payWithPoints = paymentTransactionRequest.payWithPoints;
+        this.pointsBack = paymentTransactionBody.points.back ? paymentTransactionBody.points.back : null;
+
+        this.currentTier =
+            paymentTransactionBody.tiers && paymentTransactionBody.tiers.currentTier
+                ? new web3.PublicKey(paymentTransactionBody.tiers.currentTier)
+                : null;
+
+        this.customerOwnsTier = paymentTransactionBody.tiers ? paymentTransactionBody.tiers.customerOwns : false;
+
+        this.currentDiscount =
+            paymentTransactionBody.tiers && paymentTransactionBody.tiers.currentDiscount
+                ? paymentTransactionBody.tiers.currentDiscount
+                : null;
+
+        this.nextTier =
+            paymentTransactionBody.tiers && paymentTransactionBody.tiers.nextTier
+                ? new web3.PublicKey(paymentTransactionBody.tiers.nextTier)
+                : null;
     }
 
     public async buildPaymentTransaction(connection: web3.Connection): Promise<web3.Transaction> {
@@ -84,7 +107,7 @@ export class PaymentTransactionBuilder {
             connection
         );
 
-        const receivingQuantity =
+        let receivingQuantity =
             this.amountType === AmountType.quantity
                 ? this.receivingAmount
                 : receivingTokenInformation.convertSizeToQuantity(this.receivingAmount);
@@ -127,6 +150,10 @@ export class PaymentTransactionBuilder {
             );
             transaction = transaction.add(burnTx);
         } else {
+            if (this.loyaltyProgram === 'tiers' && this.currentDiscount && this.currentDiscount > 0) {
+                receivingQuantity = Math.ceil((receivingQuantity * (100 - this.currentDiscount)) / 100);
+                console.log('after discoutn', receivingQuantity);
+            }
             if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
                 swapIxs = await createSwapIx({
                     provider: 'jupiter',
@@ -147,6 +174,51 @@ export class PaymentTransactionBuilder {
                 connection,
                 this.feePayer
             );
+        }
+
+        if (this.loyaltyProgram === 'tiers') {
+            if (this.nextTier && this.customerOwnsTier && this.currentTier) {
+                let customerTokenAddress = await getAssociatedTokenAddress(this.currentTier, this.sender);
+                let newCustomerTokenAddress = await getAssociatedTokenAddress(this.nextTier, this.sender);
+
+                transaction = transaction.add(
+                    createBurnInstruction(customerTokenAddress, this.currentTier, this.sender, 1)
+                );
+
+                transaction = transaction.add(
+                    createCloseAccountInstruction(customerTokenAddress, this.sender, this.sender)
+                );
+
+                transaction = transaction.add(
+                    createAssociatedTokenAccountInstruction(
+                        this.sender,
+                        newCustomerTokenAddress,
+                        this.sender,
+                        this.nextTier
+                    )
+                );
+
+                transaction = transaction.add(
+                    createMintToInstruction(this.nextTier, newCustomerTokenAddress, this.feePayer, 1)
+                );
+            } else if (!this.nextTier && !this.customerOwnsTier && this.currentTier) {
+                let newCustomerTokenAddress = await getAssociatedTokenAddress(this.currentTier, this.sender);
+
+                transaction = transaction.add(
+                    createAssociatedTokenAccountInstruction(
+                        this.sender,
+                        newCustomerTokenAddress,
+                        this.sender,
+                        this.currentTier
+                    )
+                );
+
+                transaction = transaction.add(
+                    createMintToInstruction(this.currentTier, newCustomerTokenAddress, this.feePayer, 1)
+                );
+            } else {
+                console.log('hit else case');
+            }
         }
 
         if (this.singleUseNewAcc && this.singleUsePayer) {

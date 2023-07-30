@@ -1,5 +1,5 @@
 import { InferType, boolean, number, object, string } from 'yup';
-import { parseAndValidate } from '../../../utilities/yup.utility.js';
+import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
 import { publicKeySchema } from '../../public-key-schema.model.js';
 
 export const updateLoyaltyRequestBodySchema = object().shape({
@@ -29,7 +29,7 @@ export const updateLoyaltyRequestBodySchema = object().shape({
 export type UpdateLoyaltyRequest = InferType<typeof updateLoyaltyRequestBodySchema>;
 
 export const parseAndValidateUpdateLoyaltyRequestBody = (updateLoyaltyRequestBody: unknown): UpdateLoyaltyRequest => {
-    return parseAndValidate(
+    return parseAndValidateStrict(
         updateLoyaltyRequestBody,
         updateLoyaltyRequestBodySchema,
         'Could not parse the update loyalty request body. Unknown Reason.'
