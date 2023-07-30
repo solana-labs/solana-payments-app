@@ -10,12 +10,16 @@ interface CustomerState {
     usdcBalance: number | null;
     pointsBalance: number | null;
     tier: Tier | null;
+    customerOwns: boolean;
+    nextTier: Tier | null;
     error: string | null;
 }
 
 const initalState: CustomerState = {
     usdcBalance: null,
     pointsBalance: null,
+    customerOwns: false,
+    nextTier: null,
     tier: null,
     error: null,
 };
@@ -23,6 +27,8 @@ const initalState: CustomerState = {
 type BalanceResponse = {
     usdcBalance: number | null;
     pointsBalance: number | null;
+    customerOwns: boolean;
+    nextTier: Tier | null;
     tier: Tier | null;
     error: string | null;
 };
@@ -44,6 +50,8 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
 
             const actualData = customerResponse.data.customerResponse;
             const tier = actualData.tier;
+            const nextTier = actualData.nextTier;
+            console.log('actual data enxt', actualData.nextTier);
 
             return {
                 usdcBalance: actualData.usdc,
@@ -52,6 +60,11 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                     discount: tier ? tier.discount : 0,
                     name: tier ? tier.name : '',
                 },
+                customerOwns: actualData.customerOwns,
+                nextTier: {
+                    discount: nextTier ? nextTier.discount : 0,
+                    name: nextTier ? nextTier.name : '',
+                },
                 error: null,
             };
         } catch (error) {
@@ -59,6 +72,8 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                 usdcBalance: null,
                 pointsBalance: null,
                 tier: null,
+                customerOwns: false,
+                nextTier: null,
                 error: 'There is a fatal error with this app. Please contact the developer.',
             };
         }
@@ -78,6 +93,8 @@ const customerSlice = createSlice({
                 state.usdcBalance = action.payload.usdcBalance;
                 state.pointsBalance = action.payload.pointsBalance;
                 state.tier = action.payload.tier;
+                state.customerOwns = action.payload.customerOwns;
+                state.nextTier = action.payload.nextTier;
             });
     },
 });
@@ -87,5 +104,6 @@ export default customerSlice.reducer;
 export const getBalance = (state: RootState): number | null => state.customer.usdcBalance;
 export const getPointsBalance = (state: RootState): number | null => state.customer.pointsBalance;
 export const getTier = (state: RootState): Tier | null => state.customer.tier;
+export const getNextTier = (state: RootState): Tier | null => state.customer.nextTier;
 export const getIsWalletError = (state: RootState): boolean => state.customer.error != null;
 export const getWalletError = (state: RootState): string | null => state.customer.error;

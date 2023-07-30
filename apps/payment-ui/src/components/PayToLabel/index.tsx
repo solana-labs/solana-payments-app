@@ -3,14 +3,16 @@ import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/PayToLabel
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayToLabel/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayToLabel/PayAmountTokensDisplay';
 import { PayToDisplay, PayToLoading } from '@/components/PayToLabel/PayToDisplay';
-import { getTier } from '@/features/customer/customerSlice';
+import { getNextTier, getTier } from '@/features/customer/customerSlice';
 import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
 import { useSelector } from 'react-redux';
 import { DiscountAmountDisplay, DiscountAmountLoading } from './DiscountAmountDisplay';
+import { TierUpgradeNotification } from './TierUpgradeNotification';
 
 export const PayToLabel = () => {
     const paymentDetails = useSelector(getPaymentDetails);
     const customerTier = useSelector(getTier);
+    const customerNextTier = useSelector(getNextTier);
 
     console.log('label tier', customerTier);
     if (paymentDetails === null) {
@@ -51,8 +53,20 @@ export const PayToLabel = () => {
                 <div className="divider" />
             </div>
             <CartAmountDisplay amount={cart} />
-            {customerTier && discount && <DiscountAmountDisplay amount={discount} tierName={customerTier.name} />}
             <FeePriceDisplay />
+            {customerTier && discount && (
+                <DiscountAmountDisplay
+                    amount={discount}
+                    tierName={customerTier.name}
+                    percentage={customerTier.discount}
+                />
+            )}
+            {customerNextTier && customerNextTier.discount && (
+                <TierUpgradeNotification
+                    nextTierName={customerNextTier.name}
+                    nextTierDiscount={customerNextTier.discount}
+                />
+            )}
         </div>
     );
 };

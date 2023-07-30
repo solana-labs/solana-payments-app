@@ -1,9 +1,14 @@
-export const DiscountAmountDisplay = (props: { amount: number; tierName: string }) => {
+interface Props {
+    amount: number;
+    tierName: string;
+    percentage: number;
+}
+export const DiscountAmountDisplay = (props: Props) => {
     return (
         <div className="flex flex-row w-full items-center justify-between">
             <div className="flex flex-row space-x-1">
                 <div className="label-text text-green-600">{props.tierName}</div>
-                <div className="label-text text-gray-600">Discount</div>
+                <div className="label-text text-gray-600">Discount: {props.percentage}%</div>
             </div>
             <div className="label-text text-green-600 w-16 flex justify-center rounded-md h-8 items-center">
                 ${props.amount.toFixed(2)}
