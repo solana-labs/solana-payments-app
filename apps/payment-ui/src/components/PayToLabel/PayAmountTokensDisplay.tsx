@@ -32,10 +32,10 @@ const PaymentTokenSelector = () => {
     );
 };
 
-export const PayAmountTokensDisplay = (props: { displayAmoumt: string }) => {
+export const PayAmountTokensDisplay = (props: { amount: number }) => {
     return (
         <div className="flex flex-row w-full justify-between items-center">
-            <div className="text-lg w-1/3">{props.displayAmoumt}</div>
+            <div className="text-lg w-1/3">{props.amount} USDC</div>
             <div className="w-2/3">
                 <PaymentTokenSelector />
             </div>

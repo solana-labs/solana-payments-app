@@ -79,9 +79,9 @@ model Merchant {
   pointsMint String?
   pointsBack Float?
 
-  products         Product[]
-  tiers            Tier[]
-  customerSpending CustomerSpending[]
+  products Product[]
+  tiers    Tier[]
+  customer Customer[]
 }
 
 model PaymentRecord {
@@ -188,9 +188,9 @@ model Tier {
   @@index(merchantId)
 }
 
-model CustomerSpending {
+model Customer {
   customerWalletAddress String
-  spentAmount           Float    @default(0)
+  amountSpent           Float    @default(0)
   merchant              Merchant @relation(fields: [merchantId], references: [id])
   merchantId            String
 

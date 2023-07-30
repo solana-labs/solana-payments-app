@@ -3,12 +3,16 @@ import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/PayToLabel
 import { PayAmountDisplay, PayAmountLoading } from '@/components/PayToLabel/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayToLabel/PayAmountTokensDisplay';
 import { PayToDisplay, PayToLoading } from '@/components/PayToLabel/PayToDisplay';
+import { getTier } from '@/features/customer/customerSlice';
 import { getPaymentDetails } from '@/features/payment-details/paymentDetailsSlice';
 import { useSelector } from 'react-redux';
+import { DiscountAmountDisplay, DiscountAmountLoading } from './DiscountAmountDisplay';
 
 export const PayToLabel = () => {
     const paymentDetails = useSelector(getPaymentDetails);
+    const customerTier = useSelector(getTier);
 
+    console.log('label tier', customerTier);
     if (paymentDetails === null) {
         return (
             <div>
@@ -21,22 +25,33 @@ export const PayToLabel = () => {
                     <div className="divider" />
                 </div>
                 <CartAmountLoading />
+                <DiscountAmountLoading />
                 <FeePriceDisplayLoading />
             </div>
         );
+    }
+
+    let cart = Number(paymentDetails.totalAmountFiatDisplay.substring(1));
+    let final = cart;
+    let discount;
+
+    if (customerTier != null) {
+        discount = (customerTier.discount * cart) / 100;
+        final = cart - discount;
     }
 
     return (
         <div>
             <div className="flex flex-col justify-between h-44">
                 <PayToDisplay merchantName={paymentDetails.merchantDisplayName} />
-                <PayAmountDisplay displayAmoumt={paymentDetails.totalAmountFiatDisplay} />
-                <PayAmountTokensDisplay displayAmoumt={`${paymentDetails.usdcSize.toFixed(2)} USDC`} />
+                <PayAmountDisplay amount={final} />
+                <PayAmountTokensDisplay amount={paymentDetails.usdcSize} />
             </div>
             <div className="flex flex-col w-full">
                 <div className="divider" />
             </div>
-            <CartAmountDisplay displayAmount={paymentDetails.totalAmountFiatDisplay} />
+            <CartAmountDisplay amount={cart} />
+            {customerTier && discount && <DiscountAmountDisplay amount={discount} tierName={customerTier.name} />}
             <FeePriceDisplay />
         </div>
     );

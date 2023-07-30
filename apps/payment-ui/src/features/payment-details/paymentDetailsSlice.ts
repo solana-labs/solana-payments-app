@@ -26,7 +26,7 @@ export interface Product {
     merchantId: string;
 }
 
-export interface Tier {
+interface Tier {
     id: string;
     name: string;
     threshold: number;

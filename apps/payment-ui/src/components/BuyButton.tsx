@@ -1,4 +1,5 @@
 import * as Button from '@/components/Button';
+import { getPointsBalance } from '@/features/customer/customerSlice';
 import {
     Notification,
     NotificationType,
@@ -7,7 +8,6 @@ import {
 } from '@/features/notification/notificationSlice';
 import { getLoyaltyDetails, getPaymentDetails, getPaymentId } from '@/features/payment-details/paymentDetailsSlice';
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
-import { getPointsBalance } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -120,17 +120,23 @@ const BuyButton = () => {
 
     return (
         <div className="flex flex-col space-y-2">
-            {loyaltyDetails && loyaltyDetails.loyaltyProgram === 'points' && (
-                <Button.Primary
-                    disabled={pointsDisabled()}
-                    pending={walletLoading}
-                    onClick={async () => {
-                        await fetchAndSendTransaction(true);
-                    }}
-                    className="bg-purple-700 text-white w-full shadow-xl "
-                >
-                    {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
-                </Button.Primary>
+            {loyaltyDetails && (
+                <>
+                    {loyaltyDetails.loyaltyProgram === 'points' ? (
+                        <Button.Primary
+                            disabled={pointsDisabled()}
+                            pending={walletLoading}
+                            onClick={async () => {
+                                await fetchAndSendTransaction(true);
+                            }}
+                            className="bg-purple-700 text-white w-full shadow-xl "
+                        >
+                            {pointsDisabled() ? 'Need more points' : 'Buy with Points'}
+                        </Button.Primary>
+                    ) : (
+                        <p>getting a tier</p>
+                    )}
+                </>
             )}
             <Button.Primary
                 disabled={isDisabled()}

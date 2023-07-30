@@ -53,7 +53,7 @@ function generateMerchantRecords(count = 1): any[] {
                 acceptedPrivacyPolicy: true,
                 dismissCompleted: true,
                 active: true,
-                loyaltyProgram: 'points',
+                loyaltyProgram: 'tiers',
                 pointsMint: 'Fq2oteAH3w4qKfDtnrdHTqVNRoUAWwMHSqeG7gsRqPSC',
                 pointsBack: 1,
             };
