@@ -10,7 +10,7 @@ export interface PaymentStatusResponse {
     completed: boolean;
 }
 
-export interface PaymentErrrorResponse {
+export interface PaymentErrorResponse {
     errorTitle: string;
     errorDetail: string;
     errorRedirect: string;
@@ -41,7 +41,7 @@ export const createPaymentStatusResponse = (
     };
 };
 
-export const createPaymentErrorResponse = (paymentRecord: PaymentRecord): PaymentErrrorResponse | null => {
+export const createPaymentErrorResponse = (paymentRecord: PaymentRecord): PaymentErrorResponse | null => {
     if (paymentRecord.status != PaymentRecordStatus.rejected) {
         return null;
     }

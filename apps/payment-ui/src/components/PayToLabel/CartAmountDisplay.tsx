@@ -1,9 +1,9 @@
-export const CartAmountDisplay = (props: { displayAmount: string }) => {
+export const CartAmountDisplay = (props: { amount: number }) => {
     return (
         <div className="flex flex-row w-full items-center justify-between">
             <div className="label-text text-gray-600">Cart</div>
             <div className="label-text text-gray-600 w-16 flex justify-center rounded-md h-8 items-center">
-                {props.displayAmount}
+                ${props.amount.toFixed(2)}
             </div>
         </div>
     );
