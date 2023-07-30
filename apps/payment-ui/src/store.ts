@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
+import customerReducer from './features/customer/customerSlice';
 import notificationReducer from './features/notification/notificationSlice';
 import paymentDetailsReducer from './features/payment-details/paymentDetailsSlice';
 import paymentOptionsSlice from './features/payment-options/paymentOptionsSlice';
 import paymentSessionReducer from './features/payment-session/paymentSessionSlice';
-import walletReducer from './features/wallet/walletSlice';
 import websocketReducer from './features/websocket/websocketSlice';
 
 export const store = configureStore({
@@ -11,7 +11,7 @@ export const store = configureStore({
         notification: notificationReducer,
         paymentSession: paymentSessionReducer,
         paymentOptions: paymentOptionsSlice,
-        wallet: walletReducer,
+        customer: customerReducer,
         websocket: websocketReducer,
         paymentDetails: paymentDetailsReducer,
     },

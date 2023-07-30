@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { getBalance, getPointsBalance } from '@/features/wallet/walletSlice';
+import { getBalance, getPointsBalance } from '@/features/customer/customerSlice';
 import { useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import Image from 'next/image';

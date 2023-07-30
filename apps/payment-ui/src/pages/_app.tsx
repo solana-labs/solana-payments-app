@@ -1,7 +1,7 @@
 import CompletingHandler from '@/components/handlers/CompletingHandler';
+import CustomerHandler from '@/components/handlers/CustomerHandler';
 import PaymentDetailsHandler from '@/components/handlers/PaymentDetailsHandler';
 import RouterHandler from '@/components/handlers/RouterHandler';
-import WalletHandler from '@/components/handlers/WalletHandler';
 import WebsocketHandler from '@/components/handlers/WebsocketHandler';
 import WindowHandler from '@/components/handlers/WindowHandler';
 import '@/styles/globals.css';
@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <Provider store={store}>
             <WalletContext>
-                <WalletHandler />
+                <CustomerHandler />
                 <CompletingHandler />
                 <PaymentDetailsHandler />
                 <WindowHandler />

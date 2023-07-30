@@ -1,3 +1,4 @@
+import { fetchCustomer, getBalance } from '@/features/customer/customerSlice';
 import {
     Notification,
     NotificationType,
@@ -5,13 +6,12 @@ import {
     setNotification,
 } from '@/features/notification/notificationSlice';
 import { getLoyaltyDetails, getPaymentSize } from '@/features/payment-details/paymentDetailsSlice';
-import { fetchWalletBalance, getBalance } from '@/features/wallet/walletSlice';
 import { AppDispatch } from '@/store';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-const WalletHandler: React.FC = () => {
+const CustomerHandler: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { publicKey } = useWallet();
 
@@ -22,7 +22,7 @@ const WalletHandler: React.FC = () => {
 
     useEffect(() => {
         if (publicKey) {
-            dispatch(fetchWalletBalance(publicKey.toBase58()));
+            dispatch(fetchCustomer(publicKey.toBase58()));
         } else {
             dispatch(removeNotification());
         }
@@ -43,4 +43,4 @@ const WalletHandler: React.FC = () => {
     return null;
 };
 
-export default WalletHandler;
+export default CustomerHandler;
