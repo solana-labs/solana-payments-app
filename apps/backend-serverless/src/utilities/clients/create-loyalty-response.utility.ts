@@ -33,7 +33,7 @@ export const createLoyaltyResponse = async (merchant: Merchant): Promise<Loyalty
         await merchantService.updateMerchant(merchant, { lastFetched: new Date() });
     }
 
-    const products = await merchantService.getProducts(merchant.id);
+    const products = await merchantService.getProductsByMerchant(merchant.id);
     const tiers = await merchantService.getTiers(merchant.id);
 
     return {

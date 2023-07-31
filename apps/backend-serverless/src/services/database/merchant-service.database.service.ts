@@ -217,13 +217,25 @@ export class MerchantService {
         );
     }
 
-    async getProducts(merchantId: string): Promise<Product[]> {
+    async getProductsByMerchant(merchantId: string): Promise<Product[]> {
         return prismaErrorHandler(
             this.prisma.product.findMany({
                 where: { merchantId: merchantId },
             })
         );
     }
+
+    async getProductsByIds(ids: string[]): Promise<Product[]> {
+        const products = await this.prisma.product.findMany({
+            where: {
+                id: {
+                    in: ids,
+                },
+            },
+        });
+        return products;
+    }
+
     async getProduct(productId: string): Promise<Product> {
         const product = await prismaErrorHandler(
             this.prisma.product.findUnique({
