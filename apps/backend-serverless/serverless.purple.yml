@@ -391,6 +391,12 @@ functions:
       - httpApi:
           path: /checkouts
           method: post
+  products:
+    handler: src/handlers/webhooks/products.products
+    events:
+      - httpApi:
+          path: /products
+          method: post
 stepFunctions:
   stateMachines:
     retry:
