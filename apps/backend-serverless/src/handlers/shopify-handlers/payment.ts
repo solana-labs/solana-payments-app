@@ -23,7 +23,7 @@ Sentry.AWSLambda.init({
 export const payment = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In Payment',
+            message: 'In Payment shopify handler',
             level: 'info',
             extra: {
                 event,
@@ -50,6 +50,27 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             }
             const merchant = await merchantService.getMerchant({ shop: shop });
             const paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
+
+            Sentry.captureEvent({
+                message: 'In Payment SHOPIFY about to get the checkout response',
+                level: 'info',
+                extra: {
+                    event,
+                },
+            });
+            console.log(
+                'paymentInitiation.payment_method.data.cancel_url',
+                paymentInitiation.payment_method.data.cancel_url
+            );
+            let checkoutUrlParts = paymentInitiation.payment_method.data.cancel_url.split('/');
+            console.log('parts', checkoutUrlParts);
+
+            let checkoutId = checkoutUrlParts[checkoutUrlParts.length - 2];
+            console.log('checkoutId', checkoutId);
+            Sentry.captureEvent({
+                message: 'postmortem',
+                level: 'info',
+            });
 
             let paymentRecord;
             try {
