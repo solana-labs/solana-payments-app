@@ -72,11 +72,32 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
                 shop,
                 accessToken: updateData.accessToken,
                 topic: ShopifyWebhookTopic.checkoutsCreate,
+                endpoint: '/checkouts',
             });
             await createShopifyWebhook({
                 shop,
                 accessToken: updateData.accessToken,
                 topic: ShopifyWebhookTopic.checkoutsUpdate,
+                endpoint: '/checkouts',
+            });
+
+            await createShopifyWebhook({
+                shop,
+                accessToken: updateData.accessToken,
+                topic: ShopifyWebhookTopic.productsCreate,
+                endpoint: '/products',
+            });
+            await createShopifyWebhook({
+                shop,
+                accessToken: updateData.accessToken,
+                topic: ShopifyWebhookTopic.productsUpdate,
+                endpoint: '/products',
+            });
+            await createShopifyWebhook({
+                shop,
+                accessToken: updateData.accessToken,
+                topic: ShopifyWebhookTopic.productsDelete,
+                endpoint: '/products',
             });
 
             const adminData = makeAdminData(axios);
