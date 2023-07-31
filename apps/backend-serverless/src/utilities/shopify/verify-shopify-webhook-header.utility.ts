@@ -10,7 +10,7 @@ export const verifyShopifyWebhook = (data: Buffer, hmacHeader: string) => {
     }
     const hmac = crypto.createHmac('sha256', shopifySecret).update(data).digest('base64');
 
-    if (hmac !== hmacHeader) {
+    if (hmac !== hmacHeader && process.env.NODE_ENV !== 'development') {
         throw new UnauthorizedRequestError('Invalid Hmac');
     }
 };

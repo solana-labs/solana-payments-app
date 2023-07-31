@@ -62,15 +62,6 @@ export const payment = Sentry.AWSLambda.wrapHandler(
                 'paymentInitiation.payment_method.data.cancel_url',
                 paymentInitiation.payment_method.data.cancel_url
             );
-            let checkoutUrlParts = paymentInitiation.payment_method.data.cancel_url.split('/');
-            console.log('parts', checkoutUrlParts);
-
-            let checkoutId = checkoutUrlParts[checkoutUrlParts.length - 2];
-            console.log('checkoutId', checkoutId);
-            Sentry.captureEvent({
-                message: 'postmortem',
-                level: 'info',
-            });
 
             let paymentRecord;
             try {

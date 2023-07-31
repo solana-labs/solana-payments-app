@@ -4,6 +4,7 @@ import {
     PaymentRecordRejectionReason,
     PaymentRecordStatus,
     PrismaClient,
+    Product,
     TransactionType,
 } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
@@ -41,6 +42,7 @@ import { TrmService } from '../../services/trm-service.service.js';
 import { uploadSingleUseKeypair } from '../../services/upload-single-use-keypair.service.js';
 import { WebSocketService } from '../../services/websocket/send-websocket-message.service.js';
 import { createCustomerResponse } from '../../utilities/clients/create-customer-response.js';
+import { createPaymentProductNftsResponse } from '../../utilities/clients/create-payment-product-nfts-response.js';
 import { generateSingleUseKeypairFromRecord } from '../../utilities/generate-single-use-keypair.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import {
@@ -87,6 +89,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         let gasKeypair: web3.Keypair;
         let singleUseKeypair: web3.Keypair;
         let paymentRequest: PaymentRequestParameters;
+        let products: Product[];
 
         try {
             let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
@@ -180,6 +183,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
         }
 
         try {
+            const productResponse = await createPaymentProductNftsResponse(paymentRecord, merchantService);
+
             singleUseKeypair = await generateSingleUseKeypairFromRecord(paymentRecord);
             try {
                 await uploadSingleUseKeypair(singleUseKeypair, paymentRecord);
@@ -187,10 +192,8 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 Sentry.captureException(error);
             }
             gasKeypair = await fetchGasKeypair();
-            console.log('got the gas keypair', gasKeypair.publicKey.toBase58());
 
             const customerResponse = await createCustomerResponse(account, paymentRecord, merchantService);
-            console.log('\n\n\n about to fetch payment transaction \n\n\n');
             let paymentTransaction = await fetchPaymentTransaction(
                 paymentRecord,
                 merchant,
@@ -201,24 +204,19 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 paymentRequest.payWithPoints,
                 customerResponse
             );
-            console.log('got the payemtn transactio', paymentTransaction.transaction);
 
             let transaction = encodeTransaction(paymentTransaction.transaction);
-            console.log('encoded the transaction', transaction);
             transaction.partialSign(gasKeypair);
-            console.log('partial signed');
             if (paymentRequest.payWithPoints) {
                 verifyTransactionWithRecordPoints(paymentRecord, transaction, true);
             } else {
                 verifyTransactionWithRecord(paymentRecord, transaction, true);
             }
-            console.log('verified tx');
 
             const transactionSignature = transaction.signature;
             if (transactionSignature == null) {
                 throw new DependencyError('transaction signature');
             }
-            console.log('got the tx sig', transactionSignature);
 
             await transactionRecordService.createTransactionRecord(
                 encodeBufferToBase58(transactionSignature),
@@ -227,7 +225,6 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 null,
                 paymentRequest.payWithPoints
             );
-            console.log('created tx record');
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
                 requireAllSignatures: false,
