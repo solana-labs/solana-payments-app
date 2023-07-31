@@ -51,18 +51,6 @@ export const payment = Sentry.AWSLambda.wrapHandler(
             const merchant = await merchantService.getMerchant({ shop: shop });
             const paymentInitiation = parseAndValidateShopifyPaymentInitiation(JSON.parse(event.body));
 
-            Sentry.captureEvent({
-                message: 'In Payment SHOPIFY about to get the checkout response',
-                level: 'info',
-                extra: {
-                    event,
-                },
-            });
-            console.log(
-                'paymentInitiation.payment_method.data.cancel_url',
-                paymentInitiation.payment_method.data.cancel_url
-            );
-
             let paymentRecord;
             try {
                 paymentRecord = await paymentRecordService.getPaymentRecord({ shopId: paymentInitiation.id });
