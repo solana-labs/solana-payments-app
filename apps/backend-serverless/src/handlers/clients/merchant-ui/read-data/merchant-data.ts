@@ -24,6 +24,9 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in merchant-data',
             level: 'info',
+            extra: {
+                event,
+            },
         });
 
         const merchantService = new MerchantService(prisma);

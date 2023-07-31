@@ -5,6 +5,7 @@ interface Props {
     shop: string;
     accessToken: string;
     topic: string;
+    endpoint: string;
 }
 export async function createShopifyWebhook(props: Props) {
     const url = shopifyAdminRestEndpoint(props.shop, 'webhooks');
@@ -12,7 +13,7 @@ export async function createShopifyWebhook(props: Props) {
     const payload = {
         webhook: {
             topic: props.topic,
-            address: process.env.BACKEND_URL + '/checkouts',
+            address: process.env.BACKEND_URL + props.endpoint,
             format: 'json',
         },
     };

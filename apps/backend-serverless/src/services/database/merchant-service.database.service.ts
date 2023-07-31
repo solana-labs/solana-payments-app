@@ -4,9 +4,9 @@ import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingExpectedDatabaseRecordError } from '../../errors/missing-expected-database-record.error.js';
-import { ProductNode } from '../../models/shopify-graphql-responses/shop-products.model.js';
 import { filterUndefinedFields } from '../../utilities/database/filter-underfined-fields.utility.js';
 import { PubkeyType, getPubkeyType } from '../helius.service.js';
+import { FetchedProduct } from '../shopify/shop-products.service.js';
 import { prismaErrorHandler } from './shared.database.service.js';
 
 export type ShopQuery = {
@@ -150,7 +150,7 @@ export class MerchantService {
         );
     }
 
-    async upsertProducts(merchantId: string, products: ProductNode[]): Promise<Product[]> {
+    async upsertProducts(merchantId: string, products: FetchedProduct[]): Promise<Product[]> {
         const existingProducts = await this.prisma.product.findMany({
             where: { merchantId: merchantId },
         });
@@ -168,12 +168,12 @@ export class MerchantService {
                 where: { id: product.id },
                 update: {
                     name: product.title,
-                    image: product.handle,
+                    image: product.imageSrc,
                 },
                 create: {
                     id: product.id,
                     name: product.title,
-                    image: product.handle,
+                    image: product.imageSrc,
                     merchantId: merchantId,
                 },
             })

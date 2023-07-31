@@ -7,6 +7,9 @@ export enum ShopifyWebhookTopic {
     shopRedact = 'shop/redact',
     checkoutsCreate = 'checkouts/create',
     checkoutsUpdate = 'checkouts/update',
+    productsCreate = 'products/create',
+    productsUpdate = 'products/update',
+    productsDelete = 'products/delete',
 }
 
 export const shopifyWebhookHeadersScheme = object().shape({
