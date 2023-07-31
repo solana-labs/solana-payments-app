@@ -136,7 +136,9 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
 
         try {
             if (backendUrl == null || paymentId == null) {
-                throw new Error('There is a fatal error with this app. Please return back to Shopify.');
+                throw new Error(
+                    'There is a fatal error with this app. Missing env variables. Please return back to Shopify.'
+                );
             }
 
             const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
@@ -151,7 +153,7 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
                 paymentDetails: null,
                 errorDetails: {
                     errorTitle: 'Internal Error',
-                    errorDetail: 'There is a fatal error with this app. Please return back to Shopify.',
+                    errorDetail: 'There is a fatal error with this app. Internal Error. Please return back to Shopify.',
                     errorRedirect: null,
                 },
                 loyaltyDetails: null,

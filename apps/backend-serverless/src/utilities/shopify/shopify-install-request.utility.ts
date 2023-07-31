@@ -50,6 +50,8 @@ export const createShopifyOAuthGrantRedirectUrl = (shop: string, nonce: string) 
         ShopifyScope.WRITE_PAYMENT_SESSIONS,
         ShopifyScope.READ_PRODUCTS,
         ShopifyScope.READ_PRODUCTS_LISTING,
+        ShopifyScope.READ_CHECKOUTS,
+        ShopifyScope.READ_ORDERS,
     ])}&redirect_uri=${redirectUrl}&state=${nonce}`;
 };
 
@@ -63,4 +65,6 @@ export enum ShopifyScope {
     WRITE_PAYMENT_SESSIONS = 'write_payment_sessions',
     READ_PRODUCTS = 'read_products',
     READ_PRODUCTS_LISTING = 'read_product_listings',
+    READ_CHECKOUTS = 'read_checkouts',
+    READ_ORDERS = 'read_orders',
 }

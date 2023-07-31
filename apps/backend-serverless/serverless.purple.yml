@@ -385,6 +385,12 @@ functions:
         Action:
           - s3:DeleteObject
         Resource: 'arn:aws:s3:::${self:custom.single-use-bucket-name}/*'
+  checkouts:
+    handler: src/handlers/webhooks/checkouts.checkouts
+    events:
+      - httpApi:
+          path: /checkouts
+          method: post
 stepFunctions:
   stateMachines:
     retry:

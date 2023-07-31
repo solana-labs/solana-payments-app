@@ -197,3 +197,11 @@ model Customer {
   @@id([merchantId, customerWalletAddress]) // Composite key on merchantId and customerWalletAddress
   @@unique([merchantId, customerWalletAddress]) // Unique constraint on the same fields
 }
+
+model Checkout {
+  id            Int      @id @default(autoincrement())
+  checkoutToken String   @unique
+  productIds    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

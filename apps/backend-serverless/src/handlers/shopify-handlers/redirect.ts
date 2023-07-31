@@ -4,6 +4,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import axios from 'axios';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { parseAndValidateAppRedirectQueryParams } from '../../models/shopify/redirect-query-params.model.js';
+import { ShopifyWebhookTopic } from '../../models/shopify/shopify-webhook-headers.model.js';
 import { contingentlyHandleAppConfigure } from '../../services/business-logic/contigently-handle-app-configure.service.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchAccessToken } from '../../services/fetch-access-token.service.js';
@@ -13,6 +14,7 @@ import { createOnboardingResponse } from '../../utilities/clients/create-onboard
 import { verifyShopifySignedCookie } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 import { verifyRedirectParams } from '../../utilities/shopify/shopify-redirect-request.utility.js';
+import { createShopifyWebhook } from '../../utilities/shopify/webhook-subscribe.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -65,6 +67,18 @@ export const redirect = Sentry.AWSLambda.wrapHandler(
             };
 
             merchant = await merchantService.updateMerchant(merchant, updateData);
+
+            await createShopifyWebhook({
+                shop,
+                accessToken: updateData.accessToken,
+                topic: ShopifyWebhookTopic.checkoutsCreate,
+            });
+            await createShopifyWebhook({
+                shop,
+                accessToken: updateData.accessToken,
+                topic: ShopifyWebhookTopic.checkoutsUpdate,
+            });
+
             const adminData = makeAdminData(axios);
             try {
                 const adminDataResponse = await adminData(shop, accessTokenResponse.access_token);

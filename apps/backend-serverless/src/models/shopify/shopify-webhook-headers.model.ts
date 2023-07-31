@@ -5,6 +5,8 @@ export enum ShopifyWebhookTopic {
     customerData = 'customers/data_request',
     customerRedact = 'customers/redact',
     shopRedact = 'shop/redact',
+    checkoutsCreate = 'checkouts/create',
+    checkoutsUpdate = 'checkouts/update',
 }
 
 export const shopifyWebhookHeadersScheme = object().shape({
@@ -26,6 +28,6 @@ export const parseAndValidateShopifyWebhookHeaders = (shopifyRequestHeaders: any
     return parseAndValidateStrict<ShopifyWebhookHeaders>(
         headersLowerCased,
         shopifyWebhookHeadersScheme,
-        'Could not parse the Shopify webhook headers. Unknown Reason.',
+        'Could not parse the Shopify webhook headers. Unknown Reason.'
     );
 };

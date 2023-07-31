@@ -71,7 +71,11 @@ export const fetchAllProducts = async (merchant: Merchant): Promise<ProductNode[
 
         let resolveShopProductsResponse = parseAndValidateShopProductsResponse(response.data);
 
-        const products = resolveShopProductsResponse.data.products.edges.map((edge: any) => edge.node);
+        const products = resolveShopProductsResponse.data.products.edges.map((edge: any) => ({
+            id: edge.node.id.split('/').pop(),
+            title: edge.node.title,
+            handle: edge.node.handle,
+        }));
         allProducts.push(...products);
 
         hasNextPage = resolveShopProductsResponse.data.products.pageInfo.hasNextPage;

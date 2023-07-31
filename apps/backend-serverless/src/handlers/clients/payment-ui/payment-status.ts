@@ -5,6 +5,7 @@ import { parseAndValidatePaymentStatusRequest } from '../../../models/clients/pa
 import { MerchantService } from '../../../services/database/merchant-service.database.service.js';
 import { PaymentRecordService } from '../../../services/database/payment-record-service.database.service.js';
 import { createLoyaltyResponse } from '../../../utilities/clients/create-loyalty-response.utility.js';
+import { createPaymentProductNftsResponse } from '../../../utilities/clients/create-payment-product-nfts-response.js';
 import {
     createPaymentErrorResponse,
     createPaymentStatusResponse,
@@ -44,10 +45,12 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
                 parsedPaymentStatusQuery.language
             );
             const paymentErrorResponse = createPaymentErrorResponse(paymentRecord);
+            const productResponse = await createPaymentProductNftsResponse(paymentRecord, merchantService);
             const responseBodyData = {
                 paymentStatus: paymentStatusResponse,
                 error: paymentErrorResponse,
                 loyaltyDetails: loyaltyResponse,
+                productResponse: productResponse,
             };
 
             return {
