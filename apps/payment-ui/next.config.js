@@ -1,6 +1,16 @@
 // next.config.js
 const nextConfig = {
     reactStrictMode: false,
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'cdn.shopify.com',
+                port: '',
+                pathname: '/s/files/**',
+            },
+        ],
+    },
     exportPathMap: function () {
         return {
             '/': { page: '/' },

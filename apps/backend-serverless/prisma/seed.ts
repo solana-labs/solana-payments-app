@@ -142,7 +142,7 @@ function generateRefundRecords(paymentRecords: any[]): any[] {
 function generateProductRecords(count = 2): any[] {
     const records: any[] = [
         {
-            id: 'gid://shopify/Product/1',
+            id: '1',
             name: `Blue Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/files/Main.jpg?v=1690255438',
             merchantId: `merchant-${0}`,
@@ -150,7 +150,7 @@ function generateProductRecords(count = 2): any[] {
             mint: '4PoRgd3x1xW3UWn1rmsooLjmyk81BFKyF8CCLyCM5YJE',
         },
         {
-            id: 'gid://shopify/Product/2',
+            id: '2',
             name: `Purple Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/products/Main_5127218a-8f6c-498f-b489-09242c0fab0a.jpg?v=1690255438',
             merchantId: `merchant-${0}`,

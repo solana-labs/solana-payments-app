@@ -45,12 +45,12 @@ export const paymentStatus = Sentry.AWSLambda.wrapHandler(
                 parsedPaymentStatusQuery.language
             );
             const paymentErrorResponse = createPaymentErrorResponse(paymentRecord);
-            const productResponse = await createPaymentProductNftsResponse(paymentRecord, merchantService);
+            const productDetails = await createPaymentProductNftsResponse(paymentRecord, merchantService);
             const responseBodyData = {
                 paymentStatus: paymentStatusResponse,
                 error: paymentErrorResponse,
                 loyaltyDetails: loyaltyResponse,
-                productResponse: productResponse,
+                productDetails: productDetails.products,
             };
 
             return {

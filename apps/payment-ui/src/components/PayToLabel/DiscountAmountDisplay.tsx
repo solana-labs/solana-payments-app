@@ -4,6 +4,9 @@ interface Props {
     percentage: number;
 }
 export const DiscountAmountDisplay = (props: Props) => {
+    if (props.amount == 0) {
+        return <></>;
+    }
     return (
         <div className="flex flex-row w-full items-center justify-between">
             <div className="flex flex-row space-x-1">

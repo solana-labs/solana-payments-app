@@ -58,12 +58,15 @@ export interface PaymentDetailsState {
     paymentDetails: PaymentDetails | null;
     errorDetails: ErrorDetails | null;
     loyaltyDetails: LoyaltyDetails | null;
+    productDetails: Product[];
 }
 
 export interface PaymentDetailsResponse {
     paymentDetails: PaymentDetails | null;
     errorDetails: ErrorDetails | null;
+
     loyaltyDetails: LoyaltyDetails | null;
+    productDetails: Product[];
 }
 
 const initalState: PaymentDetailsState = {
@@ -72,6 +75,7 @@ const initalState: PaymentDetailsState = {
     paymentDetails: null,
     errorDetails: null,
     loyaltyDetails: null,
+    productDetails: [],
 };
 
 const paymentDetailsSlice = createSlice({
@@ -101,6 +105,7 @@ const paymentDetailsSlice = createSlice({
                     state.paymentDetails = action.payload.paymentDetails;
                     state.errorDetails = action.payload.errorDetails;
                     state.loyaltyDetails = action.payload.loyaltyDetails;
+                    state.productDetails = action.payload.productDetails;
                 }
             );
     },
@@ -126,6 +131,7 @@ export const getPaymentRedirectUrl = (state: RootState): string | null =>
     state.paymentDetails.paymentDetails?.redirectUrl ?? null;
 
 export const getLoyaltyDetails = (state: RootState): LoyaltyDetails | null => state.paymentDetails.loyaltyDetails;
+export const getProductDetails = (state: RootState): Product[] => state.paymentDetails.productDetails;
 
 export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
     'paymentDetails/fetchPaymentDetails',
@@ -143,10 +149,12 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
 
             const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
             const response = await axios.get(url);
+            console.log('got back the product detaisl', response.data.productDetails);
             return {
                 paymentDetails: response.data.paymentStatus,
                 errorDetails: response.data.error,
                 loyaltyDetails: response.data.loyaltyDetails,
+                productDetails: response.data.productDetails,
             };
         } catch (error) {
             return {
@@ -157,6 +165,7 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
                     errorRedirect: null,
                 },
                 loyaltyDetails: null,
+                productDetails: [],
             };
         }
     }
