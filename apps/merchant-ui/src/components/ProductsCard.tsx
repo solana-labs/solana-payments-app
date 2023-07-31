@@ -4,6 +4,8 @@ import * as RE from '@/lib/Result';
 import { Product, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
+import Image from 'next/image';
+import Router from 'next/router';
 import { Switch } from './ui/switch';
 
 interface Props {
@@ -22,7 +24,9 @@ export function ProductsCard(props: Props) {
         RE.isOk(merchantInfo) && merchantInfo.data.loyalty.products ? merchantInfo.data.loyalty.products : [];
 
     async function handleToggle(product: Product) {
-        const response = await updateLoyalty({
+        let response;
+
+        response = await updateLoyalty({
             products: {
                 id: product.id,
                 active: !product.active,
@@ -30,12 +34,7 @@ export function ProductsCard(props: Props) {
             payer: publicKey?.toBase58(),
         });
 
-        if (response.status != 200) {
-            toast({
-                title: `Error ${product.active ? 'deactivating' : 'activating'} NFTs`,
-                variant: 'destructive',
-            });
-        } else {
+        if (response.status === 200) {
             const data = await response.json();
             if (data.transaction) {
                 const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
@@ -46,6 +45,11 @@ export function ProductsCard(props: Props) {
             toast({
                 title: `Successfully ${product.active ? 'deactivated' : 'activated'} NFTs`,
                 variant: 'constructive',
+            });
+        } else {
+            toast({
+                title: `Error ${product.active ? 'deactivating' : 'activating'} NFTs`,
+                variant: 'destructive',
             });
         }
     }
@@ -61,8 +65,16 @@ export function ProductsCard(props: Props) {
             </TableHeader>
             <TableBody>
                 {products.map((product: Product) => (
-                    <TableRow key={product.id}>
-                        <TableCell>{product.image}</TableCell>
+                    <TableRow
+                        key={product.id}
+                        className={`h-20 ${product.mint && 'hover:cursor-pointer'}`}
+                        onClick={() =>
+                            product.mint && Router.push(`https://explorer.solana.com/address/${product.mint}`)
+                        }
+                    >
+                        <TableCell>
+                            {product.image && <Image src={product.image} alt={product.name} width={100} height={100} />}
+                        </TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell>
                             <Switch checked={product.active} onCheckedChange={() => handleToggle(product)} />

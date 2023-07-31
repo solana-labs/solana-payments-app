@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 export interface Product {
     id: string;
-    name?: string;
+    name: string;
     image?: string;
     active: boolean;
     mint?: string;
