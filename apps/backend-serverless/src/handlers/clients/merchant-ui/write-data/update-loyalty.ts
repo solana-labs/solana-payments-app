@@ -151,8 +151,8 @@ async function handleProductUpdate(
     let transaction;
     let newMintAddress;
 
-    if (product.mint == null) {
-        let response = await fetchManageProductsTransaction(product.name, gasKeypair, merchantAddress);
+    if (product.mint == null && product.image) {
+        let response = await fetchManageProductsTransaction(product.name, gasKeypair, merchantAddress, product.image);
         transaction = response.base;
         newMintAddress = response.mintAddress;
     }

@@ -5,7 +5,8 @@ import { Product, updateLoyalty, useMerchantStore } from '@/stores/merchantStore
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
-import Router from 'next/router';
+import { useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
 import { Switch } from './ui/switch';
 
 interface Props {
@@ -17,14 +18,26 @@ export function ProductsCard(props: Props) {
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
-    const { publicKey, sendTransaction, wallet, connect, disconnect, connected, wallets, select } = useWallet();
+    const { publicKey, sendTransaction } = useWallet();
+    const wallet = useWallet();
     const { connection } = useConnection();
 
     const products =
         RE.isOk(merchantInfo) && merchantInfo.data.loyalty.products ? merchantInfo.data.loyalty.products : [];
 
+    const [processingId, setProcessingId] = useState<string | null>(null);
+
     async function handleToggle(product: Product) {
+        if (!wallet) return;
+
+        setProcessingId(product.id);
         let response;
+
+        if (!product.mint) {
+            toast({
+                title: `About to upload and mint your unique product nft`,
+            });
+        }
 
         response = await updateLoyalty({
             products: {
@@ -52,6 +65,7 @@ export function ProductsCard(props: Props) {
                 variant: 'destructive',
             });
         }
+        setProcessingId(null);
     }
 
     return (
@@ -65,19 +79,24 @@ export function ProductsCard(props: Props) {
             </TableHeader>
             <TableBody>
                 {products.map((product: Product) => (
-                    <TableRow
-                        key={product.id}
-                        className={`h-20 ${product.mint && 'hover:cursor-pointer'}`}
-                        onClick={() =>
-                            product.mint && Router.push(`https://explorer.solana.com/address/${product.mint}`)
-                        }
-                    >
-                        <TableCell>
+                    <TableRow key={product.id} className={`h-20 ${product.mint && 'hover:cursor-pointer'} `}>
+                        <TableCell
+                            className=""
+                            onClick={() => product.mint && window.open(`https://solscan.io/token/${product.mint}`)}
+                        >
                             {product.image && <Image src={product.image} alt={product.name} width={100} height={100} />}
                         </TableCell>
-                        <TableCell>{product.name}</TableCell>
-                        <TableCell>
-                            <Switch checked={product.active} onCheckedChange={() => handleToggle(product)} />
+                        <TableCell className="">{product.name}</TableCell>
+                        <TableCell className="justify-center items-stretch">
+                            {processingId === product.id ? (
+                                <FaSpinner className="animate-spin h-6 w-6" />
+                            ) : (
+                                <Switch
+                                    checked={product.active}
+                                    onCheckedChange={() => handleToggle(product)}
+                                    disabled={processingId !== null}
+                                />
+                            )}
                         </TableCell>
                     </TableRow>
                 ))}

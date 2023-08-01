@@ -1,5 +1,6 @@
-import { GuestIdentityDriver, Metaplex } from '@metaplex-foundation/js';
+import { GuestIdentityDriver, Metaplex, bundlrStorage, keypairIdentity, toMetaplexFile } from '@metaplex-foundation/js';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import axios from 'axios';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 type TransactionData = {
@@ -10,7 +11,8 @@ type TransactionData = {
 export const fetchManageProductsTransaction = async (
     name: string,
     gasAddress: Keypair,
-    merchantAddress: PublicKey
+    merchantAddress: PublicKey,
+    image: string
 ): Promise<TransactionData> => {
     const heliusApiKey = process.env.HELIUS_API_KEY;
 
@@ -19,9 +21,9 @@ export const fetchManageProductsTransaction = async (
     }
 
     const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
-    let metaplex = Metaplex.make(connection);
+    let metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
 
-    const { nftBuilder, generatedMint } = await createNft(metaplex, gasAddress, name, merchantAddress);
+    const { nftBuilder, generatedMint } = await createNft(metaplex, gasAddress, name, merchantAddress, image);
 
     const latestBlockhash = await connection.getLatestBlockhash();
     const transaction = await nftBuilder.toTransaction(latestBlockhash);
@@ -43,17 +45,32 @@ const createNft = async (
     metaplex: Metaplex,
     gasAddress: Keypair,
     name: string,
-    merchantAddress: PublicKey
+    merchantAddress: PublicKey,
+    image: string
 ): Promise<NftBuilderData> => {
     let merchantIdentity = new GuestIdentityDriver(merchantAddress);
-    let gasIdentity = new GuestIdentityDriver(gasAddress.publicKey);
     let generatedMint = Keypair.generate();
+
+    const imageResponse = await axios.get(image, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+    console.log('2');
+    const file = toMetaplexFile(imageBuffer, name.replace(/\s/g, '_').toLowerCase() + '.jpg');
+
+    console.log('got file');
+    const uploadedMetadata = await metaplex.nfts().uploadMetadata({
+        name: name,
+        symbol: 'PRODUCT',
+        description: 'A unique nft for your unique item',
+        image: file,
+    });
+
+    console.log('uploaded metadata');
+
     let nftBuilder = await metaplex.nfts().builders().create(
         {
-            updateAuthority: gasIdentity,
-            mintAuthority: gasIdentity,
-            uri: 'https://arweave.net/9bMqZG9aCu9bCbilTQYuWCyDCCOXLdd6s5YalNDTn74',
+            uri: uploadedMetadata.uri,
             name: name,
+            symbol: 'PRODUCT',
             sellerFeeBasisPoints: 100,
             useNewMint: generatedMint,
         },

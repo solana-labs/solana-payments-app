@@ -257,6 +257,7 @@ functions:
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   update-loyalty:
     handler: src/handlers/clients/merchant-ui/write-data/update-loyalty.updateLoyalty
+    timeout: 60 # Increase the timeout to 60 seconds
     events:
       - httpApi:
           path: /update-loyalty
