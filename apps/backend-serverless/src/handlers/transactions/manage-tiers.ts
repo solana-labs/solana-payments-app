@@ -35,7 +35,6 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }
 
-        // TODO: create tier if not exist, update tier if exist
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchantService = new MerchantService(prisma);
@@ -50,9 +49,7 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
             let transaction;
             let mintAddress;
 
-            console.log('the entire params', tierSetupRequest);
             if (!id) {
-                console.log('in create tier');
                 // create new tier
                 let result = await fetchCreateTiersTransaction(
                     gasKeypair,
@@ -64,7 +61,6 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 transaction = result.base;
                 mintAddress = result.mintAddress;
             } else {
-                console.log('in update tier');
                 // update existing tier
                 let tier = await merchantService.getTier(id);
                 transaction = await fetchUpdateTiersTransaction(
@@ -98,27 +94,3 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
         rethrowAfterCapture: false,
     }
 );
-
-// async function handleTierUpdate(
-//     tiers: any,
-//     gasKeypair: Keypair,
-//     merchant: Merchant,
-//     merchantService: MerchantService,
-//     payer: string
-// ) {
-//     let tierDetails = tiers.id
-//         ? { ...((await merchantService.getTier(tiers.id)) || {}), ...filterUndefinedFields(tiers) }
-//         : tiers;
-//     const { mint, name, threshold, discount } = tierDetails;
-//     if (!name || !threshold || !discount || !payer) {
-//         throw new Error('Required tier details are missing');
-//     }
-
-//     const mintAddress = mint ? new PublicKey(mint) : undefined;
-//     const merchantAddress = new PublicKey(payer);
-
-//     if (mintAddress) {
-//         tierDetails.mint = mintAddress.toString();
-//         tierDetails.merchantId = merchant.id;
-//     }
-// }
