@@ -183,7 +183,7 @@ export function PointsCard(props: Props) {
         );
     } else {
         return (
-            <Card className="w-[400px]">
+            <Card className="">
                 <CardHeader>
                     <CardTitle>Manage Points Loyalty Program</CardTitle>
                     <CardDescription>Give back % of purchases to every customer</CardDescription>

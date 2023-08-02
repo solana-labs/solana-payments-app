@@ -47,20 +47,13 @@ export type ProductUpdate = {
     mint?: string;
 };
 
-export type TierCreate = {
+export type TierUpdate = {
+    id?: number;
     name: string;
     threshold: number;
     discount: number;
-    mint: string;
-    merchantId: string;
-};
-
-export type TierUpdate = {
-    id: number;
-    name?: string;
-    threshold?: number;
-    discount?: number;
     active?: boolean;
+    mint?: string;
 };
 
 export class MerchantService {
@@ -199,20 +192,17 @@ export class MerchantService {
         );
     }
 
-    async createTier(tier: TierCreate): Promise<Tier> {
-        return prismaErrorHandler(
-            this.prisma.tier.create({
-                data: tier,
-            })
-        );
-    }
-
-    async updateTier(tier: TierUpdate): Promise<Tier> {
+    async upsertTier(tier: TierUpdate, merchantId: string): Promise<Tier> {
+        const id = tier.id;
         const filteredUpdate = filterUndefinedFields(tier);
         return prismaErrorHandler(
-            this.prisma.tier.update({
-                where: { id: tier.id },
-                data: filteredUpdate,
+            this.prisma.tier.upsert({
+                where: { id: id },
+                update: filteredUpdate,
+                create: {
+                    ...tier,
+                    merchantId: merchantId,
+                },
             })
         );
     }

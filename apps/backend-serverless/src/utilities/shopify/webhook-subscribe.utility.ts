@@ -18,14 +18,23 @@ export async function createShopifyWebhook(props: Props) {
         },
     };
 
-    const config = {
-        headers: {
-            'X-Shopify-Access-Token': props.accessToken,
-        },
+    const headers = {
+        'X-Shopify-Access-Token': props.accessToken,
     };
 
     try {
-        const response = await axios.post(url, payload, config);
+        let response;
+        if (process.env.NODE_ENV === 'development') {
+            return;
+        } else {
+            response = await axios({
+                url,
+                method: 'POST',
+                data: payload,
+                headers: headers,
+            });
+        }
+
         return response.data;
     } catch (error) {
         console.error(error);

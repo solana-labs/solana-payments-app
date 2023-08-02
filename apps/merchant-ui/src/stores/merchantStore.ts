@@ -81,15 +81,12 @@ export const useMerchantStore = create<MerchantStore>(set => ({
     },
 }));
 
+const headers = {
+    'Content-Type': 'application/json',
+};
 export async function updateMerchant(field: string, value: string | boolean | number | object) {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    let response;
-
     try {
-        response = await fetch(API_ENDPOINTS.updateMerchant, {
+        return await fetch(API_ENDPOINTS.updateMerchant, {
             method: 'PUT',
             headers,
             body: JSON.stringify({ [field]: value }),
@@ -99,26 +96,46 @@ export async function updateMerchant(field: string, value: string | boolean | nu
         console.error('Failed to update merchant data', error);
         throw new Error('Failed to update merchant data');
     }
-    return response;
 }
 
-export async function updateLoyalty(updateLoyaltyRequest: object) {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    let response;
-
+export async function updateLoyalty(body: object) {
     try {
-        response = await fetch(API_ENDPOINTS.updateLoyalty, {
+        return await fetch(API_ENDPOINTS.updateLoyalty, {
             method: 'PUT',
             headers,
-            body: JSON.stringify(updateLoyaltyRequest),
+            body: JSON.stringify(body),
             credentials: 'include',
         });
     } catch (error) {
         console.error('Failed to update loyalty data', error);
         throw new Error('Failed to update loyalty data');
     }
-    return response;
+}
+
+export async function manageTiers(body: object) {
+    try {
+        return await fetch(API_ENDPOINTS.manageTiers, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+    } catch (error) {
+        console.error('Failed to update tier data', error);
+        throw new Error('Failed to update tier data');
+    }
+}
+
+export async function manageProducts(body: object) {
+    try {
+        return await fetch(API_ENDPOINTS.manageProducts, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+    } catch (error) {
+        console.error('Failed to update tier data', error);
+        throw new Error('Failed to update tier data');
+    }
 }
