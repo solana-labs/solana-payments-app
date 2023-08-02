@@ -2,7 +2,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Tier, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { Tier, manageTiers, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import { useState } from 'react';
@@ -61,13 +61,9 @@ export function TiersCard(props: Props) {
                 variant: 'constructive',
             });
         } else {
-            const response = await updateLoyalty({
-                tiers: {
-                    id: tierId,
-                    name: editingTier.name,
-                    threshold: editingTier.threshold,
-                    discount: editingTier.discount,
-                },
+            const response = await manageTiers({
+                id: tierId,
+                ...editingTier,
                 payer: publicKey?.toBase58(),
             });
 
@@ -78,6 +74,7 @@ export function TiersCard(props: Props) {
                 });
             } else {
                 const data = await response.json();
+                console.log('data', data);
                 const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
 
                 await sendTransaction(transaction, connection);
@@ -98,10 +95,9 @@ export function TiersCard(props: Props) {
             return;
         }
 
-        const response = await updateLoyalty({
-            tiers: {
-                ...newTier,
-            },
+        // ...newTier,
+        const response = await manageTiers({
+            ...newTier,
             payer: publicKey?.toBase58(),
         });
 
@@ -114,6 +110,8 @@ export function TiersCard(props: Props) {
         } else {
             const data = await response.json();
 
+            console.log('data', data);
+
             const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
             await sendTransaction(transaction, connection);
 
@@ -124,11 +122,11 @@ export function TiersCard(props: Props) {
         }
 
         await getMerchantInfo();
-        setNewTier({
-            name: undefined,
-            threshold: undefined,
-            discount: undefined,
-        });
+        // setNewTier({
+        //     name: undefined,
+        //     threshold: undefined,
+        //     discount: undefined,
+        // });
     }
 
     async function handleToggle(tierId: number) {
