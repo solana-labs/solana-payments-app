@@ -26,17 +26,6 @@ export async function createShopifyWebhook(props: Props) {
         let response;
         if (process.env.NODE_ENV === 'development') {
             return;
-            // const agent = new https.Agent({
-            //     rejectUnauthorized: false,
-            // });
-
-            // response = await axios({
-            //     url,
-            //     method: 'POST',
-            //     data: payload,
-            //     headers,
-            //     httpsAgent: agent,
-            // });
         } else {
             response = await axios({
                 url,

@@ -1,6 +1,11 @@
-import { InferType, boolean, number, object, string } from 'yup';
+import { InferType, Schema, boolean, number, object, string } from 'yup';
 import { parseAndValidateStrict } from '../../../utilities/yup.utility.js';
-import { publicKeySchema } from '../../public-key-schema.model.js';
+
+function whenNoObject<T extends Schema<any>>(schema: T, name: string): T {
+    return schema.when(name, ([val], schema) => {
+        return val === undefined ? schema.optional() : schema.required();
+    });
+}
 
 export const updateLoyaltyRequestBodySchema = object().shape({
     loyaltyProgram: string().oneOf(['points', 'tiers', 'none']).optional(),
@@ -8,22 +13,19 @@ export const updateLoyaltyRequestBodySchema = object().shape({
         mint: string().optional(),
         back: number().optional(),
     }),
-    tiers: object()
-        .shape({
-            id: number().optional(),
-            name: string().optional(),
-            threshold: number().optional(),
-            discount: number().optional(),
-            active: boolean().optional(),
-        })
-        .optional(),
-    products: object()
-        .shape({
-            id: string().optional(),
-            active: boolean().optional(),
-        })
-        .optional(),
-    payer: publicKeySchema.optional(),
+    tiers: object().shape({
+        id: number().optional(),
+        name: whenNoObject(string(), '$tiers'),
+        threshold: whenNoObject(number(), '$tiers'),
+        discount: whenNoObject(number(), '$tiers'),
+        active: boolean().optional(),
+        mint: string().optional(),
+    }),
+    products: object().shape({
+        id: whenNoObject(string(), '$products'),
+        mint: string().optional(),
+        active: boolean().optional(),
+    }),
 });
 
 export type UpdateLoyaltyRequest = InferType<typeof updateLoyaltyRequestBodySchema>;
@@ -32,6 +34,7 @@ export const parseAndValidateUpdateLoyaltyRequestBody = (updateLoyaltyRequestBod
     return parseAndValidateStrict(
         updateLoyaltyRequestBody,
         updateLoyaltyRequestBodySchema,
-        'Could not parse the update loyalty request body. Unknown Reason.'
+        'Could not parse the update loyalty request body. Unknown Reason.',
+        updateLoyaltyRequestBody
     );
 };

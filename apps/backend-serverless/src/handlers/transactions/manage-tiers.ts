@@ -39,7 +39,6 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchantService = new MerchantService(prisma);
-            console.log('in setup', event.body);
             const tierSetupRequest: TierSetupRequest = parseAndValidateTierSetupRequestBody(JSON.parse(event.body));
 
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
@@ -81,7 +80,7 @@ export const tiersSetupTransaction = Sentry.AWSLambda.wrapHandler(
             return {
                 statusCode: 200,
                 body: JSON.stringify({
-                    transaction: transaction,
+                    ...(transaction && { transaction }),
                     ...(mintAddress && { mintAddress: mintAddress.toBase58() }),
                     message: 'tier nft management',
                 }),

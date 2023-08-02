@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Product, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { Product, manageProducts, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
@@ -39,11 +39,8 @@ export function ProductsCard(props: Props) {
             });
         }
 
-        response = await updateLoyalty({
-            products: {
-                id: product.id,
-                active: !product.active,
-            },
+        response = await manageProducts({
+            id: product.id,
             payer: publicKey?.toBase58(),
         });
 
@@ -55,6 +52,14 @@ export function ProductsCard(props: Props) {
                 await sendTransaction(transaction, connection);
             }
             await getMerchantInfo();
+
+            response = await updateLoyalty({
+                products: {
+                    id: product.id,
+                    active: !product.active,
+                },
+                payer: publicKey?.toBase58(),
+            });
             toast({
                 title: `Successfully ${product.active ? 'deactivated' : 'activated'} NFTs`,
                 variant: 'constructive',

@@ -173,7 +173,7 @@ function generateTierRecords(count = 2): any[] {
     const records: any[] = [
         {
             name: `Tier 0`,
-            threshold: 1000,
+            threshold: 100,
             discount: 10,
             merchantId: `merchant-${0}`,
             active: true,
@@ -181,16 +181,16 @@ function generateTierRecords(count = 2): any[] {
         },
     ];
 
-    for (let i = 1; i < count; i++) {
-        let record = {
-            name: `Tier ${i}`,
-            threshold: 100 * (i + 1),
-            discount: 10 * (i + 1),
-            merchantId: `merchant-${0}`,
-            active: false,
-        };
-        records.push(record);
-    }
+    // for (let i = 1; i < count; i++) {
+    //     let record = {
+    //         name: `Tier ${i}`,
+    //         threshold: 100 * (i + 1),
+    //         discount: 10 * (i + 1),
+    //         merchantId: `merchant-${0}`,
+    //         active: false,
+    //     };
+    //     records.push(record);
+    // }
     return records;
 }
 

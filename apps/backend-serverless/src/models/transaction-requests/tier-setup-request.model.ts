@@ -2,7 +2,6 @@ import { InferType, Schema, number, object, string } from 'yup';
 import { parseAndValidateStrict } from '../../utilities/yup.utility.js';
 import { publicKeySchema } from '../public-key-schema.model.js';
 
-// Create a helper function for conditional validation
 function whenNoId<T extends Schema<any>>(schema: T): T {
     return schema.when('id', ([id], schema) => {
         return id === undefined ? schema.required() : schema.optional();

@@ -180,7 +180,7 @@ model Tier {
   name       String
   threshold  Float
   discount   Float
-  active     Boolean  @default(true)
+  active     Boolean  @default(false)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId String
   mint       String?

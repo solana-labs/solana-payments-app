@@ -98,12 +98,12 @@ export async function updateMerchant(field: string, value: string | boolean | nu
     }
 }
 
-export async function updateLoyalty(updateLoyaltyRequest: object) {
+export async function updateLoyalty(body: object) {
     try {
         return await fetch(API_ENDPOINTS.updateLoyalty, {
             method: 'PUT',
             headers,
-            body: JSON.stringify(updateLoyaltyRequest),
+            body: JSON.stringify(body),
             credentials: 'include',
         });
     } catch (error) {
@@ -112,13 +112,26 @@ export async function updateLoyalty(updateLoyaltyRequest: object) {
     }
 }
 
-export async function manageTiers(manageTiersRequest: object) {
-    console.log('about to manage', API_ENDPOINTS.manageTiers, manageTiersRequest);
+export async function manageTiers(body: object) {
     try {
         return await fetch(API_ENDPOINTS.manageTiers, {
             method: 'POST',
             headers,
-            body: JSON.stringify(manageTiersRequest),
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+    } catch (error) {
+        console.error('Failed to update tier data', error);
+        throw new Error('Failed to update tier data');
+    }
+}
+
+export async function manageProducts(body: object) {
+    try {
+        return await fetch(API_ENDPOINTS.manageProducts, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
             credentials: 'include',
         });
     } catch (error) {

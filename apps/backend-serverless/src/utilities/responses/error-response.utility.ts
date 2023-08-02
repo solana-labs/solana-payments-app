@@ -75,6 +75,7 @@ export const createErrorResponse = async (error: unknown) => {
         message = 'Unknown error. Please contact support.';
     }
 
+    console.log('error', error);
     Sentry.captureException(error, {
         extra: {
             message,

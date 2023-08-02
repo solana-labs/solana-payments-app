@@ -17,10 +17,10 @@ export const parseAndValidate = <T>(data: unknown, schema: AnySchema, errorMessa
     return parsedData;
 };
 
-export const parseAndValidateStrict = <T>(data: unknown, schema: AnySchema, errorMessage: string): T => {
+export const parseAndValidateStrict = <T>(data: unknown, schema: AnySchema, errorMessage: string, context?: any): T => {
     let parsedData: T;
     try {
-        schema.validateSync(data, { strict: true });
+        schema.validateSync(data, { strict: true, ...(context ? { context } : {}) });
         parsedData = schema.cast(data) as T;
     } catch (error) {
         if (error instanceof Error) {

@@ -1,15 +1,10 @@
-import { Merchant, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
-import { Keypair, PublicKey } from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../../../errors/invalid-input.error.js';
 import { parseAndValidateUpdateLoyaltyRequestBody } from '../../../../models/clients/merchant-ui/update-loyalty-request.model.js';
 import { MerchantService } from '../../../../services/database/merchant-service.database.service.js';
-import { fetchGasKeypair } from '../../../../services/fetch-gas-keypair.service.js';
-import { fetchManageProductsTransaction } from '../../../../services/transaction-request/fetch-manage-products-transaction.service.js';
-import { fetchManageTiersTransaction } from '../../../../services/transaction-request/fetch-manage-tiers-transaction.service.js';
 import { withAuth } from '../../../../utilities/clients/token-authenticate.utility.js';
-import { filterUndefinedFields } from '../../../../utilities/database/filter-underfined-fields.utility.js';
 import { createErrorResponse } from '../../../../utilities/responses/error-response.utility.js';
 
 const prisma = new PrismaClient();
@@ -38,40 +33,43 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
 
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
-            const { tiers, products, payer, points, loyaltyProgram } = updateLoyaltyRequest;
+            const { tiers, products, points, loyaltyProgram } = updateLoyaltyRequest;
 
-            const merchantUpdateQuery = {
-                ...(loyaltyProgram && { loyaltyProgram: loyaltyProgram }),
-                ...(points?.mint && { pointsMint: points.mint }),
-                ...(points?.back && { pointsBack: points.back }),
-            };
+            if (loyaltyProgram) {
+                await merchantService.updateMerchant(merchant, { loyaltyProgram: loyaltyProgram });
+            }
 
-            if (Object.keys(merchantUpdateQuery).length > 0) {
+            if (Object.keys(points).length > 0) {
+                const merchantUpdateQuery = {
+                    ...(points?.mint && { pointsMint: points.mint }),
+                    ...(points?.back && { pointsBack: points.back }),
+                };
                 await merchantService.updateMerchant(merchant, merchantUpdateQuery);
-                return createSuccessResponse();
             }
 
-            let gasKeypair = await fetchGasKeypair();
-
-            if (!payer) {
-                throw new Error('payer is missing');
-            }
-            if (tiers && Object.values(tiers).length > 0) {
-                const tierUpdateResponse = await handleTierUpdate(tiers, gasKeypair, merchant, merchantService, payer);
-                return createSuccessResponse(tierUpdateResponse);
+            if (Object.keys(tiers).length > 0) {
+                // @ts-ignore
+                await merchantService.upsertTier(tiers, merchant.id);
             }
 
-            if (products && Object.values(products).length > 0) {
-                const productUpdateResponse = await handleProductUpdate(
-                    products,
-                    gasKeypair,
-                    merchant,
-                    merchantService,
-                    payer
-                );
-                return createSuccessResponse(productUpdateResponse);
+            if (Object.keys(products).length > 0) {
+                if (products.id == undefined) {
+                    throw new InvalidInputError('product id is required');
+                }
+                // @ts-ignore
+                await merchantService.updateProduct({
+                    ...products,
+                });
             }
-            return createSuccessResponse();
+
+            return {
+                statusCode: 200,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                    'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+                },
+            };
         } catch (error) {
             return createErrorResponse(error);
         }
@@ -80,92 +78,3 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
         rethrowAfterCapture: false,
     }
 );
-
-async function handleTierUpdate(
-    tiers: any,
-    gasKeypair: Keypair,
-    merchant: Merchant,
-    merchantService: MerchantService,
-    payer: string
-) {
-    let tierDetails = tiers.id
-        ? { ...((await merchantService.getTier(tiers.id)) || {}), ...filterUndefinedFields(tiers) }
-        : tiers;
-    const { mint, name, threshold, discount } = tierDetails;
-    if (!name || !threshold || !discount || !payer) {
-        throw new Error('Required tier details are missing');
-    }
-
-    const mintAddress = mint ? new PublicKey(mint) : undefined;
-    const merchantAddress = new PublicKey(payer);
-
-    const { base: transaction, mintAddress: newMintAddress } = await fetchManageTiersTransaction(
-        name,
-        threshold,
-        discount,
-        gasKeypair,
-        merchantAddress,
-        mintAddress
-    );
-
-    if (newMintAddress) {
-        tierDetails.mint = newMintAddress.toString();
-        tierDetails.merchantId = merchant.id;
-    }
-
-    if (tiers.id) {
-        await merchantService.updateTier(tierDetails);
-    } else {
-        await merchantService.createTier(tierDetails);
-    }
-
-    return {
-        transaction,
-        mintAddress: newMintAddress?.toString(),
-        message: 'tier nft management',
-    };
-}
-
-function createSuccessResponse(body: any = {}): APIGatewayProxyResultV2 {
-    return {
-        statusCode: 200,
-        body: JSON.stringify(body),
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
-            'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
-        },
-    };
-}
-
-async function handleProductUpdate(
-    products: any,
-    gasKeypair: Keypair,
-    merchant: Merchant,
-    merchantService: MerchantService,
-    payer: string
-) {
-    let product = await merchantService.getProduct(products.id);
-    const merchantAddress = new PublicKey(payer);
-
-    let transaction;
-    let newMintAddress;
-
-    if (product.mint == null && product.image) {
-        let response = await fetchManageProductsTransaction(product.name, gasKeypair, merchantAddress, product.image);
-        transaction = response.base;
-        newMintAddress = response.mintAddress;
-    }
-
-    await merchantService.updateProduct({
-        id: product.id,
-        mint: newMintAddress?.toString(),
-        active: products.active,
-    });
-
-    return {
-        transaction,
-        mintAddress: newMintAddress?.toString(),
-        message: 'product nft management',
-    };
-}

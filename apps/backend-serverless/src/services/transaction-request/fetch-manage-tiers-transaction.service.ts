@@ -57,7 +57,7 @@ export const fetchUpdateTiersTransaction = async (
     name: string,
     discount: number,
     threshold: number
-): Promise<string> => {
+): Promise<string | null> => {
     const heliusApiKey = process.env.HELIUS_API_KEY;
 
     if (heliusApiKey == null) {
@@ -75,6 +75,10 @@ export const fetchUpdateTiersTransaction = async (
         ...(nft.sellerFeeBasisPoints !== discount && { sellerFeeBasisPoints: discount }),
         ...(nft.symbol !== threshold.toString() && { symbol: threshold.toString() }),
     };
+
+    if (Object.keys(updatedFields).length === 0) {
+        return null;
+    }
 
     let nftBuilder = await metaplex
         .nfts()

@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { Tier, manageTiers, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { Link } from '@carbon/icons-react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import { useState } from 'react';
@@ -44,6 +45,7 @@ export function TiersCard(props: Props) {
     const tiers = RE.isOk(merchantInfo) && merchantInfo.data.loyalty.tiers ? merchantInfo.data.loyalty.tiers : [];
 
     const { toast } = useToast();
+    let response;
 
     async function handleSave(tierId: number) {
         const tier = tiers.find(t => t.id === tierId);
@@ -61,7 +63,7 @@ export function TiersCard(props: Props) {
                 variant: 'constructive',
             });
         } else {
-            const response = await manageTiers({
+            response = await manageTiers({
                 id: tierId,
                 ...editingTier,
                 payer: publicKey?.toBase58(),
@@ -73,15 +75,24 @@ export function TiersCard(props: Props) {
                     variant: 'destructive',
                 });
             } else {
-                const data = await response.json();
-                console.log('data', data);
-                const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
-
-                await sendTransaction(transaction, connection);
-                await getMerchantInfo();
+                let data = await response.json();
+                if (data.transaction) {
+                    const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
+                    await sendTransaction(transaction, connection);
+                    await getMerchantInfo();
+                }
                 toast({
                     title: 'Successfully Saved Changes',
                     variant: 'constructive',
+                });
+
+                response = await updateLoyalty({
+                    loyaltyProgram: 'tiers',
+                    tiers: {
+                        id: tierId,
+                        ...editingTier,
+                        ...(data.mintAddress && { mint: data.mintAddress }),
+                    },
                 });
             }
         }
@@ -95,7 +106,6 @@ export function TiersCard(props: Props) {
             return;
         }
 
-        // ...newTier,
         const response = await manageTiers({
             ...newTier,
             payer: publicKey?.toBase58(),
@@ -110,8 +120,6 @@ export function TiersCard(props: Props) {
         } else {
             const data = await response.json();
 
-            console.log('data', data);
-
             const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
             await sendTransaction(transaction, connection);
 
@@ -122,11 +130,11 @@ export function TiersCard(props: Props) {
         }
 
         await getMerchantInfo();
-        // setNewTier({
-        //     name: undefined,
-        //     threshold: undefined,
-        //     discount: undefined,
-        // });
+        setNewTier({
+            name: undefined,
+            threshold: undefined,
+            discount: undefined,
+        });
     }
 
     async function handleToggle(tierId: number) {
@@ -138,7 +146,7 @@ export function TiersCard(props: Props) {
 
         await updateLoyalty({
             tiers: {
-                id: tierId,
+                ...tier,
                 active: !tier.active,
             },
             payer: publicKey?.toBase58(),
@@ -146,7 +154,7 @@ export function TiersCard(props: Props) {
 
         await getMerchantInfo();
         toast({
-            title: 'Successfully Saved Changes',
+            title: `Successfully ${!tier.active ? 'activated' : 'deactivated'} Tier`,
             variant: 'constructive',
         });
     }
@@ -220,6 +228,7 @@ export function TiersCard(props: Props) {
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow>
+                            <TableHead></TableHead>
                             <TableHead>Tier</TableHead>
                             <TableHead>$ Threshold</TableHead>
                             <TableHead>% Back</TableHead>
@@ -231,6 +240,14 @@ export function TiersCard(props: Props) {
                             .sort((a, b) => b.threshold - a.threshold)
                             .map((tier: Tier) => (
                                 <TableRow key={tier.id}>
+                                    <TableCell
+                                        className=""
+                                        onClick={() =>
+                                            tier.mint && window.open(`https://solscan.io/token/${tier.mint}`)
+                                        }
+                                    >
+                                        <Link />
+                                    </TableCell>
                                     <TableCell>
                                         {editing === tier.id ? (
                                             <Input
@@ -303,6 +320,7 @@ export function TiersCard(props: Props) {
                                 </TableRow>
                             ))}
                         <TableRow>
+                            <TableCell></TableCell>
                             <TableCell>
                                 <Input
                                     value={newTier.name ? newTier.name : ''}
