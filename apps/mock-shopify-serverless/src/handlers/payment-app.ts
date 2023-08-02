@@ -16,7 +16,7 @@ export const paymentApp = async (event: APIGatewayProxyEventV2): Promise<APIGate
         data = {
             paymentsAppConfigure: {
                 paymentsAppConfiguration: {
-                    externalHandle: 'merchant-0',
+                    externalHandle: 'GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof',
                     ready: true,
                 },
                 userErrors: [],
