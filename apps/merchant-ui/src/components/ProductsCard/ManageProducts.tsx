@@ -7,13 +7,13 @@ import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';
-import { Switch } from './ui/switch';
+import { Switch } from '../ui/switch';
 
 interface Props {
     className?: string;
 }
 
-export function ProductsCard(props: Props) {
+export function ManageProducts(props: Props) {
     const { toast } = useToast();
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
