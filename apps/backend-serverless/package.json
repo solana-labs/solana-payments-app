@@ -41,11 +41,14 @@
     "license": "ISC",
     "dependencies": {
         "@metaplex-foundation/js": "^0.19.4",
+        "@metaplex-foundation/mpl-bubblegum": "^0.7.0",
+        "@metaplex-foundation/mpl-token-metadata": "^2.12.0",
         "@prisma/client": "^4.13.0",
         "@project-serum/anchor": "^0.26.0",
         "@sentry/node": "^7.51.2",
         "@sentry/serverless": "^7.60.0",
         "@sentry/tracing": "^7.51.2",
+        "@solana/spl-account-compression": "^0.1.8",
         "@solana/spl-token": "^0.3.7",
         "@solana/web3.js": "^1.77.3",
         "@types/jsonwebtoken": "^9.0.2",
@@ -59,6 +62,7 @@
         "lodash": "^4.17.21",
         "node-fetch": "^3.3.1",
         "prisma": "^4.13.0",
+        "ts-node": "^10.9.1",
         "yup": "1.2.0"
     },
     "devDependencies": {
