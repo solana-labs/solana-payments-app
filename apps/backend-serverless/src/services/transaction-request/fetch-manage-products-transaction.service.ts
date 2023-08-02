@@ -23,31 +23,6 @@ export const fetchManageProductsTransaction = async (
     const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
     let metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
 
-    const { nftBuilder, generatedMint } = await createNft(metaplex, gasAddress, name, merchantAddress, image);
-
-    const latestBlockhash = await connection.getLatestBlockhash();
-    const transaction = await nftBuilder.toTransaction(latestBlockhash);
-
-    transaction.partialSign(gasAddress);
-    transaction.partialSign(generatedMint);
-
-    let base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
-
-    return { base, mintAddress: generatedMint?.publicKey };
-};
-
-type NftBuilderData = {
-    nftBuilder: any; // replace with actual type
-    generatedMint: Keypair;
-};
-
-const createNft = async (
-    metaplex: Metaplex,
-    gasAddress: Keypair,
-    name: string,
-    merchantAddress: PublicKey,
-    image: string
-): Promise<NftBuilderData> => {
     let merchantIdentity = new GuestIdentityDriver(merchantAddress);
     let generatedMint = Keypair.generate();
 
@@ -76,5 +51,14 @@ const createNft = async (
         },
         { payer: merchantIdentity }
     );
-    return { nftBuilder, generatedMint };
+
+    const latestBlockhash = await connection.getLatestBlockhash();
+    const transaction = await nftBuilder.toTransaction(latestBlockhash);
+
+    transaction.partialSign(gasAddress);
+    transaction.partialSign(generatedMint);
+
+    let base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+
+    return { base, mintAddress: generatedMint?.publicKey };
 };
