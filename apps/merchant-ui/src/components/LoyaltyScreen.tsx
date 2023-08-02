@@ -25,6 +25,12 @@ export function LoyaltyScreen(props: Props) {
         return null;
     }
 
+    const tabs = [
+        { value: 'points', component: <PointsCard />, label: 'Points' },
+        { value: 'tiers', component: <TiersCard />, label: 'Tiers' },
+        { value: 'items', component: <ProductsCard />, label: 'Items' },
+    ];
+
     return (
         <DefaultLayoutContent className={props.className}>
             <DefaultLayoutScreenTitle className="hidden md:block">Loyalty Program</DefaultLayoutScreenTitle>
@@ -46,25 +52,19 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="tiers" className="flex flex-col items-center w-[400px] ">
+                    <Tabs defaultValue="tiers" className="flex flex-col items-center w-[700px] justify-center">
                         <div className="flex flex-row space-x-2">
-                            <TabsList>
-                                <TabsTrigger value="points">Points</TabsTrigger>
-                                <TabsTrigger value="tiers">Tiers</TabsTrigger>
-                            </TabsList>
-                            <TabsList>
-                                <TabsTrigger value="items">Items</TabsTrigger>
-                            </TabsList>
+                            {tabs.map(tab => (
+                                <TabsList key={tab.value}>
+                                    <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
+                                </TabsList>
+                            ))}
                         </div>
-                        <TabsContent value="points" className="w-full">
-                            <PointsCard />
-                        </TabsContent>
-                        <TabsContent value="tiers" className="w-full">
-                            <TiersCard />
-                        </TabsContent>
-                        <TabsContent value="items" className="w-full">
-                            <ProductsCard />
-                        </TabsContent>
+                        {tabs.map(tab => (
+                            <TabsContent key={tab.value} value={tab.value} className="w-full flex justify-center">
+                                {tab.component}
+                            </TabsContent>
+                        ))}
                     </Tabs>
                 )}
             </div>
