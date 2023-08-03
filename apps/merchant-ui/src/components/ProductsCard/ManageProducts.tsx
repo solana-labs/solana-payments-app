@@ -1,12 +1,15 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Product, manageProducts, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { Product, useLoyaltyStore, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
 import { Switch } from '../ui/switch';
+import { CustomerViewTable } from './CustomerViewTable';
+import { ProductViewTable } from './ProductViewTable';
 
 interface Props {
     className?: string;
@@ -17,14 +20,30 @@ export function ManageProducts(props: Props) {
 
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
+    const loyaltyData = useLoyaltyStore(state => state.loyaltyData);
+    const getLoyaltyData = useLoyaltyStore(state => state.getLoyaltyData);
     const { publicKey, sendTransaction } = useWallet();
     const wallet = useWallet();
     const { connection } = useConnection();
+
+    const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
     const products =
         RE.isOk(merchantInfo) && merchantInfo.data.loyalty.products ? merchantInfo.data.loyalty.products : [];
 
     const [processingId, setProcessingId] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchLoyaltyData() {
+            try {
+                await getLoyaltyData();
+                console.log('loyalty after use effec', merchantInfo);
+            } catch (error) {
+                console.log('error fetching merchant info', error);
+            }
+        }
+        fetchLoyaltyData();
+    }, []);
 
     async function handleToggle(product: Product) {
         if (!wallet) return;
@@ -68,40 +87,64 @@ export function ManageProducts(props: Props) {
         }
         setProcessingId(null);
     }
+    console.log('loyalty data', loyaltyData.data);
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow className="w-full">
-                    <TableHead></TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>NFT Enabled</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {products.map((product: Product) => (
-                    <TableRow key={product.id} className={`h-20  `}>
-                        <TableCell
-                            className=""
-                            // onClick={() => product.mint && window.open(`https://solscan.io/token/${product.mint}`)}
-                        >
-                            {product.image && <Image src={product.image} alt={product.name} width={100} height={100} />}
-                        </TableCell>
-                        <TableCell className="">{product.name}</TableCell>
-                        <TableCell className="justify-center items-stretch">
-                            {processingId === product.id ? (
-                                <FaSpinner className="animate-spin h-6 w-6" />
-                            ) : (
-                                <Switch
-                                    checked={product.active}
-                                    onCheckedChange={() => handleToggle(product)}
-                                    disabled={processingId !== null}
-                                />
-                            )}
-                        </TableCell>
+        <div className="w-full">
+            <Table>
+                <TableHeader>
+                    <TableRow className="w-full">
+                        <TableHead></TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>NFT Enabled</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {products.map((product: Product) => (
+                        <TableRow key={product.id} className={`h-20  `}>
+                            <TableCell
+                                className=""
+                                onClick={() => {
+                                    product.uri && product.uri != selectedProduct
+                                        ? setSelectedProduct(product.uri)
+                                        : setSelectedProduct(null);
+                                }}
+                            >
+                                {product.image && (
+                                    <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        width={100}
+                                        height={100}
+                                        className={twMerge(
+                                            product.uri &&
+                                                selectedProduct === product.uri &&
+                                                `border border-2 border-red-500`
+                                        )}
+                                    />
+                                )}
+                            </TableCell>
+                            <TableCell className="">{product.name}</TableCell>
+                            <TableCell className="justify-center items-stretch">
+                                {processingId === product.id ? (
+                                    <FaSpinner className="animate-spin h-6 w-6" />
+                                ) : (
+                                    <Switch
+                                        checked={product.active}
+                                        onCheckedChange={() => handleToggle(product)}
+                                        disabled={processingId !== null}
+                                    />
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            {RE.isOk(loyaltyData) && loyaltyData.data && (
+                <>
+                    {selectedProduct == null ? <CustomerViewTable /> : <ProductViewTable productId={selectedProduct} />}
+                </>
+            )}
+        </div>
     );
 }

@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     paymentData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment-data`,
     updateMerchant: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-merchant`,
     updateLoyalty: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-loyalty`,
+    loyaltyData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/loyalty-data`,
     manageTiers: `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage-tiers`,
     manageProducts: `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage-products`,
 };

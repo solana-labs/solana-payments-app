@@ -32,6 +32,33 @@ export interface LoyaltyDetails {
     tiers: Tier[];
 }
 
+interface ProductDetail {
+    id: string;
+    name: string;
+    image: string;
+    description: string;
+    creators: string[];
+    count: number; // Add this line
+}
+
+interface ProductView {
+    productDetails: ProductDetail;
+    owners: string[];
+}
+
+interface CustomerView extends Array<ProductDetail> {}
+
+interface ProductsNftResponse {
+    count: number;
+    owners: string[];
+    productView: Record<string, ProductView>;
+    customerView: Record<string, CustomerView>;
+}
+
+interface LoyaltyInfo {
+    productNfts: ProductsNftResponse;
+}
+
 interface MerchantInfo {
     shop: string;
     name: string;
@@ -51,12 +78,42 @@ type MerchantStore = {
     getMerchantInfo: () => Promise<void>;
 };
 
+type LoyaltyStore = {
+    loyaltyData: RE.Result<LoyaltyInfo>;
+    getLoyaltyData: () => Promise<void>;
+};
+
+export const useLoyaltyStore = create<LoyaltyStore>(set => ({
+    loyaltyData: RE.pending(),
+    getLoyaltyData: async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.loyaltyData, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const loyaltyData = await response.json();
+            console.log('got back json', loyaltyData);
+            console.log('does product nfts exist', loyaltyData.productNfts);
+
+            set({
+                loyaltyData: RE.ok({
+                    productNfts: loyaltyData.productNfts,
+                }),
+            });
+        } catch (error) {
+            console.log('Failed to fetch loyalty info', error);
+            set({ loyaltyData: RE.failed(new Error('Failed to fetch loyalty info')) });
+        }
+    },
+}));
+
 export const useMerchantStore = create<MerchantStore>(set => ({
     merchantInfo: RE.pending(),
 
     getMerchantInfo: async () => {
         try {
             const response = await fetch(API_ENDPOINTS.merchantData, {
+                method: 'GET',
                 credentials: 'include',
             });
             const merchantJson = await response.json();
@@ -77,6 +134,7 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                 }),
             });
         } catch (error) {
+            console.log('Failed to fetch merchant info', error);
             set({ merchantInfo: RE.failed(new Error('Failed to fetch merchant info')) });
         }
     },
