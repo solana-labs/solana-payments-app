@@ -7,7 +7,7 @@ export interface Product {
     name: string;
     image?: string;
     active: boolean;
-    mint?: string;
+    uri?: string;
     merchantId: string;
 }
 

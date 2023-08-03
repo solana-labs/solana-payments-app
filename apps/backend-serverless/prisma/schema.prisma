@@ -178,7 +178,7 @@ model Product {
   active     Boolean  @default(false)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId String
-  mint       String?
+  uri        String?
 
   @@index(merchantId)
 }

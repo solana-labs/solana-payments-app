@@ -31,6 +31,7 @@ import {
     getMinimumBalanceForRentExemptMint,
 } from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
+import axios from 'axios';
 import crypto from 'crypto';
 import Jimp from 'jimp';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
@@ -194,16 +195,16 @@ export async function setupCollection(
 
     const metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
 
-    // const uploadedMetadata = await metaplex.nfts().uploadMetadata({
-    //     name,
-    //     symbol,
-    //     description: shopName + ' product collection metadat',
-    //     image: file,
-    // });
+    const uploadedMetadata = await metaplex.nfts().uploadMetadata({
+        name,
+        symbol,
+        description: shopName + ' product collection metadat',
+        image: file,
+    });
 
-    // console.log('URI', uploadedMetadata.uri);
-    // let uri = uploadedMetadata.uri;
-    let uri = 'https://arweave.net/Toz3gHUV0xMOfNqgeikqXlp68O-KZO_mgYF6y1rMAiY';
+    console.log('URI', uploadedMetadata.uri);
+    let uri = uploadedMetadata.uri;
+    // let uri = 'https://arweave.net/Toz3gHUV0xMOfNqgeikqXlp68O-KZO_mgYF6y1rMAiY';
     const metadataV3: CreateMetadataAccountArgsV3 = {
         data: {
             name: shopName + ' NFTs',
@@ -314,10 +315,34 @@ export async function setupCollection(
     ];
 }
 
+export async function setupProductMetadata(name: string, gasAddress: Keypair, image: string): Promise<string> {
+    const imageResponse = await axios.get(image, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+
+    const file = toMetaplexFile(imageBuffer, 'image.png'); // Ensure you use correct extension .png here
+
+    const metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
+
+    try {
+        const uploadedMetadata = await metaplex.nfts().uploadMetadata({
+            name: name,
+            symbol: 'PRODUCT',
+            description: 'A unique nft for your unique item',
+            image: file,
+        });
+        return uploadedMetadata.uri;
+    } catch (error) {
+        console.log('error uri', error);
+        throw error;
+    }
+}
+
 export async function mintCompressedNFT(
     gasAddress: Keypair,
     merchantAddress: PublicKey,
-    payer: PublicKey
+    payer: PublicKey,
+    name: string,
+    productUri: string
 ): Promise<TransactionInstruction[]> {
     let { treeKey, mint, treeAuthority, bubblegumSigner, metadataAccount, masterEditionAccount } =
         await getCompressedAccounts(gasAddress, merchantAddress);
@@ -327,15 +352,20 @@ export async function mintCompressedNFT(
     // TODO get symbol and product ru
 
     const compressedNFTMetadata: MetadataArgs = {
-        name: 'NFT Name',
+        name: name,
         symbol: 'Product',
         // specific json metadata for each NFT
-        uri: 'https://supersweetcollection.notarealurl/token.json',
+        uri: productUri,
         creators: [
             {
                 address: gasAddress.publicKey,
                 verified: false,
-                share: 100,
+                share: 50,
+            },
+            {
+                address: merchantAddress,
+                verified: false,
+                share: 50,
             },
         ],
         editionNonce: 0,
@@ -357,7 +387,6 @@ export async function mintCompressedNFT(
         createMintToCollectionV1Instruction(
             {
                 payer: payer,
-
                 merkleTree: treeKey,
                 treeAuthority,
                 treeDelegate: payer,

@@ -146,16 +146,14 @@ function generateProductRecords(count = 2): any[] {
             name: `Blue Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/files/Main.jpg?v=1690255438',
             merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
-            active: true,
-            mint: '8irVXZ22bYRCFeo4VpzQkyVN8dcgfoWWzMLvR34EXjcb',
+            active: false,
         },
         {
             id: '2',
             name: `Purple Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/products/Main_5127218a-8f6c-498f-b489-09242c0fab0a.jpg?v=1690255438',
             merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
-            active: true,
-            mint: '3EeiqqW2oBb8qy4GpfcqrDzqefDkpUYkPi214vFaZvwH',
+            active: false,
         },
         {
             id: '3',

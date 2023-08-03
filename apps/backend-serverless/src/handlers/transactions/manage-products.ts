@@ -7,8 +7,11 @@ import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { parseAndValidateProductSetupRequestBody } from '../../models/transaction-requests/product-setup-request.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import { fetchManageProductsTransaction } from '../../services/transaction-request/fetch-products-transaction.service.js';
-import { setupCollection, treeSetup } from '../../services/transaction-request/products-transaction.service.js';
+import {
+    setupCollection,
+    setupProductMetadata,
+    treeSetup,
+} from '../../services/transaction-request/products-transaction.service.js';
 import { withAuth } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
@@ -38,7 +41,6 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             const merchantService = new MerchantService(prisma);
             const productSetupRequest = parseAndValidateProductSetupRequestBody(JSON.parse(event.body));
 
-            console.log('product setup request', productSetupRequest);
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
             let gasKeypair = await fetchGasKeypair();
 
@@ -53,6 +55,7 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             let newMintAddress;
             let instructions;
             let base;
+            let uri;
 
             const blockhash = await connection.getLatestBlockhash();
             const transaction = new Transaction({
@@ -61,27 +64,14 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 lastValidBlockHeight: blockhash.lastValidBlockHeight,
             });
 
-            console.log('merchant Id', merchant.id);
             const merchantId = new PublicKey(merchant.id);
             const payer = new PublicKey(productSetupRequest.payer);
-            console.log('merchant Id pub', merchantId);
 
             if (productSetupRequest.maxNFTs) {
                 instructions = await treeSetup(gasKeypair, merchantId, payer, productSetupRequest.maxNFTs);
                 instructions.forEach(instruction => transaction.add(instruction));
                 transaction.feePayer = payer;
                 transaction.partialSign(gasKeypair);
-
-                // transaction.instructions.forEach((instruction, i) => {
-                //     console.log(`Instruction ${i}:`);
-
-                //     instruction.keys.forEach((key, j) => {
-                //         console.log(`  Key ${j}: ${key.pubkey.toString()}`);
-                //     });
-                // });
-
-                // const sim = await connection.simulateTransaction(transaction);
-                // console.log('sim', sim);
 
                 base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
             } else if (productSetupRequest.name && productSetupRequest.symbol && merchant.name) {
@@ -96,8 +86,6 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 instructions.forEach(instruction => transaction.add(instruction));
                 transaction.feePayer = payer;
                 transaction.partialSign(gasKeypair);
-                // const sim = await connection.simulateTransaction(transaction);
-                // console.log('sim', sim);
 
                 base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
             } else if (productSetupRequest.id) {
@@ -105,22 +93,15 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 if (!product.image) {
                     throw new Error('product image not availble');
                 }
-
-                let { base: transaction, mintAddress: newMintAddress } = await fetchManageProductsTransaction(
-                    product.name,
-                    gasKeypair,
-                    new PublicKey(productSetupRequest.payer),
-                    product.image
-                );
-                // return trasnaction
-                // image
+                uri = await setupProductMetadata(product.name, gasKeypair, product.image);
             }
 
             return {
                 statusCode: 200,
                 body: JSON.stringify({
-                    transaction: base,
+                    ...(base && { transaction: base }),
                     ...(newMintAddress && { mintAddress: newMintAddress.toBase58() }),
+                    ...(uri && { uri }),
                     message: 'product nft management',
                 }),
                 headers: {

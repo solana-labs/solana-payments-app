@@ -3,7 +3,6 @@ import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { Product, manageProducts, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';
@@ -30,41 +29,38 @@ export function ManageProducts(props: Props) {
     async function handleToggle(product: Product) {
         if (!wallet) return;
 
-        setProcessingId(product.id);
-        let response;
+        try {
+            setProcessingId(product.id);
+            let response;
 
-        if (!product.mint) {
-            toast({
-                title: `About to upload and mint your unique product nft`,
-            });
-        }
+            let data;
 
-        response = await manageProducts({
-            id: product.id,
-            payer: publicKey?.toBase58(),
-        });
-
-        if (response.status === 200) {
-            const data = await response.json();
-            if (data.transaction) {
-                const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
-
-                await sendTransaction(transaction, connection);
+            if (!product.uri) {
+                toast({
+                    title: `About to upload and mint your unique product nft`,
+                });
+                response = await manageProducts({
+                    id: product.id,
+                    payer: publicKey?.toBase58(),
+                });
+                data = await response.json();
             }
-            await getMerchantInfo();
 
             response = await updateLoyalty({
                 products: {
                     id: product.id,
+                    ...(data && data.uri && { uri: data.uri }),
                     active: !product.active,
                 },
             });
+
+            await getMerchantInfo();
 
             toast({
                 title: `Successfully ${product.active ? 'deactivated' : 'activated'} NFTs`,
                 variant: 'constructive',
             });
-        } else {
+        } catch {
             toast({
                 title: `Error ${product.active ? 'deactivating' : 'activating'} NFTs`,
                 variant: 'destructive',
@@ -84,10 +80,10 @@ export function ManageProducts(props: Props) {
             </TableHeader>
             <TableBody>
                 {products.map((product: Product) => (
-                    <TableRow key={product.id} className={`h-20 ${product.mint && 'hover:cursor-pointer'} `}>
+                    <TableRow key={product.id} className={`h-20  `}>
                         <TableCell
                             className=""
-                            onClick={() => product.mint && window.open(`https://solscan.io/token/${product.mint}`)}
+                            // onClick={() => product.mint && window.open(`https://solscan.io/token/${product.mint}`)}
                         >
                             {product.image && <Image src={product.image} alt={product.name} width={100} height={100} />}
                         </TableCell>

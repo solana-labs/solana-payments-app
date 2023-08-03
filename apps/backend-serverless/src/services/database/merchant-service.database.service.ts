@@ -54,7 +54,7 @@ export type ProductUpdate = {
     name?: string;
     image?: string;
     active?: boolean;
-    mint?: string;
+    uri?: string;
 };
 
 export type TierUpdate = {

@@ -24,7 +24,7 @@ export const updateLoyaltyRequestBodySchema = object().shape({
     }),
     products: object().shape({
         id: whenNoObject(string(), '$products'),
-        mint: string().optional(),
+        uri: string().optional(),
         active: boolean().optional(),
     }),
 });
