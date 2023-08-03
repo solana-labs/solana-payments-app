@@ -48,6 +48,10 @@ yarn dev
 yarn seed
 ```
 
+```
+node --loader ts-node/esm scripts/nft-setup.ts
+```
+
 ## Testing
 
 Use these links to test out the local development flow

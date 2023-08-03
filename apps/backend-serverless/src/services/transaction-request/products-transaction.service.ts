@@ -341,6 +341,7 @@ export async function mintCompressedNFT(
     gasAddress: Keypair,
     merchantAddress: PublicKey,
     payer: PublicKey,
+    owner: PublicKey,
     name: string,
     productUri: string
 ): Promise<TransactionInstruction[]> {
@@ -387,13 +388,14 @@ export async function mintCompressedNFT(
         createMintToCollectionV1Instruction(
             {
                 payer: payer,
+
                 merkleTree: treeKey,
                 treeAuthority,
                 treeDelegate: payer,
-                leafOwner: payer,
-                leafDelegate: payer,
+                leafOwner: owner,
+                leafDelegate: owner,
                 // collection details
-                collectionAuthority: payer,
+                collectionAuthority: gasAddress.publicKey,
                 collectionAuthorityRecordPda: BUBBLEGUM_PROGRAM_ID,
                 collectionMint: mint,
                 collectionMetadata: metadataAccount,
