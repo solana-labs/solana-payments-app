@@ -44,7 +44,7 @@ if (heliusApiKey == null) {
 
 const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
 
-async function getSeeds(merchantAddress: PublicKey) {
+export async function getCompressedNftSeeds(merchantAddress: PublicKey) {
     const tree_seed = 'treeseed1';
     const mint_seed = 'mintseed1';
 
@@ -73,7 +73,7 @@ function findLeastDepthPair(n: number): ValidDepthSizePair {
 }
 
 export async function getCompressedAccounts(gasAddress: Keypair, merchantAddress: PublicKey) {
-    const { TREE_SEED, MINT_SEED } = await getSeeds(merchantAddress);
+    const { TREE_SEED, MINT_SEED } = await getCompressedNftSeeds(merchantAddress);
     let treeKey = await PublicKey.createWithSeed(gasAddress.publicKey, TREE_SEED, SPL_ACCOUNT_COMPRESSION_PROGRAM_ID);
 
     let mint = await PublicKey.createWithSeed(gasAddress.publicKey, MINT_SEED, TOKEN_PROGRAM_ID);
@@ -100,13 +100,13 @@ export async function getCompressedAccounts(gasAddress: Keypair, merchantAddress
         TOKEN_METADATA_PROGRAM_ID
     );
 
-    console.log('\n\nPRINTING ALL KEYS\n\n');
-    console.log('treeKey', treeKey.toString());
-    console.log('mint', mint.toString());
-    console.log('treeAuthority', treeAuthority.toString());
-    console.log('bubblegumSigner', bubblegumSigner.toString());
-    console.log('metadataAccount', metadataAccount.toString());
-    console.log('masterEditionAccount', masterEditionAccount.toString());
+    // console.log('\n\nPRINTING ALL KEYS\n\n');
+    // console.log('treeKey', treeKey.toString());
+    // console.log('mint', mint.toString());
+    // console.log('treeAuthority', treeAuthority.toString());
+    // console.log('bubblegumSigner', bubblegumSigner.toString());
+    // console.log('metadataAccount', metadataAccount.toString());
+    // console.log('masterEditionAccount', masterEditionAccount.toString());
 
     return { treeKey, mint, treeAuthority, bubblegumSigner, metadataAccount, masterEditionAccount };
 }
@@ -130,7 +130,7 @@ export async function treeSetup(
     console.log('gass', gasAddress.publicKey.toString());
     console.log('merchant', merchantAddress.toString());
     let { treeKey, treeAuthority } = await getCompressedAccounts(gasAddress, merchantAddress);
-    const { TREE_SEED, MINT_SEED } = await getSeeds(merchantAddress);
+    const { TREE_SEED, MINT_SEED } = await getCompressedNftSeeds(merchantAddress);
 
     const allocTreeIx = SystemProgram.createAccountWithSeed({
         fromPubkey: payer,
@@ -184,7 +184,7 @@ export async function setupCollection(
         merchantAddress
     );
 
-    const { TREE_SEED, MINT_SEED } = await getSeeds(merchantAddress);
+    const { TREE_SEED, MINT_SEED } = await getCompressedNftSeeds(merchantAddress);
     let ata = await getAssociatedTokenAddress(
         mint, // mint
         merchantAddress // owner

@@ -257,6 +257,12 @@ functions:
       - httpApi:
           path: /payment-data
           method: get
+  loyalty-data:
+    handler: src/handlers/clients/merchant-ui/read-data/loyalty-data.loyaltyData
+    events:
+      - httpApi:
+          path: /loyalty-data
+          method: get
   update-merchant:
     handler: src/handlers/clients/merchant-ui/write-data/update-merchant.updateMerchant
     events:
