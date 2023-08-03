@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
@@ -14,6 +14,7 @@ import {
 } from '../../services/transaction-request/products-transaction.service.js';
 import { withAuth } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
+import { constructTransaction } from '../../utilities/transaction.utility.js';
 
 const prisma = new PrismaClient();
 
@@ -48,27 +49,17 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 throw new MissingEnvError('helius api');
             }
 
-            const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
-
             let newMintAddress;
             let instructions;
             let base;
             let uri;
-
-            const blockhash = await connection.getLatestBlockhash();
-            const transaction = new Transaction({
-                feePayer: gasKeypair.publicKey,
-                blockhash: blockhash.blockhash,
-                lastValidBlockHeight: blockhash.lastValidBlockHeight,
-            });
 
             const merchantId = new PublicKey(merchant.id);
             const payer = new PublicKey(productSetupRequest.payer);
 
             if (productSetupRequest.maxNFTs) {
                 instructions = await treeSetup(gasKeypair, merchantId, payer, productSetupRequest.maxNFTs);
-                instructions.forEach(instruction => transaction.add(instruction));
-                transaction.feePayer = payer;
+                const transaction = await constructTransaction(instructions, payer);
                 transaction.partialSign(gasKeypair);
 
                 base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
@@ -81,8 +72,7 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                     productSetupRequest.symbol,
                     merchant.name
                 );
-                instructions.forEach(instruction => transaction.add(instruction));
-                transaction.feePayer = payer;
+                const transaction = await constructTransaction(instructions, payer);
                 transaction.partialSign(gasKeypair);
 
                 base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });

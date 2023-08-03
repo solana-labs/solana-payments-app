@@ -1,7 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { PaymentRecord, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
+import { createPaymentProductNftsResponse } from '../../utilities/clients/create-payment-product-nfts-response.js';
 import { delay } from '../../utilities/delay.utility.js';
+import { constructTransaction, sendTransaction } from '../../utilities/transaction.utility.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 import {
@@ -10,7 +12,9 @@ import {
     getRecordServiceForTransaction,
 } from '../database/record-service.database.service.js';
 import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
+import { fetchGasKeypair } from '../fetch-gas-keypair.service.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
+import { mintCompressedNFT } from '../transaction-request/products-transaction.service.js';
 import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { WebSocketService } from '../websocket/send-websocket-message.service.js';
 
@@ -48,6 +52,7 @@ export const processTransaction = async (
     await recordService.updateRecordToPaid(record.id, signature);
 
     let resolveResponse: ShopifyResolveResponse;
+    let gasKeypair = await fetchGasKeypair();
 
     // This is the biggest canidate to fail, and if it does, just retry
     try {
@@ -73,5 +78,37 @@ export const processTransaction = async (
         // TODO Make this fetching user account better
         // @ts-ignore
         await merchantService.recordCustomer(rpcTransaction._json.signers[1], record.merchantId, record.amount);
+
+        const { products } = await createPaymentProductNftsResponse(record as PaymentRecord, merchantService);
+
+        console.log('minting nfts', products);
+        console.log('rpc tx', rpcTransaction);
+        // const productPromises = products.map(async product => {
+        try {
+            let product = products[0];
+            if (product.uri && rpcTransaction._json.signers[1]) {
+                const instructions = await mintCompressedNFT(
+                    gasKeypair,
+                    new web3.PublicKey(record.merchantId),
+                    gasKeypair.publicKey,
+                    new web3.PublicKey(rpcTransaction._json.signers[1]),
+                    product.name,
+                    product.uri
+                );
+
+                console.log('instructinos');
+                const transaction = await constructTransaction(instructions, gasKeypair.publicKey);
+                transaction.partialSign(gasKeypair);
+                console.log('got constuct', transaction);
+
+                let sig = await sendTransaction(transaction);
+                console.log('sig', sig);
+            }
+        } catch (error) {
+            console.log('error minting compressed', error);
+        }
+        // });
+
+        // await Promise.all(productPromises);
     }
 };
