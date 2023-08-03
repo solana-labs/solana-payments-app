@@ -1,12 +1,12 @@
+import { DefaultLayoutContent } from '@/components/DefaultLayoutContent';
+import { DefaultLayoutScreenTitle } from '@/components/DefaultLayoutScreenTitle';
 import { PointsCard } from '@/components/PointsCard';
+import ProductsCard from '@/components/ProductsCard/index';
+import { TiersCard } from '@/components/TiersCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useEffect, useState } from 'react';
-import { DefaultLayoutContent } from './DefaultLayoutContent';
-import { DefaultLayoutScreenTitle } from './DefaultLayoutScreenTitle';
-import { ProductsCard } from './ProductsCard';
-import { TiersCard } from './TiersCard';
 
 interface Props {
     className?: string;
@@ -28,7 +28,7 @@ export function LoyaltyScreen(props: Props) {
     const tabs = [
         { value: 'points', component: <PointsCard />, label: 'Points' },
         { value: 'tiers', component: <TiersCard />, label: 'Tiers' },
-        { value: 'items', component: <ProductsCard />, label: 'Items' },
+        { value: 'products', component: <ProductsCard />, label: 'Products' },
     ];
 
     return (
@@ -52,7 +52,7 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="tiers" className="flex flex-col items-center w-[700px] justify-center">
+                    <Tabs defaultValue="products" className="flex flex-col items-center w-[700px] justify-center">
                         <div className="flex flex-row space-x-2">
                             {tabs.map(tab => (
                                 <TabsList key={tab.value}>

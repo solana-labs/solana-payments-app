@@ -1,4 +1,13 @@
-import { Customer, KybState, LoyaltyProgram, Merchant, PrismaClient, Product, Tier } from '@prisma/client';
+import {
+    Customer,
+    KybState,
+    LoyaltyProgram,
+    Merchant,
+    PrismaClient,
+    Product,
+    ProductStatus,
+    Tier,
+} from '@prisma/client';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import * as web3 from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
@@ -35,6 +44,7 @@ export type MerchantUpdate = {
     lastFetched: Date;
 
     loyaltyProgram: LoyaltyProgram;
+    productStatus: ProductStatus;
     pointsMint: string;
     pointsBack: number;
 };
@@ -44,7 +54,7 @@ export type ProductUpdate = {
     name?: string;
     image?: string;
     active?: boolean;
-    mint?: string;
+    uri?: string;
 };
 
 export type TierUpdate = {

@@ -205,6 +205,7 @@ functions:
           method: post
   manage-products:
     handler: src/handlers/transactions/manage-products.productsSetupTransaction
+    timeout: 60 # Increase the timeout to 60 seconds
     events:
       - httpApi:
           path: /manage-products

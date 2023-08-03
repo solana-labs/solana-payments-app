@@ -33,10 +33,13 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
 
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
-            const { tiers, products, points, loyaltyProgram } = updateLoyaltyRequest;
+            const { tiers, products, points, loyaltyProgram, productStatus } = updateLoyaltyRequest;
 
             if (loyaltyProgram) {
                 await merchantService.updateMerchant(merchant, { loyaltyProgram: loyaltyProgram });
+            }
+            if (productStatus) {
+                await merchantService.updateMerchant(merchant, { productStatus: productStatus });
             }
 
             if (Object.keys(points).length > 0) {

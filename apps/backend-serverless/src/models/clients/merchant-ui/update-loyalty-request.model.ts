@@ -9,6 +9,7 @@ function whenNoObject<T extends Schema<any>>(schema: T, name: string): T {
 
 export const updateLoyaltyRequestBodySchema = object().shape({
     loyaltyProgram: string().oneOf(['points', 'tiers', 'none']).optional(),
+    productStatus: string().oneOf(['tree', 'collection', 'ready']).optional(),
     points: object().shape({
         mint: string().optional(),
         back: number().optional(),
@@ -23,7 +24,7 @@ export const updateLoyaltyRequestBodySchema = object().shape({
     }),
     products: object().shape({
         id: whenNoObject(string(), '$products'),
-        mint: string().optional(),
+        uri: string().optional(),
         active: boolean().optional(),
     }),
 });

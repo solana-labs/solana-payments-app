@@ -52,6 +52,12 @@ enum LoyaltyProgram {
   tiers
 }
 
+enum ProductStatus {
+  tree
+  collection
+  ready
+}
+
 model Merchant {
   id             String          @id // Internal ID
   shop           String          @unique
@@ -78,6 +84,8 @@ model Merchant {
 
   pointsMint String?
   pointsBack Float?
+
+  productStatus ProductStatus @default(tree)
 
   products Product[]
   tiers    Tier[]
@@ -170,7 +178,7 @@ model Product {
   active     Boolean  @default(false)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId String
-  mint       String?
+  uri        String?
 
   @@index(merchantId)
 }

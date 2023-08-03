@@ -58,6 +58,7 @@
         "bs58": "5.0.0",
         "dotenv": "^16.0.3",
         "helius-sdk": "^1.0.7",
+        "jimp": "^0.22.10",
         "jsonwebtoken": "^9.0.0",
         "lodash": "^4.17.21",
         "node-fetch": "^3.3.1",

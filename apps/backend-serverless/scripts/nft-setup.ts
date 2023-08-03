@@ -41,18 +41,18 @@ import {
     TransactionInstruction,
     clusterApiUrl,
 } from '@solana/web3.js';
-import bs58 from 'bs58';
 import fs from 'fs';
+import Jimp from 'jimp';
 import { WrapperConnection } from './ReadApi/WrapperConnection.js';
 
-const gasAddress = Keypair.fromSecretKey(bs58.decode(GAS_KEYPAIR_SECRET));
+const gasAddress = Keypair.fromSecretKey();
+const merchantAddress = Keypair.fromSecretKey();
 
 const connection = new Connection(clusterApiUrl('mainnet-beta'));
 const metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
 
-const merchantAddress = Keypair.fromSecretKey(bs58.decode(customerAdd));
-
 let seed = 'treeKeypair001';
+
 async function uploadNft() {
     const imageBuffer = fs.readFileSync('scripts/tier.png');
     const file = toMetaplexFile(imageBuffer, 'image.jpg');
@@ -480,4 +480,14 @@ async function getNftsByOwner() {
         });
 }
 
-getNftsByOwner();
+// getNftsByOwner();
+
+async function createImage(text: string) {
+    const image = new Jimp(800, 600, '#ffffff'); // create a new image, 800px by 600px with white background
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK); // load font from jimp's built-in fonts
+
+    image.print(font, 10, 10, text); // print text on image
+    image.write('output.png'); // save the image
+}
+
+createImage('merchant shop');

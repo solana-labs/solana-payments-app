@@ -39,7 +39,7 @@ function generateMerchantRecords(count = 1): any[] {
         let merchant;
         if (i === 0) {
             merchant = {
-                id: `merchant-${i}`,
+                id: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
                 shop: `localhost:4004`,
                 name: `Merchant ${i}`,
                 accessToken: `access-token-${i}`,
@@ -99,7 +99,7 @@ function generatePaymentRecords(count = 1): any[] {
             currency: 'USD',
             usdcAmount: i + 1,
             cancelURL: `https://store${i}.myshopify.com/checkouts/c/randomId_-${i}/processing`,
-            merchantId: `merchant-0`,
+            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
             transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
             requestedAt: requestedAt.toISOString(),
             completedAt: completedAt.toISOString(),
@@ -145,23 +145,21 @@ function generateProductRecords(count = 2): any[] {
             id: '1',
             name: `Blue Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/files/Main.jpg?v=1690255438',
-            merchantId: `merchant-${0}`,
-            active: true,
-            mint: '8irVXZ22bYRCFeo4VpzQkyVN8dcgfoWWzMLvR34EXjcb',
+            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
+            active: false,
         },
         {
             id: '2',
             name: `Purple Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/products/Main_5127218a-8f6c-498f-b489-09242c0fab0a.jpg?v=1690255438',
-            merchantId: `merchant-${0}`,
-            active: true,
-            mint: '3EeiqqW2oBb8qy4GpfcqrDzqefDkpUYkPi214vFaZvwH',
+            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
+            active: false,
         },
         {
             id: '3',
             name: `Green Snow Board`,
             image: 'https://cdn.shopify.com/s/files/1/0798/3752/8383/products/Main_0a4e9096-021a-4c1e-8750-24b233166a12.jpg?v=1690255438',
-            merchantId: `merchant-${0}`,
+            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
             active: false,
         },
     ];
@@ -175,7 +173,7 @@ function generateTierRecords(count = 2): any[] {
             name: `Tier 0`,
             threshold: 100,
             discount: 10,
-            merchantId: `merchant-${0}`,
+            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
             active: true,
             mint: '6rEHh7ZPV238LbvaUfQKLSBUsJoCYsaMPqTH1QdQ79dB',
         },
@@ -248,7 +246,7 @@ async function main() {
     await prisma.$executeRaw`DELETE from Product `;
     await prisma.$executeRaw`DELETE from GDPR `;
 
-    await insertGeneratedData(2, 4, 4, 4);
+    await insertGeneratedData(1, 4, 4, 4);
 }
 
 main()
