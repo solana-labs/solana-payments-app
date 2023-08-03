@@ -34,8 +34,6 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }
 
-        // TODO: this function will init tree, create collection nft, upload nft metadata
-
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchantService = new MerchantService(prisma);
