@@ -53,7 +53,7 @@ async function fetchAssetsByGroup(page: number, mint: PublicKey): Promise<Result
     return response.data.result;
 }
 
-interface ProductDetail {
+export interface ProductDetail {
     id: string;
     name: string;
     image: string;
@@ -88,7 +88,7 @@ export const createProductsNftResponse = async (merchant: Merchant): Promise<Pro
     let page = 1;
     while (true) {
         const result = await fetchAssetsByGroup(page, mint);
-        console.log('RESULT', result.items);
+        // console.log('RESULT', result.items);
         result.items.forEach(item => {
             uniqueOwners.add(item.ownership.owner);
 

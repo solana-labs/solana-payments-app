@@ -5,6 +5,7 @@ import { USDC_MINT } from '../../configs/tokens.config.js';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchBalance } from '../../services/helius.service.js';
+import { ProductDetail, createProductsNftResponse } from './create-products-response.utility.js';
 
 export interface CustomerResponse {
     amountSpent: number;
@@ -13,7 +14,7 @@ export interface CustomerResponse {
     points: number | null;
     usdc: number | null;
     nextTier: Tier | null;
-    // productNFTs: array().of(productNFTSchema).required(),
+    customerNfts: ProductDetail[];
 }
 
 async function determineTier(
@@ -67,6 +68,17 @@ async function customerOwnsTier(customerWallet: string, tierMint: string): Promi
     return customerOwns;
 }
 
+// function getCustomerNftImages(customerView: Record<string, CustomerProduct[]>, customerWallet: string) {
+//     const customerProducts = customerView[customerWallet];
+//     if (!customerProducts) {
+//         console.log(`No NFTs found for customer ${customerWallet}`);
+//         return [];
+//     }
+
+//     const images = customerProducts.map(product => product.image);
+//     return images;
+// }
+
 export const createCustomerResponse = async (
     customerWallet: string,
     paymentRecord: PaymentRecord,
@@ -85,6 +97,7 @@ export const createCustomerResponse = async (
             points: null,
             usdc: usdcBalance,
             nextTier: null,
+            customerNfts: [],
         };
     }
 
@@ -95,6 +108,9 @@ export const createCustomerResponse = async (
     let customerOwns =
         currentTier && currentTier.mint ? await customerOwnsTier(customerWallet, currentTier.mint) : false;
 
+    let customerNfts = (await createProductsNftResponse(merchant)).customerView[customerWallet];
+
+    console.log('customer nfts', customerNfts);
     return {
         amountSpent: customer.amountSpent,
         tier: currentTier,
@@ -102,5 +118,6 @@ export const createCustomerResponse = async (
         points: points,
         usdc: usdcBalance,
         nextTier: nextPossibleTier,
+        customerNfts: customerNfts,
     };
 };

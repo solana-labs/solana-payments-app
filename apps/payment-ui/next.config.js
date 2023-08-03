@@ -9,6 +9,12 @@ const nextConfig = {
                 port: '',
                 pathname: '/s/files/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'arweave.net',
+                port: '',
+                pathname: '/**',
+            },
         ],
     },
     exportPathMap: function () {

@@ -2,10 +2,20 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../../store';
 
+export interface ProductDetail {
+    id: string;
+    name: string;
+    image: string;
+    description: string;
+    creators: string[];
+    count: number; // Add this line
+}
+
 interface Tier {
     discount: number;
     name: string;
 }
+
 interface CustomerState {
     usdcBalance: number | null;
     pointsBalance: number | null;
@@ -13,6 +23,7 @@ interface CustomerState {
     customerOwns: boolean;
     nextTier: Tier | null;
     error: string | null;
+    customerNfts: ProductDetail[];
 }
 
 const initalState: CustomerState = {
@@ -22,6 +33,7 @@ const initalState: CustomerState = {
     nextTier: null,
     tier: null,
     error: null,
+    customerNfts: [],
 };
 
 type BalanceResponse = {
@@ -31,6 +43,7 @@ type BalanceResponse = {
     nextTier: Tier | null;
     tier: Tier | null;
     error: string | null;
+    customerNfts: ProductDetail[];
 };
 
 export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
@@ -66,6 +79,7 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                     name: nextTier ? nextTier.name : '',
                 },
                 error: null,
+                customerNfts: actualData.customerNfts,
             };
         } catch (error) {
             return {
@@ -75,6 +89,7 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                 customerOwns: false,
                 nextTier: null,
                 error: 'There is a fatal error with this app. Please contact the developer.',
+                customerNfts: [],
             };
         }
     }
@@ -95,6 +110,7 @@ const customerSlice = createSlice({
                 state.tier = action.payload.tier;
                 state.customerOwns = action.payload.customerOwns;
                 state.nextTier = action.payload.nextTier;
+                state.customerNfts = action.payload.customerNfts;
             });
     },
 });
@@ -107,3 +123,4 @@ export const getTier = (state: RootState): Tier | null => state.customer.tier;
 export const getNextTier = (state: RootState): Tier | null => state.customer.nextTier;
 export const getIsWalletError = (state: RootState): boolean => state.customer.error != null;
 export const getWalletError = (state: RootState): string | null => state.customer.error;
+export const getCustomerNfts = (state: RootState): string | null => state.customer.customerNfts;
