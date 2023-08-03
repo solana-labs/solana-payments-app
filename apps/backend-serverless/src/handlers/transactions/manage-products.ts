@@ -67,32 +67,39 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
             console.log('merchant Id pub', merchantId);
 
             if (productSetupRequest.maxNFTs) {
-                console.log('in max');
                 instructions = await treeSetup(gasKeypair, merchantId, payer, productSetupRequest.maxNFTs);
-                console.log('got tree instructions', instructions);
-
                 instructions.forEach(instruction => transaction.add(instruction));
-                // return trasnaction
                 transaction.feePayer = payer;
                 transaction.partialSign(gasKeypair);
-                console.log('final transaction', transaction);
 
-                transaction.instructions.forEach((instruction, i) => {
-                    console.log(`Instruction ${i}:`);
+                // transaction.instructions.forEach((instruction, i) => {
+                //     console.log(`Instruction ${i}:`);
 
-                    instruction.keys.forEach((key, j) => {
-                        console.log(`  Key ${j}: ${key.pubkey.toString()}`);
-                    });
-                });
+                //     instruction.keys.forEach((key, j) => {
+                //         console.log(`  Key ${j}: ${key.pubkey.toString()}`);
+                //     });
+                // });
 
-                const sim = await connection.simulateTransaction(transaction);
-                console.log('sim', sim);
+                // const sim = await connection.simulateTransaction(transaction);
+                // console.log('sim', sim);
 
                 base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
-            } else if (productSetupRequest.name && productSetupRequest.symbol) {
-                instructions = await setupCollection(gasKeypair, merchantId);
-                // transaction.partialSign(mint);
-                // return trasnaction
+            } else if (productSetupRequest.name && productSetupRequest.symbol && merchant.name) {
+                instructions = await setupCollection(
+                    gasKeypair,
+                    merchantId,
+                    payer,
+                    productSetupRequest.name,
+                    productSetupRequest.symbol,
+                    merchant.name
+                );
+                instructions.forEach(instruction => transaction.add(instruction));
+                transaction.feePayer = payer;
+                transaction.partialSign(gasKeypair);
+                // const sim = await connection.simulateTransaction(transaction);
+                // console.log('sim', sim);
+
+                base = transaction.serialize({ requireAllSignatures: false, verifySignatures: false });
             } else if (productSetupRequest.id) {
                 let product = await merchantService.getProduct(productSetupRequest.id);
                 if (!product.image) {

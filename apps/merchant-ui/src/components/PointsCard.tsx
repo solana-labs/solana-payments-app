@@ -78,7 +78,6 @@ export function PointsCard(props: Props) {
                     variant: 'destructive',
                 });
             }
-            // throw error; // Re-throw the error
         }
     }
 

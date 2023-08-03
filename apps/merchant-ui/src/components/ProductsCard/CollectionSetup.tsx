@@ -1,7 +1,9 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { useMerchantStore } from '@/stores/merchantStore';
+import { manageProducts, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
 import { useState } from 'react';
 import { DefaultLayoutContent } from '../DefaultLayoutContent';
 import { Button } from '../ui/button';
@@ -23,6 +25,52 @@ export default function CollectionSetup(props: Props) {
     const [symbol, setSymbol] = useState('');
     const [loading, setLoading] = useState(false);
     console.log('merchant Info', merchantInfo);
+
+    async function handleSave() {
+        if (!publicKey) {
+            return;
+        }
+
+        let response;
+        try {
+            response = await manageProducts({
+                name,
+                symbol,
+                payer: publicKey.toBase58(),
+            });
+
+            if (response.status != 200) {
+                toast({
+                    title: 'Error Setting up collection',
+                    variant: 'destructive',
+                });
+            } else {
+                let data = await response.json();
+                if (data.transaction) {
+                    const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
+                    await sendTransaction(transaction, connection);
+                    await getMerchantInfo();
+                }
+
+                response = await updateLoyalty({
+                    productStatus: 'ready',
+                });
+                toast({
+                    title: 'Successfully created collection',
+                    variant: 'constructive',
+                });
+                await getMerchantInfo();
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error Setting up collection',
+                    description: error.message,
+                    variant: 'destructive',
+                });
+            }
+        }
+    }
 
     if (RE.isFailed(merchantInfo)) {
         return (
@@ -71,7 +119,9 @@ export default function CollectionSetup(props: Props) {
                 </form>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Button pending={loading}>Setup</Button>
+                <Button pending={loading} onClick={handleSave}>
+                    Setup
+                </Button>
                 <Button variant="outline" onClick={disconnect}>
                     Disconnect Wallet
                 </Button>

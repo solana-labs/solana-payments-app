@@ -1,3 +1,4 @@
+import { Metaplex, bundlrStorage, keypairIdentity, toMetaplexFile } from '@metaplex-foundation/js';
 import {
     PROGRAM_ID as BUBBLEGUM_PROGRAM_ID,
     MetadataArgs,
@@ -31,6 +32,7 @@ import {
 } from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 import crypto from 'crypto';
+import Jimp from 'jimp';
 import { MissingEnvError } from '../../errors/missing-env.error.js';
 
 const heliusApiKey = process.env.HELIUS_API_KEY;
@@ -73,7 +75,7 @@ export async function getCompressedAccounts(gasAddress: Keypair, merchantAddress
     const { TREE_SEED, MINT_SEED } = await getSeeds(merchantAddress);
     let treeKey = await PublicKey.createWithSeed(gasAddress.publicKey, TREE_SEED, SPL_ACCOUNT_COMPRESSION_PROGRAM_ID);
 
-    let mint = await PublicKey.createWithSeed(gasAddress.publicKey, MINT_SEED, SPL_ACCOUNT_COMPRESSION_PROGRAM_ID);
+    let mint = await PublicKey.createWithSeed(gasAddress.publicKey, MINT_SEED, TOKEN_PROGRAM_ID);
 
     const [treeAuthority] = PublicKey.findProgramAddressSync([treeKey.toBuffer()], BUBBLEGUM_PROGRAM_ID);
 
@@ -160,9 +162,21 @@ export async function treeSetup(
     return [allocTreeIx, createTreeIx];
 }
 
+async function createImage(text: string): Promise<Buffer> {
+    const image = new Jimp(800, 600, '#ffffff'); // create a new image, 800px by 600px with white background
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK); // load font from jimp's built-in fonts
+
+    image.print(font, 10, 10, text); // print text on image
+    return image.getBufferAsync(Jimp.MIME_PNG); // get buffer of the image
+}
+
 export async function setupCollection(
     gasAddress: Keypair,
-    merchantAddress: PublicKey
+    merchantAddress: PublicKey,
+    payer: PublicKey,
+    name: string,
+    symbol: string,
+    shopName: string
 ): Promise<TransactionInstruction[]> {
     let { treeKey, mint, treeAuthority, metadataAccount, masterEditionAccount } = await getCompressedAccounts(
         gasAddress,
@@ -175,13 +189,25 @@ export async function setupCollection(
         merchantAddress // owner
     );
 
-    // TODO CREAT URI for merchant collection
+    const imageBuffer = await createImage(shopName);
+    const file = toMetaplexFile(imageBuffer, 'image.png'); // Ensure you use correct extension .png here
 
-    let uri;
+    const metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
+
+    // const uploadedMetadata = await metaplex.nfts().uploadMetadata({
+    //     name,
+    //     symbol,
+    //     description: shopName + ' product collection metadat',
+    //     image: file,
+    // });
+
+    // console.log('URI', uploadedMetadata.uri);
+    // let uri = uploadedMetadata.uri;
+    let uri = 'https://arweave.net/Toz3gHUV0xMOfNqgeikqXlp68O-KZO_mgYF6y1rMAiY';
     const metadataV3: CreateMetadataAccountArgsV3 = {
         data: {
-            name: 'Super Sweet NFT Collection',
-            symbol: 'SSNC',
+            name: shopName + ' NFTs',
+            symbol,
             // specific json metadata for the collection
             uri,
             sellerFeeBasisPoints: 100,
@@ -189,7 +215,12 @@ export async function setupCollection(
                 {
                     address: gasAddress.publicKey,
                     verified: false,
-                    share: 100,
+                    share: 50,
+                },
+                {
+                    address: merchantAddress,
+                    verified: false,
+                    share: 50,
                 },
             ],
             collection: null,
@@ -200,7 +231,7 @@ export async function setupCollection(
     };
 
     const createAccountIx = SystemProgram.createAccountWithSeed({
-        fromPubkey: merchantAddress,
+        fromPubkey: payer,
         newAccountPubkey: mint,
         basePubkey: gasAddress.publicKey,
         seed: MINT_SEED,
@@ -217,7 +248,7 @@ export async function setupCollection(
     );
 
     const createATAIx = createAssociatedTokenAccountInstruction(
-        merchantAddress, // payer
+        payer, // payer
         ata, // ata
         merchantAddress, // owner
         mint
@@ -236,7 +267,7 @@ export async function setupCollection(
             metadata: metadataAccount,
             mint: mint,
             mintAuthority: gasAddress.publicKey,
-            payer: merchantAddress,
+            payer: payer,
             updateAuthority: gasAddress.publicKey,
         },
         {
@@ -249,7 +280,7 @@ export async function setupCollection(
             edition: masterEditionAccount,
             mint: mint,
             mintAuthority: gasAddress.publicKey,
-            payer: merchantAddress,
+            payer: payer,
             updateAuthority: gasAddress.publicKey,
             metadata: metadataAccount,
         },
