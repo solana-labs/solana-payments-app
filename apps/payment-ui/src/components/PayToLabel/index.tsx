@@ -1,6 +1,6 @@
 import { CartAmountDisplay, CartAmountLoading } from '@/components/PayToLabel/CartAmountDisplay';
 import { FeePriceDisplay, FeePriceDisplayLoading } from '@/components/PayToLabel/FeeDisplay';
-import { PayAmountDisplay, PayAmountLoading } from '@/components/PayToLabel/PayAmountDisplay';
+import { PayAmountLoading } from '@/components/PayToLabel/PayAmountDisplay';
 import { PayAmountTokensDisplay, PayAmountTokensLoading } from '@/components/PayToLabel/PayAmountTokensDisplay';
 import { PayToDisplay, PayToLoading } from '@/components/PayToLabel/PayToDisplay';
 import { getNextTier, getTier } from '@/features/customer/customerSlice';
@@ -45,20 +45,21 @@ export const PayToLabel = () => {
 
     return (
         <div>
-            <div className="flex flex-col justify-between h-44">
+            <div className="flex flex-col justify-between space-y-5">
                 <PayToDisplay merchantName={paymentDetails.merchantDisplayName} />
-                <PayAmountDisplay amount={final} />
-                <PayAmountTokensDisplay amount={paymentDetails.usdcSize} />
+                <PayAmountTokensDisplay amount={final} />
                 {productDetails.length > 0 && (
-                    <>
-                        <p>Minted nfts</p>
-                        {productDetails.map(product => (
-                            <Image key={product.id} src={product.image} alt={product.name} width={50} height={50} />
-                        ))}
-                    </>
+                    <div>
+                        <p className="">NFT Rewards</p>
+                        <div className="flex flex-row ">
+                            {productDetails.map(product => (
+                                <Image key={product.id} src={product.image} alt={product.name} width={50} height={50} />
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full mt-2">
                 <div className="divider" />
             </div>
             <CartAmountDisplay amount={cart} />
