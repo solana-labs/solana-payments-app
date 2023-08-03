@@ -63,5 +63,5 @@ export const sendTransaction = async (transaction: web3.Transaction) => {
         skipPreflight: true,
         preflightCommitment: 'confirmed',
     });
-    console.log(transactionSignature);
+    // console.log(transactionSignature);
 };

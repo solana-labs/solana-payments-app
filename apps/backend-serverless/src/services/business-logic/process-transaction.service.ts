@@ -83,32 +83,27 @@ export const processTransaction = async (
 
         console.log('minting nfts', products);
         console.log('rpc tx', rpcTransaction);
-        // const productPromises = products.map(async product => {
         try {
-            let product = products[0];
-            if (product.uri && rpcTransaction._json.signers[1]) {
-                const instructions = await mintCompressedNFT(
-                    gasKeypair,
-                    new web3.PublicKey(record.merchantId),
-                    gasKeypair.publicKey,
-                    new web3.PublicKey(rpcTransaction._json.signers[1]),
-                    product.name,
-                    product.uri
-                );
+            const productPromises = products.map(async product => {
+                if (product.uri && rpcTransaction._json.signers[1]) {
+                    const instructions = await mintCompressedNFT(
+                        gasKeypair,
+                        new web3.PublicKey(record.merchantId),
+                        gasKeypair.publicKey,
+                        new web3.PublicKey(rpcTransaction._json.signers[1]),
+                        product.name,
+                        product.uri
+                    );
 
-                console.log('instructinos');
-                const transaction = await constructTransaction(instructions, gasKeypair.publicKey);
-                transaction.partialSign(gasKeypair);
-                console.log('got constuct', transaction);
+                    const transaction = await constructTransaction(instructions, gasKeypair.publicKey);
+                    transaction.partialSign(gasKeypair);
 
-                let sig = await sendTransaction(transaction);
-                console.log('sig', sig);
-            }
+                    await sendTransaction(transaction);
+                }
+            });
+            await Promise.all(productPromises);
         } catch (error) {
             console.log('error minting compressed', error);
         }
-        // });
-
-        // await Promise.all(productPromises);
     }
 };
