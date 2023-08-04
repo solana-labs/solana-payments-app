@@ -10,7 +10,7 @@ import { getLoyaltyDetails, getPaymentDetails, getPaymentId } from '@/features/p
 import { resetSession } from '@/features/payment-session/paymentSessionSlice';
 import { AppDispatch } from '@/store';
 import { buildTransactionRequestEndpoint } from '@/utility/endpoints.utility';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
 import { useState } from 'react';
@@ -25,6 +25,7 @@ const BuyButton = () => {
     const pointsBalance = useSelector(getPointsBalance);
     const loyaltyDetails = useSelector(getLoyaltyDetails);
     const usdcCost = useSelector(getPaymentDetails)?.usdcSize;
+    const { connection } = useConnection();
 
     const fetchAndSendTransaction = async (points: boolean = false) => {
         const getErrorType = (error: any) => {
@@ -78,9 +79,6 @@ const BuyButton = () => {
                 throw new Error('Failed to parse transaction string');
             }
 
-            const connection = new web3.Connection(
-                'https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e'
-            );
             await sendTransaction(transaction, connection);
         } catch (error) {
             const errorType = getErrorType(error);
