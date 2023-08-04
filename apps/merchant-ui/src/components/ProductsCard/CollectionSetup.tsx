@@ -33,6 +33,10 @@ export default function CollectionSetup(props: Props) {
 
         let response;
         try {
+            toast({
+                title: 'Setting up Collection NFT and Uploading metadata',
+                variant: 'constructive',
+            });
             response = await manageProducts({
                 name,
                 symbol,

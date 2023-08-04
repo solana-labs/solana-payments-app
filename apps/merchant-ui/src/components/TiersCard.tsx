@@ -97,6 +97,7 @@ export function TiersCard(props: Props) {
             }
         }
 
+        await getMerchantInfo();
         setEditing(null);
     }
 
@@ -106,7 +107,7 @@ export function TiersCard(props: Props) {
             return;
         }
 
-        const response = await manageTiers({
+        response = await manageTiers({
             ...newTier,
             payer: publicKey?.toBase58(),
         });
@@ -122,6 +123,14 @@ export function TiersCard(props: Props) {
 
             const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
             await sendTransaction(transaction, connection);
+
+            response = await updateLoyalty({
+                loyaltyProgram: 'tiers',
+                tiers: {
+                    ...newTier,
+                    ...(data.mintAddress && { mint: data.mintAddress }),
+                },
+            });
 
             toast({
                 title: 'Successfully Added a new Tier',
@@ -213,9 +222,14 @@ export function TiersCard(props: Props) {
                     <CardDescription>Reward discounts to returning customers</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                    <Button onClick={selectLoyaltyProgram} pending={loading}>
-                        Restart the Program
-                    </Button>
+                    {!merchantInfo.data.loyalty.tiers.length > 0 ? (
+                        <Button onClick={selectLoyaltyProgram}>Start the Program</Button>
+                    ) : (
+                        <Button onClick={selectLoyaltyProgram} pending={loading}>
+                            Restart the Program
+                        </Button>
+                    )}
+
                     <Button variant="outline" onClick={disconnect}>
                         Disconnect Wallet
                     </Button>

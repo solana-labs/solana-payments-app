@@ -57,7 +57,7 @@ export function PointsCard(props: Props) {
             await sendTransaction(transaction, connection);
 
             await updateLoyalty({
-                loyaltyProgram: 'tiers',
+                loyaltyProgram: 'points',
                 points: {
                     mint: data.pointsMint,
                     back: 1,
