@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
-import { Product, useLoyaltyStore, useMerchantStore } from '@/stores/merchantStore';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Product, manageProducts, updateLoyalty, useLoyaltyStore, useMerchantStore } from '@/stores/merchantStore';
+import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';
@@ -22,9 +22,8 @@ export function ManageProducts(props: Props) {
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
     const loyaltyData = useLoyaltyStore(state => state.loyaltyData);
     const getLoyaltyData = useLoyaltyStore(state => state.getLoyaltyData);
-    const { publicKey, sendTransaction } = useWallet();
+    const { publicKey } = useWallet();
     const wallet = useWallet();
-    const { connection } = useConnection();
 
     const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
@@ -87,7 +86,6 @@ export function ManageProducts(props: Props) {
         }
         setProcessingId(null);
     }
-    console.log('loyalty data', loyaltyData.data);
 
     return (
         <div className="w-full">

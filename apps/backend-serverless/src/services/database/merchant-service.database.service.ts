@@ -203,18 +203,32 @@ export class MerchantService {
     }
 
     async upsertTier(tier: TierUpdate, merchantId: string): Promise<Tier> {
-        const id = tier.id;
         const filteredUpdate = filterUndefinedFields(tier);
-        return prismaErrorHandler(
-            this.prisma.tier.upsert({
-                where: { id: id },
-                update: filteredUpdate,
-                create: {
-                    ...tier,
-                    merchantId: merchantId,
-                },
-            })
-        );
+
+        // Try to find an existing Tier with the same name and merchantId
+        const existingTier = await this.prisma.tier.findFirst({
+            where: {
+                name: tier.name,
+                merchantId: merchantId,
+            },
+        });
+        console.log('existingTier', existingTier);
+
+        // If it exists, update it
+        if (existingTier) {
+            return this.prisma.tier.update({
+                where: { id: existingTier.id },
+                data: filteredUpdate,
+            });
+        }
+
+        // If it doesn't exist, create a new one
+        return this.prisma.tier.create({
+            data: {
+                ...tier,
+                merchantId: merchantId,
+            },
+        });
     }
 
     async getProductsByMerchant(merchantId: string): Promise<Product[]> {

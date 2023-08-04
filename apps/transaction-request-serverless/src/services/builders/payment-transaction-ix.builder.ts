@@ -39,9 +39,10 @@ export class PaymentTransactionBuilder {
     private payWithPoints: boolean;
 
     private currentTier: web3.PublicKey | null;
-    private customerOwnsTier: boolean;
-    private currentDiscount: number | null;
     private nextTier: web3.PublicKey | null;
+    private customerOwnsTier: boolean;
+    private isFirstTier: boolean;
+    private currentDiscount: number | null;
 
     constructor(paymentTransactionRequest: PaymentTransactionRequest, paymentTransactionBody: PaymentTransactionBody) {
         this.sender = new web3.PublicKey(paymentTransactionRequest.sender);
@@ -82,6 +83,7 @@ export class PaymentTransactionBuilder {
                 : null;
 
         this.customerOwnsTier = paymentTransactionBody.tiers ? paymentTransactionBody.tiers.customerOwns : false;
+        this.isFirstTier = paymentTransactionBody.tiers ? paymentTransactionBody.tiers.isFirstTier : false;
 
         this.currentDiscount =
             paymentTransactionBody.tiers && paymentTransactionBody.tiers.currentDiscount
@@ -135,7 +137,7 @@ export class PaymentTransactionBuilder {
                 this.pointsMint,
                 customerTokenAddress,
                 this.feePayer,
-                receivingQuantity * this.pointsBack * 100000
+                receivingQuantity * this.pointsBack
             );
             transaction = transaction.add(mintIx);
         }
@@ -150,7 +152,12 @@ export class PaymentTransactionBuilder {
             );
             transaction = transaction.add(burnTx);
         } else {
-            if (this.loyaltyProgram === 'tiers' && this.currentDiscount && this.currentDiscount > 0) {
+            if (
+                this.loyaltyProgram === 'tiers' &&
+                this.currentDiscount &&
+                this.currentDiscount > 0 &&
+                this.customerOwnsTier
+            ) {
                 receivingQuantity = Math.ceil((receivingQuantity * (100 - this.currentDiscount)) / 100);
                 console.log('after discoutn', receivingQuantity);
             }
@@ -177,7 +184,8 @@ export class PaymentTransactionBuilder {
         }
 
         if (this.loyaltyProgram === 'tiers') {
-            if (this.nextTier && this.customerOwnsTier && this.currentTier) {
+            // Case where customer is expected to upgrade to the next tier
+            if (this.currentTier && this.nextTier && this.customerOwnsTier) {
                 let customerTokenAddress = await getAssociatedTokenAddress(this.currentTier, this.sender);
                 let newCustomerTokenAddress = await getAssociatedTokenAddress(this.nextTier, this.sender);
 
@@ -201,7 +209,24 @@ export class PaymentTransactionBuilder {
                 transaction = transaction.add(
                     createMintToInstruction(this.nextTier, newCustomerTokenAddress, this.feePayer, 1)
                 );
-            } else if (!this.nextTier && !this.customerOwnsTier && this.currentTier) {
+            }
+            // Case where customer does not have a current tier but is expected to be upgraded to a new tier
+            else if ((!this.currentTier || !this.customerOwnsTier) && this.nextTier) {
+                let newCustomerTokenAddress = await getAssociatedTokenAddress(this.nextTier, this.sender);
+
+                transaction = transaction.add(
+                    createAssociatedTokenAccountInstruction(
+                        this.sender,
+                        newCustomerTokenAddress,
+                        this.sender,
+                        this.nextTier
+                    )
+                );
+
+                transaction = transaction.add(
+                    createMintToInstruction(this.nextTier, newCustomerTokenAddress, this.feePayer, 1)
+                );
+            } else if (this.currentTier && !this.nextTier && !this.customerOwnsTier) {
                 let newCustomerTokenAddress = await getAssociatedTokenAddress(this.currentTier, this.sender);
 
                 transaction = transaction.add(

@@ -26,18 +26,21 @@ export const fetchCreateTiersTransaction = async (
     let merchantIdentity = new GuestIdentityDriver(merchantAddress);
     let generatedMint = Keypair.generate();
 
-    let nftBuilder = await metaplex.nfts().builders().createSft(
-        {
-            updateAuthority: gasAddress,
-            mintAuthority: gasAddress,
-            uri: 'https://arweave.net/9bMqZG9aCu9bCbilTQYuWCyDCCOXLdd6s5YalNDTn74',
-            name: name,
-            sellerFeeBasisPoints: discount,
-            symbol: threshold.toString(),
-            useNewMint: generatedMint,
-        },
-        { payer: merchantIdentity }
-    );
+    let nftBuilder = await metaplex
+        .nfts()
+        .builders()
+        .createSft(
+            {
+                updateAuthority: gasAddress,
+                mintAuthority: gasAddress,
+                uri: 'https://arweave.net/9bMqZG9aCu9bCbilTQYuWCyDCCOXLdd6s5YalNDTn74',
+                name: name,
+                sellerFeeBasisPoints: threshold * 100,
+                symbol: discount.toString(),
+                useNewMint: generatedMint,
+            },
+            { payer: merchantIdentity }
+        );
 
     const latestBlockhash = await connection.getLatestBlockhash();
     const transaction = await nftBuilder.toTransaction(latestBlockhash);
@@ -72,8 +75,8 @@ export const fetchUpdateTiersTransaction = async (
     const nft = await metaplex.nfts().findByMint({ mintAddress });
     let updatedFields = {
         ...(nft.name !== name && { name: name }),
-        ...(nft.sellerFeeBasisPoints !== discount && { sellerFeeBasisPoints: discount }),
-        ...(nft.symbol !== threshold.toString() && { symbol: threshold.toString() }),
+        ...(nft.sellerFeeBasisPoints !== threshold * 100 && { sellerFeeBasisPoints: threshold * 100 }),
+        ...(nft.symbol !== discount.toString() && { symbol: discount.toString() }),
     };
 
     if (Object.keys(updatedFields).length === 0) {

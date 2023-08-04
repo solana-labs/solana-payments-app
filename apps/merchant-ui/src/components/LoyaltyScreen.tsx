@@ -52,7 +52,7 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="products" className="flex flex-col items-center w-[700px] justify-center">
+                    <Tabs defaultValue="points" className="flex flex-col items-center w-[700px] justify-center">
                         <div className="flex flex-row space-x-2">
                             {tabs.map(tab => (
                                 <TabsList key={tab.value}>

@@ -149,7 +149,6 @@ export const fetchPaymentDetails = createAsyncThunk<PaymentDetailsResponse>(
 
             const url = `${backendUrl}/payment-status?paymentId=${paymentId}&language=en`;
             const response = await axios.get(url);
-            console.log('got back the product detaisl', response.data.productDetails);
             return {
                 paymentDetails: response.data.paymentStatus,
                 errorDetails: response.data.error,
