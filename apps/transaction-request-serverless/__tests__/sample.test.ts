@@ -3,9 +3,9 @@ import * as web3 from '@solana/web3.js';
 import { USDC_PUBKEY } from '../src/configs/pubkeys.config.js';
 import { findAssociatedTokenAddress } from '../src/utilities/ata.utility.js';
 
-describe('Sample test', () => {
+describe('transaction test', () => {
     beforeEach((): void => {
-        jest.setTimeout(60000);
+        jest.setTimeout(6000);
     });
 
     const secretArray = [];
@@ -19,9 +19,9 @@ describe('Sample test', () => {
     let mintPubkey: web3.PublicKey | null = null;
 
     let newGuy: web3.Keypair | null = null;
+    const connection = new web3.Connection(`https://rpc.helius.xyz/?api-key=${process.env.HELIUS_API_KEY}`);
 
-    it('create a mint.', async () => {
-        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
+    it.skip('create a mint.', async () => {
         const blockhash = await connection.getLatestBlockhash();
         const tx = new web3.Transaction({
             feePayer: keypair.publicKey,
@@ -39,7 +39,7 @@ describe('Sample test', () => {
             {
                 skipPreflight: true,
                 commitment: 'confirmed',
-            },
+            }
         );
 
         console.log(mintPubkey.toBase58());
@@ -47,50 +47,10 @@ describe('Sample test', () => {
         expect(true).toBe(true);
     });
 
-    // it('do it youself.', async () => {
-    //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
-    //     const blockhash = await connection.getLatestBlockhash();
-    //     let tx = new web3.Transaction({
-    //         feePayer: keypair.publicKey,
-    //         blockhash: blockhash.blockhash,
-    //         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    //     }).add(
-    //         // create mint account
-    //         web3.SystemProgram.createAccount({
-    //             fromPubkey: keypair.publicKey,
-    //             newAccountPubkey: newKeypair.publicKey,
-    //             space: MINT_SIZE,
-    //             lamports: await getMinimumBalanceForRentExemptMint(connection),
-    //             programId: token.TOKEN_PROGRAM_ID,
-    //         }),
-    //         // init mint account
-    //         token.createInitializeMintInstruction(
-    //             mintPubkey!, // mint pubkey
-    //             8, // decimals
-    //             keypair.publicKey, // mint authority
-    //             keypair.publicKey // freeze authority (you can use `null` to disable it. when you disable it, you can't turn it on again)
-    //         )
-    //     );
-
-    //     tx.partialSign(keypair);
-    //     tx.partialSign(newKeypair);
-
-    //     const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-
-    //     const signature = await connection.sendRawTransaction(txBuffer, {
-    //         skipPreflight: true,
-    //         preflightCommitment: 'confirmed',
-    //     });
-
-    //     console.log(signature);
-
-    //     expect(true).toBe(true);
-    // });
-
-    it('create token account.', async () => {
+    it.skip('create token account.', async () => {
         const random = await web3.PublicKey.findProgramAddressSync(
             [keypair.publicKey.toBuffer(), token.TOKEN_PROGRAM_ID.toBuffer(), mintPubkey!.toBuffer()],
-            token.TOKEN_PROGRAM_ID,
+            token.TOKEN_PROGRAM_ID
         );
         tokenAccount = random[0];
 
@@ -98,7 +58,6 @@ describe('Sample test', () => {
 
         const ata = await findAssociatedTokenAddress(newGuy.publicKey, USDC_PUBKEY!);
 
-        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
         const blockhash = await connection.getLatestBlockhash();
         const tx = new web3.Transaction({
             feePayer: keypair.publicKey,
@@ -111,8 +70,8 @@ describe('Sample test', () => {
                 newGuy.publicKey,
                 USDC_PUBKEY,
                 token.TOKEN_PROGRAM_ID,
-                token.ASSOCIATED_TOKEN_PROGRAM_ID,
-            ),
+                token.ASSOCIATED_TOKEN_PROGRAM_ID
+            )
         );
 
         tx.partialSign(keypair);
@@ -129,8 +88,7 @@ describe('Sample test', () => {
         expect(true).toBe(true);
     });
 
-    it('close token account.', async () => {
-        const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
+    it.skip('close token account.', async () => {
         const blockhash = await connection.getLatestBlockhash();
         const ata = await findAssociatedTokenAddress(newGuy!.publicKey, USDC_PUBKEY!);
 
@@ -140,7 +98,7 @@ describe('Sample test', () => {
             lastValidBlockHeight: blockhash.lastValidBlockHeight,
         }).add(
             // create mint account
-            token.createCloseAccountInstruction(ata, keypair.publicKey, newGuy!.publicKey, [], token.TOKEN_PROGRAM_ID),
+            token.createCloseAccountInstruction(ata, keypair.publicKey, newGuy!.publicKey, [], token.TOKEN_PROGRAM_ID)
         );
 
         tx.partialSign(newGuy!);
@@ -157,40 +115,4 @@ describe('Sample test', () => {
 
         expect(true).toBe(true);
     });
-
-    // it('create a mint.', async () => {
-    //     const connection = new web3.Connection('https://rpc.helius.xyz/?api-key=5f70b753-57cb-422b-a018-d7df67b4470e');
-    //     const blockhash = await connection.getLatestBlockhash();
-    //     let tx = new web3.Transaction({
-    //         feePayer: keypair.publicKey,
-    //         blockhash: blockhash.blockhash,
-    //         lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    //     });
-
-    //     const newKeypair = web3.Keypair.generate();
-
-    //     const pda = await web3.PublicKey.findProgramAddressSync(
-    //         [Buffer.from('some-shopify-id', 'utf-8')],
-    //         token.TOKEN_PROGRAM_ID
-    //     );
-
-    //     const createAccountIx = await token.createInitializeAccountInstruction(
-    //         pda[0],
-    //         USDC_PUBKEY,
-    //         keypair.publicKey,
-    //         token.TOKEN_PROGRAM_ID
-    //     );
-
-    //     tx = tx.add(createAccountIx);
-
-    //     tx.partialSign(keypair);
-
-    //     const txBuffer = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-
-    //     const signature = await connection.sendRawTransaction(txBuffer);
-
-    //     console.log(signature);
-
-    //     expect(true).toBe(true);
-    // });
 });
