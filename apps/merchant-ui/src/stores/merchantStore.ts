@@ -31,34 +31,6 @@ export interface LoyaltyDetails {
     products: Product[];
     tiers: Tier[];
 }
-
-interface ProductDetail {
-    id: string;
-    name: string;
-    image: string;
-    description: string;
-    creators: string[];
-    count: number; // Add this line
-}
-
-interface ProductView {
-    productDetails: ProductDetail;
-    owners: string[];
-}
-
-interface CustomerView extends Array<ProductDetail> {}
-
-interface ProductsNftResponse {
-    count: number;
-    owners: string[];
-    productView: Record<string, ProductView>;
-    customerView: Record<string, CustomerView>;
-}
-
-interface LoyaltyInfo {
-    productNfts: ProductsNftResponse;
-}
-
 interface MerchantInfo {
     shop: string;
     name: string;
@@ -77,6 +49,38 @@ type MerchantStore = {
     merchantInfo: RE.Result<MerchantInfo>;
     getMerchantInfo: () => Promise<void>;
 };
+
+export interface ProductDetail {
+    id: string;
+    name: string;
+    image: string;
+    description: string;
+    creators: string[];
+    count: number; // Add this line
+}
+
+export interface OwnerInfo {
+    owner: string;
+    count: number;
+}
+
+interface ProductView {
+    productDetails: ProductDetail;
+    owners: OwnerInfo[];
+}
+
+interface CustomerView extends Array<ProductDetail> {}
+
+interface ProductsNftResponse {
+    count: number;
+    owners: string[];
+    productView: Record<string, ProductView>;
+    customerView: Record<string, CustomerView>;
+}
+
+interface LoyaltyInfo {
+    productNfts: ProductsNftResponse;
+}
 
 type LoyaltyStore = {
     loyaltyData: RE.Result<LoyaltyInfo>;

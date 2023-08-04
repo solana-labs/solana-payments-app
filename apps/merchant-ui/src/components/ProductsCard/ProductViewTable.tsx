@@ -12,6 +12,7 @@ export function ProductViewTable({ productId }: Props) {
     if (RE.isOk(loyaltyData) && loyaltyData.data) {
         // find the selected product
         const selectedProduct = loyaltyData.data.productNfts.productView[productId];
+        console.log('selected produt', selectedProduct);
 
         if (selectedProduct) {
             return (

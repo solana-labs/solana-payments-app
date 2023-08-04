@@ -101,9 +101,19 @@ export const PayToLabel = () => {
                     <div>
                         <p className="">NFT Rewards</p>
                         <div className="flex flex-row ">
-                            {productDetails.map(product => (
-                                <Image key={product.id} src={product.image} alt={product.name} width={50} height={50} />
-                            ))}
+                            {productDetails.map(
+                                product =>
+                                    product.image &&
+                                    product.name && (
+                                        <Image
+                                            key={product.id}
+                                            src={product.image}
+                                            alt={product.name}
+                                            width={50}
+                                            height={50}
+                                        />
+                                    )
+                            )}
                         </div>
                     </div>
                 )}

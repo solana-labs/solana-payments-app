@@ -62,9 +62,14 @@ export interface ProductDetail {
     count: number; // Add this line
 }
 
+export interface OwnerInfo {
+    owner: string;
+    count: number;
+}
+
 interface ProductView {
     productDetails: ProductDetail;
-    owners: string[];
+    owners: OwnerInfo[];
 }
 
 interface CustomerView extends Array<ProductDetail> {}

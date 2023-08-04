@@ -222,7 +222,7 @@ export function TiersCard(props: Props) {
                     <CardDescription>Reward discounts to returning customers</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                    {!merchantInfo.data.loyalty.tiers.length > 0 ? (
+                    {!(merchantInfo.data.loyalty.tiers.length > 0) ? (
                         <Button onClick={selectLoyaltyProgram}>Start the Program</Button>
                     ) : (
                         <Button onClick={selectLoyaltyProgram} pending={loading}>
