@@ -57,6 +57,7 @@ export const fetchPaymentTransaction = async (
             currentDiscount: customerResponse.tier ? customerResponse.tier.discount : undefined,
             customerOwns: customerResponse.tier ? customerResponse.customerOwns : undefined,
             nextTier: customerResponse.nextTier ? customerResponse.nextTier.mint : undefined,
+            isFirstTier: customerResponse.isFirstTier ? customerResponse.isFirstTier : undefined,
         },
     };
 

@@ -45,8 +45,8 @@ if (heliusApiKey == null) {
 const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
 
 export async function getCompressedNftSeeds(merchantAddress: PublicKey) {
-    const tree_seed = 'treeseed1';
-    const mint_seed = 'mintseed1';
+    const tree_seed = 'treeseed3';
+    const mint_seed = 'mintseed3';
 
     const TREE_SEED = crypto
         .createHash('sha256')
@@ -99,14 +99,6 @@ export async function getCompressedAccounts(gasAddress: Keypair, merchantAddress
         ],
         TOKEN_METADATA_PROGRAM_ID
     );
-
-    // console.log('\n\nPRINTING ALL KEYS\n\n');
-    // console.log('treeKey', treeKey.toString());
-    // console.log('mint', mint.toString());
-    // console.log('treeAuthority', treeAuthority.toString());
-    // console.log('bubblegumSigner', bubblegumSigner.toString());
-    // console.log('metadataAccount', metadataAccount.toString());
-    // console.log('masterEditionAccount', masterEditionAccount.toString());
 
     return { treeKey, mint, treeAuthority, bubblegumSigner, metadataAccount, masterEditionAccount };
 }
@@ -204,7 +196,6 @@ export async function setupCollection(
 
     console.log('URI', uploadedMetadata.uri);
     let uri = uploadedMetadata.uri;
-    // let uri = 'https://arweave.net/Toz3gHUV0xMOfNqgeikqXlp68O-KZO_mgYF6y1rMAiY';
     const metadataV3: CreateMetadataAccountArgsV3 = {
         data: {
             name: shopName + ' NFTs',

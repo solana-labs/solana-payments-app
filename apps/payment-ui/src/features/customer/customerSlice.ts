@@ -24,6 +24,7 @@ interface CustomerState {
     nextTier: Tier | null;
     error: string | null;
     customerNfts: ProductDetail[];
+    amountSpent: number | null;
 }
 
 const initalState: CustomerState = {
@@ -34,6 +35,7 @@ const initalState: CustomerState = {
     tier: null,
     error: null,
     customerNfts: [],
+    amountSpent: null,
 };
 
 type BalanceResponse = {
@@ -44,6 +46,7 @@ type BalanceResponse = {
     tier: Tier | null;
     error: string | null;
     customerNfts: ProductDetail[];
+    amountSpent: number | null;
 };
 
 export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
@@ -80,6 +83,7 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                 },
                 error: null,
                 customerNfts: actualData.customerNfts,
+                amountSpent: actualData.amountSpent,
             };
         } catch (error) {
             return {
@@ -90,6 +94,7 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
                 nextTier: null,
                 error: 'There is a fatal error with this app. Please contact the developer.',
                 customerNfts: [],
+                amountSpent: null,
             };
         }
     }
@@ -111,6 +116,7 @@ const customerSlice = createSlice({
                 state.customerOwns = action.payload.customerOwns;
                 state.nextTier = action.payload.nextTier;
                 state.customerNfts = action.payload.customerNfts;
+                state.amountSpent = action.payload.amountSpent;
             });
     },
 });
@@ -123,4 +129,6 @@ export const getTier = (state: RootState): Tier | null => state.customer.tier;
 export const getNextTier = (state: RootState): Tier | null => state.customer.nextTier;
 export const getIsWalletError = (state: RootState): boolean => state.customer.error != null;
 export const getWalletError = (state: RootState): string | null => state.customer.error;
-export const getCustomerNfts = (state: RootState): string | null => state.customer.customerNfts;
+export const getCustomerNfts = (state: RootState): ProductDetail[] | null => state.customer.customerNfts;
+export const getAmountSpent = (state: RootState): number | null => state.customer.amountSpent;
+export const getCustomer = (state: RootState): CustomerState => state.customer;

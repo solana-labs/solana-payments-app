@@ -8,7 +8,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { getBalance, getCustomerNfts, getPointsBalance, getTier } from '@/features/customer/customerSlice';
+import {
+    getAmountSpent,
+    getBalance,
+    getCustomerNfts,
+    getPointsBalance,
+    getTier,
+} from '@/features/customer/customerSlice';
 import { useWallet } from '@solana/wallet-adapter-react';
 import * as web3 from '@solana/web3.js';
 import Image from 'next/image';
@@ -27,6 +33,7 @@ export function CustomerProfile(props: Props) {
     const pointsBalance = useSelector(getPointsBalance);
     const customerTier = useSelector(getTier);
     const customerNfts = useSelector(getCustomerNfts);
+    const amountSpent = useSelector(getAmountSpent);
     const [copied, setCopied] = useState(false);
 
     const walletDisplayString = (pubkey: web3.PublicKey | null) => {
@@ -67,11 +74,16 @@ export function CustomerProfile(props: Props) {
                             {usdcBalance} USDC
                         </DialogDescription>
                         <DialogDescription className="pt-2 text-gray-700 text-md font-normal">
-                            {pointsBalance} Points
+                            {pointsBalance === null ? 0 : pointsBalance} Points
                         </DialogDescription>
                         {customerTier && (
                             <DialogDescription className="pt-2 text-gray-700 text-md font-normal">
-                                {customerTier.name}
+                                {customerTier.name} Tier
+                            </DialogDescription>
+                        )}
+                        {amountSpent && (
+                            <DialogDescription className="pt-2 text-gray-700 text-md font-normal">
+                                ${amountSpent} Spent
                             </DialogDescription>
                         )}
                         {customerNfts && (

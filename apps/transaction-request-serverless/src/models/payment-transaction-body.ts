@@ -15,14 +15,9 @@ export const paymentTransactionBodySchema = object().shape({
             customerOwns: boolean().default(false).optional(),
             currentDiscount: number().optional(),
             nextTier: publicKeySchema.optional(),
+            isFirstTier: boolean().default(false).optional(),
         })
         .optional(),
-    // products: object()
-    //     .shape({
-    //         id: string().optional(),
-    //         active: boolean().optional(),
-    //     })
-    //     .optional(),
 });
 
 export type PaymentTransactionBody = InferType<typeof paymentTransactionBodySchema>;
