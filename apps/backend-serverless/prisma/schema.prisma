@@ -188,11 +188,12 @@ model Tier {
   name       String
   threshold  Float
   discount   Float
-  active     Boolean  @default(false)
+  active     Boolean  @default(true)
   merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId String
   mint       String?
 
+  @@index([name, merchantId], name: "name_merchantId") // Unique index on `name` and `merchantId`
   @@index(merchantId)
 }
 
