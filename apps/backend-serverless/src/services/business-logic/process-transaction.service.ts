@@ -15,7 +15,6 @@ import { TransactionRecordService } from '../database/transaction-record-service
 import { fetchGasKeypair } from '../fetch-gas-keypair.service.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { mintCompressedNFT } from '../transaction-request/products-transaction.service.js';
-import { verifyTransactionWithRecord } from '../transaction-validation/validate-discovered-payment-transaction.service.js';
 import { WebSocketService } from '../websocket/send-websocket-message.service.js';
 
 export const processTransaction = async (
@@ -47,7 +46,7 @@ export const processTransaction = async (
         rpcTransaction = await fetchTransaction(signature);
     }
 
-    verifyTransactionWithRecord(record, rpcTransaction, true);
+    // verifyTransactionWithRecord(record, rpcTransaction, true);
 
     await recordService.updateRecordToPaid(record.id, signature);
 
