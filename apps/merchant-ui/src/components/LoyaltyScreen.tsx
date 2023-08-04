@@ -3,6 +3,7 @@ import { DefaultLayoutScreenTitle } from '@/components/DefaultLayoutScreenTitle'
 import { PointsCard } from '@/components/PointsCard';
 import ProductsCard from '@/components/ProductsCard/index';
 import { TiersCard } from '@/components/TiersCard';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -52,20 +53,25 @@ export function LoyaltyScreen(props: Props) {
                         </div>
                     </WalletMultiButton>
                 ) : (
-                    <Tabs defaultValue="points" className="flex flex-col items-center w-[700px] justify-center">
-                        <div className="flex flex-row space-x-2">
+                    <div className="flex flex-col items-center">
+                        <Tabs defaultValue="points" className="flex flex-col items-center w-[700px] justify-center">
+                            <div className="flex flex-row space-x-2">
+                                {tabs.map(tab => (
+                                    <TabsList key={tab.value}>
+                                        <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
+                                    </TabsList>
+                                ))}
+                            </div>
                             {tabs.map(tab => (
-                                <TabsList key={tab.value}>
-                                    <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
-                                </TabsList>
+                                <TabsContent key={tab.value} value={tab.value} className="w-full flex justify-center">
+                                    {tab.component}
+                                </TabsContent>
                             ))}
-                        </div>
-                        {tabs.map(tab => (
-                            <TabsContent key={tab.value} value={tab.value} className="w-full flex justify-center">
-                                {tab.component}
-                            </TabsContent>
-                        ))}
-                    </Tabs>
+                        </Tabs>
+                        <Button variant="outline" onClick={disconnect} className="w-max">
+                            Disconnect Wallet
+                        </Button>
+                    </div>
                 )}
             </div>
         </DefaultLayoutContent>

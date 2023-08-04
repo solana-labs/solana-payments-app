@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
@@ -161,12 +160,12 @@ export function PointsCard(props: Props) {
         );
     } else if (merchantInfo.data.loyalty.loyaltyProgram != 'points') {
         return (
-            <Card className="w-[400px]">
-                <CardHeader>
+            <Card className="w-max flex flex-col items-center">
+                <CardHeader className="flex flex-col items-center">
                     <CardTitle>Create Points Loyalty Program</CardTitle>
                     <CardDescription>Give back % of purchases to every customer</CardDescription>
                 </CardHeader>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex justify-between flex-col space-y-2">
                     {!merchantInfo.data.loyalty.points.pointsMint ? (
                         <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
                     ) : (
@@ -174,46 +173,41 @@ export function PointsCard(props: Props) {
                             Restart the Program
                         </Button>
                     )}
-                    <Button variant="outline" onClick={disconnect}>
-                        Disconnect Wallet
-                    </Button>
+                    <p className="text-xs">(Disables Points)</p>
                 </CardFooter>
             </Card>
         );
     } else {
         return (
-            <Card className="">
+            <Card className="flex flex-col items-center">
                 <CardHeader>
                     <CardTitle>Manage Points Loyalty Program</CardTitle>
-                    <CardDescription>Give back % of purchases to every customer</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form>
-                        <div className="grid w-full items-center gap-4">
-                            <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="name">Set % points back</Label>
+                        <div className="flex flex-col w-full items-center gap-4">
+                            <div className="flex flex-row space-x-1.5 items-center">
+                                <p>Enable</p>
                                 <Input
                                     type="number"
                                     id="name"
-                                    placeholder="%"
                                     onChange={e => {
                                         const value = parseFloat(e.target.value);
-                                        if (value >= 0 && value <= 100) {
+                                        if ((value >= 0 && value <= 100) || isNaN(value)) {
                                             setPoints(value);
                                         }
                                     }}
                                     value={points}
+                                    className="w-20"
                                 />
+                                <p>% Back</p>
                             </div>
                         </div>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                     <Button pending={loading} onClick={updateLoyaltyPoints}>
-                        Update Loyalty Points Back %
-                    </Button>
-                    <Button variant="outline" onClick={disconnect}>
-                        Disconnect Wallet
+                        Update
                     </Button>
                 </CardFooter>
             </Card>
