@@ -63,6 +63,7 @@ package:
     - 'node_modules/.prisma/client/libquery_engine-linux-arm64-*'
     - '!node_modules/prisma/libquery_engine-*'
     - '!node_modules/@prisma/engines/**'
+    - 'node_modules/@project-serum/**'
 functions:
   install:
     handler: src/handlers/shopify-handlers/install.install
@@ -306,6 +307,7 @@ functions:
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   process-message:
     handler: src/handlers/webhooks/sqs/process-transaction-message.processTransactionMessage
+    timeout: 30
     events:
       - sqs:
           arn: ${self:resources.Outputs.ProcessQueueArn.Value}
@@ -323,6 +325,10 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/${self:custom.gas-object-name}'
   sp-info-message:
     handler: src/handlers/webhooks/sqs/solana-pay-info-message.solanaPayInfoMessage
     events:

@@ -110,9 +110,6 @@ export default function TreeSetup(props: Props) {
                 <Button pending={loading} onClick={handleSave}>
                     Setup
                 </Button>
-                <Button variant="outline" onClick={disconnect}>
-                    Disconnect Wallet
-                </Button>
             </CardFooter>
         </Card>
     );

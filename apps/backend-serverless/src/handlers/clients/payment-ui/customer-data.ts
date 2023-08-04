@@ -20,6 +20,9 @@ export const customerData = Sentry.AWSLambda.wrapHandler(
         Sentry.captureEvent({
             message: 'in customerData',
             level: 'info',
+            extra: {
+                event,
+            },
         });
 
         const paymentRecordService = new PaymentRecordService(prisma);

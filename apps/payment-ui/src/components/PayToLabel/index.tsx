@@ -30,13 +30,18 @@ export const PayToLabel = () => {
     const calculateDiscount = (cart: number, discountRate: number) => (discountRate * cart) / 100;
 
     useEffect(() => {
-        if (customerTier !== null && paymentDetails !== null) {
-            let cart = Number(paymentDetails.totalAmountFiatDisplay.substring(1));
+        if (paymentDetails !== null) {
+            let cart = Number(paymentDetails.usdcSize);
             setCart(cart);
-            setDiscount(calculateDiscount(cart, customerTier.discount));
             setIsLoading(false);
         }
-    }, [customerTier, paymentDetails]);
+    }, [paymentDetails]);
+
+    useEffect(() => {
+        if (customerTier !== null && cart > 0) {
+            setDiscount(calculateDiscount(cart, customerTier.discount));
+        }
+    }, [customerTier, cart]);
 
     function calculateFinalAmount(): number {
         if (!loyaltyDetails || !customer || !paymentDetails || !customerTier) {

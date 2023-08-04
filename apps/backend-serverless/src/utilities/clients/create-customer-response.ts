@@ -125,10 +125,10 @@ export const createCustomerResponse = async (
     let customerOwns =
         currentTier && currentTier.mint ? await customerOwnsTier(customerWallet, currentTier.mint) : false;
 
-    console.log('tier status', currentTier, nextPossibleTier, isFirstTier, customerOwns);
+    // console.log('tier status', currentTier, nextPossibleTier, isFirstTier, customerOwns);
     let customerNfts = (await createProductsNftResponse(merchant)).customerView[customerWallet];
 
-    console.log('customer nfts', customerNfts);
+    // console.log('customer nfts', customerNfts);
     return {
         amountSpent: customer.amountSpent,
         tier: currentTier,

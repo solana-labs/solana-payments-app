@@ -37,7 +37,7 @@ export const PaymentView: React.FC = () => {
                 <div className="w-full h-full flex flex-col items-center">
                     <div className="flex flex-col items-center">
                         <QRCode />
-                        <div className="text-gray-600 text-xs pt-4">Scan this code to pay with your Solana wallet</div>
+                        <p className="text-gray-600 text-xs pt-4">Scan this code to pay with your Solana wallet</p>
                     </div>
                 </div>
             )}

@@ -129,6 +129,7 @@ export function TiersCard(props: Props) {
                 tiers: {
                     ...newTier,
                     ...(data.mintAddress && { mint: data.mintAddress }),
+                    active: true,
                 },
             });
 
@@ -244,7 +245,7 @@ export function TiersCard(props: Props) {
                             <TableHead>$ Threshold</TableHead>
                             <TableHead>% Back</TableHead>
                             <TableHead>Active</TableHead>
-                            {/* <TableHead>Frozen</TableHead> */}
+                            <TableHead>Frozen</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -309,9 +310,9 @@ export function TiersCard(props: Props) {
                                     <TableCell>
                                         <Switch checked={tier.active} onCheckedChange={() => handleToggle(tier.id)} />
                                     </TableCell>
-                                    {/* <TableCell>
-                                        <Switch checked={false} />
-                                    </TableCell> */}
+                                    <TableCell>
+                                        <Switch checked={true} />
+                                    </TableCell>
                                     <TableCell className="flex flex-row space-x-1">
                                         {editing === tier.id ? (
                                             <Button variant="outline" onClick={() => handleSave(tier.id)}>
@@ -371,7 +372,7 @@ export function TiersCard(props: Props) {
                                 />
                             </TableCell>
                             <TableCell></TableCell>
-                            {/* <TableCell></TableCell> */}
+                            <TableCell></TableCell>
                             <TableCell className="flex flex-row space-x-1">
                                 <Button
                                     variant="outline"
