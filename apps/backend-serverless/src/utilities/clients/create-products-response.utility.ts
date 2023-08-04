@@ -3,10 +3,12 @@ import { PublicKey } from '@solana/web3.js';
 import axios from 'axios';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { getCompressedAccounts } from '../../services/transaction-request/products-transaction.service.js';
+import { getConnectionUrl } from '../connection.utility.js';
 
 interface Item {
     id: string;
     content: {
+        json_uri: string;
         metadata: {
             name: string;
             description: string;
@@ -28,11 +30,8 @@ interface Result {
 }
 
 async function fetchAssetsByGroup(page: number, mint: PublicKey): Promise<Result> {
-    const heliusApiKey = process.env.HELIUS_API_KEY;
-    if (!heliusApiKey) throw new Error('Helius API Key not found');
-
     const response = await axios({
-        url: `https://rpc.helius.xyz/?api-key=${heliusApiKey}`,
+        url: getConnectionUrl(),
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -93,10 +92,8 @@ export const createProductsNftResponse = async (merchant: Merchant): Promise<Pro
     let page = 1;
     while (true) {
         const result = await fetchAssetsByGroup(page, mint);
-        // console.log('RESULT', result.items);
         result.items.forEach(item => {
             uniqueOwners.add(item.ownership.owner);
-
             // Product View
             const productType = item.content.json_uri;
             if (!productView[productType]) {

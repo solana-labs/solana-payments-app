@@ -14,6 +14,7 @@ import {
     HeliusEnhancedTransactionArray,
     parseAndValidateHeliusEnchancedTransaction,
 } from '../models/dependencies/helius-enhanced-transaction.model.js';
+import { getConnectionUrl } from '../utilities/connection.utility.js';
 
 export const fetchEnhancedTransaction = async (transactionId: string): Promise<HeliusEnhancedTransaction | null> => {
     let heliusEnhancedTransactions: HeliusEnhancedTransactionArray;
@@ -81,16 +82,8 @@ export const fetchBalance = async (publicKey: string, mint: string): Promise<num
 export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> => {
     let response: AxiosResponse;
 
-    const apiKey = process.env.HELIUS_API_KEY;
-
-    if (apiKey == null) {
-        throw new Error('No API key found');
-    }
-
-    const getAccountInfoUrl = `https://rpc.helius.xyz/?api-key=${apiKey}`;
-
     try {
-        response = await axios.post(getAccountInfoUrl, {
+        response = await axios.post(getConnectionUrl(), {
             jsonrpc: '2.0',
             id: 1,
             method: 'getAccountInfo',

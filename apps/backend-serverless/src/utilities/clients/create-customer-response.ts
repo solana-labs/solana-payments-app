@@ -1,10 +1,10 @@
 import { PaymentRecord, Tier } from '@prisma/client';
 import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchBalance } from '../../services/helius.service.js';
+import { getConnection } from '../connection.utility.js';
 import { ProductDetail, createProductsNftResponse } from './create-products-response.utility.js';
 
 export interface CustomerResponse {
@@ -83,12 +83,7 @@ async function customerOwnsTier(customerWallet: string, tierMint: string): Promi
         let customerAddress = new PublicKey(customerWallet);
         let customerTokenAddress = await getAssociatedTokenAddress(tierMintPubKey, customerAddress);
 
-        const heliusApiKey = process.env.HELIUS_API_KEY;
-        if (heliusApiKey == null) {
-            throw new MissingEnvError('helius api');
-        }
-
-        const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
+        let connection = getConnection();
         await getAccount(connection, customerTokenAddress);
         customerOwns = true;
     } catch {}

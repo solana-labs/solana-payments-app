@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/serverless';
 import { PublicKey } from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
 import { parseAndValidateProductSetupRequestBody } from '../../models/transaction-requests/product-setup-request.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
@@ -42,12 +41,6 @@ export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
 
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
             let gasKeypair = await fetchGasKeypair();
-
-            const heliusApiKey = process.env.HELIUS_API_KEY;
-
-            if (heliusApiKey == null) {
-                throw new MissingEnvError('helius api');
-            }
 
             let newMintAddress;
             let instructions;

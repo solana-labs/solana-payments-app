@@ -1,6 +1,6 @@
 import { GuestIdentityDriver, Metaplex } from '@metaplex-foundation/js';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { getConnection } from '../../utilities/connection.utility.js';
 
 type TransactionData = {
     base: string;
@@ -14,13 +14,7 @@ export const fetchCreateTiersTransaction = async (
     discount: number,
     threshold: number
 ): Promise<TransactionData> => {
-    const heliusApiKey = process.env.HELIUS_API_KEY;
-
-    if (heliusApiKey == null) {
-        throw new MissingEnvError('helius api');
-    }
-
-    const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
+    let connection = getConnection();
     let metaplex = Metaplex.make(connection);
 
     let merchantIdentity = new GuestIdentityDriver(merchantAddress);
@@ -61,13 +55,7 @@ export const fetchUpdateTiersTransaction = async (
     discount: number,
     threshold: number
 ): Promise<string | null> => {
-    const heliusApiKey = process.env.HELIUS_API_KEY;
-
-    if (heliusApiKey == null) {
-        throw new MissingEnvError('helius api');
-    }
-
-    const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
+    let connection = getConnection();
     let metaplex = Metaplex.make(connection);
 
     let merchantIdentity = new GuestIdentityDriver(merchantAddress);

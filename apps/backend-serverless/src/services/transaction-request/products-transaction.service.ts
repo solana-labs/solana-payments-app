@@ -30,19 +30,13 @@ import {
     getAssociatedTokenAddress,
     getMinimumBalanceForRentExemptMint,
 } from '@solana/spl-token';
-import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
+import { Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 import axios from 'axios';
 import crypto from 'crypto';
 import Jimp from 'jimp';
-import { MissingEnvError } from '../../errors/missing-env.error.js';
+import { getConnection } from '../../utilities/connection.utility.js';
 
-const heliusApiKey = process.env.HELIUS_API_KEY;
-
-if (heliusApiKey == null) {
-    throw new MissingEnvError('helius api');
-}
-
-const connection = new Connection(`https://rpc.helius.xyz/?api-key=${heliusApiKey}`);
+let connection = getConnection();
 
 export async function getCompressedNftSeeds(merchantAddress: PublicKey) {
     const tree_seed = 'treeseed3';
