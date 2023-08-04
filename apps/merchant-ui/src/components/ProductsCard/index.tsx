@@ -13,8 +13,6 @@ export default function ProductsCard(props: Props) {
     const merchantInfo = useMerchantStore(state => state.merchantInfo);
     const getMerchantInfo = useMerchantStore(state => state.getMerchantInfo);
 
-    console.log('merchant Info', merchantInfo);
-
     if (RE.isFailed(merchantInfo)) {
         return (
             <DefaultLayoutContent className={props.className}>

@@ -48,13 +48,13 @@ const WebsocketHandler: React.FC = () => {
             socket.current = new WebSocket(websocketUrl + '?paymentId=' + paymentId);
 
             socket.current.onopen = () => {
-                console.log('WebSocket Client Connected');
+                // console.log('WebSocket Client Connected');
                 dispatch(setWebsocketConnected());
             };
 
             socket.current.onmessage = event => {
                 const data = JSON.parse(event.data);
-                console.log('Message: ' + data.messageType);
+                // console.log('Message: ' + data.messageType);
 
                 if (data.messageType == 'transactionRequestStarted') {
                     dispatch(setTransactionRequestStarted());
@@ -101,7 +101,7 @@ const WebsocketHandler: React.FC = () => {
             };
 
             socket.current.onclose = () => {
-                console.log('WebSocket is closed now.');
+                // console.log('WebSocket is closed now.');
                 stopReconnectionAttempts.current = true;
                 dispatch(
                     setNotification({
@@ -113,7 +113,7 @@ const WebsocketHandler: React.FC = () => {
             };
 
             socket.current.onerror = error => {
-                console.log('WebSocket encountered error: ', error);
+                // console.log('WebSocket encountered error: ', error);
                 stopReconnectionAttempts.current = true;
                 dispatch(
                     setNotification({
@@ -127,7 +127,7 @@ const WebsocketHandler: React.FC = () => {
             const interval = 5000; // 5 seconds
 
             timer.current = setInterval(() => {
-                console.log('Trying to connect');
+                // console.log('Trying to connect');
                 clearInterval(timer.current);
                 dispatch(setWebsocketReadyToConnect());
             }, interval);

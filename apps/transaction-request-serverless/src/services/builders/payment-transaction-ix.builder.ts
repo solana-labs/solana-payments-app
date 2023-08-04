@@ -159,7 +159,7 @@ export class PaymentTransactionBuilder {
                 this.customerOwnsTier
             ) {
                 receivingQuantity = Math.ceil((receivingQuantity * (100 - this.currentDiscount)) / 100);
-                console.log('after discoutn', receivingQuantity);
+                // console.log('after discoutn', receivingQuantity);
             }
             if (this.sendingToken.toBase58() != this.receivingToken.toBase58()) {
                 swapIxs = await createSwapIx({

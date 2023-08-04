@@ -50,17 +50,6 @@ export const PayToLabel = () => {
         }
     }
 
-    console.log(
-        'tier details',
-        loyaltyDetails,
-        customerTier,
-        customerNextTier,
-        discount,
-        customer,
-        paymentDetails,
-        productDetails
-    );
-
     const showPointsBack = loyaltyDetails?.loyaltyProgram === 'points';
     const hasProductDetails = productDetails.length > 0;
     const showTierDiscount =

@@ -67,7 +67,6 @@ export const fetchCustomer = createAsyncThunk<BalanceResponse, string>(
             const actualData = customerResponse.data.customerResponse;
             const tier = actualData.tier;
             const nextTier = actualData.nextTier;
-            console.log('actual data enxt', actualData.nextTier);
 
             return {
                 usdcBalance: actualData.usdc,

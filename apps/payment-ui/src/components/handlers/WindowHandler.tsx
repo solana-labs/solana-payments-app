@@ -10,7 +10,6 @@ const WindowHandler: React.FC = () => {
         const handleResize = () => {
             const isMobile = window.innerWidth < 640;
             if (isMobile) {
-                console.log('is mobile');
                 dispatch(setPaymentMethod('connect-wallet'));
             }
         };

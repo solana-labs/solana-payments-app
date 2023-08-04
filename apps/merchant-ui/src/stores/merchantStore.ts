@@ -96,8 +96,6 @@ export const useLoyaltyStore = create<LoyaltyStore>(set => ({
                 credentials: 'include',
             });
             const loyaltyData = await response.json();
-            console.log('got back json', loyaltyData);
-            console.log('does product nfts exist', loyaltyData.productNfts);
 
             set({
                 loyaltyData: RE.ok({
@@ -105,7 +103,6 @@ export const useLoyaltyStore = create<LoyaltyStore>(set => ({
                 }),
             });
         } catch (error) {
-            console.log('Failed to fetch loyalty info', error);
             set({ loyaltyData: RE.failed(new Error('Failed to fetch loyalty info')) });
         }
     },
@@ -138,7 +135,6 @@ export const useMerchantStore = create<MerchantStore>(set => ({
                 }),
             });
         } catch (error) {
-            console.log('Failed to fetch merchant info', error);
             set({ merchantInfo: RE.failed(new Error('Failed to fetch merchant info')) });
         }
     },

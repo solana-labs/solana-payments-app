@@ -120,8 +120,6 @@ export const useClosedRefundStore = create<ClosedRefundStore>(set => ({
                 set({ refundCount: dataClosed.refundData.total });
             }
         } catch (error) {
-            console.log('error: ', error);
-            // TODO handle this failure better
             set({ closedRefunds: RE.failed(new Error('Failed to fetch closed refunds')) });
         }
     },

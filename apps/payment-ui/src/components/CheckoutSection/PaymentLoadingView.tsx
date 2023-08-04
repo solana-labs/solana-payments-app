@@ -10,7 +10,7 @@ const StepBar = ({ completed, include }: { completed: boolean; include: boolean 
             'w-1/2 scale-105',
             'h-1',
             !include ? 'bg-background' : completed ? 'bg-black' : 'bg-gray-200',
-            'self-center',
+            'self-center'
         )}
     />
 );
@@ -79,8 +79,6 @@ export const PaymentLoadingView = () => {
     const mergedState = useSelector(getMergedState);
 
     const currentStep = mergedState - 1;
-
-    console.log(currentStep, 'currentStep');
 
     return (
         <div className="flex flex-col items-center">

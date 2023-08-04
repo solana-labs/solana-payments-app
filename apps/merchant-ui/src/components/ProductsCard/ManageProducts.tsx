@@ -36,10 +36,7 @@ export function ManageProducts(props: Props) {
         async function fetchLoyaltyData() {
             try {
                 await getLoyaltyData();
-                console.log('loyalty after use effec', merchantInfo);
-            } catch (error) {
-                console.log('error fetching merchant info', error);
-            }
+            } catch (error) {}
         }
         fetchLoyaltyData();
     }, []);

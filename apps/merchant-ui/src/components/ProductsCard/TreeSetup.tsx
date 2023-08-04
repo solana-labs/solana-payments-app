@@ -23,7 +23,6 @@ export default function TreeSetup(props: Props) {
 
     const [maxNFTs, setMaxNFTs] = useState(0);
     const [loading, setLoading] = useState(false);
-    console.log('merchant Info', merchantInfo);
 
     async function handleSave() {
         if (!publicKey) {

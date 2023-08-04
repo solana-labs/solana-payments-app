@@ -24,7 +24,6 @@ export default function CollectionSetup(props: Props) {
     const [name, setName] = useState('');
     const [symbol, setSymbol] = useState('');
     const [loading, setLoading] = useState(false);
-    console.log('merchant Info', merchantInfo);
 
     async function handleSave() {
         if (!publicKey) {

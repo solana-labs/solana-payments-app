@@ -6,7 +6,6 @@ import Image from 'next/image';
 export function CustomerViewTable() {
     const loyaltyData = useLoyaltyStore(state => state.loyaltyData);
 
-    console.log('curosimer view', loyaltyData);
     return (
         <Table>
             <TableCaption>A list of customers and their owned products.</TableCaption>

@@ -45,6 +45,6 @@ export const getKybState = async (inquiryId: string): Promise<KybState> => {
         return KybState.pending;
     }
 
-    console.log('status', status);
+    // console.log('status', status);
     throw new DependencyError('persona unknown state, reached end of options');
 };
