@@ -42,7 +42,7 @@ export const processTransaction = async (
 
     // TODO: If we're gonna time out, we should requeue this
     while (rpcTransaction == null) {
-        await delay(1000);
+        await delay(500);
         rpcTransaction = await fetchTransaction(signature);
     }
 

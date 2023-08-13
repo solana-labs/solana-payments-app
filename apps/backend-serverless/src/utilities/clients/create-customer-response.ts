@@ -6,7 +6,6 @@ import { MerchantService } from '../../services/database/merchant-service.databa
 import { fetchBalance } from '../../services/helius.service.js';
 import { getConnection } from '../connection.utility.js';
 import { ProductDetail, createProductsNftResponse } from './create-products-response.utility.js';
-
 export interface CustomerResponse {
     amountSpent: number;
     tier: Tier | null;
@@ -125,10 +124,14 @@ export const createCustomerResponse = async (
     let customerOwns =
         currentTier && currentTier.mint ? await customerOwnsTier(customerWallet, currentTier.mint) : false;
 
-    // console.log('tier status', currentTier, nextPossibleTier, isFirstTier, customerOwns);
-    let customerNfts = (await createProductsNftResponse(merchant)).customerView[customerWallet];
+    let customerNfts: ProductDetail[] = [];
 
-    // console.log('customer nfts', customerNfts);
+    try {
+        customerNfts = (await createProductsNftResponse(merchant)).customerView[customerWallet];
+    } catch (err) {
+        console.log('error getting customer nfts', err);
+    }
+
     return {
         amountSpent: customer.amountSpent,
         tier: currentTier,

@@ -45,7 +45,7 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
             throw new UnauthorizedRequestError('Token has expired');
         }
     } else {
-        if (useAuthMock !== null && useAuthMock !== undefined) {
+        if (useAuthMock) {
             const payload = {
                 id: useAuthMock,
                 iat: Math.floor(Date.now() / 1000),

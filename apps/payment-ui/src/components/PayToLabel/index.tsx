@@ -27,25 +27,24 @@ export const PayToLabel = () => {
     const [cart, setCart] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
 
-    const calculateDiscount = (cart: number, discountRate: number) => (discountRate * cart) / 100;
-
     useEffect(() => {
-        if (paymentDetails !== null) {
-            let cart = Number(paymentDetails.usdcSize);
-            setCart(cart);
+        if (paymentDetails) {
+            let cartValue = Number(paymentDetails.usdcSize);
+
+            setCart(cartValue);
+            if (customerTier && cartValue > 0) {
+                setDiscount((cartValue * customerTier.discount) / 100);
+            }
             setIsLoading(false);
         }
-    }, [paymentDetails]);
-
-    useEffect(() => {
-        if (customerTier !== null && cart > 0) {
-            setDiscount(calculateDiscount(cart, customerTier.discount));
-        }
-    }, [customerTier, cart]);
+    }, [paymentDetails, customerTier]);
 
     function calculateFinalAmount(): number {
-        if (!loyaltyDetails || !customer || !paymentDetails || !customerTier) {
-            return 0;
+        if (!paymentDetails) {
+            return -1;
+        }
+        if (!loyaltyDetails || !customer || !customerTier) {
+            return paymentDetails.usdcSize;
         }
 
         if (loyaltyDetails?.loyaltyProgram === 'tiers' && customer.customerOwns) {
@@ -73,7 +72,7 @@ export const PayToLabel = () => {
                     <div className="divider" />
                 </div>
                 <CartAmountLoading />
-                <DiscountAmountLoading />
+                {showTierDiscount && <DiscountAmountLoading />}
                 <FeePriceDisplayLoading />
             </div>
         );
