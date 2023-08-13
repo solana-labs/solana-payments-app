@@ -79,7 +79,7 @@ export const updateMerchant = Sentry.AWSLambda.wrapHandler(
             } catch (error) {
                 // it's unlikely that this will throw but we should catch and record all errors underneath this, merchant will get blocked elsewhere
                 // we don't need to error out here because a new merchant shouldn't have a kyb inquiry but if they do
-                console.log('error with kyb');
+                console.log('error with kyb', error);
 
                 Sentry.captureException(error);
                 await Sentry.flush(2000);

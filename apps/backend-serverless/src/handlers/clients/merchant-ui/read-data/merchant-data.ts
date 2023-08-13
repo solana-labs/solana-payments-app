@@ -42,10 +42,10 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             ) {
                 try {
                     merchant = await syncKybState(merchant, prisma);
-                } catch {
-                    // it's unlikely that this will throw but we should catch and record all errors underneath this
-                    // we don't need to error out here because a new merchant shouldn't have a kyb inquirey but if they do
-                    // we don't wana disrupt the flow, they'll just get blocked elsewhere
+                } catch (error) {
+                    console.log('error with kyb', error);
+                    Sentry.captureException(error);
+                    await Sentry.flush(2000);
                 }
             }
 

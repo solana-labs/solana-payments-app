@@ -34,7 +34,7 @@ export function KYBButton(props: Props) {
         </div>
     ) : kybState === 'pending' ? (
         <div className="flex items-center bg-indigo-100 px-4 py-2.5 rounded-lg">
-            <div className="text-indigo-700 text-sm font-semibold mr-2">Pending verification</div>
+            <div className="text-indigo-700 text-sm font-semibold mr-2">Pending email verification</div>
         </div>
     ) : kybState === 'failed' ? (
         <div className="flex items-center bg-red-100 px-4 py-2.5 rounded-lg">
@@ -56,7 +56,7 @@ export function KYBButton(props: Props) {
                         'place-items-center',
                         'right-0',
                         'top-0',
-                        'z-10',
+                        'z-10'
                     )}
                 >
                     <Dialog.Content
@@ -65,7 +65,7 @@ export function KYBButton(props: Props) {
                     >
                         <Inquiry
                             templateId="itmpl_r9DWaWkBDNJb2KTd1c83i5Xg"
-                            environmentId="env_zgfWXWXgfPoDANKtnLraWC1V"
+                            environmentId={process.env.NEXT_PUBLIC_PERSONA_ENVIRONMENT_ID}
                             frameWidth={PERSONA_WIDTH}
                             frameHeight={PERSONA_HEIGHT}
                             onComplete={async ({ inquiryId, status, fields }) => {
