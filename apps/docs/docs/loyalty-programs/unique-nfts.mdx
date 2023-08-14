@@ -1,0 +1,20 @@
+---
+title: Unique NFTs
+sidebar_position: 3
+---
+
+# Unique NFTs
+
+This program allows you to reward your customers with a unique cNFT every time they buy a specific product that you specify.
+
+# Architecture
+
+The first part of the flow is the merchant selecting how many products they'd like to mint an NFT for. This data is important for defining the depth of the merkle tree we will use to store the product NFT collection.
+
+The second part allows a merchant to define some metadata, which will be used to tie together the minted NFTs into one collection.
+
+Finally, the merchants are taken to a page with all of their Shopify products, along with the product's image. When a merchant decides reward customers with an NFT for the first time, the product's image is uploaded to arweave as a metadata template. From there, everytime a customer's checkout includes that product, a new NFT is minted with the product's image as the metadata.
+
+## Data display
+
+The loyalty page includes some basic views about which customers own which products, allowing for primitive analytics for merchants to see which products are most popular for crypto users.

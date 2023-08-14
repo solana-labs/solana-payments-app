@@ -1,0 +1,20 @@
+---
+title: Tiered Discounts
+sidebar_position: 2
+---
+
+# Tiered Discounts
+
+This program allows merchants to setup a tiered discount program where customers are rewarded a discount based on their total spend. For the merchant, they select a threshold spend, a % discount, and a name for the tier. As a merchant, you can update, add, or disable tiers at any time.
+
+For the customer, once they have reached the threshold spend, their total is discounted by the % discount. The customer is also notified if they will be upgraded in tiers, and what their future reward will be.
+
+# Architecture
+
+Each tier is a SFT, where name, threshold, and discount all form the SFT metadata. When a customer is awarded a tier, they are minted 1 SFT for that tier. When the customer is upgraded to a new tier, their existing SFT is burned, and a new SFT is minted for the new tier.
+
+The tiers themselves are stored in our database for quick reference, and metadatas are created to display data onchain for the customer to view as well.
+
+# Future Plans
+
+We aim to provide more comphrensive data for merchants to see what tiers customers are in.

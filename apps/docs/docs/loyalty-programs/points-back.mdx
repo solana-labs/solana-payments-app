@@ -1,0 +1,20 @@
+---
+title: Points Back
+sidebar_position: 1
+---
+
+# Points Back
+
+This program allows merchants to set a % back where customers are rewarded a certain number of points per order.
+
+The customer, once they have accumulated enough points, can purchase products with their points.
+
+# Architecture
+
+Specifically, we initialize and create a new mint (where the authority is the system gas keypair), store the public key in the merchant's database row, and then use that mint to mint points back to the customer.
+
+The points back % is a value stored in a database, which the merchant can update at will.
+
+# Future Plans
+
+In the future, we aim to store the points back % as a part of the token metadata.
