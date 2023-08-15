@@ -198,7 +198,7 @@ export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
                 paymentRecord,
                 merchant,
                 account,
-                gasKeypair.publicKey.toBase58(),
+                gasKeypair,
                 singleUseKeypair.publicKey.toBase58(),
                 gasKeypair.publicKey.toBase58(),
                 paymentRequest.payWithPoints,

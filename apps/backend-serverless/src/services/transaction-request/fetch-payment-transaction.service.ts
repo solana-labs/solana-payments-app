@@ -1,4 +1,5 @@
 import { Merchant, PaymentRecord } from '@prisma/client';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import axios from 'axios';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import {
@@ -7,12 +8,13 @@ import {
 } from '../../models/transaction-requests/transaction-request-response.model.js';
 import { CustomerResponse } from '../../utilities/clients/create-customer-response.js';
 import { buildPayTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
+import { getPointsMint } from './fetch-points-setup-transaction.service.js';
 
 export const fetchPaymentTransaction = async (
     paymentRecord: PaymentRecord,
     merchant: Merchant,
     account: string,
-    gas: string,
+    gasKeypair: Keypair,
     singleUseNewAcc: string,
     singleUsePayer: string,
     payWithPoints: boolean,
@@ -31,7 +33,7 @@ export const fetchPaymentTransaction = async (
         account,
         USDC_MINT.toBase58(),
         USDC_MINT.toBase58(),
-        gas,
+        gasKeypair.publicKey.toBase58(),
         paymentRecord.usdcAmount.toFixed(6),
         'size',
         'blockhash',
@@ -45,11 +47,13 @@ export const fetchPaymentTransaction = async (
         'Content-Type': 'application/json',
     };
 
+    const pointsMint = await getPointsMint(gasKeypair, new PublicKey(merchant.id));
+
     const body = {
         loyaltyProgram: merchant.loyaltyProgram,
         payWithPoints: payWithPoints,
         points: {
-            mint: merchant.pointsMint,
+            mint: pointsMint.toBase58(),
             back: merchant.pointsBack,
         },
         tiers: {

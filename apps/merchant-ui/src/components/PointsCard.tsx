@@ -58,7 +58,6 @@ export function PointsCard(props: Props) {
             await updateLoyalty({
                 loyaltyProgram: 'points',
                 points: {
-                    mint: data.pointsMint,
                     back: 1,
                 },
             });
@@ -166,7 +165,7 @@ export function PointsCard(props: Props) {
                     <CardDescription>Give back % of purchases to every customer</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between flex-col space-y-2">
-                    {!merchantInfo.data.loyalty.points.pointsMint ? (
+                    {!merchantInfo.data.loyalty.points.pointsBack ? (
                         <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
                     ) : (
                         <Button onClick={selectLoyaltyProgram} pending={loading}>

@@ -3,7 +3,9 @@ import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 import { USDC_MINT } from '../../configs/tokens.config.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
+import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
 import { fetchBalance } from '../../services/helius.service.js';
+import { getPointsMint } from '../../services/transaction-request/fetch-points-setup-transaction.service.js';
 import { getConnection } from '../connection.utility.js';
 import { ProductDetail, createProductsNftResponse } from './create-products-response.utility.js';
 export interface CustomerResponse {
@@ -113,7 +115,12 @@ export const createCustomerResponse = async (
         };
     }
 
-    let points = merchant.pointsMint ? await fetchBalance(customerWallet, merchant.pointsMint) : null;
+    let points: number | null = null;
+    if (merchant.pointsMint) {
+        let gasKeypair = await fetchGasKeypair();
+        const pointsMint = await getPointsMint(gasKeypair, new PublicKey(merchant.id));
+        points = await fetchBalance(customerWallet, pointsMint.toBase58());
+    }
 
     let tiers = await merchantService.getTiers(merchant.id);
     const { currentTier, nextPossibleTier, isFirstTier } = await determineTier(

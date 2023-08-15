@@ -41,7 +41,6 @@ export type MerchantUpdate = {
     kybInquiry: string;
     kybState: KybState;
     active: boolean;
-    lastFetched: Date;
 
     loyaltyProgram: LoyaltyProgram;
     productStatus: ProductStatus;

@@ -5,8 +5,7 @@ export interface LoyaltyResponse {
     loyaltyProgram: LoyaltyProgram;
     productStatus: ProductStatus;
     points: {
-        pointsMint: string | null;
-        pointsBack: number;
+        pointsBack: number | null;
     };
     products: Product[];
     tiers: Tier[];
@@ -24,8 +23,7 @@ export const createLoyaltyResponse = async (merchant: Merchant): Promise<Loyalty
         loyaltyProgram: merchant.loyaltyProgram,
         productStatus: merchant.productStatus,
         points: {
-            pointsMint: merchant.pointsMint ? merchant.pointsMint : null,
-            pointsBack: merchant.pointsBack ? merchant.pointsBack : 0,
+            pointsBack: merchant.pointsBack ? merchant.pointsBack : null,
         },
         products: products,
         tiers: tiers,

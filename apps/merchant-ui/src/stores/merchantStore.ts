@@ -25,7 +25,6 @@ export interface LoyaltyDetails {
     loyaltyProgram: 'none' | 'points' | 'tiers';
     productStatus: 'tree' | 'collection' | 'ready';
     points: {
-        pointsMint: string | null;
         pointsBack: number;
     };
     products: Product[];

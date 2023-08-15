@@ -138,7 +138,7 @@ export class PaymentTransactionBuilder {
                 this.pointsMint,
                 customerTokenAddress,
                 this.feePayer,
-                receivingQuantity * this.pointsBack
+                (receivingQuantity * this.pointsBack) / 100
             );
             transaction = transaction.add(mintIx);
         }

@@ -86,7 +86,9 @@ export const PayToLabel = () => {
                 {showPointsBack && (
                     <div className="flex flex-row space-x-1">
                         <p className="">Points Back</p>
-                        <p className="">{(paymentDetails.usdcSize * loyaltyDetails?.points.pointsBack).toFixed(2)}</p>
+                        <p className="">
+                            {((paymentDetails.usdcSize * loyaltyDetails?.points.pointsBack) / 100).toFixed(2)}
+                        </p>
                     </div>
                 )}
 
