@@ -16,7 +16,7 @@ export function SupportFaq(props: Props) {
                 qas={[
                     {
                         question: 'What is a self-custodial wallet?',
-                        answer: 'This is a device or application that stores a collection of keys and can be used to send, receive, and track ownership of cryptocurrencies. “Self-custody” simply means that you and you alone have access to the keypairs of your wallet.',
+                        answer: 'This is a device or application that stores a collection of keys and can be used to send, receive, and track ownership of cryptocurrencies. “Self-custody” simply means that you and you alone have access to the keypairs of your wallet. It is usually a wallet app on Solana, like Solflare or Phantom.',
                     },
                     {
                         question: 'What kind of wallet can I use to receive payments?',

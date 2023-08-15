@@ -25,7 +25,7 @@ export function Refunds(props: Props) {
                 <Tabs.Content value="open">
                     {showNotification && ( // Only render this block if showNotification is true
                         <div className="p-4 rounded-2xl bg-slate-50 mt-6 flex flex-row relative">
-                            <div>
+                            <div className="flex flex-col space-y-2">
                                 <div className="flex items-center space-x-2.5">
                                     <Info className="h-5 w-5 fill-slate-900" />
                                     <div className="text-black font-medium text-xs">
@@ -33,11 +33,17 @@ export function Refunds(props: Props) {
                                     </div>
                                 </div>
                                 <div className="my-2.5 text-xs text-neutral-600">
-                                    • Usually a wallet app on Solana, like Solflare or Phantom
-                                    <br />• Refunds cannot be processed with a Coinbase account
+                                    • Refunds cannot be processed with a Coinbase account
                                 </div>
                                 <Link className="font-semibold text-indigo-700 text-xs" href="/support">
                                     What&apos;s a self-custodial wallet?
+                                </Link>
+
+                                <Link
+                                    className="font-semibold text-indigo-700 text-xs"
+                                    href="https://shopifydocs.solanapay.com/merchants/refunds"
+                                >
+                                    How do refunds get processed?
                                 </Link>
                             </div>
                             <button onClick={() => setShowNotification(false)} className="absolute right-2 top-2 p-2">
