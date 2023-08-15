@@ -1,8 +1,5 @@
-import {
-    CreateMetadataAccountArgsV3,
-    PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
-    createCreateMetadataAccountV3Instruction,
-} from '@metaplex-foundation/mpl-token-metadata';
+import { GuestIdentityDriver, Metaplex } from '@metaplex-foundation/js';
+import { TokenStandard } from '@metaplex-foundation/mpl-token-metadata';
 import { Merchant } from '@prisma/client';
 import {
     MINT_SIZE,
@@ -15,7 +12,7 @@ import crypto from 'crypto';
 import { getConnection } from '../../utilities/connection.utility.js';
 
 export async function getPointsMintSeed(merchantAddress: PublicKey) {
-    const points_seed = 'pointsseed1';
+    const points_seed = 'pointsseed2';
 
     const POINTS_SEED = crypto
         .createHash('sha256')
@@ -26,30 +23,25 @@ export async function getPointsMintSeed(merchantAddress: PublicKey) {
     return { POINTS_SEED };
 }
 
-export async function getPointsMint(gasAddress: Keypair, merchantAddress: PublicKey): Promise<PublicKey> {
+export async function getPointsMint(gasAddress: PublicKey, merchantAddress: PublicKey): Promise<PublicKey> {
     const { POINTS_SEED } = await getPointsMintSeed(merchantAddress);
-    let pointsMint = await PublicKey.createWithSeed(gasAddress.publicKey, POINTS_SEED, TOKEN_PROGRAM_ID);
+    let pointsMint = await PublicKey.createWithSeed(gasAddress, POINTS_SEED, TOKEN_PROGRAM_ID);
     return pointsMint;
 }
 
 export const fetchPointsSetupTransaction = async (
     mint: PublicKey,
-    gasAddress: PublicKey,
+    gasAddress: Keypair,
     payer: PublicKey,
     merchant: Merchant
 ): Promise<Transaction> => {
     let connection = getConnection();
-    // const metaplex = Metaplex.make(connection).use(keypairIdentity(gasAddress)).use(bundlrStorage());
+    let metaplex = Metaplex.make(connection);
+    let merchantIdentity = new GuestIdentityDriver(payer);
 
     const lamports = await getMinimumBalanceForRentExemptMint(connection);
 
-    const blockhash = await connection.getLatestBlockhash();
     const programId = TOKEN_PROGRAM_ID;
-
-    const [metadataAccount, _bump] = PublicKey.findProgramAddressSync(
-        [Buffer.from('metadata', 'utf8'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-        TOKEN_METADATA_PROGRAM_ID
-    );
 
     // const MY_TOKEN_METADATA: UploadMetadataInput = {
     //     name: merchant.name + ' POINTS',
@@ -61,50 +53,86 @@ export const fetchPointsSetupTransaction = async (
     // const { uri } = await metaplex.nfts().uploadMetadata(MY_TOKEN_METADATA);
     const uri = 'https://arweave.net/YjWWh-kE596IX3FYIk1YOYMk9CIKUHjsoOaVU8XyDkg';
 
-    const metadataV3: CreateMetadataAccountArgsV3 = {
-        data: {
-            name: merchant.name + ' POINTS',
-            symbol: 'PTS',
-            uri,
-            sellerFeeBasisPoints: 100,
-            creators: null,
-            collection: null,
-            uses: null,
-        },
-        isMutable: true,
-        collectionDetails: null,
-    };
-
     const { POINTS_SEED } = await getPointsMintSeed(new PublicKey(merchant.id));
-    return new Transaction({
-        feePayer: payer,
-        blockhash: blockhash.blockhash,
-        lastValidBlockHeight: blockhash.lastValidBlockHeight,
-    })
-        .add(
-            SystemProgram.createAccountWithSeed({
+    let nftBuilder = await metaplex
+        .nfts()
+        .builders()
+        .createSft(
+            {
+                updateAuthority: gasAddress,
+                mintAuthority: gasAddress,
+                uri: uri,
+                name: merchant.name + ' POINTS',
+                sellerFeeBasisPoints: 1,
+                symbol: 'PTS',
+                useExistingMint: mint,
+                tokenStandard: TokenStandard.Fungible,
+            },
+            { payer: merchantIdentity }
+        );
+
+    const latestBlockhash = await connection.getLatestBlockhash();
+    const prep = await nftBuilder.prepend(
+        {
+            instruction: SystemProgram.createAccountWithSeed({
                 fromPubkey: payer,
                 newAccountPubkey: mint,
-                basePubkey: gasAddress,
+                basePubkey: gasAddress.publicKey,
                 seed: POINTS_SEED,
                 lamports,
                 space: MINT_SIZE,
                 programId,
             }),
-            createInitializeMint2Instruction(mint, 6, gasAddress, gasAddress, programId)
-        )
-        .add(
-            createCreateMetadataAccountV3Instruction(
-                {
-                    metadata: metadataAccount,
-                    mint: mint,
-                    mintAuthority: gasAddress,
-                    payer: payer,
-                    updateAuthority: gasAddress,
-                },
-                {
-                    createMetadataAccountArgsV3: metadataV3,
-                }
-            )
+            signerPubkeys: [gasAddress],
+        },
+        {
+            instruction: createInitializeMint2Instruction(
+                mint,
+                6,
+                gasAddress.publicKey,
+                gasAddress.publicKey,
+                programId
+            ),
+            signerPubkeys: [gasAddress],
+        }
+    );
+    let transaction = await prep.toTransaction(latestBlockhash);
+    return transaction;
+};
+
+export const fetchPointsUpdateTransaction = async (
+    gasAddress: Keypair,
+    payer: PublicKey,
+    merchant: Merchant,
+    back: number
+): Promise<Transaction> => {
+    let connection = getConnection();
+    let metaplex = Metaplex.make(connection);
+
+    let merchantIdentity = new GuestIdentityDriver(payer);
+
+    let mint = await getPointsMint(gasAddress.publicKey, new PublicKey(merchant.id));
+    const nft = await metaplex.nfts().findByMint({ mintAddress: mint });
+    let updatedFields = {
+        sellerFeeBasisPoints: back * 100,
+    };
+
+    let nftBuilder = await metaplex
+        .nfts()
+        .builders()
+        .update(
+            {
+                nftOrSft: nft,
+                updateAuthority: gasAddress,
+                ...updatedFields,
+            },
+            {
+                payer: merchantIdentity,
+            }
         );
+
+    const latestBlockhash = await connection.getLatestBlockhash();
+    const transaction = await nftBuilder.toTransaction(latestBlockhash);
+
+    return transaction;
 };

@@ -47,7 +47,7 @@ export const fetchPaymentTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    const pointsMint = await getPointsMint(gasKeypair, new PublicKey(merchant.id));
+    const pointsMint = await getPointsMint(gasKeypair.publicKey, new PublicKey(merchant.id));
 
     const body = {
         loyaltyProgram: merchant.loyaltyProgram,
