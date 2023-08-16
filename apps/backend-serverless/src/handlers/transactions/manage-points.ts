@@ -35,11 +35,9 @@ export const managePointsTransaction = Sentry.AWSLambda.wrapHandler(
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchantService = new MerchantService(prisma);
-            console.log('event stuff', event.body);
             const pointsUpdateRequest: PointsUpdateRequest = parseAndValidatePointsUpdateRequestBody(
                 JSON.parse(event.body)
             );
-            console.log('after parse', pointsUpdateRequest);
 
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
@@ -50,7 +48,6 @@ export const managePointsTransaction = Sentry.AWSLambda.wrapHandler(
             let transaction = await fetchPointsUpdateTransaction(gasKeypair, new PublicKey(account), merchant, back);
 
             transaction.partialSign(gasKeypair);
-            console.log('about to send transaction', transaction);
 
             const transactionBuffer = transaction.serialize({
                 verifySignatures: false,
