@@ -27,7 +27,7 @@ export const getKybState = async (inquiryId: string): Promise<KybState> => {
         throw new DependencyError('persona couldnt find status');
     }
 
-    if (status === 'completed') {
+    if (status === 'approved') {
         return KybState.finished;
     }
 
@@ -39,7 +39,7 @@ export const getKybState = async (inquiryId: string): Promise<KybState> => {
         status === 'created' ||
         status === 'pending' ||
         status === 'needs_review' ||
-        status === 'approved' ||
+        status === 'completed' ||
         status === 'declined'
     ) {
         return KybState.pending;
