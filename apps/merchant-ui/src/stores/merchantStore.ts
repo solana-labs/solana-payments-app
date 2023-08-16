@@ -26,6 +26,7 @@ export interface LoyaltyDetails {
     productStatus: 'tree' | 'collection' | 'ready';
     points: {
         pointsBack: number;
+        pointsMint: string;
     };
     products: Product[];
     tiers: Tier[];
@@ -173,6 +174,20 @@ export async function updateLoyalty(body: object) {
 export async function manageTiers(body: object) {
     try {
         return await fetch(API_ENDPOINTS.manageTiers, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+    } catch (error) {
+        console.error('Failed to update tier data', error);
+        throw new Error('Failed to update tier data');
+    }
+}
+
+export async function managePoints(body: object) {
+    try {
+        return await fetch(API_ENDPOINTS.managePoints, {
             method: 'POST',
             headers,
             body: JSON.stringify(body),
