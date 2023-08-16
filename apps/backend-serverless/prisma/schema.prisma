@@ -80,9 +80,6 @@ model Merchant {
 
   loyaltyProgram LoyaltyProgram @default(none)
 
-  lastFetched DateTime?
-
-  pointsMint String?
   pointsBack Float?
 
   productStatus ProductStatus @default(tree)

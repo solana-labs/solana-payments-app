@@ -44,7 +44,6 @@ export const updateLoyalty = Sentry.AWSLambda.wrapHandler(
 
             if (Object.keys(points).length > 0) {
                 const merchantUpdateQuery = {
-                    ...(points?.mint && { pointsMint: points.mint }),
                     ...(points?.back && { pointsBack: points.back }),
                 };
                 await merchantService.updateMerchant(merchant, merchantUpdateQuery);

@@ -41,8 +41,6 @@ export const createMockMerchant = (merchantData: Partial<Merchant> = {}): Mercha
         acceptedPrivacyPolicy: merchantData.acceptedPrivacyPolicy ?? false,
         dismissCompleted: merchantData.dismissCompleted ?? false,
         loyaltyProgram: merchantData.loyaltyProgram ?? 'none',
-        lastFetched: null,
-        pointsMint: merchantData.pointsMint ?? null,
         pointsBack: merchantData.pointsBack ?? 0,
     };
 };

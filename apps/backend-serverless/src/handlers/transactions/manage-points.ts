@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import * as Sentry from '@sentry/serverless';
-import * as web3 from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { InvalidInputError } from '../../errors/invalid-input.error.js';
-import { parseAndValidateTransactionRequestBody } from '../../models/transaction-requests/transaction-request-body.model.js';
+import {
+    PointsUpdateRequest,
+    parseAndValidatePointsUpdateRequestBody,
+} from '../../models/transaction-requests/points-update-request.model.js';
 import { MerchantService } from '../../services/database/merchant-service.database.service.js';
 import { fetchGasKeypair } from '../../services/fetch-gas-keypair.service.js';
-import {
-    fetchPointsSetupTransaction,
-    getPointsMint,
-} from '../../services/transaction-request/fetch-points-setup-transaction.service.js';
+import { fetchPointsUpdateTransaction } from '../../services/transaction-request/fetch-points-setup-transaction.service.js';
 import { withAuth } from '../../utilities/clients/token-authenticate.utility.js';
 import { createErrorResponse } from '../../utilities/responses/error-response.utility.js';
 
@@ -21,40 +21,32 @@ Sentry.AWSLambda.init({
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
 });
 
-export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
+export const managePointsTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         Sentry.captureEvent({
-            message: 'In points setup transaction handler',
+            message: 'in tiers setup transaction',
             level: 'info',
-            extra: {
-                event,
-            },
         });
 
         if (event.body == null) {
-            return createErrorResponse(new InvalidInputError('request body'));
+            return createErrorResponse(new InvalidInputError('missing body in request'));
         }
 
-        const merchantService = new MerchantService(prisma);
-
         try {
-            let transactionRequestBody = parseAndValidateTransactionRequestBody(JSON.parse(event.body));
-
             const merchantAuthToken = withAuth(event.cookies);
-            let merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
+            const merchantService = new MerchantService(prisma);
+            const pointsUpdateRequest: PointsUpdateRequest = parseAndValidatePointsUpdateRequestBody(
+                JSON.parse(event.body)
+            );
+
+            const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });
 
             let gasKeypair = await fetchGasKeypair();
 
-            const pointsMint = await getPointsMint(gasKeypair.publicKey, new web3.PublicKey(merchant.id));
+            let { back, account } = pointsUpdateRequest;
 
-            let pointsSetupTransaction = await fetchPointsSetupTransaction(
-                pointsMint,
-                gasKeypair,
-                new web3.PublicKey(transactionRequestBody.account),
-                merchant
-            );
+            let transaction = await fetchPointsUpdateTransaction(gasKeypair, new PublicKey(account), merchant, back);
 
-            let transaction = pointsSetupTransaction;
             transaction.partialSign(gasKeypair);
 
             const transactionBuffer = transaction.serialize({
@@ -66,15 +58,19 @@ export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
                 statusCode: 200,
                 body: JSON.stringify({
                     transaction: transactionBuffer.toString('base64'),
-                    message: `Creating ${merchant.name} Points Rewards`,
+                    message: 'Points Metadata Update',
                 }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                    'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+                },
             };
         } catch (error) {
             return createErrorResponse(error);
         }
     },
     {
-        captureTimeoutWarning: false,
         rethrowAfterCapture: false,
     }
 );

@@ -16,5 +16,6 @@ export const API_ENDPOINTS = {
     updateLoyalty: `${process.env.NEXT_PUBLIC_API_BASE_URL}/update-loyalty`,
     loyaltyData: `${process.env.NEXT_PUBLIC_API_BASE_URL}/loyalty-data`,
     manageTiers: `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage-tiers`,
+    managePoints: `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage-points`,
     manageProducts: `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage-products`,
 };

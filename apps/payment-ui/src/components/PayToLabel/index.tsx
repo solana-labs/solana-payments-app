@@ -54,7 +54,6 @@ export const PayToLabel = () => {
         }
     }
 
-    const showPointsBack = loyaltyDetails?.loyaltyProgram === 'points';
     const hasProductDetails = productDetails.length > 0;
     const showTierDiscount =
         loyaltyDetails?.loyaltyProgram === 'tiers' && customerTier && discount > 0 && customer.customerOwns;
@@ -83,10 +82,12 @@ export const PayToLabel = () => {
             <div className="flex flex-col justify-between space-y-5">
                 <PayToDisplay merchantName={paymentDetails.merchantDisplayName} />
                 <PayAmountTokensDisplay amount={calculateFinalAmount()} />
-                {showPointsBack && (
+                {loyaltyDetails?.points.pointsBack && (
                     <div className="flex flex-row space-x-1">
                         <p className="">Points Back</p>
-                        <p className="">{(paymentDetails.usdcSize * loyaltyDetails?.points.pointsBack).toFixed(2)}</p>
+                        <p className="">
+                            {((paymentDetails.usdcSize * loyaltyDetails?.points.pointsBack) / 100).toFixed(2)}
+                        </p>
                     </div>
                 )}
 

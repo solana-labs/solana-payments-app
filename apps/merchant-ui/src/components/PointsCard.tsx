@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import * as RE from '@/lib/Result';
 import { API_ENDPOINTS } from '@/lib/endpoints';
-import { updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { managePoints, updateLoyalty, useMerchantStore } from '@/stores/merchantStore';
+import { Link } from '@carbon/icons-react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
@@ -58,7 +59,6 @@ export function PointsCard(props: Props) {
             await updateLoyalty({
                 loyaltyProgram: 'points',
                 points: {
-                    mint: data.pointsMint,
                     back: 1,
                 },
             });
@@ -113,18 +113,39 @@ export function PointsCard(props: Props) {
             return;
         }
 
+        let response;
         try {
-            await updateLoyalty({
-                points: {
-                    back: points,
-                },
+            setLoading(true);
+            response = await managePoints({
+                account: publicKey?.toBase58(),
+                back: points,
             });
 
-            await getMerchantInfo();
-            toast({
-                title: 'Successfully Updated Points!',
-                variant: 'constructive',
-            });
+            if (response.status != 200) {
+                toast({
+                    title: 'Error Updating Points Back',
+                    variant: 'destructive',
+                });
+            } else {
+                let data = await response.json();
+                if (data.transaction) {
+                    const transaction = Transaction.from(Buffer.from(data.transaction, 'base64'));
+                    await sendTransaction(transaction, connection);
+                    await getMerchantInfo();
+                }
+                toast({
+                    title: 'Successfully Updated Points Back',
+                    variant: 'constructive',
+                });
+
+                await updateLoyalty({
+                    points: {
+                        back: points,
+                    },
+                });
+                await getMerchantInfo();
+                setLoading(false);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 toast({
@@ -166,7 +187,7 @@ export function PointsCard(props: Props) {
                     <CardDescription>Give back % of purchases to every customer</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between flex-col space-y-2">
-                    {!merchantInfo.data.loyalty.points.pointsMint ? (
+                    {!merchantInfo.data.loyalty.points.pointsBack ? (
                         <Button onClick={setupLoyaltyProgram}>Start the Program</Button>
                     ) : (
                         <Button onClick={selectLoyaltyProgram} pending={loading}>
@@ -201,6 +222,14 @@ export function PointsCard(props: Props) {
                                     className="w-20"
                                 />
                                 <p>% Back</p>
+                                <Link
+                                    onClick={() =>
+                                        merchantInfo.data.loyalty.points.pointsMint &&
+                                        window.open(
+                                            `https://solscan.io/token/${merchantInfo.data.loyalty.points.pointsMint}`
+                                        )
+                                    }
+                                ></Link>
                             </div>
                         </div>
                     </form>

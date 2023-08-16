@@ -91,26 +91,3 @@ export const buildRefundTransactionRequestEndpoint = (
 
     return `${TRANSACTION_REQUEST_SERVER_URL}/pay?${queryString}`;
 };
-
-export const buildPointsSetupTransactionRequestEndpoint = (
-    mintAddress: string,
-    merchantAddress: string,
-    gasAddress: string
-) => {
-    if (TRANSACTION_REQUEST_SERVER_URL == null) {
-        throw new Error('Missing TRANSACTION_REQUEST_SERVER_URL environment variable.');
-    }
-
-    const params = {
-        mintAddress,
-        merchantAddress,
-        gasAddress,
-    };
-
-    const queryString = Object.entries(params)
-        .filter(([_, value]) => value != null)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-
-    return `${TRANSACTION_REQUEST_SERVER_URL}/points-setup?${queryString}`;
-};

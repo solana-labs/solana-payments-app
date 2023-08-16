@@ -198,6 +198,12 @@ functions:
       - httpApi:
           path: /payment-transaction
           method: get
+  manage-points:
+    handler: src/handlers/transactions/manage-points.managePointsTransaction
+    events:
+      - httpApi:
+          path: /manage-points
+          method: post
   manage-tiers:
     handler: src/handlers/transactions/manage-tiers.tiersSetupTransaction
     events:

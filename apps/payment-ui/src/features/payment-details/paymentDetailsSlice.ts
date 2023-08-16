@@ -39,8 +39,8 @@ interface Tier {
 export interface LoyaltyDetails {
     loyaltyProgram: 'none' | 'points' | 'tiers';
     points: {
+        pointsBack: number | null;
         pointsMint: string | null;
-        pointsBack: number;
     };
     products: Product[];
     tiers: Tier[];
