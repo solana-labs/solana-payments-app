@@ -53,8 +53,12 @@ provider:
     PROCESS_SQS_URL: ${self:custom.${self:provider.stage}.ProcessQueueUrl, self:resources.Outputs.ProcessQueueUrl.Value}
     SP_INFO_SQS_URL: ${self:custom.${self:provider.stage}.SolanaPayInfoQueueUrl, self:resources.Outputs.SolanaPayInfoQueueUrl.Value}
     GAS_KEYPAIR_SECRET: ${env:GAS_KEYPAIR_SECRET}
+    POINTS_SEED: ${env:POINTS_SEED}
+    TREE_SEED: ${env:TREE_SEED}
+    MINT_SEED: ${env:MINT_SEED}
     USE_AUTH_MOCK: ${env:USE_AUTH_MOCK}
     AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE: ${1}
+
 package:
   patterns:
     - 'node_modules/.prisma/**'

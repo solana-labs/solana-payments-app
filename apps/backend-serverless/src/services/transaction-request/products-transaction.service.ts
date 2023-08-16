@@ -39,17 +39,14 @@ import { getConnection } from '../../utilities/connection.utility.js';
 let connection = getConnection();
 
 export async function getCompressedNftSeeds(merchantAddress: PublicKey) {
-    const tree_seed = 'treeseed3';
-    const mint_seed = 'mintseed3';
-
     const TREE_SEED = crypto
         .createHash('sha256')
-        .update(tree_seed + merchantAddress.toString())
+        .update(process.env.TREE_SEED + merchantAddress.toString())
         .digest('hex')
         .substring(0, 32);
     const MINT_SEED = crypto
         .createHash('sha256')
-        .update(mint_seed + merchantAddress.toString())
+        .update(process.env.MINT_SEED + merchantAddress.toString())
         .digest('hex')
         .substring(0, 32);
 

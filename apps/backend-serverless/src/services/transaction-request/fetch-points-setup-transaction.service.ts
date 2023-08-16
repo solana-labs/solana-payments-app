@@ -12,11 +12,9 @@ import crypto from 'crypto';
 import { getConnection } from '../../utilities/connection.utility.js';
 
 export async function getPointsMintSeed(merchantAddress: PublicKey) {
-    const points_seed = 'pointsseed2';
-
     const POINTS_SEED = crypto
         .createHash('sha256')
-        .update(points_seed + merchantAddress.toString())
+        .update(process.env.POINTS_SEED + merchantAddress.toString())
         .digest('hex')
         .substring(0, 32);
 
