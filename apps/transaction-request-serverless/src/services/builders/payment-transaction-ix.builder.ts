@@ -4,6 +4,7 @@ import {
     createCloseAccountInstruction,
     createFreezeAccountInstruction,
     createMintToInstruction,
+    createThawAccountInstruction,
     getAccount,
     getAssociatedTokenAddress,
 } from '@solana/spl-token';
@@ -189,6 +190,10 @@ export class PaymentTransactionBuilder {
             if (this.currentTier && this.nextTier && this.customerOwnsTier) {
                 let customerTokenAddress = await getAssociatedTokenAddress(this.currentTier, this.sender);
                 let newCustomerTokenAddress = await getAssociatedTokenAddress(this.nextTier, this.sender);
+
+                transaction = transaction.add(
+                    createThawAccountInstruction(customerTokenAddress, this.currentTier, this.feePayer)
+                );
 
                 transaction = transaction.add(
                     createBurnInstruction(customerTokenAddress, this.currentTier, this.sender, 1)

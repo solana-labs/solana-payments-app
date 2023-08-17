@@ -82,7 +82,7 @@ export const PayToLabel = () => {
             <div className="flex flex-col justify-between space-y-5">
                 <PayToDisplay merchantName={paymentDetails.merchantDisplayName} />
                 <PayAmountTokensDisplay amount={calculateFinalAmount()} />
-                {loyaltyDetails?.points.pointsBack && (
+                {loyaltyDetails?.points.pointsBack && loyaltyDetails?.loyaltyProgram === 'points' && (
                     <div className="flex flex-row space-x-1">
                         <p className="">Points Back</p>
                         <p className="">

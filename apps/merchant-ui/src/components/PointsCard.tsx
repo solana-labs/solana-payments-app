@@ -92,7 +92,6 @@ export function PointsCard(props: Props) {
             });
 
             await getMerchantInfo();
-            setLoading(false);
             toast({
                 title: 'Successfully Started Points Back!',
                 variant: 'constructive',
@@ -106,6 +105,7 @@ export function PointsCard(props: Props) {
                 });
             }
         }
+        setLoading(false);
     }
 
     async function updateLoyaltyPoints() {
@@ -144,7 +144,6 @@ export function PointsCard(props: Props) {
                     },
                 });
                 await getMerchantInfo();
-                setLoading(false);
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -156,6 +155,7 @@ export function PointsCard(props: Props) {
             }
             // throw error; // Re-throw the error
         }
+        setLoading(false);
     }
 
     if (RE.isFailed(merchantInfo)) {
@@ -194,7 +194,7 @@ export function PointsCard(props: Props) {
                             Restart the Program
                         </Button>
                     )}
-                    <p className="text-xs">(Disables Points)</p>
+                    <p className="text-xs">(Disables Tiers)</p>
                 </CardFooter>
             </Card>
         );

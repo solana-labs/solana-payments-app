@@ -116,7 +116,7 @@ export const createCustomerResponse = async (
     }
 
     let points: number | null = null;
-    if (merchant.pointsMint) {
+    if (merchant.pointsBack) {
         let gasKeypair = await fetchGasKeypair();
         const pointsMint = await getPointsMint(gasKeypair.publicKey, new PublicKey(merchant.id));
         points = await fetchBalance(customerWallet, pointsMint.toBase58());

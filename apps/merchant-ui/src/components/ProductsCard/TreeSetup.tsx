@@ -85,7 +85,7 @@ export default function TreeSetup(props: Props) {
     return (
         <Card className="">
             <CardHeader>
-                <CardTitle>Setup Product NFT Size</CardTitle>
+                <CardTitle>Setup Product NFT Collection Size</CardTitle>
             </CardHeader>
             <CardContent>
                 <form>
@@ -106,7 +106,7 @@ export default function TreeSetup(props: Props) {
                     </div>
                 </form>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-between flex-col space-y-2">
                 <Button pending={loading} onClick={handleSave}>
                     Setup
                 </Button>
