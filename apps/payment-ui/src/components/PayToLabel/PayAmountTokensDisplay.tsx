@@ -36,16 +36,14 @@ const PaymentTokenSelector = () => {
 export const PayAmountTokensDisplay = (props: { amount: number }) => {
     return (
         <div className="flex flex-row w-full justify-between items-center">
-            <div className="flex flex-col w-1/3">
+            <div className="flex flex-col">
                 <div className="text-5xl flex flex-row items-center space-x-1">
                     <Icon icon="cryptocurrency:usdc" className="text-3xl" />
                     <p>{props.amount.toFixed(2)}</p>
                 </div>
                 {/* <div className="text-sm text-gray-500"> (Discount on payment)</div> */}
             </div>
-            <div className="w-2/3">
-                <PaymentTokenSelector />
-            </div>
+            <PaymentTokenSelector />
         </div>
     );
 };

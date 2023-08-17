@@ -6,6 +6,7 @@ export const config = {
     matcher: '/',
 };
 
+// https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
 const comprehensivelySanctionedCountries = ['CU', 'IR', 'KP', 'RU', 'SY', 'UA'];
 const ofacSanctionedCountries = ['BA', 'BY', 'MM', 'CF', 'CD', 'ET', 'HK', 'IQ', 'LB', 'LY', 'SD', 'VE', 'YE', 'ZW'];
 const otherCountries = ['AF', 'BY', 'MM', 'CF', 'CN', 'CI', 'CU', 'CD', 'CY', 'ER', 'HT'];
@@ -32,9 +33,9 @@ const isBlockedGeo = (request: NextRequest): boolean => {
         return true;
     }
 
-    if (country === 'US' && geo.region === 'NY') {
-        return true;
-    }
+    // if (country === 'US' && geo.region === 'NY') {
+    //     return true;
+    // }
 
     if (ofacSanctionedCountries.includes(country)) {
         return true;

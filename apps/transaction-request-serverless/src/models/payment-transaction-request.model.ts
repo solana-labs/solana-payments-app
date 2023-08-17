@@ -26,9 +26,9 @@ export const paymentTransactionRequestScheme = object().shape({
         .default(TransactionType.blockhash)
         .required(),
     createAta: boolean().default(true).required(),
-    singleUseNewAcc: publicKeySchema.nullable(),
-    singleUsePayer: publicKeySchema.nullable(),
-    indexInputs: string().nullable(),
+    singleUseNewAcc: publicKeySchema.nullable(), // public key for a system program create account instruction. useful to insure only a single payment transaction fetched from this server could ever be submitted on chain.
+    singleUsePayer: publicKeySchema.nullable(), //wallet responsible for paying for the rent of the single use account
+    indexInputs: string().nullable(), //comma seperated list of strings. public key is derived from the input and added onto an instruction. useful for finding payment transactions on chain later
 });
 
 export type PaymentTransactionRequest = InferType<typeof paymentTransactionRequestScheme>;

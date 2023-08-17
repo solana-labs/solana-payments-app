@@ -1,0 +1,62 @@
+---
+title: Code Walkthrough
+sidebar_position: 2
+---
+
+# Code Walkthrough
+
+Lets dive into the code and see how it works.
+
+The codebase is a [Turbo monorepo](https://turbo.build/repo). The most important section is the `apps` folder, of which we will cover here
+
+## Backends
+
+We decided to use a serverless architecture of all of our backends, so they are easy to maintain and scale. The servers' handlers are all defined in the apps' `serverless.yml` file.
+
+The backends all use either query strings or bodies, we parse and validate them using `yup`, the schemas of which are in the `models` folders
+
+We use prisma for our database schema, follow the appropriate [prisma docs](https://www.prisma.io) to setup with your database of choice.
+
+### backend-serverless
+
+This is our serverless implementation of all of the logic needed to receive payments/refunds/onboards from Shopify, and serve our frontends with the data they need. This is deployed in 2 parts
+
+#### purple
+
+The purple deployment is the server that our frontends immediately communicate with. Purple talks to the transaction-request-serverless to fetch the payment transaction, displays merchant and customer data. It tells shopify when certain actions are completed, and gets initial starting instructions from green.
+
+#### green
+
+The green deployment is how shopify talks to our app. This deployment handles the [mandatory GDPR webhooks](https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks), receives instructions directly from shopify to onboard a merchant, and start a transaction. It also watches customer checkouts to see what products the customer is buying. For payments, shopify tells Green how much a payment is for, and Green makes a pending PaymentRecord for that amount.
+
+### transaction-request-serverless
+
+This server constructs the actual transaction customers need to sign. There is a single exposed handler `pay`, which our backend-serverless calls to construct the transaction. The
+
+A transaction request server is an idea coined by [Solana Pay](https://docs.solanapay.com/core/transaction-request/merchant-integration). It is used as a component in the Solana Pay Protocol to deliver arbitrary transactions through the scanning of QR codes instead of simple token transfers
+
+We decided to build a transaction request server for a few reasons:
+
+1. Future proof
+2. Seperation of logic
+3. Reusablility, for example this transaction request server could also be used for something like dialect smart messages.
+
+### mock-shopify-serverless
+
+This server mimics Shopify's behavior through similarly formatted responses and redirects. It also simulates transactions in its `/payment` handler, either as a test or actual transactions, depending on the boolean test parameter.
+
+## frontends
+
+The frontends are both built using Next/tailwind/typescript/radix-ui.
+
+### merchant-ui
+
+This manages all of a merchant's configuration, including onboarding the merchant when they first start, allowing merchants to process refunds (with crypto), view existing crypto payment history, update their settings, and setup their loyalty programs.
+
+M-ui uses zustand for global state management, and the store files all have the various calls made to the backend
+
+### payment-ui
+
+This is the Customer's checkout screen, where they can complete their shopify purchase with Solana Pay.
+
+this ui uses redux, and all the backend calls are located in the slice files.

@@ -1,4 +1,4 @@
-# Shopify Technical Requirements
+# Shopify Requirements
 
 Shopify has a list of technical requirements that payment apps are to support [here](https://shopify.dev/docs/apps/payments#technical-requirements). This is how we implent and suppport each of those.
 
@@ -8,7 +8,7 @@ As a payments app we need to support idempotency in both directions. Meaning eve
 
 ### Shopify to Us
 
-Shopify sends us requests to initiate [payments](https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite#initiate-the-flow) and [refunds](https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow) through our respective [/payment](https://github.com/solana-labs/solana-payments-app/tree/main/apps/backend-serverless/src/handlers/shopify-handlers/payment.ts) and [/refund](https://github.com/solana-labs/solana-payments-app/tree/main/apps/backend-serverless/src/handlers/shopify-handlers/refund.ts) endpoints.
+Shopify sends us requests to initiate [payments](https://shopify.dev/docs/apps/payments/implementation/process-a-payment/offsite#initiate-the-flow) and [refunds](https://shopify.dev/docs/apps/payments/implementation/process-a-refund#initiate-the-flow) through our respective `/payment` and `/refund` endpoints.
 
 Both of these requests inlcude an `id` in the request body that serves as the idempotency key. To handle this technical requirement we do a few things within the handlers, database, and transaction building logic.
 
@@ -16,11 +16,11 @@ Both of these requests inlcude an `id` in the request body that serves as the id
 
 **Database** - When creating a PaymentRecord or RefundRecord in the database, we assign the given `id` value from shopify as the `shopId` on the entry. To prevent duplicate records, we have marked `shopId` as unique. This should then result in throwing an error if we try to create another PaymentRecord with the same `shopId` as another record in the database.
 
-**Transaction Building Logic** - An imporant part of the system design for our payment app is having an open endpoint to generate on chain transactions. This enables us to support [Solana Pay Transaction Requests](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#specification-transaction-request). To prevent double spending, it is not enough to check against the database for the state of a given record. This has to led to us using a conecpt we are calling [Single Use Accounts](https://github.com/solana-labs/solana-payments-app/tree/main/README.md#single-use-accounts). In each transaction we build for a given record, we generate a deterministic keypair that is generated using the `shopId` as input. This keypair is then used in a System Program Create Account instruction which is added to each transaction. Then, even if we end up in situation where multiple transactions are fetched for a single record, only one of those transactions will be able to land on chain.
+**Transaction Building Logic** - An important part of the system design for our payment app is having an open endpoint to generate on chain transactions. This enables us to support [Solana Pay Transaction Requests](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#specification-transaction-request). To prevent double spending, it is not enough to check against the database for the state of a given record. This has to led to us using a conecpt we are calling [Single Use Accounts](https://github.com/solana-labs/solana-payments-app/tree/main/README.md#single-use-accounts). In each transaction we build for a given record, we generate a deterministic keypair that is generated using the `shopId` as input. This keypair is then used in a System Program Create Account instruction which is added to each transaction. Then, even if we end up in situation where multiple transactions are fetched for a single record, only one of those transactions will be able to land on chain.
 
 ### Us to Shopify
 
-Shopify handles the idepotency on their end when we make requests to them about payments and refunds. We make these calls to Shopify when we "discover" transactions that corespond to PaymentRecords and RefundRecords we maintain. For redundency, we have multiple ways to "discover" these transactions including:
+Shopify handles the idepotency on their end when we make requests to them about payments and refunds. We make these calls to Shopify when we "discover" transactions that correspond to PaymentRecords and RefundRecords we maintain. For redundency, we have multiple ways to "discover" these transactions including:
 
 -   [webhooks](https://github.com/solana-labs/solana-payments-app/tree/main/apps/backend-serverless/src/handlers/webhooks/helius.ts)
 -   [polling](https://github.com/solana-labs/solana-payments-app/tree/main/apps/backend-serverless/src/handlers/webhooks/helius.ts)
@@ -66,7 +66,7 @@ HMAC verifiication is one of the security methods shopify uses alongside MTLS an
 
 ## [Rate limiting](https://shopify.dev/docs/apps/payments/implementation#rate-limiting)
 
-We currently get the rate limiting values back from Shopify when we make the graphql mutations. We will start storing these values as well before we submit for review but I don't see this becoming an issue so will likely push back rate limiting functionality on our end.
+We currently get the rate limiting values back from Shopify when we make the graphql mutations.
 
 ## [API versioning](https://shopify.dev/docs/api/usage/versioning)
 
@@ -80,7 +80,7 @@ There are three mantatory APIs that Shopify requires we support.
 2. customer data redact
 3. shop redact
 
-Currently, we don't store any info about customers in our app ( bullish on privacy ) so the first two APIs aren't very important to us. For these, we still
+Currently, we don't store any info about customers in our app so the first two APIs aren't very important to us. For these, we still
 
 -   host them
 -   protect them with mTLS
