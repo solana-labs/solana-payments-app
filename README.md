@@ -28,10 +28,10 @@ Transact on Shopify using Solana
 
 # Quickstart
 
-Pre Setup:
+Pre Setup Dependencies:
 
--   [Install Docker Desktop](https://docs.docker.com/desktop/)
--   [Install MySql](https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/)
+-   [Docker Desktop](https://docs.docker.com/desktop/)
+-   [MySql](https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/)
 
 Installation:
 
