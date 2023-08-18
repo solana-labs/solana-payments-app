@@ -9,9 +9,20 @@ export function ShopifySignIn(props: Props) {
     return (
         <button
             onClick={() => {
-                process.env.NODE_ENV === 'development'
-                    ? (window.location.href = 'https://localhost:4004/install')
-                    : (window.location.href = '/merchant');
+                switch (process.env.NEXT_PUBLIC_NODE_ENV) {
+                    case 'development':
+                        window.location.href = 'https://localhost:4004/install';
+                        break;
+                    case 'staging':
+                        window.location.href = '/merchant';
+                        break;
+                    case 'production':
+                        window.location.href = 'https://apps.shopify.com/solana-pay';
+                        break;
+                    default:
+                        console.error('Unknown environment');
+                        break;
+                }
             }}
             className={twMerge(
                 'border-gray-300',
@@ -25,7 +36,7 @@ export function ShopifySignIn(props: Props) {
                 'items-center',
                 'justify-center',
                 'space-x-2',
-                props.className,
+                props.className
             )}
         >
             <img className="h-7 w-7" src="/shopify-logo.svg" alt="Shopify Logo" />

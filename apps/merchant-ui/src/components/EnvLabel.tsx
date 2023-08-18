@@ -5,7 +5,7 @@ export default function EnvLabel() {
     return (
         <div className="bg-red-500 text-white text-xs font-bold p-1 text-center">
             {process.env.NEXT_PUBLIC_NODE_ENV === 'development' && 'Development'}
-            {process.env.NEXT_PUBLIC_NODE_ENV === 'test' && 'Staging'}
+            {process.env.NEXT_PUBLIC_NODE_ENV === 'staging' && 'Staging'}
         </div>
     );
 }

@@ -7,7 +7,13 @@
             "outputs": ["./apps/payment-ui/.next/**"]
         },
         "build:merchant-ui": {
-            "env": ["NODE_ENV", "NEXT_PUBLIC_API_BASE_URL"],
+            "env": [
+                "NODE_ENV",
+                "NEXT_PUBLIC_API_BASE_URL",
+                "NEXT_PUBLIC_NODE_ENV",
+                "NEXT_PUBLIC_FEATURE_FLAG",
+                "NEXT_PUBLIC_PERSONA_ENVIRONMENT_ID"
+            ],
             "outputs": ["./apps/merchant-ui/.next/**"]
         },
         "build:backend-serverless": {
