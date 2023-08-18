@@ -35,7 +35,7 @@ export function SupportFaq(props: Props) {
             />
             <div className="mt-11">
                 <div className="text-2xl text-black font-semibold">Need more help?</div>
-                <a className="inline-block mt-7" href="mailto:product@solana.com">
+                <a className="inline-block mt-7" href="mailto:commerce@solana.com">
                     <Primary>Email us</Primary>
                 </a>
             </div>
