@@ -4,6 +4,7 @@ import {
     getPaymentDetails,
     getProductDetails,
 } from '@/features/payment-details/paymentDetailsSlice';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CartAmountDisplay, CartAmountLoading } from './CartAmountDisplay';
@@ -53,7 +54,6 @@ export const PayToLabel = () => {
         }
     }
 
-    const hasProductDetails = productDetails.length > 0;
     const showTierDiscount =
         loyaltyDetails?.loyaltyProgram === 'tiers' && customerTier && discount > 0 && customer.customerOwns;
     const showTierUpgrade =
@@ -79,10 +79,8 @@ export const PayToLabel = () => {
     return (
         <div>
             <div className="flex flex-col justify-between space-y-5">
-                {/* <PayToDisplay merchantName={paymentDetails.merchantDisplayName} /> */}
-                <PayToDisplay merchantName={'Merchant Store'} />
-                {/* <PayAmountTokensDisplay amount={calculateFinalAmount()} /> */}
-                <PayAmountTokensDisplay amount={420.69} />
+                <PayToDisplay merchantName={paymentDetails.merchantDisplayName} />
+                <PayAmountTokensDisplay amount={calculateFinalAmount()} />
                 {loyaltyDetails?.points.pointsBack && loyaltyDetails?.loyaltyProgram === 'points' && (
                     <div className="flex flex-row space-x-1">
                         <p className="">Points Back</p>
@@ -92,7 +90,7 @@ export const PayToLabel = () => {
                     </div>
                 )}
 
-                {/* {hasProductDetails && (
+                {productDetails.length > 0 && (
                     <div>
                         <p className="">NFT Rewards</p>
                         <div className="flex flex-row ">
@@ -111,7 +109,7 @@ export const PayToLabel = () => {
                             )}
                         </div>
                     </div>
-                )} */}
+                )}
             </div>
             <div className="flex flex-col w-full mt-2">
                 <div className="divider" />

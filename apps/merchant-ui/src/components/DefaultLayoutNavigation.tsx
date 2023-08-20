@@ -108,13 +108,12 @@ export function DefaultLayoutNavigation(props: Props) {
                                     text="Refunds"
                                     renderInRhs={<RefundCount refundCount={refundCount} />}
                                 />
-                                {process.env.NEXT_PUBLIC_FEATURE_FLAG == 'true' && (
-                                    <DefaultLayoutNavigationLink
-                                        href="/loyalty"
-                                        icon={<AiOutlineCrown />}
-                                        text="Loyalty"
-                                    />
-                                )}
+                                <DefaultLayoutNavigationLink
+                                    href="/loyalty"
+                                    icon={<AiOutlineCrown />}
+                                    text="Loyalty"
+                                    disabled={process.env.NEXT_PUBLIC_FEATURE_FLAG == 'true'}
+                                />
                                 <DefaultLayoutNavigationLink href="/merchant" icon={<Store />} text="Merchant" />
                                 <DefaultLayoutNavigationLink href="/support" icon={<Support />} text="Support" />
                             </div>
