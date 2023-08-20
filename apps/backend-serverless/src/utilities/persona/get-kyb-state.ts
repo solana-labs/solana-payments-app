@@ -13,7 +13,9 @@ export const getKybState = async (inquiryId: string): Promise<KybState> => {
     const rawResp = await fetch(`https://withpersona.com/api/v1/inquiries/${inquiryId}`, {
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.PERSONA_API_KEY}`,
+            'Persona-Version': '2023-01-05',
+            accept: 'application/json',
+            authorization: `Bearer ${process.env.PERSONA_API_KEY}`,
         },
     });
 

@@ -17,6 +17,7 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
 
     let merchantAuthToken: MerchantAuthToken;
     let decodedToken: string | jwt.JwtPayload;
+    console.log('cookiez?', cookies);
 
     if (cookies != null && cookies.length > 0) {
         const bearerCookie = cookies.find(cookie => cookie.startsWith('Bearer='));
@@ -44,17 +45,15 @@ export const withAuth = (cookies: string[] | undefined): MerchantAuthToken => {
         if (merchantAuthToken.exp < currentTimestamp) {
             throw new UnauthorizedRequestError('Token has expired');
         }
+    } else if (useAuthMock) {
+        const payload = {
+            id: useAuthMock,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+        };
+        merchantAuthToken = parseAndValidateMerchantAuthToken(payload);
     } else {
-        if (useAuthMock) {
-            const payload = {
-                id: useAuthMock,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-            };
-            merchantAuthToken = parseAndValidateMerchantAuthToken(payload);
-        } else {
-            throw new UnauthorizedRequestError('Did not include cookies or useAuthMock');
-        }
+        throw new UnauthorizedRequestError('Did not include cookies or useAuthMock');
     }
 
     return merchantAuthToken;
