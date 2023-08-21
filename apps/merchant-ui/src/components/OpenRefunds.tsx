@@ -244,7 +244,7 @@ export function OpenRefunds(props: Props) {
 
     return (
         <PaginatedTable
-            className={twMerge(props.className, 'mt-8', 'hover:')}
+            className={twMerge(props.className, 'mt-8')}
             columns={['orderId', 'requestedAt', 'requestedRefundAmount', 'purchaseAmount', 'status']}
             curPage={RE.map(openRefunds, ({ refunds }) => refunds)}
             headers={{
