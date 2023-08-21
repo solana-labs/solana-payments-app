@@ -281,77 +281,6 @@ export function OpenRefunds(props: Props) {
                     <div
                         className={twMerge('border-b', 'border-gray-200', 'flex', 'h-20', 'items-center', 'space-x-3')}
                     >
-                        <Dialog.Root open={denyApprove === refund.orderId} onOpenChange={() => setDenyApprove(null)}>
-                            <Button.Secondary onClick={() => setDenyApprove(refund.orderId)}>Deny</Button.Secondary>
-                            <Dialog.Portal>
-                                <Dialog.Overlay
-                                    className={twMerge(
-                                        'bg-black/30',
-                                        'bottom-0',
-                                        'fixed',
-                                        'grid',
-                                        'left-0',
-                                        'place-items-center',
-                                        'right-0',
-                                        'top-0',
-                                        'z-10'
-                                    )}
-                                >
-                                    <Dialog.Content
-                                        className="bg-white rounded-xl overflow-hidden"
-                                        onPointerDownOutside={() => {
-                                            denyPendingRef.current = false;
-                                            setDenyApprove(null);
-                                            setDenyPending(false);
-                                        }}
-                                    >
-                                        <div className="px-6 pt-6 pb-6">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex flex-col space-y-2">
-                                                    <div className="font-semibold text-slate-900 text-2xl">
-                                                        Deny Refund
-                                                    </div>
-                                                    <div className="text-slate-800">
-                                                        Are you sure? You can’t undo this action afterwards.
-                                                    </div>
-
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Enter Rejection Reason"
-                                                        value={rejectReason}
-                                                        onChange={e => {
-                                                            setRejectReason(e.target.value);
-                                                        }}
-                                                    />
-                                                </div>
-                                                <Dialog.Close
-                                                    className={twMerge(
-                                                        'bg-slate-100',
-                                                        'grid',
-                                                        'h-12',
-                                                        'ml-8',
-                                                        'place-items-center',
-                                                        'rounded-full',
-                                                        'w-12'
-                                                    )}
-                                                >
-                                                    <Close className="h-6 w-6 fill-black" />
-                                                </Dialog.Close>
-                                            </div>
-                                        </div>
-                                        <div className="bg-slate-50 p-4 flex justify-end">
-                                            <Button.Primary
-                                                onClick={() => rejectRefund(refund.orderId)}
-                                                pending={denyPending}
-                                                disabled={rejectReason === ''}
-                                            >
-                                                Deny Refund
-                                            </Button.Primary>
-                                        </div>
-                                    </Dialog.Content>
-                                </Dialog.Overlay>
-                            </Dialog.Portal>
-                        </Dialog.Root>
                         <Dialog.Root
                             open={openApprove === refund.orderId && !walletModalActive}
                             onOpenChange={() => setOpenApprove(null)}
@@ -427,38 +356,112 @@ export function OpenRefunds(props: Props) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="bg-slate-50 p-4 flex justify-end">
+                                        <div className="bg-slate-50 p-4 flex justify-end border-t">
                                             {!connected ? (
-                                                <WalletMultiButton
+                                                <div
                                                     onClick={() => {
                                                         setWalletModalActive(true);
                                                     }}
-                                                    style={{
-                                                        backgroundColor: 'black',
-                                                        width: '100%',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        zIndex: 1000,
-                                                    }}
                                                 >
-                                                    <div className="flex flex-row items-center justify-center">
-                                                        <div className="pl-1">Connect wallet</div>
-                                                    </div>
-                                                </WalletMultiButton>
+                                                    <WalletMultiButton
+                                                        style={{
+                                                            backgroundColor: 'black',
+                                                            width: '100%',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            zIndex: 1000,
+                                                        }}
+                                                    >
+                                                        <div className="flex flex-row items-center justify-center">
+                                                            <div className="pl-1">Connect wallet</div>
+                                                        </div>
+                                                    </WalletMultiButton>
+                                                </div>
                                             ) : (
                                                 <div className="flex flex-row space-x-2">
-                                                    <Button.Secondary onClick={disconnect}>
-                                                        Disconnect Wallet
-                                                    </Button.Secondary>
                                                     <Button.Primary
                                                         onClick={() => approveRefund(refund.orderId)}
                                                         pending={approvePending}
                                                     >
                                                         Approve
                                                     </Button.Primary>
+                                                    <Button.Secondary onClick={disconnect}>
+                                                        Disconnect Wallet
+                                                    </Button.Secondary>
                                                 </div>
                                             )}
+                                        </div>
+                                    </Dialog.Content>
+                                </Dialog.Overlay>
+                            </Dialog.Portal>
+                        </Dialog.Root>
+                        <Dialog.Root open={denyApprove === refund.orderId} onOpenChange={() => setDenyApprove(null)}>
+                            <Button.Secondary onClick={() => setDenyApprove(refund.orderId)}>Deny</Button.Secondary>
+                            <Dialog.Portal>
+                                <Dialog.Overlay
+                                    className={twMerge(
+                                        'bg-black/30',
+                                        'bottom-0',
+                                        'fixed',
+                                        'grid',
+                                        'left-0',
+                                        'place-items-center',
+                                        'right-0',
+                                        'top-0',
+                                        'z-10'
+                                    )}
+                                >
+                                    <Dialog.Content
+                                        className="bg-white rounded-xl overflow-hidden"
+                                        onPointerDownOutside={() => {
+                                            denyPendingRef.current = false;
+                                            setDenyApprove(null);
+                                            setDenyPending(false);
+                                        }}
+                                    >
+                                        <div className="px-6 pt-6 pb-6">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col space-y-2">
+                                                    <div className="font-semibold text-slate-900 text-2xl">
+                                                        Deny Refund
+                                                    </div>
+                                                    <div className="text-slate-800">
+                                                        Are you sure? You can’t undo this action afterwards.
+                                                    </div>
+
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="Enter Rejection Reason"
+                                                        value={rejectReason}
+                                                        onChange={e => {
+                                                            setRejectReason(e.target.value);
+                                                        }}
+                                                    />
+                                                </div>
+                                                <Dialog.Close
+                                                    className={twMerge(
+                                                        'bg-slate-100',
+                                                        'grid',
+                                                        'h-12',
+                                                        'ml-8',
+                                                        'place-items-center',
+                                                        'rounded-full',
+                                                        'w-12'
+                                                    )}
+                                                >
+                                                    <Close className="h-6 w-6 fill-black" />
+                                                </Dialog.Close>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 flex justify-end border-t">
+                                            <Button.Primary
+                                                onClick={() => rejectRefund(refund.orderId)}
+                                                pending={denyPending}
+                                                disabled={rejectReason === ''}
+                                            >
+                                                Deny Refund
+                                            </Button.Primary>
                                         </div>
                                     </Dialog.Content>
                                 </Dialog.Overlay>
