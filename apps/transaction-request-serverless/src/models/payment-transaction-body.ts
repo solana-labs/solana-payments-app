@@ -4,20 +4,18 @@ import { publicKeySchema } from './public-key-schema.model.js';
 
 export const paymentTransactionBodySchema = object().shape({
     loyaltyProgram: string().oneOf(['points', 'tiers', 'none']).optional(),
-    payWithPoints: boolean().default(false).optional(),
+    payWithPoints: boolean(),
     points: object().shape({
         mint: string().optional(),
         back: number().optional(),
     }),
-    tiers: object()
-        .shape({
-            currentTier: publicKeySchema.optional(),
-            customerOwns: boolean().default(false).optional(),
-            currentDiscount: number().optional(),
-            nextTier: publicKeySchema.optional(),
-            isFirstTier: boolean().default(false).optional(),
-        })
-        .optional(),
+    tiers: object().shape({
+        currentTier: publicKeySchema.optional(),
+        customerOwns: boolean().default(false).optional(),
+        currentDiscount: number().optional(),
+        nextTier: publicKeySchema.optional(),
+        isFirstTier: boolean().default(false).optional(),
+    }),
 });
 
 export type PaymentTransactionBody = InferType<typeof paymentTransactionBodySchema>;

@@ -54,12 +54,12 @@ export const fetchPaymentTransaction = async (
         payWithPoints: payWithPoints,
         points: {
             mint: pointsMint.toBase58(),
-            back: merchant.pointsBack,
+            back: merchant.pointsBack ? merchant.pointsBack : undefined,
         },
         tiers: {
             currentTier: customerResponse.tier ? customerResponse.tier.mint : undefined,
-            currentDiscount: customerResponse.tier ? customerResponse.tier.discount : undefined,
             customerOwns: customerResponse.tier ? customerResponse.customerOwns : undefined,
+            currentDiscount: customerResponse.tier ? customerResponse.tier.discount : undefined,
             nextTier: customerResponse.nextTier ? customerResponse.nextTier.mint : undefined,
             isFirstTier: customerResponse.isFirstTier ? customerResponse.isFirstTier : undefined,
         },
