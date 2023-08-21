@@ -121,7 +121,7 @@ export class MerchantService {
         try {
             accountType = await getPubkeyType(inputPubkeyString);
         } catch (error) {
-            throw new InvalidInputError('Make sure account is created and has SOL');
+            throw new InvalidInputError('Make sure account has SOL');
         }
         const inputPubkey = new web3.PublicKey(inputPubkeyString);
         const usdcAddress = await getAssociatedTokenAddress(USDC_MINT, inputPubkey);

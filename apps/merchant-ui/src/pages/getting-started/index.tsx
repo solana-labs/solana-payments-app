@@ -40,10 +40,7 @@ export default function GetStartedPage(props: Props) {
                 <DefaultLayout className="h-full w-full">
                     <DefaultLayoutContent className={props.className}>
                         <DefaultLayoutScreenTitle>Welcome, {merchantInfo.data.name}!</DefaultLayoutScreenTitle>
-                        <div className="mt-4 text-black text-lg">
-                            Accepting payments on Solana is just four easy steps away.
-                        </div>
-                        <FinishAccountSetupPrompt className="mt-14 rounded-xl" />
+                        <FinishAccountSetupPrompt className="mt-6 rounded-xl" />
                     </DefaultLayoutContent>
                 </DefaultLayout>
             </div>
