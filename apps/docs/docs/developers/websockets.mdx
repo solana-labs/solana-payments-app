@@ -1,9 +1,10 @@
 ---
 title: Websocket Design
-sidebar_position: 3
+image: ../assets/favicon-32x32.png
+sidebar_position: 4
 ---
 
-In the payment flow, we use websockets to give customers a step-by-step update of their payment.
+Websockets are used to give the user a real-time view of the payment process.
 
 First, in payment-transaction, we validate the basic payemnt request sent from the payment-ui to the backend. If the request is valid, the customer is sent to the laoding screen, and their state is set to _completed_.
 

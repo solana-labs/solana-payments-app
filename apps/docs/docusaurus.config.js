@@ -1,5 +1,5 @@
 const config = {
-    title: 'Shopify <> Solana Pay',
+    title: 'Solana Pay x Shopify',
     tagline: 'Enable Solana powered Payments on Shopify',
     favicon: 'img/favicon.ico',
     url: 'https://shopifydocs.solanapay.com',
