@@ -65,6 +65,7 @@ export function KYBButton(props: Props) {
                     >
                         <Inquiry
                             templateId="itmpl_r9DWaWkBDNJb2KTd1c83i5Xg"
+                            referenceId={RE.isOk(merchantInfo) ? merchantInfo.data.shop : ''}
                             environmentId={process.env.NEXT_PUBLIC_PERSONA_ENVIRONMENT_ID}
                             frameWidth={PERSONA_WIDTH}
                             frameHeight={PERSONA_HEIGHT}

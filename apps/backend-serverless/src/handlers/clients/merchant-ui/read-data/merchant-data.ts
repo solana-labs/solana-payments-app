@@ -63,6 +63,7 @@ export const merchantData = Sentry.AWSLambda.wrapHandler(
             const loyaltyResponse = await createLoyaltyResponse(merchant);
             const responseBodyData = {
                 merchantData: {
+                    shop: merchant.shop,
                     name: merchant.name,
                     paymentAddress: merchant.walletAddress ?? merchant.tokenAddress,
                     onboarding: onboardingResponse,
