@@ -14,10 +14,11 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
 
 export type BlockedProps = {
     isBlocked: string;
+    isLoggedIn: string;
     country: string;
 };
 
-export default function Home({ isBlocked, country }: BlockedProps) {
+export default function Home({ isBlocked, isLoggedIn, country }: BlockedProps) {
     return (
         <>
             <Head>
@@ -29,7 +30,11 @@ export default function Home({ isBlocked, country }: BlockedProps) {
             </Head>
             <div className={twMerge('grid', 'h-screen', 'w-screen', 'md:grid-cols-2')}>
                 <div className="flex flex-col justify-center items-center px-6 md:px-24">
-                    <Welcome className="pt-14 md:pt-0 md:mb-56 w-full max-w-md" isBlocked={isBlocked} />
+                    <Welcome
+                        className="pt-14 md:pt-0 md:mb-56 w-full max-w-md"
+                        isBlocked={isBlocked}
+                        isLoggedIn={isLoggedIn}
+                    />
                 </div>
                 <div className={twMerge('relative', 'h-full')}>
                     <WelcomeHero className={twMerge('absolute', 'inset-0', 'w-full', 'h-full', 'object-cover')} />

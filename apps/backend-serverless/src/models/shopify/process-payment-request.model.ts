@@ -12,7 +12,7 @@ const customerAddressSchema = object().shape({
     city: string().required(),
     postal_code: string().optional(),
     province: string().optional(),
-    country_code: string().required(),
+    country_code: string().optional(),
     phone_number: string().optional(),
     company: string().optional(),
 });

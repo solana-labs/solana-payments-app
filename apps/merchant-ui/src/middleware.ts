@@ -60,15 +60,19 @@ export function middleware(request: NextRequest) {
     }
 
     const isBlocked = isBlockedGeo(request);
+    const isLoggedIn = request.cookies.has('Bearer') && request.cookies.has('nonce');
     const geo = request.geo;
 
     if (geo) {
         request.nextUrl.searchParams.set('country', geo.country ?? 'unknown');
     }
+    if (isLoggedIn) {
+        request.nextUrl.searchParams.set('isLoggedIn', 'false');
+    }
 
     request.nextUrl.searchParams.set('isBlocked', isBlocked.toString());
 
-    if (isBlocked && request.nextUrl.pathname !== '/') {
+    if ((isBlocked || !isLoggedIn) && request.nextUrl.pathname !== '/') {
         request.nextUrl.pathname = '/';
         return NextResponse.redirect(request.nextUrl);
     }
