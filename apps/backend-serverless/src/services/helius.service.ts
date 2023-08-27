@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import axios, { AxiosResponse } from 'axios';
 import { USDC_MINT } from '../configs/tokens.config.js';
 import { DependencyError } from '../errors/dependency.error.js';
@@ -106,7 +107,19 @@ export const getAccountInfo = async (pubkey: string): Promise<GetAccountInfo> =>
 };
 
 export const getPubkeyType = async (pubkey: string): Promise<PubkeyType> => {
-    const accountInfo = await getAccountInfo(pubkey);
+    try {
+        const isPubkey = new PublicKey(pubkey);
+    } catch {
+        throw new InvalidInputError('Payment address must be a valid Solana address');
+    }
+
+    let accountInfo: GetAccountInfo;
+
+    try {
+        accountInfo = await getAccountInfo(pubkey);
+    } catch (error) {
+        return PubkeyType.native;
+    }
     const owner = accountInfo.result.value.owner;
     const pubkeyType = getPubkeyTypeForProgramOwner(owner);
     if (pubkeyType == PubkeyType.token) {

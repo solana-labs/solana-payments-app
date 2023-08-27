@@ -121,10 +121,10 @@ export class MerchantService {
         try {
             accountType = await getPubkeyType(inputPubkeyString);
         } catch (error) {
-            throw new InvalidInputError('Make sure account has SOL');
+            throw new InvalidInputError('Make sure payment address is a valid Solana Address');
         }
         const inputPubkey = new web3.PublicKey(inputPubkeyString);
-        const usdcAddress = await getAssociatedTokenAddress(USDC_MINT, inputPubkey);
+        const tokenAddress = await getAssociatedTokenAddress(USDC_MINT, inputPubkey);
 
         let updatedWalletAddress: string | null = null;
         let updatedTokenAddress: string | null = null;
@@ -132,7 +132,7 @@ export class MerchantService {
         switch (accountType) {
             case PubkeyType.native:
                 updatedWalletAddress = inputPubkey.toBase58();
-                updatedTokenAddress = usdcAddress.toBase58();
+                updatedTokenAddress = tokenAddress.toBase58();
                 break;
             case PubkeyType.token:
                 updatedTokenAddress = inputPubkey.toBase58();
