@@ -1,5 +1,4 @@
 import {
-    Merchant,
     PaymentRecord,
     PaymentRecordStatus,
     PrismaClient,
@@ -299,7 +298,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
     async createRefundRecord(
         id: string,
         refundInitiation: ShopifyRefundInitiation,
-        merchant: Merchant,
+        merchantId: string,
         usdcAmount: number
     ): Promise<RefundRecord> {
         return await prismaErrorHandler(
@@ -314,7 +313,7 @@ export class RefundRecordService implements RecordService<RefundRecord, RefundRe
                     shopGid: refundInitiation.gid,
                     shopPaymentId: refundInitiation.payment_id,
                     test: refundInitiation.test,
-                    merchantId: merchant.id,
+                    merchantId: merchantId,
                     transactionSignature: null,
                     requestedAt: new Date(),
                     completedAt: null,

@@ -53,9 +53,9 @@ function generateMerchantRecords(count = 1): any[] {
                 acceptedPrivacyPolicy: true,
                 dismissCompleted: true,
                 active: true,
-                loyaltyProgram: 'tiers',
-                pointsMint: 'Fq2oteAH3w4qKfDtnrdHTqVNRoUAWwMHSqeG7gsRqPSC',
-                pointsBack: 1,
+                // loyaltyProgram: 'tiers',
+                // pointsMint: 'Fq2oteAH3w4qKfDtnrdHTqVNRoUAWwMHSqeG7gsRqPSC',
+                // pointsBack: 1,
             };
         } else {
             merchant = {
@@ -76,65 +76,6 @@ function generateMerchantRecords(count = 1): any[] {
         }
 
         records.push(merchant);
-    }
-    return records;
-}
-
-function generatePaymentRecords(count = 1): any[] {
-    const records: any[] = [];
-    for (let i = 0; i < count; i++) {
-        const requestedAt = new Date();
-        requestedAt.setDate(requestedAt.getDate() + i);
-        const completedAt = new Date(requestedAt.getTime());
-        completedAt.setDate(completedAt.getDate() + i + 1);
-
-        const record = {
-            id: `payment-${i}`,
-            status: 'completed',
-            shopId: `r_2-${i}_shopid`,
-            shopGid: `gid://shopify/PaymentSession/r_${i}_shopid`,
-            shopGroup: `shop_group_${i}`,
-            test: 1,
-            amount: i + 1,
-            currency: 'USD',
-            usdcAmount: i + 1,
-            cancelURL: `https://store${i}.myshopify.com/checkouts/c/randomId_-${i}/processing`,
-            merchantId: `GZQN3FYe8WGLTWSBGDgprSfJmwwDrYNPL2vR2v9ZpJof`,
-            transactionSignature: `317CdVpw26TCBpgKdaK8siAG3iMHatFPxph47GQieaZYojo9Q4qNG8vJ3r2EsHUWGEieEgzpFYBPmrqhiHh6sjLt`,
-            requestedAt: requestedAt.toISOString(),
-            completedAt: completedAt.toISOString(),
-        };
-
-        records.push(record);
-    }
-    return records;
-}
-
-function generateRefundRecords(paymentRecords: any[]): any[] {
-    const records: any[] = [];
-
-    for (let i = 0; i < paymentRecords.length; i++) {
-        const paymentRecord = paymentRecords[i];
-        const requestedAt = new Date(paymentRecord.requestedAt);
-        const completedAt = new Date(paymentRecord.completedAt);
-
-        const record = {
-            id: `refund-${i}`,
-            status: i % 2 === 0 ? 'pending' : 'completed',
-            amount: i,
-            currency: 'USD',
-            usdcAmount: i,
-            shopId: `r_${i}_shopid`,
-            shopGid: `gid://shopify/PaymentSession/r_${i}_shopid`,
-            shopPaymentId: paymentRecord.shopId,
-            test: 1,
-            merchantId: paymentRecord.merchantId,
-            transactionSignature: i % 2 === 0 ? null : `signature-${i}`,
-            requestedAt: requestedAt.toISOString(),
-            completedAt: i % 2 === 0 ? null : completedAt.toISOString(),
-        };
-
-        records.push(record);
     }
     return records;
 }
@@ -196,22 +137,6 @@ async function insertGeneratedData(merchants: number, payments: number, products
     const merchantInfo = await prisma.merchant.createMany({
         data: generateMerchantRecords(merchants).map(merchant => ({
             ...merchant,
-        })),
-    });
-
-    const paymentRecords = await prisma.paymentRecord.createMany({
-        data: generatePaymentRecords(payments).map(record => ({
-            ...record,
-            status: stringToPaymentRecordStatus(record.status),
-            test: Boolean(record.test),
-        })),
-    });
-
-    const refundRecords = await prisma.refundRecord.createMany({
-        data: generateRefundRecords(generatePaymentRecords(payments)).map(record => ({
-            ...record,
-            status: stringToRefundRecordStatus(record.status),
-            test: Boolean(record.test),
         })),
     });
 

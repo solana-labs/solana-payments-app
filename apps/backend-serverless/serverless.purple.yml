@@ -24,6 +24,13 @@ provider:
         - PATCH
         - DELETE
       allowCredentials: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+          Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/${self:custom.gas-object-name}'
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   environment:
@@ -159,6 +166,7 @@ functions:
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
   refund-transaction:
     handler: src/handlers/transactions/refund-transaction.refundTransaction
+    timeout: 60 # Increase the timeout to 60 seconds
     events:
       - httpApi:
           path: /refund-transaction
@@ -227,6 +235,11 @@ functions:
       - httpApi:
           path: /payment-status
           method: get
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/${self:custom.gas-object-name}'
   customer-data:
     handler: src/handlers/clients/payment-ui/customer-data.customerData
     events:
@@ -250,6 +263,10 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: ${self:resources.Outputs.ShopifyQueueArn.Value}
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: 'arn:aws:s3:::${self:custom.gas-bucket-name}/${self:custom.gas-object-name}'
   refund-data:
     handler: src/handlers/clients/merchant-ui/read-data/refund-data.refundData
     events:

@@ -1,6 +1,8 @@
 import { PaymentRecord, RefundRecord } from '@prisma/client';
+import { TOKEN_PROGRAM_ID, decodeTransferCheckedInstruction } from '@solana/spl-token';
 import axios from 'axios';
 import { USDC_MINT } from '../../configs/tokens.config.js';
+import { InvalidInputError } from '../../errors/invalid-input.error.js';
 import {
     TransactionRequestResponse,
     parseAndValidateTransactionRequestResponse,
@@ -9,6 +11,7 @@ import { delay } from '../../utilities/delay.utility.js';
 import { findPayingTokenAddressFromTransaction } from '../../utilities/transaction-inspection.utility.js';
 import { buildRefundTransactionRequestEndpoint } from '../../utilities/transaction-request/endpoints.utility.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
+import { fetchBalance } from '../helius.service.js';
 
 export const fetchRefundTransaction = async (
     refundRecord: RefundRecord,
@@ -35,15 +38,28 @@ export const fetchRefundTransaction = async (
         await delay(1000);
         transaction = await fetchTransaction(associatedPaymentRecord.transactionSignature);
     }
+    const transferInstruction = transaction.instructions[transaction.instructions.length - 2];
+
+    if (transferInstruction.programId.toBase58() != TOKEN_PROGRAM_ID.toBase58()) {
+        const error = new Error('Invalid transaction.' + transferInstruction.programId.toBase58());
+        throw error;
+    }
+
+    const decodedInstruction = decodeTransferCheckedInstruction(transferInstruction);
+
+    const mint = decodedInstruction.keys.mint;
+
+    const fetchBalancePromise = fetchBalance(account, mint.pubkey.toBase58());
+
     const payingCustomerTokenAddress = await findPayingTokenAddressFromTransaction(transaction);
 
     let receiverWalletAddress: string | null = null;
     let receiverTokenAddress: string | null = payingCustomerTokenAddress.toBase58();
 
-    if (refundRecord.test) {
-        receiverWalletAddress = account;
-        receiverTokenAddress = null;
-    }
+    // if (refundRecord.test) {
+    //     receiverWalletAddress = account;
+    //     receiverTokenAddress = null;
+    // }
 
     const endpoint = buildRefundTransactionRequestEndpoint(
         receiverWalletAddress,
@@ -64,13 +80,21 @@ export const fetchRefundTransaction = async (
         'Content-Type': 'application/json',
     };
 
-    const response = await axiosInstance.post(endpoint, { headers: headers });
+    const axiosPostPromise = axiosInstance.post(endpoint, { headers: headers });
 
-    if (response.status != 200) {
+    const [balance, axiosResponse] = await Promise.all([fetchBalancePromise, axiosPostPromise]);
+
+    // Check balance
+    if (balance < refundRecord.usdcAmount) {
+        throw new InvalidInputError('Not enough balance to refund');
+    }
+
+    // Check axios response
+    if (axiosResponse.status != 200) {
         throw new Error('Error fetching refund transaction.');
     }
 
-    const transactionRequestResponse = parseAndValidateTransactionRequestResponse(response.data);
+    const transactionRequestResponse = parseAndValidateTransactionRequestResponse(axiosResponse.data);
 
     return transactionRequestResponse;
 };

@@ -95,8 +95,8 @@ export function OpenRefunds(props: Props) {
                 credentials: 'include',
             });
             const data = await response.json();
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.status !== 200) {
+                throw new Error(`${data.error}`);
             }
 
             const buffer = Buffer.from(data.transaction, 'base64');
@@ -110,7 +110,7 @@ export function OpenRefunds(props: Props) {
                     });
                     const statusData = await statusResponse.json();
                     if (!statusResponse.ok) {
-                        throw new Error(`HTTP error! status: ${statusResponse.status}`);
+                        throw new Error(`${statusData.error}`);
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
                     if (statusData.refundStatus.status !== RefundStatus.Pending) {

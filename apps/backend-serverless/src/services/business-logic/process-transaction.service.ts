@@ -1,9 +1,11 @@
 import { PaymentRecord, PrismaClient } from '@prisma/client';
 import * as web3 from '@solana/web3.js';
 import axios from 'axios';
+import { ShopifyRefundInitiation } from '../../models/shopify/process-refund.request.model.js';
 import { createPaymentProductNftsResponse } from '../../utilities/clients/create-payment-product-nfts-response.js';
 import { delay } from '../../utilities/delay.utility.js';
 import { constructTransaction, sendTransaction } from '../../utilities/transaction.utility.js';
+import { convertAmountAndCurrencyToUsdcSize } from '../coin-gecko.service.js';
 import { MerchantService } from '../database/merchant-service.database.service.js';
 import { TransactionSignatureQuery } from '../database/payment-record-service.database.service.js';
 import {
@@ -11,11 +13,16 @@ import {
     ShopifyResolveResponse,
     getRecordServiceForTransaction,
 } from '../database/record-service.database.service.js';
+import { RefundRecordService } from '../database/refund-record-service.database.service.js';
 import { TransactionRecordService } from '../database/transaction-record-service.database.service.js';
 import { fetchGasKeypair } from '../fetch-gas-keypair.service.js';
 import { fetchTransaction } from '../fetch-transaction.service.js';
 import { mintCompressedNFT } from '../transaction-request/products-transaction.service.js';
 import { WebSocketService } from '../websocket/send-websocket-message.service.js';
+
+function getRandomArbitrary(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+}
 
 export const processTransaction = async (
     signature: string,
@@ -31,6 +38,7 @@ export const processTransaction = async (
     });
 
     const recordService = await getRecordServiceForTransaction(transactionRecord, prisma);
+    const refundRecordService = new RefundRecordService(prisma);
 
     const record = await recordService.getRecordFromTransactionRecord(transactionRecord);
 
@@ -103,6 +111,36 @@ export const processTransaction = async (
             await Promise.all(productPromises);
         } catch (error) {
             console.log('error minting compressed', error);
+        }
+        if (process.env.NODE_ENV === 'development') {
+            console.log('making the refund record dev');
+            const id = getRandomArbitrary(1, 1000000).toString();
+            const gid = getRandomArbitrary(1, 1000000).toString();
+
+            let refundInitiation: ShopifyRefundInitiation = {
+                id: gid,
+                gid: 'refundSession//' + gid,
+                payment_id: record.shopId,
+                amount: record.amount,
+                currency: record.currency,
+                test: record.test,
+                merchant_locale: 'us',
+                proposed_at: new Date().toISOString(),
+            };
+
+            let usdcSize: number;
+
+            if (refundInitiation.test) {
+                usdcSize = 0.01;
+            } else {
+                usdcSize = await convertAmountAndCurrencyToUsdcSize(
+                    refundInitiation.amount,
+                    refundInitiation.currency,
+                    axios
+                );
+            }
+
+            await refundRecordService.createRefundRecord(id, refundInitiation, record.merchantId, usdcSize);
         }
     }
 };
