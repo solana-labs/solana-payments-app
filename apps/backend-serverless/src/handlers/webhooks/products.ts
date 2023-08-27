@@ -55,7 +55,10 @@ export const products = Sentry.AWSLambda.wrapHandler(
                 body: JSON.stringify({}),
             };
         } catch (error) {
-            return createErrorResponse(error);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({}),
+            };
         }
     },
     {
