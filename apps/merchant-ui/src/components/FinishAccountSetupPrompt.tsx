@@ -146,6 +146,11 @@ export function FinishAccountSetupPrompt(props: Props) {
     return (
         <div className={twMerge('bg-slate-50', 'pt-6', 'px-4', props.className)}>
             <div className="text-black font-semibold text-lg">Finish setting up your account:</div>
+            <p className="text-black font-normal text-md pt-2">
+                We are experiencing issues with our KYB provider.
+                <br />
+                If your application is rejected, please bear with us, we will get back to you as soon as possible.
+            </p>
             {STEPS.map((step, i) => (
                 <FinishAccountSetupPromptListItem
                     additionalText={step === RemainingSetupItem.VerifyBusiness && !kybState ? '• Takes ~5m' : undefined}
