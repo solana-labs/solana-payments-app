@@ -73,12 +73,14 @@ export function MerchantInfo(props: Props) {
         setPending(true);
 
         let response = await updateMerchant('paymentAddress', formState.walletAddress);
+
         if (response && response.status === 200) {
             setAddressChanged(true);
         } else if (response && response.status !== 200) {
             let d = await response.json();
             setAddressChanged(d.error);
         }
+
         await getMerchantInfo();
         setPending(false);
     }
@@ -102,18 +104,17 @@ export function MerchantInfo(props: Props) {
             <div className={twMerge('gap-x-4', 'grid-cols-[max-content,1fr]', 'grid', 'items-start', 'max-w-4xl')}>
                 <DefaultLayoutHeader className="mt-16 col-span-2">Information</DefaultLayoutHeader>
                 <div>
-                    <div className="font-medium text-black text-sm">Merchant Name</div>
-                    <div className="text-sm text-neutral-600">Taken from your Shopify store</div>
+                    <p className="font-medium text-black text-sm">Merchant Name</p>
+                    <p className="text-sm text-neutral-600">Taken from your Shopify store</p>
                 </div>
                 <div className="flex justify-end">
                     <Input disabled className="w-full max-w-lg" value={formState.name} />
                 </div>
                 <div className="mt-6 border-b border-gray-200 col-span-2" />
                 <DefaultLayoutHeader className="mt-16 col-span-2">Wallet and Settlement</DefaultLayoutHeader>
-                <div>
-                    <div className="font-medium text-black text-sm">USDC Payments Address</div>
-                    <div className="text-sm text-neutral-600">Receive all payments to this address</div>
-                    <WalletAddressSuggestion className="mt-5" />
+                <div className="flex flex-col space-y-2">
+                    <p className="font-medium text-black text-sm">USDC Payments Address</p>
+                    <WalletAddressSuggestion />
                 </div>
                 <div className="flex justify-end">
                     <AddressInput
@@ -132,13 +133,13 @@ export function MerchantInfo(props: Props) {
                 </div>
                 <div className="my-6 border-b border-gray-200 col-span-2" />
                 <div>
-                    <div className="font-medium text-black text-sm">Settlement Token</div>
-                    <div className="text-sm text-neutral-600">Select which token you receive from customers</div>
+                    <p className="font-medium text-black text-sm">Settlement Token</p>
+                    <p className="text-sm text-neutral-600">Select which token you receive from customers</p>
                 </div>
-                <div>
+                <div className="flex justify-end">
                     <TokenSelect
                         disabled
-                        className="w-full"
+                        className="w-full max-w-lg"
                         token={formState.token}
                         onChange={token =>
                             setFormState(cur => ({

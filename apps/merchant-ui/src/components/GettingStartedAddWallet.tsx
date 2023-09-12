@@ -65,13 +65,12 @@ export function GettingStartedAddWallet(props: Props) {
                     'grid',
                     'items-start',
                     'max-w-4xl',
-                    'mt-9',
+                    'mt-9'
                 )}
             >
-                <div>
-                    <div className="font-medium text-black text-sm">Settlement wallet</div>
-                    <div className="text-sm text-neutral-600">Receive all payments to this address</div>
-                    <WalletAddressSuggestion className="mt-5" />
+                <div className="flex flex-col space-y-2">
+                    <p className="font-medium text-black text-sm">USDC Payments Address</p>
+                    <WalletAddressSuggestion />
                 </div>
                 <div className="flex justify-end">
                     <AddressInput
@@ -93,7 +92,7 @@ export function GettingStartedAddWallet(props: Props) {
                     'justify-end',
                     'mt-6',
                     'py-5',
-                    'space-x-3',
+                    'space-x-3'
                 )}
             >
                 <Button.Secondary onClick={() => router.back()}>Cancel</Button.Secondary>

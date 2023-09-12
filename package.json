@@ -16,7 +16,7 @@
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
         "setup:env": "node scripts/env-setup.js",
-        "seed": "yarn --cwd apps/backend-serverless prisma:push:dev && yarn --cwd apps/backend-serverless prisma:seed:dev",
+        "seed": "yarn --cwd apps/backend-serverless prisma:generate && yarn --cwd apps/backend-serverless prisma:push:dev && yarn --cwd apps/backend-serverless prisma:seed:dev",
         "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,mdx}\""
     },
     "dependencies": {
