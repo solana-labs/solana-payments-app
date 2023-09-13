@@ -20,11 +20,6 @@ Sentry.AWSLambda.init({
 
 export const updateMerchant = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in update-merchant',
-            level: 'info',
-        });
-
         const merchantService = new MerchantService(prisma);
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body in request'));

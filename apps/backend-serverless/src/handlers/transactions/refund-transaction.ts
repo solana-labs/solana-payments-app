@@ -34,13 +34,6 @@ Sentry.AWSLambda.init({
 
 export const refundTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in refund-transaction',
-            level: 'info',
-            extra: {
-                event,
-            },
-        });
         let refundRequest: RefundTransactionRequest;
 
         const transactionRecordService = new TransactionRecordService(prisma);
@@ -110,10 +103,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 throw new DependencyError('transaction signature null');
             }
 
-            Sentry.captureEvent({
-                message: 'in refund-transaction verify tx w record',
-                level: 'info',
-            });
             await transactionRecordService.createTransactionRecord(
                 encodeBufferToBase58(transactionSignature),
                 TransactionType.refund,
@@ -125,10 +114,6 @@ export const refundTransaction = Sentry.AWSLambda.wrapHandler(
                 requireAllSignatures: false,
             });
 
-            Sentry.captureEvent({
-                message: 'refund-tx about to finalize',
-                level: 'info',
-            });
             return {
                 statusCode: 200,
                 body: JSON.stringify(

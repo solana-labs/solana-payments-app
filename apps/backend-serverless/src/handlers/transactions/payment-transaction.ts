@@ -60,14 +60,6 @@ Sentry.AWSLambda.init({
 
 export const paymentTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In payment transaction handler',
-            level: 'info',
-            extra: {
-                event,
-            },
-        });
-
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
         const merchantService = new MerchantService(prisma);

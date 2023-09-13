@@ -22,11 +22,6 @@ Sentry.AWSLambda.init({
 
 export const helius = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in helius',
-            level: 'info',
-        });
-
         const requiredAuthorizationHeader = process.env.HELIUS_AUTHORIZATION;
         const websocketUrl = process.env.WEBSOCKET_URL;
 

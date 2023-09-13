@@ -18,10 +18,6 @@ Sentry.AWSLambda.init({
 
 export const cron = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in cron',
-            level: 'info',
-        });
         const transactionRecordService = new TransactionRecordService(prisma);
         const paymentRecordService = new PaymentRecordService(prisma);
 
@@ -56,7 +52,7 @@ export const cron = Sentry.AWSLambda.wrapHandler(
             {
                 signatures: signatures,
             },
-            paymentRecordService,
+            paymentRecordService
         );
 
         await websocketService.sendProcessingTransactionMessage();
@@ -77,5 +73,5 @@ export const cron = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

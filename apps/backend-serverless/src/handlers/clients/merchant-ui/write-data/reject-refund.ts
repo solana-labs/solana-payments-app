@@ -26,10 +26,6 @@ Sentry.AWSLambda.init({
 
 export const rejectRefund = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in reject-refund',
-            level: 'info',
-        });
         const refundRecordService = new RefundRecordService(prisma);
         const merchantService = new MerchantService(prisma);
 

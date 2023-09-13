@@ -23,14 +23,6 @@ Sentry.AWSLambda.init({
 
 export const pointsSetupTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In points setup transaction handler',
-            level: 'info',
-            extra: {
-                event,
-            },
-        });
-
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('request body'));
         }

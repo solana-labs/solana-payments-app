@@ -20,13 +20,6 @@ Sentry.AWSLambda.init({
 
 export const checkouts = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In checkout webhook',
-            level: 'info',
-            extra: {
-                event: JSON.stringify(event),
-            },
-        });
         if (event.body == null) {
             return createErrorResponse(
                 new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers))
@@ -52,10 +45,6 @@ export const checkouts = Sentry.AWSLambda.wrapHandler(
 
             await checkoutService.createOrUpdateCheckout(checkoutToken, productIds);
 
-            Sentry.captureEvent({
-                message: 'finsihed chekcout data',
-                level: 'info',
-            });
             return {
                 statusCode: 200,
                 body: JSON.stringify({}),

@@ -13,11 +13,6 @@ Sentry.AWSLambda.init({
 
 export const disconnect = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyWebsocketEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in websocket disconnect',
-            level: 'info',
-        });
-
         const websocketSessionService = new WebsocketSessionService(prisma);
 
         await websocketSessionService.deleteWebsocketSession({
@@ -31,5 +26,5 @@ export const disconnect = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

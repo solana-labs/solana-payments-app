@@ -23,10 +23,6 @@ Sentry.AWSLambda.init({
 
 export const solanaPayInfoMessage = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in solana-pay-info-message',
-            level: 'info',
-        });
         const websocketUrl = process.env.WEBSOCKET_URL;
         if (websocketUrl == null) {
             return createErrorResponse(new MissingEnvError('websocket url'));

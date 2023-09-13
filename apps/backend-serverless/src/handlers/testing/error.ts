@@ -13,10 +13,6 @@ Sentry.AWSLambda.init({
 
 export const error = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In error handler',
-        });
-
         try {
             throw new Error('Test error for Sentry');
         } catch (error) {
@@ -25,5 +21,5 @@ export const error = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

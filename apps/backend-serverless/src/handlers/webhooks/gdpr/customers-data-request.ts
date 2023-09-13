@@ -15,16 +15,9 @@ Sentry.AWSLambda.init({
 
 export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In customersDataRequest gdpr',
-            level: 'info',
-            extra: {
-                event: JSON.stringify(event),
-            },
-        });
         if (event.body == null) {
             return createErrorResponse(
-                new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers)),
+                new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers))
             );
         }
 
@@ -44,5 +37,5 @@ export const customersDataRequest = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

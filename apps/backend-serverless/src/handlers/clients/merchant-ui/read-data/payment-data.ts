@@ -20,12 +20,6 @@ Sentry.AWSLambda.init({
 export const paymentData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const merchantService = new MerchantService(prisma);
-
-        Sentry.captureEvent({
-            message: 'in payment-data',
-            level: 'info',
-        });
-
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const merchant = await merchantService.getMerchant({ id: merchantAuthToken.id });

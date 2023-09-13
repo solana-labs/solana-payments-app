@@ -27,10 +27,6 @@ Sentry.AWSLambda.init({
 
 export const retry = Sentry.AWSLambda.wrapHandler(
     async (event: unknown): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in retry',
-            level: 'info',
-        });
         let shopifyMutationRetry: ShopifyMutationRetry;
 
         try {
@@ -86,7 +82,7 @@ export const retry = Sentry.AWSLambda.wrapHandler(
                     shopifyMutationRetry.refundResolve,
                     shopifyMutationRetry.refundReject,
                     shopifyMutationRetry.appConfigure,
-                    nextStep,
+                    nextStep
                 );
             } catch (error) {
                 return createErrorResponse(error);
@@ -100,5 +96,5 @@ export const retry = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

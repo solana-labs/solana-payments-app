@@ -25,11 +25,6 @@ Sentry.AWSLambda.init({
 
 export const productsSetupTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in products setup transaction',
-            level: 'info',
-        });
-
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }

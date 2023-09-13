@@ -15,10 +15,6 @@ Sentry.AWSLambda.init({
 
 export const balance = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in balance',
-            level: 'info',
-        });
         try {
             const balanceRequestParameters = await parseAndValidateBalanceParameters(event.queryStringParameters);
 

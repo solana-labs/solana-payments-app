@@ -20,13 +20,6 @@ Sentry.AWSLambda.init({
 
 export const products = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In products webhook',
-            level: 'info',
-            extra: {
-                event: JSON.stringify(event),
-            },
-        });
         if (event.body == null) {
             return createErrorResponse(
                 new InvalidInputError('Customer data Missing body' + ' ' + JSON.stringify(event.headers))

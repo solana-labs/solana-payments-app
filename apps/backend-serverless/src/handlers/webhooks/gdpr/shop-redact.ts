@@ -22,14 +22,6 @@ Sentry.AWSLambda.init({
 
 export const shopRedact = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'In shopRedact gdpr',
-            level: 'info',
-            extra: {
-                event: JSON.stringify(event),
-            },
-        });
-
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('Shop redact Missing body'));
         }
@@ -59,5 +51,5 @@ export const shopRedact = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

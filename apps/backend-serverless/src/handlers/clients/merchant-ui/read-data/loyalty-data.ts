@@ -16,14 +16,6 @@ Sentry.AWSLambda.init({
 
 export const loyaltyData = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in loyalty-data',
-            level: 'info',
-            extra: {
-                event,
-            },
-        });
-
         const merchantService = new MerchantService(prisma);
 
         try {

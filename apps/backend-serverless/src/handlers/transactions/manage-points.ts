@@ -23,11 +23,6 @@ Sentry.AWSLambda.init({
 
 export const managePointsTransaction = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in tiers setup transaction',
-            level: 'info',
-        });
-
         if (event.body == null) {
             return createErrorResponse(new InvalidInputError('missing body in request'));
         }

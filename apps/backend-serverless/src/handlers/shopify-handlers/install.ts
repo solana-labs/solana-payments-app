@@ -20,14 +20,6 @@ Sentry.AWSLambda.init({
 
 export const install = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResult> => {
-        Sentry.captureEvent({
-            message: 'in install',
-            level: 'info',
-            extra: {
-                event: event,
-            },
-        });
-
         const merchantService = new MerchantService(prisma);
 
         try {

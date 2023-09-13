@@ -19,14 +19,6 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
             return createErrorResponse(new InvalidInputError('Customers redact Missing body'));
         }
 
-        Sentry.captureEvent({
-            message: 'In customersRedact gdpr',
-            level: 'info',
-            extra: {
-                event: JSON.stringify(event),
-            },
-        });
-
         try {
             const webhookHeaders = parseAndValidateShopifyWebhookHeaders(event.headers);
             if (webhookHeaders['x-shopify-topic'] != ShopifyWebhookTopic.customerRedact) {
@@ -43,5 +35,5 @@ export const customersRedact = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

@@ -11,11 +11,6 @@ Sentry.AWSLambda.init({
 
 export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     async (event: SQSEvent): Promise<APIGatewayProxyResultV2> => {
-        Sentry.captureEvent({
-            message: 'in sqs message receive',
-            level: 'info',
-        });
-        // Theses queues are set t
         for (const record of event.Records) {
             const attributes = record.messageAttributes;
 
@@ -52,5 +47,5 @@ export const sqsMessageReceive = Sentry.AWSLambda.wrapHandler(
     },
     {
         rethrowAfterCapture: false,
-    },
+    }
 );

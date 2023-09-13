@@ -20,11 +20,6 @@ export const refundStatus = Sentry.AWSLambda.wrapHandler(
     async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
         const refundRecordService = new RefundRecordService(prisma);
 
-        Sentry.captureEvent({
-            message: 'in refund-status',
-            level: 'info',
-        });
-
         try {
             const merchantAuthToken = withAuth(event.cookies);
             const refundStatusRequestParameters = parseAndValidateRefundStatusRequest(event.queryStringParameters);
