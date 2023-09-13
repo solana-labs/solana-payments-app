@@ -21,7 +21,7 @@ export function WalletAddressSuggestion(props: Props) {
                     <br />•{' '}
                     <a
                         className="font-semibold text-indigo-700"
-                        href="https://commercedocs.solanapay.com/merchants/coinbase"
+                        href="https://commercedocs.solanapay.com/merchants/wallets/coinbase"
                     >
                         A Coinbase Solana USDC address
                     </a>
