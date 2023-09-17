@@ -41,6 +41,11 @@ const config = {
                     label: 'GitHub',
                     position: 'right',
                 },
+                {
+                    href: 'mailto:commerce@solana.com',
+                    label: 'Support',
+                    position: 'right',
+                },
             ],
         },
         colorMode: {
