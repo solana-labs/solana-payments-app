@@ -30,7 +30,7 @@ export enum ErrorMessage {
     invalidRequestHeaders = 'Invalid request headers.',
     invalidSecurityInput = 'Invalid security input.',
     unauthorized = 'Unauthorized request.',
-    incompatibleDatabaseRecords = 'Incompatible interal records.',
+    incompatibleDatabaseRecords = 'Incompatible internal records.',
     incorrectPaymentRecordState = 'Incorrect payment state.',
     incorrectRefundRecordState = 'Incorrect refund state.',
     unauthorizedMerchant = 'Merchant is not authorized.',
