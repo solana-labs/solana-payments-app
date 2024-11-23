@@ -31,7 +31,7 @@ const CustomerHandler: React.FC = () => {
     useEffect(() => {
         if (usdcBalance != null && paymentSize != null && usdcBalance < paymentSize) {
             dispatch(
-                setNotification({ notification: Notification.insufficentFunds, type: NotificationType.connectWallet })
+                setNotification({ notification: Notification.insufficientFunds, type: NotificationType.connectWallet })
             );
         } else if (usdcBalance != null && paymentSize != null && usdcBalance >= paymentSize) {
             dispatch(removeNotification());
