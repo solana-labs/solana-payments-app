@@ -66,7 +66,7 @@ const WebsocketHandler: React.FC = () => {
                     dispatch(resetSession());
                     dispatch(
                         setNotification({
-                            notification: Notification.insufficentFunds,
+                            notification: Notification.insufficientFunds,
                             type: NotificationType.solanaPay,
                         })
                     );
