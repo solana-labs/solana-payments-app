@@ -30,7 +30,7 @@ describe('transaction test', () => {
         });
 
         mintPubkey = await token.createMint(
-            connection, // conneciton
+            connection, // connection
             keypair, // fee payer
             keypair.publicKey, // mint authority
             keypair.publicKey, // freeze authority (you can use `null` to disable it. when you disable it, you can't turn it on again)
