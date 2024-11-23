@@ -12,6 +12,6 @@ export const parseAndValidatePaymentStatusRequest = (paymentStatusRequestParamet
     return parseAndValidateStrict(
         paymentStatusRequestParameters,
         paymentStatusRequestScheme,
-        'Can not parse payment status request. Unkownn reason.',
+        'Can not parse payment status request. Unknown reason.',
     );
 };
