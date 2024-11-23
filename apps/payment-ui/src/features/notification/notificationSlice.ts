@@ -7,7 +7,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 //         case Notification.noWallet:
 //         case Notification.declined:
 //         case Notification.duplicatePayment:
-//         case Notification.insufficentFunds:
+//         case Notification.insufficientFunds:
 //         case Notification.simulatingIssue:
 //             return NotificationType.info;
 //         case Notification.transactionRequestFailed:
