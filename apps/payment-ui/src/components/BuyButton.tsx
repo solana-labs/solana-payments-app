@@ -33,7 +33,7 @@ const BuyButton = () => {
                 const message = error.message.toLowerCase();
                 if (message.includes('user rejected')) return Notification.declined;
                 if (message.includes('0x0') && message.includes('instruction 0')) return Notification.duplicatePayment;
-                if (message.includes('0x1') && message.includes('instruction 1')) return Notification.insufficentFunds;
+                if (message.includes('0x1') && message.includes('instruction 1')) return Notification.insufficientFunds;
                 if (message === 'Transaction string is null') return Notification.transactionRequestFailed;
                 if (message === 'Failed to parse transaction string') return Notification.transactionRequestFailed;
             }
@@ -95,7 +95,7 @@ const BuyButton = () => {
     };
 
     const isDisabled = () => {
-        if (connectedWalletNotification == Notification.insufficentFunds) {
+        if (connectedWalletNotification == Notification.insufficientFunds) {
             return true;
         } else if (paymentId == null) {
             return true;
