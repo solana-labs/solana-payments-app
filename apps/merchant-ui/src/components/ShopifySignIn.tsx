@@ -17,7 +17,7 @@ export function ShopifySignIn(props: Props) {
                         window.location.href = '/merchant';
                         break;
                     case 'production':
-                        window.location.href = 'https://apps.shopify.com/solana-pay';
+                        window.location.href = 'https://docs.hel.io/product-guides/solana-pay-shopify-plugin';
                         break;
                     default:
                         console.error('Unknown environment');

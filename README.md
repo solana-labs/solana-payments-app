@@ -12,7 +12,7 @@
     </b>
     &nbsp;|&nbsp;
     <b>
-        <a href="https://apps.shopify.com/solana-pay">installation</a>
+        <a href="https://docs.hel.io/product-guides/solana-pay-shopify-plugin">installation</a>
     </b>
     &nbsp;|&nbsp;
     <b>
