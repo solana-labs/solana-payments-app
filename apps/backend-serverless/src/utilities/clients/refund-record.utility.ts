@@ -20,6 +20,6 @@ export const createRefundDataResponseFromRefundRecord = (
         refundAmount: `${refundRecord.amount} ${refundRecord.currency}`,
         paymentAmount: refundRecord.paymentRecord
             ? `${refundRecord.paymentRecord.amount} ${refundRecord.paymentRecord.currency}`
-            : 'Not Availible',
+            : 'Not Available',
     };
 };

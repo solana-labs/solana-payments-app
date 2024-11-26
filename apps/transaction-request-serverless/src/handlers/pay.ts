@@ -47,7 +47,7 @@ export const pay = Sentry.AWSLambda.wrapHandler(
                 body: JSON.stringify(
                     {
                         transaction: base,
-                        message: 'Tranasction created successfully',
+                        message: 'Transaction created successfully',
                     },
                     null,
                     2
